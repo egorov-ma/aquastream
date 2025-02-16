@@ -4,8 +4,9 @@ server:
 spring:
   application:
     name: api-gateway
-
   cloud:
+    config:
+      enabled: false  # Отключаем Config Server
     gateway:
       routes:
         - id: user-service

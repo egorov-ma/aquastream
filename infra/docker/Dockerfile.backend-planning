@@ -1,0 +1,5 @@
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+COPY backend-planning/build/libs/backend-planning.jar app.jar
+EXPOSE 8082 9090
+ENTRYPOINT ["java", "-jar", "app.jar"] 

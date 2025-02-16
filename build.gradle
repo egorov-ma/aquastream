@@ -1,19 +1,27 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.2.3' apply false
+    id 'io.spring.dependency-management' version '1.1.4' apply false
 }
 
-group = 'org.aquastream'
-version = '1.0-SNAPSHOT'
+allprojects {
+    group = 'org.aquastream'
+    version = '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+    repositories {
+        mavenCentral()
+    }
 }
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
+subprojects {
+    apply plugin: 'java'
+    
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.10.0')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+    }
 
-test {
-    useJUnitPlatform()
+    test {
+        useJUnitPlatform()
+    }
 }

@@ -1,0 +1,10 @@
+*.iml
+.gradle
+build/
+node_modules/
+dist/
+.DS_Store
+.idea
+.vscode
+target/
+logs/ 

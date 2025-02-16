@@ -1,7 +1,14 @@
-FROM openjdk:21-slim
+# Используем базовый образ OpenJDK 21
+FROM eclipse-temurin:21-jdk
 
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
-COPY backend-api/build/libs/*.jar app.jar
 
+# Копируем собранный JAR-файл из проекта в контейнер
+COPY backend-api/build/libs/backend-api.jar app.jar
+
+# Открываем порт, который использует сервис
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"] 
+
+# Запуск сервиса при старте контейнера
+ENTRYPOINT ["java", "-jar", "app.jar"]

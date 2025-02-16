@@ -1,11 +1,113 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:16
+    container_name: aquastream-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: aquastream_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.1
+    container_name: aquastream-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    container_name: aquastream-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+
   backend-api:
     build:
-      context: ..
+      context: ../..
       dockerfile: infra/docker/Dockerfile.backend-api
+    container_name: aquastream-api
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker 
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - backend-user
+      - backend-planning
+      - backend-crew
+      - backend-notification
+
+  backend-user:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.backend-user
+    container_name: aquastream-user
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres
+
+  backend-planning:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.backend-planning
+    container_name: aquastream-planning
+    ports:
+      - "8082:8082"
+      - "9090:9090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres
+
+  backend-crew:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.backend-crew
+    container_name: aquastream-crew
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres
+
+  backend-notification:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.backend-notification
+    container_name: aquastream-notification
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - kafka
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.frontend
+    container_name: aquastream-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend-api
+
+volumes:
+  postgres_data:
