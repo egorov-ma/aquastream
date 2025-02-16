@@ -1,0 +1,10 @@
+rootProject.name = 'aquastream'
+include 'backend-api'
+include 'backend-user'
+include 'backend-planning'
+include 'backend-crew'
+include 'backend-notification'
+include 'frontend'
+include 'common'
+include 'infra'
+

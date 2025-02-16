@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.3'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.google.protobuf' version '0.9.4'
+}
+
+group = 'org.aquastream'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.grpc:grpc-netty-shaded'
+    implementation 'io.grpc:grpc-protobuf'
+    implementation 'io.grpc:grpc-stub'
+    implementation project(':common')
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.61.0'
+        }
+    }
+} 

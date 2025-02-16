@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+        - id: planning-service
+          uri: lb://planning-service
+          predicates:
+            - Path=/api/planning/**
+        - id: crew-service
+          uri: lb://crew-service
+          predicates:
+            - Path=/api/crews/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/** 

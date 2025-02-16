@@ -1,0 +1,13 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: crew-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream
+    username: aquastream
+    password: aquastream
+  jpa:
+    hibernate:
+      ddl-auto: update 
