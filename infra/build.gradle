@@ -1,6 +1,0 @@
-plugins {
-    id 'base'
-}
-
-group = 'io.egorovma'
-version = '1.0-SNAPSHOT' 
