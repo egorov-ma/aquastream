@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
-COPY backend-notification/build/libs/backend-notification.jar app.jar
+COPY ../../backend-notification/build/libs/backend-notification-1.0-SNAPSHOT.jar app.jar
 EXPOSE 8084
 ENTRYPOINT ["java", "-jar", "app.jar"]
