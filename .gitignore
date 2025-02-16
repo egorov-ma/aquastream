@@ -2,6 +2,8 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+.gradle-cache/
+.gradle-build/
 
 # IntelliJ IDEA
 .idea/
@@ -10,6 +12,7 @@ build/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+out/
 
 # Eclipse
 .apt_generated
@@ -30,18 +33,42 @@ bin/
 
 # VS Code
 .vscode/
+*.code-workspace
 
 # Mac OS
 .DS_Store
+._*
 
-# Logs
+# Logs & Temp files
+logs/
 *.log
+*.tmp
 hs_err_pid*.log  # Логи JVM
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log.*
 
-# Frontend
+# Frontend (Node.js + React/Vue)
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+frontend/.npmrc
+frontend/.yarnrc
+frontend/.eslintcache
+frontend/.parcel-cache/
+frontend/.next/
+frontend/.nuxt/
+frontend/.turbo/
+frontend/.cache/
+frontend/out/
+frontend/build/
+frontend/coverage/
+frontend/tmp/
+frontend/temp/
+frontend/public/*.cache
+frontend/public/**/*.cache
 
 # Infrastructure
 infra/.terraform/
@@ -50,3 +77,24 @@ infra/*.tfstate
 infra/*.tfstate.backup
 infra/docker/.cache/
 infra/docker/data/
+infra/docker/tmp/
+infra/docker/logs/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+.env
+.envrc
+.env.local
+.env.development
+.env.production
+.env.test
+.env.staging
+docker-compose.yml.bak
+Dockerfile.bak
+
+# Kubernetes
+k8s/*.yaml
+k8s/*.yml
+k8s/.kubeconfig
+.kube/
