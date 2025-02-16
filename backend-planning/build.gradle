@@ -5,6 +5,10 @@ plugins {
     id 'com.google.protobuf' version '0.9.4'
 }
 
+ext {
+    set('springBootVersion', "3.2.3")
+}
+
 group = 'org.aquastream'
 version = '1.0-SNAPSHOT'
 
@@ -13,12 +17,14 @@ repositories {
 }
 
 dependencies {
+    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    
     implementation platform('io.grpc:grpc-bom:1.61.0')
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.grpc:grpc-netty-shaded'
     implementation 'io.grpc:grpc-protobuf'
     implementation 'io.grpc:grpc-stub'
+    
     implementation project(':common')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
