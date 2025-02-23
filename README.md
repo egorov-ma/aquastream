@@ -1,6 +1,6 @@
 # AquaStream
 
-Микросервисная платформа для организации сплавов, построенная на современных технологиях.
+Микросервисная платформа для организации сплавов.
 
 ## Архитектура
 
@@ -19,9 +19,9 @@
 
 - Java 21, Spring Boot 3.2
 - Spring Cloud Gateway, Spring Security (JWT)
-- gRPC (backend-planning)
-- Swagger / OpenAPI для REST API (backend-api, backend-user, backend-crew, backend-notification)
-- Apache Kafka (backend-notification)
+- REST API, gRPC
+- Swagger / OpenAPI 
+- Apache Kafka
 - PostgreSQL, Docker/Docker Compose, Kubernetes
 - React, Node.js 20+
 
