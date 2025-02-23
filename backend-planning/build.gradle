@@ -2,52 +2,20 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'com.google.protobuf' version '0.9.4'
-}
-
-ext {
-    set('springBootVersion', "3.2.3")
-    set('springCloudVersion', "2023.0.0")
-}
-
-group = 'org.aquastream'
-version = '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    
-    implementation platform('io.grpc:grpc-bom:1.61.0')
-    implementation 'io.grpc:grpc-netty-shaded'
-    implementation 'io.grpc:grpc-protobuf'
-    implementation 'io.grpc:grpc-stub'
-    
-    implementation project(':common')
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'net.devh:grpc-spring-boot-starter:2.15.0.RELEASE'
+    implementation project(':common')
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'com.github.yidongnan:grpc-spring-boot-starter:2.15.0.RELEASE'
+    implementation 'dev.miku:grpcui-spring-boot-starter:0.1.0'
 }
 
-test {
-    useJUnitPlatform()
-}
-
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.25.1"
-    }
-    plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.61.0'
-        }
-    }
+ext {
+    set('springCloudVersion', "2023.0.0")
 }
 
 dependencyManagement {
