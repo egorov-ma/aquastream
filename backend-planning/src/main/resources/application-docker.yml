@@ -8,7 +8,5 @@ spring:
 grpc:
   server:
     port: 9090
-
-grpcui:
-  enabled: true
-  path: /grpcui/  # URL для доступа к gRPC UI 
+  reflection:
+    enabled: true 

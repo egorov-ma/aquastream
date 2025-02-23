@@ -8,6 +8,8 @@ spring:
 grpc:
   server:
     port: 9090
+  reflection:
+    enabled: true
 
 grpcui:
   enabled: true
