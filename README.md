@@ -109,7 +109,7 @@
    aquastream-postgres        docker-entrypoint.sh postgres    Up      0.0.0.0:5432->5432/tcp
    aquastream-zookeeper       /etc/confluent/docker/run        Up      2181/tcp, 2888/tcp, 3888/tcp
    aquastream-kafka          /etc/confluent/docker/run         Up      0.0.0.0:9092->9092/tcp
-   aquastream-prometheus     /bin/prometheus --config.f ...    Up      0.0.0.0:9090->9090/tcp
+   aquastream-prometheus     /bin/prometheus --config.f ...    Up      0.0.0.0:9091->9090/tcp
    aquastream-grafana        /run.sh                          Up      0.0.0.0:3001->3000/tcp
    ```
    
