@@ -17,49 +17,55 @@
 
 ## Технологии
 
-- Java 21
-- Spring Boot 3.2
-- Spring Cloud Gateway
-- Spring Security с JWT
+- Java 21, Spring Boot 3.2
+- Spring Cloud Gateway, Spring Security (JWT)
 - gRPC (backend-planning)
 - Swagger / OpenAPI для REST API (backend-api, backend-user, backend-crew, backend-notification)
 - Apache Kafka (backend-notification)
-- PostgreSQL
+- PostgreSQL, Docker/Docker Compose, Kubernetes
 - React, Node.js 20+
-- Docker и Docker Compose
-- Kubernetes
 
-## Локальный запуск
+## Запуск проекта
 
-Чтобы установить и развернуть проект на любом устройстве, выполните следующие команды:
-```bash
-# Шаг 1. Клонируйте репозиторий
-git clone https://github.com/egorov-ma/AquaStream.git
-cd AquaStream
+### Локальный запуск (без Docker)
 
-# Шаг 2. Соберите весь проект с использованием Gradle Wrapper
-./gradlew clean build
+1. Клонируйте репозиторий:
+   ```bash
+   git clone https://github.com/egorov-ma/AquaStream.git
+   cd AquaStream
+   ```
+2. Соберите проект с использованием Gradle Wrapper:
+   ```bash
+   ./gradlew clean build
+   ```
+3. Для локального запуска сервисы используют файл `application.yml` (настройки для localhost).
+4. Запустите сервисы из вашей IDE или с помощью командной строки.
 
-# Шаг 3. Разверните инфраструктуру и микросервисы с помощью Docker Compose
-cd infra/docker
-docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+### Запуск через Docker
 
-# Шаг 4. Установите зависимости и запустите фронтенд (в отдельном терминале)
-cd ../../frontend
-npm install
-npm start
-```
+Для работы в Docker используются специальные файлы конфигурации —  
+- `application-docker.yml` (с настройками для имен контейнеров и переменными окружения)  
+- Docker Compose (см. [infra/docker/docker-compose.yml](infra/docker/docker-compose.yml))
+
+Чтобы запустить проект в Docker:
+1. Перейдите в каталог с Docker Compose:
+   ```bash
+   cd infra/docker
+   ```
+2. Запустите контейнеры:
+   ```bash
+   docker-compose up -d
+   ```
 
 ## Доступ к сервисам
 
-После запуска контейнеров и сервисов доступны следующие URL:
+После запуска доступны следующие URL:
 
 - **API Gateway:** [http://localhost:8080](http://localhost:8080)
 - **User Service:** [http://localhost:8081](http://localhost:8081)  
   Swagger UI: [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
 - **Planning Service:** [http://localhost:8082](http://localhost:8082)  
-  gRPC сервер: порт 9090  
-  gRPC UI: [http://localhost:8082/grpcui](http://localhost:8082/grpcui) (если настроен)
+  gRPC сервер – порт 9090, gRPC UI: [http://localhost:8082/grpcui](http://localhost:8082/grpcui)
 - **Crew Service:** [http://localhost:8083](http://localhost:8083)  
   Swagger UI: [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html)
 - **Notification Service:** [http://localhost:8084](http://localhost:8084)  
@@ -68,10 +74,16 @@ npm start
 
 ## Документация API
 
-Для REST-сервисов (User, Crew, Notification и API Gateway) документация доступна через Swagger UI по соответствующим URL:
+- **REST API:** Доступна через Swagger UI по адресу `/swagger-ui.html`.
+- **gRPC API (Planning):** См. [planning.proto](backend-planning/src/main/proto/planning.proto) и [gRPC UI](http://localhost:8082/grpcui).
 
-- `/swagger-ui.html`
+## Структура проекта
 
-Для gRPC API сервиса планирования используйте файл `src/main/proto/planning.proto` для ознакомления с методами или тестируйте с помощью gRPC UI.
-
-## Структура проекта 
+- **backend-api** – API Gateway
+- **backend-user** – Сервис управления пользователями
+- **backend-planning** – Сервис планирования
+- **backend-crew** – Сервис управления экипажами
+- **backend-notification** – Сервис уведомлений
+- **frontend** – Веб-интерфейс
+- **common** – Общие модули
+- **infra** – Инфраструктурные скрипты (Docker, Kubernetes и т.д.) 

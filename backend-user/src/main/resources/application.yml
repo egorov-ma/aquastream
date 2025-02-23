@@ -5,9 +5,11 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/aquastream
-    username: aquastream
-    password: aquastream
+    # Для локального запуска подключаемся к базе на localhost
+    url: jdbc:postgresql://localhost:5432/aquastream_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,4 +17,4 @@ spring:
 
 jwt:
   secret: your-256-bit-secret
-  expiration: 86400000 # 24 hours 
+  expiration: 86400000  # 24 часа 

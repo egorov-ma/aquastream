@@ -1,14 +1,22 @@
 # Planning Service
 
-Сервис планирования сплавов с использованием gRPC.
+Сервис планирования сплавов, реализованный с использованием gRPC.
 
 ## Функциональность
 
-- Создание маршрутов
-- Планирование сплавов
-- Расчет длительности
-- Оценка сложности
+- Создание и управление планами сплавов
+- Расчёт длительности и оценка сложности маршрутов
+- Предоставление gRPC API для интеграции
+- Тестирование через gRPC UI
 
-## gRPC API
+## Конфигурация
 
-См. [planning.proto](src/main/proto/planning.proto) 
+Конфигурация определяется в файлах:
+- **Локальный запуск:** [application.yml](src/main/resources/application.yml)
+- **Запуск через Docker:** [application-docker.yml](src/main/resources/application-docker.yml)
+
+Для ознакомления с API см. файл [planning.proto](src/main/proto/planning.proto).
+
+## Запуск
+
+См. [README.md](../../README.md) в корне проекта для инструкций по запуску. 

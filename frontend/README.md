@@ -1,3 +1,19 @@
-# AquaStream Frontend
+# Frontend
 
-React/Vue based frontend application for AquaStream project. 
+Веб-интерфейс AquaStream, построенный с использованием React.
+
+## Функциональность
+
+- Интерактивный пользовательский интерфейс для отображения данных из микросервисов
+
+## Конфигурация
+
+Приложение собирается с использованием Node.js, а затем раздаётся через Nginx (см. [Dockerfile.frontend](infra/docker/Dockerfile.frontend)). Для локальной разработки используйте стандартные команды Node.js.
+
+## Запуск
+
+- **Локально:**  
+  Выполните `npm install` и `npm start` в каталоге frontend.
+
+- **Через Docker:**  
+  См. [README.md](../../README.md) в корне проекта – контейнер запускается с пробросом порта `3000:80`. 

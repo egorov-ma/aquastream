@@ -112,7 +112,7 @@ services:
       dockerfile: infra/docker/Dockerfile.frontend
     container_name: aquastream-frontend
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - backend-api
 
