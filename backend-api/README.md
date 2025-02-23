@@ -18,4 +18,8 @@ API Gateway на базе Spring Cloud Gateway для маршрутизации
 
 ## Запуск
 
-См. [README.md](../../README.md) в корне проекта для подробных инструкций. 
+См. [README.md](../../README.md) в корне проекта для подробных инструкций.
+
+## Дополнительная документация
+
+Полная документация проекта доступна в файле [PROJECT_DOCUMENTATION.md](../PROJECT_DOCUMENTATION.md). 

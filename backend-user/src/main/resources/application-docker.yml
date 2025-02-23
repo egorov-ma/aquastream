@@ -4,19 +4,9 @@ server:
 spring:
   application:
     name: user-service
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/aquastream_db}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+  config:
+    import: classpath:db-common.yml
 
 jwt:
-  secret: your-256-bit-secret
-  expiration: 86400000  # 24 часа 
+  secret: ${JWT_SECRET:default-secret-key-should-be-changed-in-production}
+  expiration: ${JWT_EXPIRATION:86400000} 

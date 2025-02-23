@@ -15,6 +15,12 @@ services:
       - notification-service
     networks:
       - aquastream-network
+    image: aquastream-api:latest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   user-service:
     container_name: aquastream-user
@@ -31,6 +37,12 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
     networks:
       - aquastream-network
+    image: aquastream-user:latest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   planning-service:
     container_name: aquastream-planning
@@ -90,10 +102,15 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - aquastream-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
     container_name: aquastream-kafka
-    image: bitnami/kafka:latest
+    image: confluentinc/cp-kafka:7.5.1
     ports:
       - "9092:9092"
     environment:
@@ -105,6 +122,11 @@ services:
       - zookeeper
     networks:
       - aquastream-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   zookeeper:
     container_name: aquastream-zookeeper

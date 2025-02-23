@@ -103,4 +103,8 @@
 - **backend-notification** – Сервис уведомлений
 - **frontend** – Веб-интерфейс
 - **common** – Общие модули
-- **infra** – Инфраструктурные скрипты (Docker, Kubernetes и т.д.) 
+- **infra** – Инфраструктурные скрипты (Docker, Kubernetes и т.д.)
+
+## Дополнительная документация
+
+Полная документация проекта доступна в файле [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md). 

@@ -10,29 +10,22 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    // Добавлен репозиторий JitPack для получения зависимости gRPC UI:
     maven { url = uri('https://jitpack.io') }
 }
 
 dependencies {
-    // Spring Boot и общие зависимости
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation project(':common')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    // Рекомендуемая зависимость для валидации данных
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     
-    // gRPC зависимости
-    implementation 'io.grpc:grpc-netty-shaded:1.61.0'
-    implementation 'io.grpc:grpc-protobuf:1.61.0'
-    implementation 'io.grpc:grpc-stub:1.61.0'
-    // Стабильный gRPC Spring Boot стартер из Maven Central:
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "io.grpc:grpc-services:${grpcVersion}"
     implementation 'net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE'
-    // Добавленная зависимость для gRPC Reflection (проверенный подход)
-    implementation 'io.grpc:grpc-services:1.61.0'
     
-    // Дополнительная зависимость для аннотаций (если требуется)
-    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
     
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -42,6 +35,7 @@ dependencies {
 
 ext {
     set('springCloudVersion', "2023.0.0")
+    set('grpcVersion', "1.61.0")
 }
 
 dependencyManagement {
@@ -80,7 +74,6 @@ sourceSets {
     }
 }
 
-// Очистка сгенерированных файлов
 clean {
     delete 'build/generated/source/proto'
 }
