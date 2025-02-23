@@ -100,7 +100,7 @@
    ```
    Name                          Command                        State           Ports         
    -------------------------------------------------------------------------------------------
-   aquastream-frontend         nginx -g daemon off;             Up      0.0.0.0:3000->80/tcp
+   aquastream-frontend        nginx -g daemon off;             Up      0.0.0.0:3000->80/tcp
    aquastream-api             java -jar app.jar                Up      0.0.0.0:8080->8080/tcp
    aquastream-crew            java -jar app.jar                Up      0.0.0.0:8083->8083/tcp
    aquastream-notification    java -jar app.jar                Up      0.0.0.0:8084->8084/tcp
@@ -108,9 +108,9 @@
    aquastream-user            java -jar app.jar                Up      0.0.0.0:8081->8081/tcp
    aquastream-postgres        docker-entrypoint.sh postgres    Up      0.0.0.0:5432->5432/tcp
    aquastream-zookeeper       /etc/confluent/docker/run        Up      2181/tcp, 2888/tcp, 3888/tcp
-   aquastream-kafka          /etc/confluent/docker/run         Up      0.0.0.0:9092->9092/tcp
-   aquastream-prometheus     /bin/prometheus --config.f ...    Up      0.0.0.0:9091->9090/tcp
-   aquastream-grafana        /run.sh                          Up      0.0.0.0:3001->3000/tcp
+   aquastream-kafka           /etc/confluent/docker/run        Up      0.0.0.0:9092->9092/tcp
+   aquastream-prometheus      /bin/prometheus --config.f ...   Up      0.0.0.0:9091->9090/tcp
+   aquastream-grafana         /run.sh                          Up      0.0.0.0:3001->3000/tcp
    ```
    
    Все контейнеры должны иметь статус "Up". Если какой-то контейнер находится в другом состоянии или отсутствует, проверьте логи командой `docker-compose logs <имя_контейнера>`.
