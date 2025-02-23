@@ -90,10 +90,25 @@
    ```
 
 4. **Проверка запущенных контейнеров:**
-   Чтобы убедиться, что все контейнеры работают корректно, выполните:
+   Перейдите в директорию с docker-compose файлом и проверьте статус контейнеров:
    ```bash
+   cd infra/docker
    docker-compose ps
    ```
+   
+   Пример успешного вывода команды:
+   ```
+   Name                        Command               State           Ports         
+   -------------------------------------------------------------------------------
+   api-gateway          java -jar app.jar            Up      0.0.0.0:8080->8080/tcp
+   crew-service         java -jar app.jar            Up      0.0.0.0:8083->8083/tcp
+   notification-service java -jar app.jar            Up      0.0.0.0:8084->8084/tcp
+   planning-service     java -jar app.jar            Up      0.0.0.0:8082->8082/tcp
+   postgres            docker-entrypoint.sh po ...   Up      0.0.0.0:5432->5432/tcp
+   user-service        java -jar app.jar            Up      0.0.0.0:8081->8081/tcp
+   ```
+   
+   Все контейнеры должны иметь статус "Up". Если какой-то контейнер находится в другом состоянии или отсутствует, проверьте логи командой `docker-compose logs <имя_контейнера>`.
 
 5. **Доступ к сервисам:**
    - **API Gateway:** [http://localhost:8080](http://localhost:8080)
