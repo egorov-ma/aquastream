@@ -29,47 +29,26 @@
 - Docker и Docker Compose
 - Kubernetes
 
-## Быстрый старт
+## Локальный запуск
 
-### Предварительные требования
+Чтобы установить и развернуть проект на любом устройстве, выполните следующие команды:
+```bash
+# Шаг 1. Клонируйте репозиторий
+git clone https://github.com/egorov-ma/AquaStream.git
+cd AquaStream
 
-- JDK 21
-- Docker и Docker Compose
-- Node.js 20+
-- PostgreSQL 16
-- Apache Kafka
+# Шаг 2. Соберите весь проект с использованием Gradle Wrapper
+./gradlew clean build
 
-### Локальный запуск
+# Шаг 3. Разверните инфраструктуру и микросервисы с помощью Docker Compose
+cd infra/docker
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
-1. **Инфраструктура**
-
-   Перейдите в директорию `infra/docker` и запустите контейнеры:
-   ```bash
-   cd infra/docker
-   docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
-   ```
-
-2. **Сборка и запуск микросервисов**
-
-   Соберите проект и запустите необходимые сервисы:
-   ```bash
-   ./gradlew clean build
-   ./gradlew :backend-api:bootRun
-   ./gradlew :backend-user:bootRun
-   ./gradlew :backend-crew:bootRun
-   ./gradlew :backend-notification:bootRun
-   ./gradlew :backend-planning:bootRun
-   ```
-   **Примечание:** Сервис планирования использует gRPC и работает на порту 9090.
-
-3. **Запуск фронтенда**
-
-   Перейдите в директорию `frontend`, установите зависимости и запустите приложение:
-   ```bash
-   cd frontend
-   npm install
-   npm start
-   ```
+# Шаг 4. Установите зависимости и запустите фронтенд (в отдельном терминале)
+cd ../../frontend
+npm install
+npm start
+```
 
 ## Доступ к сервисам
 
