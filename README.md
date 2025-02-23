@@ -34,9 +34,9 @@
    git clone https://github.com/egorov-ma/AquaStream.git
    cd AquaStream
    ```
-2. Соберите проект с использованием Gradle Wrapper:
+2. Соберите проект с использованием скрипта сборки (build.sh), который собирает как backend, так и frontend:
    ```bash
-   ./gradlew clean build
+   ./build.sh
    ```
 3. Для локального запуска сервисы используют файл `application.yml` (настройки для localhost).
 4. Запустите сервисы из вашей IDE или с помощью командной строки.
@@ -45,9 +45,10 @@
 
 1. Убедитесь, что у вас установлены Docker и Docker Compose.
 
-2. Соберите проект:
+2. Перейдите в корневую директорию проекта и соберите проект:
    ```bash
-   ./gradlew clean build
+   cd ../..
+   ./build.sh
    ```
 
 3. Перейдите в каталог с Docker Compose:
