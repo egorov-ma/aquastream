@@ -5,10 +5,10 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Копируем собранный JAR-файл из проекта в контейнер
-COPY ../../backend-api/build/libs/backend-api-1.0-SNAPSHOT.jar app.jar
+COPY backend-api/build/libs/*.jar app.jar
 
 # Открываем порт, который использует сервис
 EXPOSE 8080
 
 # Запуск сервиса при старте контейнера
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=docker"]

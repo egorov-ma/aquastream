@@ -43,18 +43,36 @@
 
 ### Запуск через Docker
 
-Для работы в Docker используются специальные файлы конфигурации —  
-- `application-docker.yml` (с настройками для имен контейнеров и переменными окружения)  
-- Docker Compose (см. [infra/docker/docker-compose.yml](infra/docker/docker-compose.yml))
+1. Убедитесь, что у вас установлены Docker и Docker Compose.
 
-Чтобы запустить проект в Docker:
-1. Перейдите в каталог с Docker Compose:
+2. Соберите проект:
+   ```bash
+   ./gradlew clean build
+   ```
+
+3. Перейдите в каталог с Docker Compose:
    ```bash
    cd infra/docker
    ```
-2. Запустите контейнеры:
+
+4. Для первого запуска выполните:
    ```bash
-   docker-compose up -d
+   ./start.sh
+   ```
+
+5. Если возникли ошибки или необходимо перезапустить проект, выполните:
+   ```bash
+   ./restart.sh
+   ```
+
+6. Для остановки работы проекта выполните:
+   ```bash
+   ./stop.sh
+   ```
+
+Примечание: Если скрипты не запускаются, убедитесь, что они имеют права на выполнение:
+   ```bash
+   chmod +x start.sh restart.sh stop.sh
    ```
 
 ## Доступ к сервисам
