@@ -8,6 +8,12 @@ plugins {
 group = 'org.aquastream'
 version = '1.0-SNAPSHOT'
 
+ext {
+    grpcVersion = '1.58.0'
+    protobufVersion = '3.24.0'
+    springCloudVersion = "2023.0.0"
+}
+
 repositories {
     mavenCentral()
     maven { url = uri('https://jitpack.io') }
@@ -26,16 +32,12 @@ dependencies {
     implementation 'net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE'
     
     implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
     
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-ext {
-    set('springCloudVersion', "2023.0.0")
-    set('grpcVersion', "1.61.0")
 }
 
 dependencyManagement {
@@ -50,11 +52,11 @@ test {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.25.1"
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.61.0'
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
         }
     }
     generateProtoTasks {
