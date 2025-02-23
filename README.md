@@ -27,23 +27,96 @@
 
 ## Запуск проекта
 
-### Локальный запуск (без Docker)
+Для запуска проекта существует несколько вариантов, в зависимости от ваших требований и среды разработки. Ниже приведены подробные инструкции для локального запуска и запуска через Docker.
 
-Используйте инструкции в корневом [build.sh](build.sh) для сборки и запуска проекта.
+### 1. Локальный запуск (без Docker)
 
-После сборки доступны следующие сервисы:
+1. **Установка необходимых инструментов:**
+   - Java 21 (или выше)
+   - Node.js (версия 20 или выше) и npm
+   - Git
 
-- **API Gateway:** [http://localhost:8080](http://localhost:8080)  
-  (Проверка работоспособности: [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health))
-- **User Service:** Swagger UI [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)  
-  (Проверка: [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health))
-- **Planning Service:**  
-  gRPC сервер – порт 9090; проверка состояния: [http://localhost:8082/actuator/health](http://localhost:8082/actuator/health)
-- **Crew Service:** Swagger UI [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html)  
-  (Проверка: [http://localhost:8083/actuator/health](http://localhost:8083/actuator/health))
-- **Notification Service:** Swagger UI [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html)  
-  (Проверка: [http://localhost:8084/actuator/health](http://localhost:8084/actuator/health))
-- **Frontend:** [http://localhost:3000](http://localhost:3000)
+2. **Клонирование репозитория:**
+   ```bash
+   git clone <URL_репозитория>
+   cd <название_проекта>
+   ```
+
+3. **Сборка проекта:**
+   Выполните скрипт сборки, который соберёт как backend, так и frontend:
+   ```bash
+   ./build.sh
+   ```
+   Скрипт:
+   - Проверяет, что вы находитесь в корневой директории проекта (наличие файла settings.gradle).
+   - Собирает backend посредством Gradle (очистка и сборка с помощью `./gradlew clean build`).
+   - Переходит в директорию `frontend`, устанавливает зависимости через npm и выполняет сборку.
+   В случае ошибок сборки скрипт завершится, и сообщение об ошибке будет выведено в консоли.
+
+4. **Запуск микросервисов:**
+   Запустите каждый микросервис (например, с использованием Spring Boot):
+   - **API Gateway (backend-api):** `java -jar backend-api/build/libs/backend-api.jar`
+   - **User Service (backend-user):** `java -jar backend-user/build/libs/backend-user.jar`
+   - **Planning Service (backend-planning):** `java -jar backend-planning/build/libs/backend-planning.jar`
+   - **Crew Service (backend-crew):** `java -jar backend-crew/build/libs/backend-crew.jar`
+   - **Notification Service (backend-notification):** `java -jar backend-notification/build/libs/backend-notification.jar`
+   
+   Перед запуском убедитесь, что заданы необходимые переменные окружения (например, настройки базы данных, SSL-параметры и прочее).
+
+5. **Проверка работы сервисов:**
+   - **API Gateway:** [http://localhost:8080](http://localhost:8080) и [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+   - **User Service:** Swagger UI – [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html), Health – [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health)
+   - **Planning Service:** Health – [http://localhost:8082/actuator/health](http://localhost:8082/actuator/health) (для тестирования gRPC используйте `grpcui`)
+   - **Crew Service:** Swagger UI – [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html), Health – [http://localhost:8083/actuator/health](http://localhost:8083/actuator/health)
+   - **Notification Service:** Swagger UI – [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html), Health – [http://localhost:8084/actuator/health](http://localhost:8084/actuator/health)
+   - **Frontend:** [http://localhost:3000](http://localhost:3000)
+
+### 2. Запуск через Docker
+
+1. **Установка Docker и Docker Compose:**
+   Убедитесь, что на вашем компьютере установлены Docker и Docker Compose.
+
+2. **Сборка Docker образов:**
+   Выполните команду сборки образов, используя Docker Compose:
+   ```bash
+   docker-compose -f infra/docker/docker-compose.yml build
+   ```
+   В Dockerfile-ах, расположенных в директории `infra/docker`, описан процесс сборки для каждого микросервиса.
+
+3. **Запуск контейнеров:**
+   Запустите все контейнеры в фоновом режиме:
+   ```bash
+   docker-compose -f infra/docker/docker-compose.yml up -d
+   ```
+
+4. **Проверка запущенных контейнеров:**
+   Чтобы убедиться, что все контейнеры работают корректно, выполните:
+   ```bash
+   docker-compose ps
+   ```
+
+5. **Доступ к сервисам:**
+   - **API Gateway:** [http://localhost:8080](http://localhost:8080)
+   - Остальные сервисы доступны через порты, указанные в конфигурационных файлах Docker Compose.
+   - Для тестирования gRPC API (Planning Service) можно воспользоваться командой:
+     ```bash
+     docker run -p 8080:8080 fullstorydev/grpcui -plaintext localhost:9090
+     ```
+
+### Дополнительные рекомендации
+
+- **Настройка переменных окружения:**  
+  Если ваше приложение использует переменные окружения (например, для подключения к базе данных или SSL-настроек), создайте файл `.env` в корневой директории или экспортируйте их перед запуском.
+
+- **Логи и отладка:**  
+  Для диагностики проблем проверяйте логи сервисов:
+  - При локальном запуске – вывод консоли.
+  - При запуске через Docker – командой `docker logs <имя_контейнера>`.
+
+- **Документация и обновления:**  
+  Ознакомьтесь с документацией в файлах [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md) и [db-common.yml](common/src/main/resources/db-common.yml) для получения информации о настройке базы данных и прочих конфигурационных параметрах.
+
+Эти подробные шаги помогут вам успешно запустить проект и проверить работоспособность каждого модуля.
 
 ## Визуализация API
 
