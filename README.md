@@ -72,6 +72,33 @@
   Swagger UI: [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html)
 - **Frontend:** [http://localhost:3000](http://localhost:3000)
 
+## Проверка работы сервисов
+
+После запуска контейнеров или сервисов выполните следующие проверки для подтверждения их работоспособности:
+
+1. **API Gateway**  
+   - Откройте [http://localhost:8080](http://localhost:8080) в браузере.  
+   - При наличии Spring Actuator проверьте [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+
+2. **User Service**  
+   - Проверьте Swagger UI: [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)  
+   - Если включён Actuator, проверьте [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health)
+
+3. **Planning Service**  
+   - Проверьте gRPC UI: [http://localhost:8082/grpcui](http://localhost:8082/grpcui)  
+   - Если настроен Actuator, проверьте [http://localhost:8082/actuator/health](http://localhost:8082/actuator/health)
+
+4. **Crew Service**  
+   - Проверьте Swagger UI: [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html)  
+   - Если доступен, проверьте [http://localhost:8083/actuator/health](http://localhost:8083/actuator/health)
+
+5. **Notification Service**  
+   - Проверьте Swagger UI: [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html)  
+   - При наличии Actuator проверьте [http://localhost:8084/actuator/health](http://localhost:8084/actuator/health)
+
+6. **Frontend**  
+   - Откройте [http://localhost:3000](http://localhost:3000) для проверки работы пользовательского интерфейса.
+
 ## Документация API
 
 - **REST API:** Доступна через Swagger UI по адресу `/swagger-ui.html`.
