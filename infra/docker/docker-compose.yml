@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api-gateway:
     container_name: aquastream-api
@@ -152,7 +150,7 @@ services:
     container_name: aquastream-prometheus
     image: prom/prometheus:latest
     volumes:
-      - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9091:9090"
     networks:
@@ -167,7 +165,7 @@ services:
     container_name: aquastream-grafana
     image: grafana/grafana:latest
     volumes:
-      - ./infra/monitoring/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/grafana-dashboard.json
+      - ../monitoring/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/grafana-dashboard.json
     ports:
       - "3001:3000"
     networks:
