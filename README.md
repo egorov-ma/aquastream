@@ -83,45 +83,60 @@
    ```
    В Dockerfile-ах, расположенных в директории `infra/docker`, описан процесс сборки для каждого микросервиса.
 
-3. **Запуск контейнеров:**
-   Запустите все контейнеры в фоновом режиме:
+3. **Запуск контейнеров (чистый запуск):**
+   Перед запуском очистите ранее запущенные и осиротевшие контейнеры, затем запустите все контейнеры в фоновом режиме:
    ```bash
-   docker-compose -f infra/docker/docker-compose.yml up -d
-   ```
-
-4. **Проверка запущенных контейнеров:**
-   Перейдите в директорию с docker-compose файлом и проверьте статус контейнеров:
-   ```bash
-   cd infra/docker
-   docker-compose ps
-   ```
-   
-   Пример успешного вывода команды:
-   ```
-   Name                          Command                        State           Ports         
-   -------------------------------------------------------------------------------------------
-   aquastream-frontend        nginx -g daemon off;             Up      0.0.0.0:3000->80/tcp
-   aquastream-api             java -jar app.jar                Up      0.0.0.0:8080->8080/tcp
-   aquastream-crew            java -jar app.jar                Up      0.0.0.0:8083->8083/tcp
-   aquastream-notification    java -jar app.jar                Up      0.0.0.0:8084->8084/tcp
-   aquastream-planning        java -jar app.jar                Up      0.0.0.0:8082->8082/tcp
-   aquastream-user            java -jar app.jar                Up      0.0.0.0:8081->8081/tcp
-   aquastream-postgres        docker-entrypoint.sh postgres    Up      0.0.0.0:5432->5432/tcp
-   aquastream-zookeeper       /etc/confluent/docker/run        Up      2181/tcp, 2888/tcp, 3888/tcp
-   aquastream-kafka           /etc/confluent/docker/run        Up      0.0.0.0:9092->9092/tcp
-   aquastream-prometheus      /bin/prometheus --config.f ...   Up      0.0.0.0:9091->9090/tcp
-   aquastream-grafana         /run.sh                          Up      0.0.0.0:3001->3000/tcp
+   docker-compose -f infra/docker/docker-compose.yml down --remove-orphans && docker-compose -f infra/docker/docker-compose.yml up -d
    ```
    
    Все контейнеры должны иметь статус "Up". Если какой-то контейнер находится в другом состоянии или отсутствует, проверьте логи командой `docker-compose logs <имя_контейнера>`.
 
-5. **Доступ к сервисам:**
+4. **Проверка запущенных контейнеров:**
+   Пример успешного вывода команды:
+   ```bash
+   Name                          Command                        State           Ports         
+   -------------------------------------------------------------------------------------------
+   aquastream-frontend           nginx -g daemon off;             Up      0.0.0.0:3000->80/tcp
+   aquastream-api                java -jar app.jar                Up      0.0.0.0:8080->8080/tcp
+   aquastream-crew               java -jar app.jar                Up      0.0.0.0:8083->8083/tcp
+   aquastream-notification       java -jar app.jar                Up      0.0.0.0:8084->8084/tcp
+   aquastream-planning           java -jar app.jar                Up      0.0.0.0:8082->8082/tcp
+   aquastream-user               java -jar app.jar                Up      0.0.0.0:8081->8081/tcp
+   aquastream-postgres           docker-entrypoint.sh postgres    Up      0.0.0.0:5432->5432/tcp
+   aquastream-zookeeper          /etc/confluent/docker/run        Up      2181/tcp, 2888/tcp, 3888/tcp
+   aquastream-kafka              /etc/confluent/docker/run        Up      0.0.0.0:9092->9092/tcp
+   aquastream-prometheus         /bin/prometheus --config.f ...   Up      0.0.0.0:9091->9090/tcp
+   aquastream-grafana            /run.sh                          Up      0.0.0.0:3001->3000/tcp
+   ```
+
+4. **Доступ к сервисам:**
    - **API Gateway:** [http://localhost:8080](http://localhost:8080)
    - Остальные сервисы доступны через порты, указанные в конфигурационных файлах Docker Compose.
    - Для тестирования gRPC API (Planning Service) можно воспользоваться командой:
      ```bash
      docker run -p 8080:8080 fullstorydev/grpcui -plaintext localhost:9090
      ```
+
+5. **Запуск с использованием скриптов:**
+   Вы также можете управлять проектом с помощью специальных скриптов, расположенных в директории `infra/docker`:
+   - `start.sh` — первичный запуск проекта.
+   - `restart.sh` — перезапуск проекта с логированием ошибок.
+   - `stop.sh` — остановка проекта.
+   - `check.sh` — проверка состояния контейнеров.
+
+   Для использования скриптов выполните в терминале:
+   ```bash
+   ./start.sh    # первичный запуск
+   ```
+   ```bash
+   ./restart.sh  # перезапуск проекта
+   ```
+   ```bash
+   ./stop.sh     # остановка проекта
+   ```
+   ```bash
+   ./check.sh    # проверка состояния контейнеров
+   ```
 
 ### Дополнительные рекомендации
 

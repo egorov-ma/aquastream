@@ -4,7 +4,11 @@
 cd "$(dirname "$0")"
 
 echo "Остановка проекта..."
-docker-compose down
+if docker-compose down; then
+  echo "Контейнеры остановлены успешно."
+else
+  echo "Ошибка при остановке контейнеров." >&2
+fi
 
-echo "Проект остановлен. Проверка статуса контейнеров:"
+echo "Проверка статуса контейнеров:"
 docker-compose ps 
