@@ -31,7 +31,7 @@ jobs:
         run: ./gradlew build
 
       - name: Build Docker images
-        run: docker compose -f infra/docker/docker-compose.yml build
+        run: docker compose -f infra/docker/compose/docker-compose.yml build
 
   deploy:
     needs: build

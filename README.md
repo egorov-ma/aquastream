@@ -79,14 +79,14 @@
 2. **Сборка Docker образов:**
    Выполните команду сборки образов, используя Docker Compose:
    ```bash
-   docker-compose -f infra/docker/docker-compose.yml build
+   docker-compose -f infra/docker/compose/docker-compose.yml build
    ```
-   В Dockerfile-ах, расположенных в директории `infra/docker`, описан процесс сборки для каждого микросервиса.
+   В Dockerfile-ах, расположенных в директории `infra/docker/images`, описан процесс сборки для каждого микросервиса.
 
 3. **Запуск контейнеров (чистый запуск):**
    Перед запуском очистите ранее запущенные и осиротевшие контейнеры, затем запустите все контейнеры в фоновом режиме:
    ```bash
-   docker-compose -f infra/docker/docker-compose.yml down --remove-orphans && docker-compose -f infra/docker/docker-compose.yml up -d
+   docker-compose -f infra/docker/compose/docker-compose.yml down --remove-orphans && docker-compose -f infra/docker/compose/docker-compose.yml up -d
    ```
    
    Все контейнеры должны иметь статус "Up". Если какой-то контейнер находится в другом состоянии или отсутствует, проверьте логи командой `docker-compose logs <имя_контейнера>`.

@@ -2,8 +2,8 @@ services:
   api-gateway:
     container_name: aquastream-api
     build:
-      context: ../../
-      dockerfile: infra/docker/Dockerfile.backend-api
+      context: ../../../
+      dockerfile: infra/docker/images/Dockerfile.backend-api
     ports:
       - "8080:8080"
     depends_on:
@@ -12,7 +12,9 @@ services:
       - crew-service
       - notification-service
     networks:
-      - aquastream-network
+      aquastream-network:
+        aliases:
+          - api-gateway
     image: aquastream-api:latest
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
@@ -23,8 +25,8 @@ services:
   user-service:
     container_name: aquastream-user
     build:
-      context: ../../
-      dockerfile: infra/docker/Dockerfile.backend-user
+      context: ../../../
+      dockerfile: infra/docker/images/Dockerfile.backend-user
     ports:
       - "8081:8081"
     depends_on:
@@ -45,8 +47,8 @@ services:
   planning-service:
     container_name: aquastream-planning
     build:
-      context: ../../
-      dockerfile: infra/docker/Dockerfile.backend-planning
+      context: ../../../
+      dockerfile: infra/docker/images/Dockerfile.backend-planning
     ports:
       - "8082:8082"
       - "9090:9090"
@@ -56,8 +58,8 @@ services:
   crew-service:
     container_name: aquastream-crew
     build:
-      context: ../../
-      dockerfile: infra/docker/Dockerfile.backend-crew
+      context: ../../../
+      dockerfile: infra/docker/images/Dockerfile.backend-crew
     ports:
       - "8083:8083"
     depends_on:
@@ -72,8 +74,8 @@ services:
   notification-service:
     container_name: aquastream-notification
     build:
-      context: ../../
-      dockerfile: infra/docker/Dockerfile.backend-notification
+      context: ../../../
+      dockerfile: infra/docker/images/Dockerfile.backend-notification
     ports:
       - "8084:8084"
     depends_on:
@@ -112,10 +114,12 @@ services:
     ports:
       - "9092:9092"
     environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     depends_on:
       - zookeeper
     networks:
@@ -139,10 +143,12 @@ services:
   frontend:
     container_name: aquastream-frontend
     build:
-      context: ../../
-      dockerfile: infra/docker/Dockerfile.frontend
+      context: ../../../
+      dockerfile: infra/docker/images/Dockerfile.frontend
     ports:
       - "3000:80"
+    depends_on:
+      - api-gateway
     networks:
       - aquastream-network
 
@@ -150,7 +156,7 @@ services:
     container_name: aquastream-prometheus
     image: prom/prometheus:latest
     volumes:
-      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../../infra/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9091:9090"
     networks:
@@ -165,7 +171,7 @@ services:
     container_name: aquastream-grafana
     image: grafana/grafana:latest
     volumes:
-      - ../monitoring/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/grafana-dashboard.json
+      - ../../../infra/monitoring/grafana/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/grafana-dashboard.json
     ports:
       - "3001:3000"
     networks:
