@@ -1,6 +1,0 @@
-plugins {
-    id 'base'
-}
-
-group = 'org.aquastream'
-version = '1.0-SNAPSHOT' 

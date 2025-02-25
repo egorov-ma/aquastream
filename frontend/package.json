@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "React/Vue based frontend application for AquaStream project.",
+  "description": "Платформа для планирования сплавов AquaStream, построенная на React.",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
@@ -12,9 +12,10 @@
   "dependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "react-router-dom": "^6.9.0"
   },
-  "keywords": [],
+  "keywords": ["сплавы", "планирование", "AquaStream"],
   "author": "",
   "license": "ISC",
   "browserslist": {
