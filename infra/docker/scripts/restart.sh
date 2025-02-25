@@ -148,6 +148,13 @@ if [ -z "$SERVICE" ]; then
         if ! $CMD down $DOWN_OPTIONS; then
             log_message "ERROR" "Не удалось остановить и удалить контейнеры!"
         fi
+        
+        # Проверяем, остались ли контейнеры, и принудительно удаляем их
+        REMAINING_CONTAINERS=$(docker ps -a -f "name=aquastream" -q)
+        if [ ! -z "$REMAINING_CONTAINERS" ]; then
+            log_message "WARN" "Обнаружены оставшиеся контейнеры. Принудительное удаление..."
+            docker rm -f $REMAINING_CONTAINERS 2>/dev/null || true
+        fi
     else
         if ! $CMD stop; then
             log_message "ERROR" "Не удалось остановить контейнеры!"
