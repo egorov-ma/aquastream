@@ -2,7 +2,7 @@ services:
   api-gateway:
     container_name: aquastream-api
     build:
-      context: ../../
+      context: ../../../
       dockerfile: infra/docker/images/Dockerfile.backend-api
     ports:
       - "8080:8080"
@@ -25,7 +25,7 @@ services:
   user-service:
     container_name: aquastream-user
     build:
-      context: ../../
+      context: ../../../
       dockerfile: infra/docker/images/Dockerfile.backend-user
     ports:
       - "8081:8081"
@@ -47,7 +47,7 @@ services:
   planning-service:
     container_name: aquastream-planning
     build:
-      context: ../../
+      context: ../../../
       dockerfile: infra/docker/images/Dockerfile.backend-planning
     ports:
       - "8082:8082"
@@ -58,7 +58,7 @@ services:
   crew-service:
     container_name: aquastream-crew
     build:
-      context: ../../
+      context: ../../../
       dockerfile: infra/docker/images/Dockerfile.backend-crew
     ports:
       - "8083:8083"
@@ -74,7 +74,7 @@ services:
   notification-service:
     container_name: aquastream-notification
     build:
-      context: ../../
+      context: ../../../
       dockerfile: infra/docker/images/Dockerfile.backend-notification
     ports:
       - "8084:8084"
@@ -143,7 +143,7 @@ services:
   frontend:
     container_name: aquastream-frontend
     build:
-      context: ../../
+      context: ../../../
       dockerfile: infra/docker/images/Dockerfile.frontend
     ports:
       - "3000:80"
