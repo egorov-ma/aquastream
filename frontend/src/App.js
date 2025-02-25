@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
 
 function App() {
   return (
-    <div>
-      <h1>AquaStream Application</h1>
-    </div>
+    <Suspense fallback={<div>Загрузка...</div>}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        {/* Добавьте дополнительные маршруты по необходимости */}
+      </Routes>
+    </Suspense>
   );
 }
 
