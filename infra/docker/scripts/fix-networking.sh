@@ -31,7 +31,13 @@ DOCKER_COMPOSE_FILE="$PROJECT_ROOT/../compose/docker-compose.yml"
 DOCKER_COMPOSE_BAK="$PROJECT_ROOT/../compose/docker-compose.yml.bak.$(date +%Y%m%d%H%M%S)"
 
 # Команда для работы с Docker Compose
-CMD="docker compose -f ../compose/docker-compose.yml -f ../compose/docker-compose.override.yml"
+CMD="docker compose -f ../compose/docker-compose.yml"
+if [ -f "../compose/docker-compose.override.yml" ]; then
+    CMD="$CMD -f ../compose/docker-compose.override.yml"
+    echo "Найден файл docker-compose.override.yml, он будет использован"
+else
+    echo "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
+fi
 
 log_message "INFO" "Корневая директория проекта: $PROJECT_ROOT"
 log_message "INFO" "Файл docker-compose: $DOCKER_COMPOSE_FILE"
@@ -214,4 +220,6 @@ done
 
 log_message "INFO" "Проверка и обновление настроек docker-compose.yml завершены"
 log_message "WARN" "После внесения изменений не забудьте перезапустить контейнеры с помощью: ./restart.sh -r"
-log_message "INFO" "Если вы хотите вернуться к исходной конфигурации, используйте резервную копию: $DOCKER_COMPOSE_BAK" 
+log_message "INFO" "Если вы хотите вернуться к исходной конфигурации, используйте резервную копию: $DOCKER_COMPOSE_BAK"
+
+echo "Остановка всех контейнеров..." 

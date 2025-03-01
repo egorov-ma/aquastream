@@ -156,8 +156,14 @@ if [ "$PULL_ONLY" = true ]; then
     exit 0
 fi
 
-# Формирование команды docker compose
-CMD="docker compose -f ../compose/docker-compose.yml -f ../compose/docker-compose.override.yml"
+# Команда для работы с Docker Compose
+CMD="docker compose -f ../compose/docker-compose.yml"
+if [ -f "../compose/docker-compose.override.yml" ]; then
+    CMD="$CMD -f ../compose/docker-compose.override.yml"
+    log_message "INFO" "Найден файл docker-compose.override.yml, он будет использован"
+else
+    log_message "INFO" "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
+fi
 
 # Сборка образов
 print_colored_text "36" "\n=== Сборка Docker образов ==="

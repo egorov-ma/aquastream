@@ -129,7 +129,13 @@ done
 cd "$SCRIPT_DIR"
 
 # Команда для работы с Docker Compose
-CMD="docker compose -f ../compose/docker-compose.yml -f ../compose/docker-compose.override.yml"
+CMD="docker compose -f ../compose/docker-compose.yml"
+if [ -f "../compose/docker-compose.override.yml" ]; then
+    CMD="$CMD -f ../compose/docker-compose.override.yml"
+    log_message "INFO" "Найден файл docker-compose.override.yml, он будет использован"
+else
+    log_message "INFO" "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
+fi
 
 # Остановка сервисов
 if [ -z "$SERVICE" ]; then
@@ -147,6 +153,13 @@ if [ -z "$SERVICE" ]; then
         
         if ! $CMD down $DOWN_OPTIONS; then
             log_message "ERROR" "Не удалось остановить и удалить контейнеры!"
+        fi
+        
+        # Проверяем, остались ли контейнеры, и принудительно удаляем их
+        REMAINING_CONTAINERS=$(docker ps -a -f "name=aquastream" -q)
+        if [ ! -z "$REMAINING_CONTAINERS" ]; then
+            log_message "WARN" "Обнаружены оставшиеся контейнеры. Принудительное удаление..."
+            docker rm -f $REMAINING_CONTAINERS 2>/dev/null || true
         fi
     else
         if ! $CMD stop; then
