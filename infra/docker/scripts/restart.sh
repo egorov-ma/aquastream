@@ -129,7 +129,13 @@ done
 cd "$SCRIPT_DIR"
 
 # Команда для работы с Docker Compose
-CMD="docker compose -f ../compose/docker-compose.yml -f ../compose/docker-compose.override.yml"
+CMD="docker compose -f ../compose/docker-compose.yml"
+if [ -f "../compose/docker-compose.override.yml" ]; then
+    CMD="$CMD -f ../compose/docker-compose.override.yml"
+    log_message "INFO" "Найден файл docker-compose.override.yml, он будет использован"
+else
+    log_message "INFO" "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
+fi
 
 # Остановка сервисов
 if [ -z "$SERVICE" ]; then

@@ -1,0 +1,68 @@
+# Пример файла docker-compose.override.yml для локальной разработки
+# Скопируйте этот файл в docker-compose.override.yml и настройте под свои нужды
+
+services:
+  # Переопределение настроек API Gateway
+  api-gateway:
+    # Пример переопределения порта
+    ports:
+      - "8888:8080"  # Изменение порта с 8080 на 8888
+    # Пример добавления переменных окружения
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - LOG_LEVEL=DEBUG
+    # Пример монтирования локальных файлов
+    volumes:
+      - ./local-configs/api-gateway.properties:/app/config/application.properties
+
+  # Переопределение настроек frontend
+  frontend:
+    # Пример использования локальной разработки с горячей перезагрузкой
+    build:
+      context: ../../../
+      dockerfile: infra/docker/images/Dockerfile.frontend.dev
+    ports:
+      - "3001:3000"  # Изменение порта с 3000 на 3001
+    volumes:
+      - ../../../frontend:/app  # Монтирование локального кода в контейнер
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:8888  # Указание URL API
+
+  # Переопределение настроек базы данных
+  postgres:
+    # Пример открытия порта для локального подключения
+    ports:
+      - "5433:5432"  # Изменение порта с 5432 на 5433
+    # Пример монтирования локального каталога для данных
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d  # Скрипты инициализации
+    environment:
+      - POSTGRES_DB=aquastream_dev
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=devpass
+
+  # Инструмент для работы с базами данных
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - aquastream-network
+
+  # Пример добавления Redis для кеширования
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - aquastream-network
+    volumes:
+      - redis_data:/data
+
+# Дополнительные тома
+volumes:
+  redis_data: 

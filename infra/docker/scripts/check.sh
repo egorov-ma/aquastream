@@ -82,8 +82,18 @@ done
 SCRIPT_DIR="$(dirname "$0")"
 cd "$SCRIPT_DIR"
 
-# Формирование команды docker compose
-CMD="docker compose -f ../compose/docker-compose.yml -f ../compose/docker-compose.override.yml"
+# Команда для работы с Docker Compose
+CMD="docker compose -f ../compose/docker-compose.yml"
+if [ -f "../compose/docker-compose.override.yml" ]; then
+    CMD="$CMD -f ../compose/docker-compose.override.yml"
+    if [ "$VERBOSE" = true ]; then
+        print_colored_text "36" "Найден файл docker-compose.override.yml, он будет использован"
+    fi
+else
+    if [ "$VERBOSE" = true ]; then
+        print_colored_text "36" "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
+    fi
+fi
 
 if [ "$VERBOSE" = true ]; then
     print_colored_text "36" "Проверка контейнеров с использованием Docker Compose..."
