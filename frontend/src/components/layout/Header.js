@@ -95,12 +95,17 @@ const Header = () => {
         }}
       >
         <Container>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Typography variant="body2">
               Путешествуй вместе с 
               <Link to="https://www.neoflex.ru" target="_blank" rel="noopener noreferrer" style={{ color: theme.palette.secondary.main, marginLeft: '4px', textDecoration: 'none' }}>
-                Neoflex
+              Neoflex
               </Link>
+              . Вступай в нашу группу
+              <Link to="https://t.me/neosplav" target="_blank" rel="noopener noreferrer" style={{ color: theme.palette.secondary.main, marginLeft: '4px', textDecoration: 'none' }}>
+                NeoSplav
+              </Link>
+              .
             </Typography>
           </Box>
         </Container>

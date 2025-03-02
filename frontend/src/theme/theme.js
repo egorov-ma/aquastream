@@ -92,7 +92,7 @@ const theme = createTheme({
       lineHeight: 1.6,
     },
     body2: {
-      fontSize: '14px',
+      fontSize: '12px',
       lineHeight: 1.6,
     },
     button: {
