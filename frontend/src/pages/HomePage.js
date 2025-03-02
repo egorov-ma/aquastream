@@ -65,6 +65,7 @@ const HomePage = () => {
               <li><Link to="/journal">Дневник</Link></li>
               <li><Link to="/contacts">Контакты</Link></li>
               <li><Link to="/participant">Участнику</Link></li>
+              <li><Link to="/ui-kit" style={{color: '#FF4B4B'}}>UI Kit</Link></li>
             </ul>
           </nav>
           <div className="user-profile">
