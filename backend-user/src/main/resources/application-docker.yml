@@ -6,7 +6,26 @@ spring:
     name: user-service
   config:
     import: classpath:db-common.yml
+  datasource:
+    url: jdbc:postgresql://postgres:5432/aquastream_db
+    username: postgres
+    password: postgres
+  kafka:
+    bootstrap-servers: kafka:9092
 
 jwt:
-  secret: ${JWT_SECRET:default-secret-key-should-be-changed-in-production}
-  expiration: ${JWT_EXPIRATION:86400000} 
+  secret: ${JWT_SECRET:CHANGE_ME_IN_PRODUCTION_DO_NOT_USE_THIS_VALUE_IT_IS_NOT_SECURE_ENOUGH_AND_NEEDS_TO_BE_CHANGED}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    
+# SpringDoc OpenAPI конфигурация для Docker
+springdoc:
+  swagger-ui:
+    enabled: true
+    disable-swagger-default-url: true 

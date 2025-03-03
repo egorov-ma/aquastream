@@ -12,9 +12,49 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: public
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${spring.application.name}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topics:
+      user-registration: user-registration
 
 jwt:
-  secret: your-256-bit-secret
-  expiration: 86400000  # 24 часа 
+  secret: 9oSu9ugYxpECIJvtQJ3Q0FPT9jEC5hK3X5Pf7MYgfjSUcum3W9
+  expiration-ms: 86400000 # 24 часа
+
+# Настройки Eureka клиента
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# SpringDoc OpenAPI конфигурация
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    filter: true
+  show-actuator: true
+  
+logging:
+  level:
+    org.springframework.security: INFO 

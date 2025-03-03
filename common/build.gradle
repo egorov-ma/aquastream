@@ -10,6 +10,17 @@ repositories {
 }
 
 dependencies {
+    // Jakarta Validation API для аннотаций валидации
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+    // Hibernate Validator - реализация Jakarta Bean Validation
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    // Зависимость для EL (Expression Language), необходимая для Hibernate Validator
+    implementation 'org.glassfish:jakarta.el:4.0.2'
+    
+    // Lombok для упрощения кода
+    implementation 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
