@@ -18,6 +18,7 @@ show_help() {
     echo "  -v, --verbose            Подробный вывод"
     echo "  -p, --ping               Проверить доступность сервисов через HTTP/HTTPS"
     echo "  -l, --logs               Показать логи контейнеров при ошибке"
+    echo "  -e, --elk                Включить проверку компонентов ELK-стека"
     echo
     echo "Примеры:"
     echo "  $0                      Проверить все сервисы"
@@ -25,6 +26,7 @@ show_help() {
     echo "  $0 -p                   Проверить все сервисы, включая HTTP-проверку"
     echo "  $0 -t 10 -a 5           Проверить с таймаутом 10 секунд и 5 попытками"
     echo "  $0 -v -l                Проверить с подробным выводом и логами при ошибке"
+    echo "  $0 -e                   Проверить все сервисы, включая компоненты ELK-стека"
     echo
     echo "Примечание:"
     echo "  Скрипт совместим с Bash 3.2 (macOS по умолчанию) и использует"
@@ -38,6 +40,7 @@ ATTEMPTS=3
 VERBOSE=false
 CHECK_HTTP=false
 SHOW_LOGS=false
+CHECK_ELK=false
 
 # Обработка аргументов командной строки
 while [[ $# -gt 0 ]]; do
@@ -70,6 +73,10 @@ while [[ $# -gt 0 ]]; do
             SHOW_LOGS=true
             shift
             ;;
+        -e|--elk)
+            CHECK_ELK=true
+            shift
+            ;;
         *)
             print_colored_text "31" "Неизвестная опция: $1"
             show_help
@@ -99,272 +106,357 @@ if [ "$VERBOSE" = true ]; then
     print_colored_text "36" "Проверка контейнеров с использованием Docker Compose..."
 fi
 
-# Получаем список запущенных контейнеров
-output=$($CMD ps)
-if [ "$VERBOSE" = true ]; then
-    echo "$output"
-    echo
-fi
-
-# Ожидаемые контейнеры и их портовые маппинги
-# Используем индексированные массивы вместо ассоциативных для совместимости с Bash 3.2
-container_names=(
-  "aquastream-frontend"
-  "aquastream-api"
-  "aquastream-crew"
-  "aquastream-notification"
-  "aquastream-planning"
-  "aquastream-user"
-  "aquastream-postgres"
-  "aquastream-zookeeper"
-  "aquastream-kafka"
-  "aquastream-prometheus"
-  "aquastream-grafana"
-)
-
-container_ports=(
-  "3000->80"
-  "8080->8080"
-  "8083->8083"
-  "8084->8084"
-  "8082->8082"
-  "8081->8081"
-  "5432->5432"
-  "2181"
-  "9092->9092"
-  "9091->9090"
-  "3001->3000"
-)
-
-# Зависимости между контейнерами (какой контейнер зависит от какого)
-# Формат: "зависимый_контейнер:от_какого_зависит"
-container_dependencies=(
-  "aquastream-frontend:aquastream-api"
-  "aquastream-api:aquastream-user"
-  "aquastream-api:aquastream-crew"
-  "aquastream-api:aquastream-notification"
-  "aquastream-api:aquastream-planning"
-  "aquastream-user:aquastream-postgres"
-  "aquastream-crew:aquastream-postgres"
-  "aquastream-notification:aquastream-postgres"
-  "aquastream-notification:aquastream-kafka"
-  "aquastream-kafka:aquastream-zookeeper"
-)
-
-# Сопоставление сервисов с контейнерами
-service_names=(
-  "frontend"
-  "api-gateway"
-  "crew"
-  "notification"
-  "planning"
-  "user"
-  "postgres"
-  "zookeeper"
-  "kafka"
-  "prometheus"
-  "grafana"
-)
-
-service_containers=(
-  "aquastream-frontend"
-  "aquastream-api"
-  "aquastream-crew"
-  "aquastream-notification"
-  "aquastream-planning"
-  "aquastream-user"
-  "aquastream-postgres"
-  "aquastream-zookeeper"
-  "aquastream-kafka"
-  "aquastream-prometheus"
-  "aquastream-grafana"
-)
-
-# Адреса для HTTP-проверок (URL для проверки доступности)
-http_containers=(
-  "aquastream-frontend"
-  "aquastream-api"
-  "aquastream-crew"
-  "aquastream-notification"
-  "aquastream-planning"
-)
-
-http_urls=(
-  "http://localhost:3000"
-  "http://localhost:3000/api/actuator/health"
-  "http://localhost:8083/api/crew/health"
-  "http://localhost:8084/api/notification/health"
-  "http://localhost:8082/api/planning/health"
-)
-
-error=0
-containers_to_check=()
-
-# Определяем, какие контейнеры нужно проверять
-if [ -z "$SERVICE" ]; then
-    # Проверяем все контейнеры
-    for i in "${!container_names[@]}"; do
-        containers_to_check+=("${container_names[$i]}")
-    done
-    print_colored_text "33" "Проверка всех контейнеров..."
-else
-    # Проверяем только указанный сервис
-    container=""
-    for i in "${!service_names[@]}"; do
-        if [ "${service_names[$i]}" = "$SERVICE" ]; then
-            container="${service_containers[$i]}"
-            break
-        fi
-    done
-    
-    if [ -z "$container" ]; then
-        print_colored_text "31" "Сервис '$SERVICE' не найден в списке известных сервисов!"
+# Проверка наличия утилиты curl
+check_curl() {
+    if ! command -v curl &> /dev/null; then
+        print_colored_text "31" "Ошибка: curl не установлен. Пожалуйста, установите curl."
         exit 1
     fi
-    
-    containers_to_check+=("$container")
-    print_colored_text "33" "Проверка контейнера для сервиса $SERVICE: $container"
-fi
-
-# Функция для проверки зависимостей контейнера
-check_container_dependencies() {
-  local container=$1
-  local has_dependency=false
-  
-  for dep in "${container_dependencies[@]}"; do
-    local dependent="${dep%%:*}"
-    local dependency="${dep##*:}"
-    
-    if [ "$dependent" = "$container" ]; then
-      has_dependency=true
-      
-      # Проверяем, запущен ли контейнер, от которого зависит
-      if ! docker ps --format "{{.Names}}" | grep -q "$dependency"; then
-        print_colored_text "31" "ОШИБКА: Контейнер $container зависит от $dependency, но $dependency не запущен!"
-        return 1
-      fi
-    fi
-  done
-  
-  return 0
 }
 
-# Функция для проверки контейнера
-check_container() {
-    local container_name=$1
-    local container_idx=-1
+# Проверяем статус определенного контейнера
+check_container_status() {
+    local container_name="$1"
+    local container_id=$(eval "$CMD ps -q $container_name" 2>/dev/null)
     
-    # Найдем индекс контейнера
-    for i in "${!container_names[@]}"; do
-        if [ "${container_names[$i]}" = "$container_name" ]; then
-            container_idx=$i
-            break
+    if [ -z "$container_id" ]; then
+        print_colored_text "31" "Контейнер $container_name не запущен"
+        
+        if [ "$SHOW_LOGS" = true ]; then
+            print_colored_text "36" "Последние логи контейнера $container_name:"
+            eval "$CMD logs --tail=20 $container_name" 2>/dev/null || echo "Логи недоступны"
+        fi
+        
+        return 1
+    else
+        print_colored_text "32" "Контейнер $container_name запущен (ID: $container_id)"
+        
+        if [ "$VERBOSE" = true ]; then
+            local container_info=$(docker inspect --format='{{.State.Status}} | Uptime: {{.State.StartedAt}} | {{.Config.Image}}' "$container_id" 2>/dev/null)
+            print_colored_text "36" "  Информация: $container_info"
+        fi
+        
+        return 0
+    fi
+}
+
+# Проверяем доступность HTTP эндпоинта
+check_http_endpoint() {
+    local service_name="$1"
+    local endpoint="$2"
+    local max_attempts=$ATTEMPTS
+    local attempt=1
+    local status_code=0
+    
+    check_curl
+    
+    print_colored_text "36" "Проверка HTTP-доступности $service_name ($endpoint)..."
+    
+    while [ $attempt -le $max_attempts ]; do
+        if [ "$VERBOSE" = true ]; then
+            print_colored_text "36" "  Попытка $attempt/$max_attempts..."
+        fi
+        
+        status_code=$(curl -s -o /dev/null -w "%{http_code}" "$endpoint" 2>/dev/null)
+        
+        if [ "$status_code" = "200" ] || [ "$status_code" = "302" ] || [ "$status_code" = "401" ]; then
+            print_colored_text "32" "HTTP-эндпоинт $service_name доступен (код ответа: $status_code)"
+            return 0
+        else
+            if [ "$VERBOSE" = true ]; then
+                print_colored_text "33" "  Ожидание $TIMEOUT секунд перед следующей попыткой..."
+            fi
+            
+            sleep $TIMEOUT
+            attempt=$((attempt + 1))
         fi
     done
     
-    if [ $container_idx -eq -1 ]; then
-        print_colored_text "31" "[ERROR] Контейнер $container_name не найден в списке известных контейнеров!"
+    print_colored_text "31" "HTTP-эндпоинт $service_name недоступен после $max_attempts попыток (последний код ответа: $status_code)"
+    return 1
+}
+
+# Проверяем статус Elasticsearch
+check_elasticsearch() {
+    local host="localhost"
+    local port="9200"
+    local container_name="elasticsearch"
+    local container_id=$(docker ps -q -f name=aquastream-elasticsearch)
+    
+    if [ -z "$container_id" ]; then
+        print_colored_text "31" "Контейнер Elasticsearch не запущен"
         return 1
     fi
     
-    local expected_port="${container_ports[$container_idx]}"
+    print_colored_text "36" "Проверка статуса Elasticsearch..."
     
-    # Сначала проверим зависимости
-    if ! check_container_dependencies "$container_name"; then
-        print_colored_text "31" "[ERROR] Проблемы с зависимостями для контейнера $container_name!"
-        return 1
-    fi
+    check_curl
     
-    # Находим строку с именем контейнера в выводе docker-compose ps
-    local line=$(echo "$output" | grep -F "$container_name")
+    # Проверяем доступность API
+    local health_response=$(curl -s "http://$host:$port/_cluster/health" 2>/dev/null)
     
-    if [ -z "$line" ]; then
-        print_colored_text "31" "[ERROR] Контейнер $container_name не найден!"
-        return 1
-    else
-        # Проверяем, что контейнер в состоянии "Up"
-        if ! echo "$line" | grep -q "Up"; then
-            print_colored_text "31" "[ERROR] Контейнер $container_name найден, но не работает (не в состоянии 'Up')!"
-            if [ "$SHOW_LOGS" = true ]; then
-                print_colored_text "33" "--- Последние логи контейнера $container_name: ---"
-                $CMD logs --tail=20 ${container_name##*-} 2>&1
-                print_colored_text "33" "--- Конец логов ---"
-            fi
-            return 1
-        fi
-    
-        # Проверяем наличие ожидаемого отображения портов
-        if ! echo "$line" | grep -q "$expected_port"; then
-            print_colored_text "31" "[ERROR] Для контейнера $container_name ожидаемые порты '$expected_port' не найдены!"
-            if [ "$VERBOSE" = true ]; then
-                print_colored_text "33" "Строка контейнера: $line"
-            fi
-            return 1
-        fi
-    
-        # Проверка через HTTP, если запрошена
-        # Найдем индекс в массиве http_containers
-        local http_idx=-1
-        for i in "${!http_containers[@]}"; do
-            if [ "${http_containers[$i]}" = "$container_name" ]; then
-                http_idx=$i
-                break
-            fi
-        done
+    if [ -z "$health_response" ]; then
+        print_colored_text "31" "Не удалось получить ответ от Elasticsearch API"
         
-        if [ "$CHECK_HTTP" = true ] && [ $http_idx -ne -1 ]; then
-            local endpoint="${http_urls[$http_idx]}"
-            
-            if [ "$VERBOSE" = true ]; then
-                print_colored_text "36" "Проверка доступности $container_name по адресу $endpoint"
-            fi
-            
-            for ((i=1; i<=$ATTEMPTS; i++)); do
-                if curl -s --connect-timeout 2 "$endpoint" >/dev/null; then
-                    if [ "$VERBOSE" = true ]; then
-                        print_colored_text "32" "HTTP-проверка успешна для $container_name"
-                    fi
-                    return 0
-                else
-                    if [ "$VERBOSE" = true ] && [ $i -lt $ATTEMPTS ]; then
-                        print_colored_text "33" "Попытка $i/$ATTEMPTS для $container_name не удалась, повтор через $TIMEOUT сек..."
-                    fi
-                    sleep $TIMEOUT
-                fi
-            done
-            
-            print_colored_text "31" "[ERROR] HTTP-проверка не удалась для $container_name после $ATTEMPTS попыток!"
-            return 1
+        if [ "$SHOW_LOGS" = true ]; then
+            print_colored_text "36" "Последние логи Elasticsearch:"
+            docker logs --tail=20 $container_id 2>/dev/null || echo "Логи недоступны"
         fi
+        
+        return 1
+    fi
+    
+    # Парсим статус из JSON-ответа
+    local status=$(echo "$health_response" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+    
+    if [ "$status" = "green" ]; then
+        print_colored_text "32" "Elasticsearch работает нормально (статус: green)"
+    elif [ "$status" = "yellow" ]; then
+        print_colored_text "33" "Elasticsearch работает, но есть предупреждения (статус: yellow)"
+    elif [ "$status" = "red" ]; then
+        print_colored_text "31" "Elasticsearch в аварийном состоянии (статус: red)"
+    else
+        print_colored_text "31" "Неизвестный статус Elasticsearch: $status"
     fi
     
     if [ "$VERBOSE" = true ]; then
-        print_colored_text "32" "Контейнер $container_name работает корректно."
+        local indices_count=$(curl -s "http://$host:$port/_cat/indices?h=i" 2>/dev/null | wc -l)
+        indices_count=$(echo "$indices_count" | xargs) # trim spaces
+        print_colored_text "36" "  Количество индексов: $indices_count"
     fi
+    
     return 0
 }
 
-# Проверяем все необходимые контейнеры
-print_colored_text "36" "Проверка состояния контейнеров:"
-for container in "${containers_to_check[@]}"; do
-    if [ "$VERBOSE" = true ]; then
-        print_colored_text "36" "Проверка контейнера $container..."
+# Проверяем статус Logstash
+check_logstash() {
+    local container_name="logstash"
+    local container_id=$(docker ps -q -f name=aquastream-logstash)
+    
+    if [ -z "$container_id" ]; then
+        print_colored_text "31" "Контейнер Logstash не запущен"
+        return 1
     fi
     
-    if ! check_container "$container"; then
-        error=1
-    fi
-done
-
-# Вывод результата
-if [ $error -ne 0 ]; then
-    print_colored_text "31" "Проверка состояния контейнеров обнаружила ошибки."
-    exit 1
-else
-    if [ -z "$SERVICE" ]; then
-        print_colored_text "32" "Все необходимые контейнеры запущены и их порты соответствуют ожидаемым значениям."
+    print_colored_text "36" "Проверка статуса Logstash..."
+    
+    # Проверяем порт
+    if docker exec $container_id bash -c "nc -z localhost 5000" &>/dev/null; then
+        print_colored_text "32" "Logstash работает и слушает порт 5000"
     else
-        print_colored_text "32" "Контейнер для сервиса '$SERVICE' запущен корректно."
+        print_colored_text "31" "Logstash запущен, но не слушает порт 5000"
+        
+        if [ "$SHOW_LOGS" = true ]; then
+            print_colored_text "36" "Последние логи Logstash:"
+            docker logs --tail=20 $container_id 2>/dev/null || echo "Логи недоступны"
+        fi
+        
+        return 1
     fi
-    exit 0
+    
+    if [ "$VERBOSE" = true ]; then
+        print_colored_text "36" "  Проверка логов Logstash на наличие ошибок..."
+        docker exec $container_id bash -c "cat /usr/share/logstash/logs/logstash-plain.log | grep -i error | tail -5" 2>/dev/null || echo "  Ошибок не найдено или логи недоступны"
+    fi
+    
+    return 0
+}
+
+# Проверяем статус Kibana
+check_kibana() {
+    local host="localhost"
+    local port="5601"
+    local container_name="kibana"
+    local container_id=$(docker ps -q -f name=aquastream-kibana)
+    
+    if [ -z "$container_id" ]; then
+        print_colored_text "31" "Контейнер Kibana не запущен"
+        return 1
+    fi
+    
+    print_colored_text "36" "Проверка статуса Kibana..."
+    
+    check_curl
+    
+    # Проверяем доступность API
+    local max_attempts=$ATTEMPTS
+    local attempt=1
+    local status_code=0
+    
+    while [ $attempt -le $max_attempts ]; do
+        if [ "$VERBOSE" = true ]; then
+            print_colored_text "36" "  Попытка $attempt/$max_attempts..."
+        fi
+        
+        status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://$host:$port/api/status" 2>/dev/null)
+        
+        if [ "$status_code" = "200" ] || [ "$status_code" = "302" ]; then
+            print_colored_text "32" "Kibana доступна (код ответа: $status_code)"
+            
+            if [ "$VERBOSE" = true ]; then
+                local status_json=$(curl -s "http://$host:$port/api/status" 2>/dev/null)
+                local status=$(echo "$status_json" | grep -o '"overall":{[^}]*}' | grep -o '"level":"[^"]*"' | cut -d'"' -f4)
+                print_colored_text "36" "  Статус Kibana: $status"
+            fi
+            
+            return 0
+        else
+            if [ "$VERBOSE" = true ]; then
+                print_colored_text "33" "  Ожидание $TIMEOUT секунд перед следующей попыткой..."
+            fi
+            
+            sleep $TIMEOUT
+            attempt=$((attempt + 1))
+        fi
+    done
+    
+    print_colored_text "31" "Kibana недоступна после $max_attempts попыток (последний код ответа: $status_code)"
+    
+    if [ "$SHOW_LOGS" = true ]; then
+        print_colored_text "36" "Последние логи Kibana:"
+        docker logs --tail=20 $container_id 2>/dev/null || echo "Логи недоступны"
+    fi
+    
+    return 1
+}
+
+# Функция для проверки всех сервисов
+check_all_services() {
+    local containers=$(eval "$CMD ps --services" 2>/dev/null)
+    
+    if [ -z "$containers" ]; then
+        print_colored_text "31" "Не найдено запущенных контейнеров или ошибка в команде Docker Compose."
+        exit 1
+    fi
+    
+    print_colored_text "36" "Проверка статуса всех сервисов..."
+    
+    local total_services=0
+    local failed_services=0
+    
+    for service in $containers; do
+        ((total_services++))
+        
+        check_container_status "$service"
+        if [ $? -ne 0 ]; then
+            ((failed_services++))
+            continue
+        fi
+        
+        # HTTP-проверка только для веб-сервисов
+        if [ "$CHECK_HTTP" = true ]; then
+            case "$service" in
+                frontend)
+                    check_http_endpoint "Frontend" "http://localhost:3000"
+                    ;;
+                api-gateway)
+                    check_http_endpoint "API Gateway" "http://localhost:8080/api/health"
+                    ;;
+                backend-user)
+                    check_http_endpoint "User Service" "http://localhost:8081/actuator/health"
+                    ;;
+                backend-notification)
+                    check_http_endpoint "Notification Service" "http://localhost:8082/actuator/health"
+                    ;;
+                backend-planning)
+                    check_http_endpoint "Planning Service" "http://localhost:8083/actuator/health"
+                    ;;
+            esac
+        fi
+    done
+    
+    # Дополнительно проверяем компоненты ELK-стека
+    if [ "$CHECK_ELK" = true ]; then
+        print_colored_text "36" "Проверка компонентов ELK-стека..."
+        
+        ((total_services+=3)) # Elasticsearch, Logstash, Kibana
+        
+        check_elasticsearch
+        if [ $? -ne 0 ]; then
+            ((failed_services++))
+        fi
+        
+        check_logstash
+        if [ $? -ne 0 ]; then
+            ((failed_services++))
+        fi
+        
+        check_kibana
+        if [ $? -ne 0 ]; then
+            ((failed_services++))
+        fi
+    fi
+    
+    # Выводим итоговое сообщение
+    print_colored_text "36" "Проверка завершена. Всего проверено сервисов: $total_services"
+    
+    if [ $failed_services -eq 0 ]; then
+        print_colored_text "32" "Все сервисы работают нормально."
+        return 0
+    else
+        print_colored_text "31" "Обнаружены проблемы с $failed_services сервисами."
+        return 1
+    fi
+}
+
+# Проверяем определенный сервис по имени
+check_specific_service() {
+    local service_name="$1"
+    print_colored_text "36" "Проверка статуса сервиса $service_name..."
+    
+    # Проверка компонентов ELK-стека
+    if [ "$CHECK_ELK" = true ] || [ "$service_name" = "elasticsearch" ] || [ "$service_name" = "logstash" ] || [ "$service_name" = "kibana" ]; then
+        case "$service_name" in
+            elasticsearch)
+                check_elasticsearch
+                return $?
+                ;;
+            logstash)
+                check_logstash
+                return $?
+                ;;
+            kibana)
+                check_kibana
+                return $?
+                ;;
+        esac
+    fi
+    
+    # Проверка обычных контейнеров Docker Compose
+    check_container_status "$service_name"
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+    
+    # HTTP-проверка только для веб-сервисов
+    if [ "$CHECK_HTTP" = true ]; then
+        case "$service_name" in
+            frontend)
+                check_http_endpoint "Frontend" "http://localhost:3000"
+                ;;
+            api-gateway)
+                check_http_endpoint "API Gateway" "http://localhost:8080/api/health"
+                ;;
+            backend-user)
+                check_http_endpoint "User Service" "http://localhost:8081/actuator/health"
+                ;;
+            backend-notification)
+                check_http_endpoint "Notification Service" "http://localhost:8082/actuator/health"
+                ;;
+            backend-planning)
+                check_http_endpoint "Planning Service" "http://localhost:8083/actuator/health"
+                ;;
+        esac
+    fi
+    
+    return 0
+}
+
+# Основная логика скрипта
+if [ -n "$SERVICE" ]; then
+    check_specific_service "$SERVICE"
+    exit $?
+else
+    check_all_services
+    exit $?
 fi 

@@ -1,0 +1,11 @@
+# Cron конфигурация для автоматической очистки логов в проекте AquaStream
+# Формат: минуты часы дни_месяца месяцы дни_недели команда
+
+# Ежедневно в 3:30 ночи выполнять очистку старых логов (старше 30 дней)
+30 3 * * * /bin/bash /path/to/aquastream/infra/docker/scripts/cleanup-logs.sh -d 30 -c --verbose > /dev/null 2>&1
+
+# Еженедельно по воскресеньям в 4:00 ночи выполнять ротацию больших файлов логов (более 100 MB)
+0 4 * * 0 /bin/bash /path/to/aquastream/infra/docker/scripts/cleanup-logs.sh -s 100 -c -k 10 --verbose > /dev/null 2>&1
+
+# Ежемесячно первого числа выполнять полную очистку архивных логов старше 90 дней
+0 5 1 * * /bin/bash /path/to/aquastream/infra/docker/scripts/cleanup-logs.sh -d 90 -a --verbose > /dev/null 2>&1 
