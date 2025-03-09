@@ -17,23 +17,26 @@ readonly COLOR_RED='\033[0;31m'
 readonly COLOR_GREEN='\033[0;32m'
 readonly COLOR_YELLOW='\033[0;33m'
 readonly COLOR_BLUE='\033[0;34m'
-readonly COLOR_MAGENTA='\033[0;35m'
-readonly COLOR_CYAN='\033[0;36m'
-readonly COLOR_WHITE='\033[0;37m'
-readonly COLOR_BOLD='\033[1m'
+# Эти цвета оставляем для возможного использования в будущем
+# readonly COLOR_MAGENTA='\033[0;35m'
+# readonly COLOR_CYAN='\033[0;36m'
+# readonly COLOR_WHITE='\033[0;37m'
+# readonly COLOR_BOLD='\033[1m'
 
 # Имя проекта и префикс для контейнеров
 readonly PROJECT_NAME="aquastream"
 readonly CONTAINER_PREFIX="${PROJECT_NAME}"
 
 # Пути к конфигурационным файлам
-readonly DOCKER_COMPOSE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../compose" && pwd)"
+readonly DOCKER_COMPOSE_DIR
+DOCKER_COMPOSE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../compose" && pwd)"
 readonly DOCKER_COMPOSE_FILE="${DOCKER_COMPOSE_DIR}/docker-compose.yml"
 readonly DOCKER_COMPOSE_OVERRIDE="${DOCKER_COMPOSE_DIR}/docker-compose.override.yml"
 readonly DOCKER_COMPOSE_CANARY="${DOCKER_COMPOSE_DIR}/docker-compose.canary.yml"
 
 # Директория для логов скриптов
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOGS_DIR="${SCRIPT_DIR}/../logs"
 mkdir -p "${LOGS_DIR}" 2>/dev/null || true
 
@@ -296,26 +299,26 @@ sanitize_input() {
 }
 
 # Функция для создания резервной копии файла
-backup_file() {
-  local file="$1"
-  local backup_dir="${SCRIPT_DIR}/../backups"
-  mkdir -p "${backup_dir}" 2>/dev/null || true
+create_backup() {
+  local file=$1
+  local backup_dir=$2
+  local timestamp=$(date +"%Y%m%d_%H%M%S")
   
-  local timestamp
-  timestamp=$(date +"%Y%m%d_%H%M%S")
-  local backup_file="${backup_dir}/$(basename "${file}")_${timestamp}.bak"
+  # Исправление SC2155: объявление и присвоение значения разделено
+  local backup_file
+  backup_file="${backup_dir}/$(basename "${file}")_${timestamp}.bak"
   
-  if [[ -f "${file}" ]]; then
-    cp "${file}" "${backup_file}" 2>/dev/null
-    log_debug "Создана резервная копия файла ${file} в ${backup_file}"
-    return 0
-  else
-    log_warn "Не удалось создать резервную копию файла ${file}: файл не существует"
-    return 1
-  fi
+  mkdir -p "${backup_dir}" || { log_error "Невозможно создать директорию резервных копий ${backup_dir}"; return 1; }
+  cp "${file}" "${backup_file}" || { log_error "Невозможно создать резервную копию ${file}"; return 1; }
+  
+  log_success "Создана резервная копия: ${backup_file}"
+  echo "${backup_file}"
 }
 
 # Экспортируем API версии скрипта
 UTILS_API_VERSION="1.0.0"
 
-log_debug "Библиотека утилит AquaStream загружена, версия ${UTILS_API_VERSION}" 
+log_debug "Библиотека утилит AquaStream загружена, версия ${UTILS_API_VERSION}"
+
+# Установка переменной окружения по умолчанию
+export AQUASTREAM_ENV=${AQUASTREAM_ENV:-dev} 

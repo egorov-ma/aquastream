@@ -13,25 +13,12 @@ print_colored_text() {
 }
 
 # Функция для логирования
-log_message() {
+log() {
     local level=$1
     local message=$2
-    local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
-    
-    case $level in
-        "INFO")
-            print_colored_text "32" "[INFO] $timestamp - $message"
-            echo "[INFO] $timestamp - $message" >> "$LOGFILE"
-            ;;
-        "WARN")
-            print_colored_text "33" "[WARN] $timestamp - $message"
-            echo "[WARN] $timestamp - $message" >> "$LOGFILE"
-            ;;
-        "ERROR")
-            print_colored_text "31" "[ERROR] $timestamp - $message"
-            echo "[ERROR] $timestamp - $message" >> "$LOGFILE"
-            ;;
-    esac
+    local timestamp
+    timestamp=$(date +'%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] [$level] $message"
 }
 
 # Функция для вывода подсказки
@@ -61,7 +48,7 @@ show_help() {
 }
 
 # Перехват ошибок
-trap 'log_message "ERROR" "Ошибка на строке $LINENO. Скрипт прекращает выполнение."; exit 1' ERR
+trap 'log "ERROR" "Ошибка на строке $LINENO. Скрипт прекращает выполнение."; exit 1' ERR
 
 # Инициализация переменных
 SERVICE=""
@@ -126,146 +113,152 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Переход в директорию со скриптом
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR" || exit 1
 
 # Команда для работы с Docker Compose
 CMD="docker compose -f ../compose/docker-compose.yml"
 if [ -f "../compose/docker-compose.override.yml" ]; then
     CMD="$CMD -f ../compose/docker-compose.override.yml"
-    log_message "INFO" "Найден файл docker-compose.override.yml, он будет использован"
+    log "INFO" "Найден файл docker-compose.override.yml, он будет использован"
 else
-    log_message "INFO" "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
+    log "INFO" "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
 fi
 
 # Остановка сервисов
 if [ -z "$SERVICE" ]; then
-    log_message "INFO" "Перезапуск проекта: остановка всех контейнеров..."
+    log "INFO" "Перезапуск проекта: остановка всех контейнеров..."
     
     if [ "$REMOVE" = true ]; then
         DOWN_OPTIONS="--remove-orphans"
         
         if [ "$VOLUMES" = true ]; then
             DOWN_OPTIONS="$DOWN_OPTIONS -v"
-            log_message "INFO" "Удаление контейнеров вместе с томами..."
+            log "INFO" "Удаление контейнеров вместе с томами..."
         else
-            log_message "INFO" "Удаление контейнеров..."
+            log "INFO" "Удаление контейнеров..."
         fi
         
-        if ! $CMD down $DOWN_OPTIONS; then
-            log_message "ERROR" "Не удалось остановить и удалить контейнеры!"
+        if ! $CMD down "$DOWN_OPTIONS"; then
+            log "ERROR" "Не удалось остановить сервисы"
+            exit 1
         fi
         
-        # Проверяем, остались ли контейнеры, и принудительно удаляем их
-        REMAINING_CONTAINERS=$(docker ps -a -f "name=aquastream" -q)
-        if [ ! -z "$REMAINING_CONTAINERS" ]; then
-            log_message "WARN" "Обнаружены оставшиеся контейнеры. Принудительное удаление..."
-            docker rm -f $REMAINING_CONTAINERS 2>/dev/null || true
+        # Убеждаемся, что все контейнеры остановлены
+        REMAINING_CONTAINERS=$(docker ps -q -f name="$CONTAINER_PREFIX" 2>/dev/null)
+        if [ -n "$REMAINING_CONTAINERS" ]; then
+            log "WARN" "Принудительная остановка оставшихся контейнеров..."
+            docker rm -f "$REMAINING_CONTAINERS" 2>/dev/null || true
         fi
     else
         if ! $CMD stop; then
-            log_message "ERROR" "Не удалось остановить контейнеры!"
+            log "ERROR" "Не удалось остановить контейнеры!"
+            exit 1
         fi
     fi
 else
-    log_message "INFO" "Перезапуск сервиса '$SERVICE'..."
+    log "INFO" "Перезапуск сервиса '$SERVICE'..."
     
-    if ! $CMD stop $SERVICE; then
-        log_message "ERROR" "Не удалось остановить сервис '$SERVICE'!"
+    if ! $CMD stop "$SERVICE"; then
+        log "ERROR" "Не удалось остановить сервис $SERVICE"
+        exit 1
     fi
 fi
 
 # Пересборка образов, если запрошена
 if [ "$BUILD" = true ]; then
     if [ -z "$SERVICE" ]; then
-        log_message "INFO" "Сборка всех Docker образов..."
+        log "INFO" "Сборка всех Docker образов..."
         if ! $CMD build; then
-            log_message "ERROR" "Ошибка при сборке Docker образов!"
+            log "ERROR" "Ошибка при сборке Docker образов!"
+            exit 1
         fi
     else
-        log_message "INFO" "Сборка Docker образа для '$SERVICE'..."
-        if ! $CMD build $SERVICE; then
-            log_message "ERROR" "Ошибка при сборке Docker образа для '$SERVICE'!"
+        log "INFO" "Сборка Docker образа для '$SERVICE'..."
+        if ! $CMD build "$SERVICE"; then
+            log "ERROR" "Не удалось собрать образ для сервиса $SERVICE"
+            exit 1
         fi
     fi
 fi
 
 # Запуск сервисов
 if [ -z "$SERVICE" ]; then
-    log_message "INFO" "Запуск критических сервисов (postgres, zookeeper, kafka)..."
+    log "INFO" "Запуск критических сервисов (postgres, zookeeper, kafka)..."
     
     # Запускаем базовые сервисы, от которых зависят остальные
     $CMD up -d postgres zookeeper
     
     # Ожидаем готовности PostgreSQL
-    log_message "INFO" "Ожидание готовности PostgreSQL..."
+    log "INFO" "Ожидание готовности PostgreSQL..."
     max_attempts=30
     attempts=0
     while ! $CMD exec postgres pg_isready -U postgres &>/dev/null; do
         attempts=$((attempts+1))
         if [ $attempts -ge $max_attempts ]; then
-            log_message "ERROR" "PostgreSQL не готов после $max_attempts попыток!"
+            log "ERROR" "PostgreSQL не готов после $max_attempts попыток!"
             break
         fi
         sleep 1
     done
     
     # Запускаем Kafka после Zookeeper
-    log_message "INFO" "Запуск Kafka..."
+    log "INFO" "Запуск Kafka..."
     $CMD up -d kafka
     
     # Ожидаем готовности Kafka
-    log_message "INFO" "Ожидание готовности Kafka..."
+    log "INFO" "Ожидание готовности Kafka..."
     attempts=0
     while ! $CMD exec kafka kafka-topics --bootstrap-server localhost:9092 --list &>/dev/null; do
         attempts=$((attempts+1))
         if [ $attempts -ge $max_attempts ]; then
-            log_message "ERROR" "Kafka не готова после $max_attempts попыток!"
+            log "ERROR" "Kafka не готова после $max_attempts попыток!"
             break
         fi
         sleep 1
     done
     
     # Запускаем микросервисы
-    log_message "INFO" "Запуск всех микросервисов..."
+    log "INFO" "Запуск всех микросервисов..."
     $CMD up -d user-service crew-service notification-service planning-service
     
     # Ожидаем запуска микросервисов
-    log_message "INFO" "Ожидание запуска микросервисов..."
+    log "INFO" "Ожидание запуска микросервисов..."
     sleep 5
     
     # Запускаем API Gateway
-    log_message "INFO" "Запуск API Gateway..."
+    log "INFO" "Запуск API Gateway..."
     $CMD up -d api-gateway
     
     # Ожидаем запуска API Gateway
-    log_message "INFO" "Ожидание запуска API Gateway..."
+    log "INFO" "Ожидание запуска API Gateway..."
     attempts=0
     max_attempts=60  # Увеличенное время ожидания для API Gateway
     while ! curl -s http://localhost:8080/actuator/health &>/dev/null; do
         attempts=$((attempts+1))
         if [ $attempts -ge $max_attempts ]; then
-            log_message "WARN" "API Gateway не ответил после $max_attempts попыток!"
+            log "WARN" "API Gateway не ответил после $max_attempts попыток!"
             break
         fi
         sleep 1
     done
     
     # Запускаем фронтенд и мониторинг
-    log_message "INFO" "Запуск фронтенда и сервисов мониторинга..."
+    log "INFO" "Запуск фронтенда и сервисов мониторинга..."
     $CMD up -d frontend prometheus grafana
 else
-    log_message "INFO" "Запуск сервиса '$SERVICE' в фоновом режиме..."
-    if ! $CMD up -d $SERVICE; then
-        log_message "ERROR" "Ошибка при запуске сервиса '$SERVICE'!"
+    log "INFO" "Запуск сервиса '$SERVICE' в фоновом режиме..."
+    if ! $CMD up -d "$SERVICE"; then
+        log "ERROR" "Не удалось запустить сервис $SERVICE"
+        exit 1
     fi
 fi
 
 # Проверка состояния сервисов, если не пропущена
 if [ "$SKIP_CHECK" != true ]; then
-    log_message "INFO" "Проверка работоспособности сервисов..."
+    log "INFO" "Проверка работоспособности сервисов..."
     
     CHECK_OPTS=""
-    if [ ! -z "$SERVICE" ]; then
+    if [ -n "$SERVICE" ]; then
         CHECK_OPTS="$CHECK_OPTS -s $SERVICE"
     fi
     
@@ -275,46 +268,47 @@ if [ "$SKIP_CHECK" != true ]; then
     
     CHECK_OPTS="$CHECK_OPTS -t $TIMEOUT -a $ATTEMPTS -p"
     
-    if ! ./check.sh $CHECK_OPTS; then
-        log_message "WARN" "Некоторые сервисы не прошли проверку работоспособности!"
+    if ! ./check.sh "$CHECK_OPTS"; then
+        log "WARN" "Проверка после перезапуска выявила проблемы!"
+        exit 1
     else
-        if [ -z "$SERVICE" ]; then
-            log_message "INFO" "Все сервисы успешно запущены и прошли проверку."
+        if [ -n "$SERVICE" ]; then
+            log "INFO" "Сервис $SERVICE успешно перезапущен!"
         else
-            log_message "INFO" "Сервис '$SERVICE' успешно запущен и прошел проверку."
+            log "INFO" "Все сервисы успешно перезапущены!"
         fi
     fi
 fi
 
 # Очистка, если запрошена
 if [ "$PRUNE" = true ]; then
-    log_message "INFO" "Выполнение очистки неиспользуемых ресурсов..."
+    log "INFO" "Выполнение очистки неиспользуемых ресурсов..."
     
     if [ "$VERBOSE" = true ]; then
-        log_message "INFO" "Удаление неиспользуемых контейнеров..."
+        log "INFO" "Удаление неиспользуемых контейнеров..."
     fi
     docker container prune -f
     
     if [ "$VERBOSE" = true ]; then
-        log_message "INFO" "Удаление неиспользуемых сетей..."
+        log "INFO" "Удаление неиспользуемых сетей..."
     fi
     docker network prune -f
     
     if [ "$VERBOSE" = true ]; then
-        log_message "INFO" "Удаление неиспользуемых образов..."
+        log "INFO" "Удаление неиспользуемых образов..."
     fi
     docker image prune -f
     
-    log_message "INFO" "Очистка завершена!"
+    log "INFO" "Очистка завершена!"
 fi
 
 # Вывод состояния запущенных контейнеров
-log_message "INFO" "Статус всех контейнеров (включая остановленные):"
+log "INFO" "Статус всех контейнеров (включая остановленные):"
 
 # Используем docker ps -a для отображения всех контейнеров, включая остановленные
 docker ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
 
-log_message "INFO" "Перезапуск завершен."
+log "INFO" "Перезапуск завершен."
 
 # =================================================================
 # ВЫЯВЛЕННЫЕ ПРОБЛЕМЫ И ВОЗМОЖНЫЕ РЕШЕНИЯ

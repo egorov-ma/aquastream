@@ -13,7 +13,7 @@ cd "$BUILD_SCRIPT_DIR"
 
 # Подключаем библиотеку утилит, если она доступна
 if [[ -f "./infra/docker/scripts/utils.sh" ]]; then
-  source "./infra/docker/scripts/utils.sh"
+  source "/Users/egorovma/IdeaProjects/aquastream/scripts/utils.sh"
 else
   # Минимальная реализация логирования, если библиотека недоступна
   log_info() {
@@ -191,7 +191,7 @@ build_backend() {
   
   # Добавляем дополнительные Java опции, если указаны
   if [[ -n "$JAVA_OPTS" ]]; then
-    gradle_cmd="JAVA_OPTS=\"$JAVA_OPTS\" $gradle_cmd"
+    export JAVA_OPTS="$JAVA_OPTS"
     log_debug "Установлены дополнительные Java опции: $JAVA_OPTS"
   fi
   
@@ -246,7 +246,7 @@ build_frontend() {
   # Устанавливаем зависимости, если необходимо
   if [[ "$install_deps" == "true" ]]; then
     log_info "Установка npm-зависимостей..."
-    if ! npm install $NPM_OPTS; then
+    if ! npm install "$NPM_OPTS"; then
       log_error "Ошибка при установке npm-зависимостей"
       return 1
     fi

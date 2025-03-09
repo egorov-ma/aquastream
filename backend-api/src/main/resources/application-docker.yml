@@ -6,11 +6,10 @@ spring:
     name: api-gateway
   cloud:
     config:
-      enabled: false
+      enabled: false # Отключаем Config Server
     gateway:
       routes:
         - id: user-service
-          # Для Docker используем имя контейнера
           uri: http://aquastream-user:8081
           predicates:
             - Path=/users/**
@@ -25,4 +24,24 @@ spring:
         - id: notification-service
           uri: http://aquastream-notification:8084
           predicates:
-            - Path=/notifications/** 
+            - Path=/notifications/**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

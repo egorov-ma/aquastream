@@ -6,7 +6,7 @@
 
 # Подключаем библиотеку утилит
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
+source "/Users/egorovma/IdeaProjects/aquastream/scripts/utils.sh"
 
 # Устанавливаем перехватчик ошибок
 setup_error_trap
@@ -95,11 +95,16 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -e|--elk)
+            # Эта переменная будет использоваться в инфраструктурных скриптах
+            # для определения, нужно ли включать ELK стек в канареечное развертывание
             INCLUDE_ELK=true
+            export INCLUDE_ELK
             shift
             ;;
         --verbose)
+            # Эта переменная используется в функциях логирования и других скриптах
             VERBOSE=true
+            export VERBOSE
             export LOG_LEVEL=$LOG_LEVEL_DEBUG
             shift
             ;;
@@ -172,6 +177,9 @@ start_canary() {
         log_error "Не удалось запустить канареечное окружение"
         return 1
     fi
+    
+    # Вычисляем оставшийся процент трафика для стабильной версии
+    local remaining=$((100 - CANARY_TRAFFIC_PERCENT))
     
     log_info "Канареечное окружение успешно запущено!"
     log_info "Трафик распределяется: ${CANARY_TRAFFIC_PERCENT}% на канареечную версию, ${remaining}% на стабильную версию"

@@ -13,13 +13,3 @@
 Конфигурация задается в файлах:
 - **Локальный запуск:** [application.yml](src/main/resources/application.yml) – настройки для подключения к базе и Kafka на localhost.
 - **Запуск через Docker:** [application-docker.yml](src/main/resources/application-docker.yml) – настройки с параметризацией через переменные окружения.
-
-## Запуск
-
-См. [README.md](../../README.md) в корне проекта для полной инструкции по запуску.
-
-## Kafka Topics
-
-- user-notifications
-- system-notifications
-- alerts 

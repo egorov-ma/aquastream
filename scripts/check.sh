@@ -85,9 +85,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Переход в директорию, где находится файл docker-compose.yml
+# Переход в директорию со скриптом
 SCRIPT_DIR="$(dirname "$0")"
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR" || exit 1
 
 # Команда для работы с Docker Compose
 CMD="docker compose -f ../compose/docker-compose.yml"
@@ -117,7 +117,8 @@ check_curl() {
 # Проверяем статус определенного контейнера
 check_container_status() {
     local container_name="$1"
-    local container_id=$(eval "$CMD ps -q $container_name" 2>/dev/null)
+    local container_id
+    container_id=$(eval "$CMD ps -q $container_name" 2>/dev/null)
     
     if [ -z "$container_id" ]; then
         print_colored_text "31" "Контейнер $container_name не запущен"
@@ -181,7 +182,8 @@ check_elasticsearch() {
     local host="localhost"
     local port="9200"
     local container_name="elasticsearch"
-    local container_id=$(docker ps -q -f name=aquastream-elasticsearch)
+    local container_id
+    container_id=$(docker ps -q -f name=aquastream-elasticsearch)
     
     if [ -z "$container_id" ]; then
         print_colored_text "31" "Контейнер Elasticsearch не запущен"
@@ -200,7 +202,7 @@ check_elasticsearch() {
         
         if [ "$SHOW_LOGS" = true ]; then
             print_colored_text "36" "Последние логи Elasticsearch:"
-            docker logs --tail=20 $container_id 2>/dev/null || echo "Логи недоступны"
+            docker logs --tail=20 "$container_id" 2>/dev/null || echo "Логи недоступны"
         fi
         
         return 1
@@ -231,7 +233,8 @@ check_elasticsearch() {
 # Проверяем статус Logstash
 check_logstash() {
     local container_name="logstash"
-    local container_id=$(docker ps -q -f name=aquastream-logstash)
+    local container_id
+    container_id=$(docker ps -q -f name=aquastream-logstash)
     
     if [ -z "$container_id" ]; then
         print_colored_text "31" "Контейнер Logstash не запущен"
@@ -241,14 +244,14 @@ check_logstash() {
     print_colored_text "36" "Проверка статуса Logstash..."
     
     # Проверяем порт
-    if docker exec $container_id bash -c "nc -z localhost 5000" &>/dev/null; then
+    if docker exec "$container_id" bash -c "nc -z localhost 5000" &>/dev/null; then
         print_colored_text "32" "Logstash работает и слушает порт 5000"
     else
         print_colored_text "31" "Logstash запущен, но не слушает порт 5000"
         
         if [ "$SHOW_LOGS" = true ]; then
             print_colored_text "36" "Последние логи Logstash:"
-            docker logs --tail=20 $container_id 2>/dev/null || echo "Логи недоступны"
+            docker logs --tail=20 "$container_id" 2>/dev/null || echo "Логи недоступны"
         fi
         
         return 1
@@ -256,7 +259,7 @@ check_logstash() {
     
     if [ "$VERBOSE" = true ]; then
         print_colored_text "36" "  Проверка логов Logstash на наличие ошибок..."
-        docker exec $container_id bash -c "cat /usr/share/logstash/logs/logstash-plain.log | grep -i error | tail -5" 2>/dev/null || echo "  Ошибок не найдено или логи недоступны"
+        docker exec "$container_id" bash -c "cat /usr/share/logstash/logs/logstash-plain.log | grep -i error | tail -5" 2>/dev/null || echo "  Ошибок не найдено или логи недоступны"
     fi
     
     return 0
@@ -267,7 +270,8 @@ check_kibana() {
     local host="localhost"
     local port="5601"
     local container_name="kibana"
-    local container_id=$(docker ps -q -f name=aquastream-kibana)
+    local container_id
+    container_id=$(docker ps -q -f name=aquastream-kibana)
     
     if [ -z "$container_id" ]; then
         print_colored_text "31" "Контейнер Kibana не запущен"
@@ -314,7 +318,7 @@ check_kibana() {
     
     if [ "$SHOW_LOGS" = true ]; then
         print_colored_text "36" "Последние логи Kibana:"
-        docker logs --tail=20 $container_id 2>/dev/null || echo "Логи недоступны"
+        docker logs --tail=20 "$container_id" 2>/dev/null || echo "Логи недоступны"
     fi
     
     return 1
@@ -322,7 +326,8 @@ check_kibana() {
 
 # Функция для проверки всех сервисов
 check_all_services() {
-    local containers=$(eval "$CMD ps --services" 2>/dev/null)
+    local containers
+    containers=$(eval "$CMD ps --services" 2>/dev/null)
     
     if [ -z "$containers" ]; then
         print_colored_text "31" "Не найдено запущенных контейнеров или ошибка в команде Docker Compose."

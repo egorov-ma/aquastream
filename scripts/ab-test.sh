@@ -6,7 +6,7 @@
 
 # Подключаем библиотеку утилит
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
+source "/Users/egorovma/IdeaProjects/aquastream/scripts/utils.sh"
 
 # Устанавливаем перехватчик ошибок
 setup_error_trap
@@ -86,8 +86,10 @@ create_result_dir() {
 # Запуск тестирования одного эндпоинта
 run_endpoint_test() {
   local endpoint="$1"
-  local safe_endpoint=$(echo "$endpoint" | sed 's/\//_/g' | sed 's/^_//')
-  local timestamp=$(date +"%Y%m%d_%H%M%S")
+  local safe_endpoint
+  safe_endpoint=$(echo "$endpoint" | sed 's/\//_/g' | sed 's/^_//')
+  local timestamp
+  timestamp=$(date +"%Y%m%d_%H%M%S")
   
   log_info "Тестирование эндпоинта: $endpoint"
   
@@ -187,22 +189,30 @@ compare_results() {
   local canary_output="$3"
   
   # Извлекаем ключевые метрики из результатов
-  local stable_rps=$(grep "Requests per second" "$stable_output" | awk '{print $4}')
-  local canary_rps=$(grep "Requests per second" "$canary_output" | awk '{print $4}')
+  local stable_rps
+  stable_rps=$(grep "Requests per second" "$stable_output" | awk '{print $4}')
+  local canary_rps
+  canary_rps=$(grep "Requests per second" "$canary_output" | awk '{print $4}')
   
-  local stable_time=$(grep "Time per request" "$stable_output" | head -1 | awk '{print $4}')
-  local canary_time=$(grep "Time per request" "$canary_output" | head -1 | awk '{print $4}')
+  local stable_time
+  stable_time=$(grep "Time per request" "$stable_output" | head -1 | awk '{print $4}')
+  local canary_time
+  canary_time=$(grep "Time per request" "$canary_output" | head -1 | awk '{print $4}')
   
-  local stable_failed=$(grep "Failed requests" "$stable_output" | awk '{print $3}')
-  local canary_failed=$(grep "Failed requests" "$canary_output" | awk '{print $3}')
+  local stable_failed
+  stable_failed=$(grep "Failed requests" "$stable_output" | awk '{print $3}')
+  local canary_failed
+  canary_failed=$(grep "Failed requests" "$canary_output" | awk '{print $3}')
   
   # Если 'Failed requests' не найдено, считаем, что нет ошибок
   stable_failed=${stable_failed:-0}
   canary_failed=${canary_failed:-0}
   
   # Расчет процентного изменения
-  local rps_change=$(bc -l <<< "scale=2; (($canary_rps - $stable_rps) / $stable_rps) * 100")
-  local time_change=$(bc -l <<< "scale=2; (($canary_time - $stable_time) / $stable_time) * 100")
+  local rps_change
+  rps_change=$(bc -l <<< "scale=2; (($canary_rps - $stable_rps) / $stable_rps) * 100")
+  local time_change
+  time_change=$(bc -l <<< "scale=2; (($canary_time - $stable_time) / $stable_time) * 100")
   
   # Вывод результатов сравнения
   log_info "Результаты сравнения для эндпоинта $endpoint:"
@@ -242,22 +252,30 @@ create_html_report() {
   log_debug "Создание HTML-отчета для эндпоинта $endpoint"
   
   # Извлекаем ключевые метрики из результатов
-  local stable_rps=$(grep "Requests per second" "$stable_output" | awk '{print $4}')
-  local canary_rps=$(grep "Requests per second" "$canary_output" | awk '{print $4}')
+  local stable_rps
+  stable_rps=$(grep "Requests per second" "$stable_output" | awk '{print $4}')
+  local canary_rps
+  canary_rps=$(grep "Requests per second" "$canary_output" | awk '{print $4}')
   
-  local stable_time=$(grep "Time per request" "$stable_output" | head -1 | awk '{print $4}')
-  local canary_time=$(grep "Time per request" "$canary_output" | head -1 | awk '{print $4}')
+  local stable_time
+  stable_time=$(grep "Time per request" "$stable_output" | head -1 | awk '{print $4}')
+  local canary_time
+  canary_time=$(grep "Time per request" "$canary_output" | head -1 | awk '{print $4}')
   
-  local stable_failed=$(grep "Failed requests" "$stable_output" | awk '{print $3}')
-  local canary_failed=$(grep "Failed requests" "$canary_output" | awk '{print $3}')
+  local stable_failed
+  stable_failed=$(grep "Failed requests" "$stable_output" | awk '{print $3}')
+  local canary_failed
+  canary_failed=$(grep "Failed requests" "$canary_output" | awk '{print $3}')
   
   # Если 'Failed requests' не найдено, считаем, что нет ошибок
   stable_failed=${stable_failed:-0}
   canary_failed=${canary_failed:-0}
   
   # Расчет процентного изменения
-  local rps_change=$(bc -l <<< "scale=2; (($canary_rps - $stable_rps) / $stable_rps) * 100")
-  local time_change=$(bc -l <<< "scale=2; (($canary_time - $stable_time) / $stable_time) * 100")
+  local rps_change
+  rps_change=$(bc -l <<< "scale=2; (($canary_rps - $stable_rps) / $stable_rps) * 100")
+  local time_change
+  time_change=$(bc -l <<< "scale=2; (($canary_time - $stable_time) / $stable_time) * 100")
   
   # Создаем HTML-отчет
   cat > "$html_output" << EOF
@@ -479,22 +497,30 @@ convert_to_json() {
   log_debug "Создание JSON-отчета для эндпоинта $endpoint"
   
   # Извлекаем ключевые метрики из результатов
-  local stable_rps=$(grep "Requests per second" "$stable_output" | awk '{print $4}')
-  local canary_rps=$(grep "Requests per second" "$canary_output" | awk '{print $4}')
+  local stable_rps
+  stable_rps=$(grep "Requests per second" "$stable_output" | awk '{print $4}')
+  local canary_rps
+  canary_rps=$(grep "Requests per second" "$canary_output" | awk '{print $4}')
   
-  local stable_time=$(grep "Time per request" "$stable_output" | head -1 | awk '{print $4}')
-  local canary_time=$(grep "Time per request" "$canary_output" | head -1 | awk '{print $4}')
+  local stable_time
+  stable_time=$(grep "Time per request" "$stable_output" | head -1 | awk '{print $4}')
+  local canary_time
+  canary_time=$(grep "Time per request" "$canary_output" | head -1 | awk '{print $4}')
   
-  local stable_failed=$(grep "Failed requests" "$stable_output" | awk '{print $3}')
-  local canary_failed=$(grep "Failed requests" "$canary_output" | awk '{print $3}')
+  local stable_failed
+  stable_failed=$(grep "Failed requests" "$stable_output" | awk '{print $3}')
+  local canary_failed
+  canary_failed=$(grep "Failed requests" "$canary_output" | awk '{print $3}')
   
   # Если 'Failed requests' не найдено, считаем, что нет ошибок
   stable_failed=${stable_failed:-0}
   canary_failed=${canary_failed:-0}
   
   # Расчет процентного изменения
-  local rps_change=$(bc -l <<< "scale=2; (($canary_rps - $stable_rps) / $stable_rps) * 100")
-  local time_change=$(bc -l <<< "scale=2; (($canary_time - $stable_time) / $stable_time) * 100")
+  local rps_change
+  rps_change=$(bc -l <<< "scale=2; (($canary_rps - $stable_rps) / $stable_rps) * 100")
+  local time_change
+  time_change=$(bc -l <<< "scale=2; (($canary_time - $stable_time) / $stable_time) * 100")
   
   # Формируем JSON
   cat > "$json_output" << EOF
@@ -546,7 +572,7 @@ GNUPLOT=false
 CSV=false
 JSON=false
 HTML=false
-VERBOSE=false
+export VERBOSE=false
 
 # Обработка аргументов командной строки
 while [[ $# -gt 0 ]]; do
@@ -588,7 +614,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -v|--verbose)
-      VERBOSE=true
+      export VERBOSE=true
       export LOG_LEVEL=$LOG_LEVEL_DEBUG
       shift
       ;;

@@ -8,7 +8,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Подключаем библиотеку утилит
-source "${SCRIPT_DIR}/utils.sh"
+source "/Users/egorovma/IdeaProjects/aquastream/scripts/utils.sh"
 
 # Устанавливаем перехватчик ошибок
 setup_error_trap
@@ -44,8 +44,9 @@ EOF
 # Константы
 CONFIG_DIR="${SCRIPT_DIR}/../config/canary/alerts"
 CONFIG_FILE="${CONFIG_DIR}/alerts_config.json"
-PROMETHEUS_URL="http://localhost:9090"
-GRAFANA_URL="http://localhost:3000"
+PROMETHEUS_URL="http://localhost:9091"
+# GRAFANA_URL используется в других скриптах, оставляем его здесь для будущего использования или документации
+# GRAFANA_URL="http://localhost:3000"
 DEFAULT_METRICS_THRESHOLD=20
 DEFAULT_ERRORS_THRESHOLD=5
 DEFAULT_LATENCY_THRESHOLD=500
@@ -61,6 +62,9 @@ ERRORS_THRESHOLD=$DEFAULT_ERRORS_THRESHOLD
 LATENCY_THRESHOLD=$DEFAULT_LATENCY_THRESHOLD
 CHECK_INTERVAL=$DEFAULT_CHECK_INTERVAL
 VERBOSE=false
+export VERBOSE
+LOG_LEVEL=$LOG_LEVEL_DEBUG
+export LOG_LEVEL
 
 # Обработка аргументов командной строки
 while [[ $# -gt 0 ]]; do
@@ -103,7 +107,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     -v|--verbose)
       VERBOSE=true
-      export LOG_LEVEL=$LOG_LEVEL_DEBUG
+      export VERBOSE
+      LOG_LEVEL=$LOG_LEVEL_DEBUG
+      export LOG_LEVEL
       shift
       ;;
     *)
@@ -153,32 +159,32 @@ configure_alerts() {
   echo -e "\n===== Настройка каналов оповещений ====="
   
   # Настройка Slack
-  read -p "Настроить оповещения в Slack? (y/n): " setup_slack
-  if [[ "$setup_slack" == "y" || "$setup_slack" == "Y" ]]; then
-    read -p "Введите Webhook URL для Slack: " SLACK_WEBHOOK
+  read -r -p "Настроить оповещения в Slack? (y/n): " setup_slack
+  if [[ "$setup_slack" == "y" ]]; then
+    read -r -p "Введите Webhook URL для Slack: " SLACK_WEBHOOK
     log_info "Webhook URL для Slack настроен"
   fi
   
   # Настройка Email
-  read -p "Настроить оповещения по Email? (y/n): " setup_email
+  read -r -p "Настроить оповещения по Email? (y/n): " setup_email
   if [[ "$setup_email" == "y" || "$setup_email" == "Y" ]]; then
-    read -p "Введите Email-адреса через запятую: " EMAIL_RECIPIENTS
-    log_info "Email-оповещения настроены для: $EMAIL_RECIPIENTS"
+    read -r -p "Введите Email-адрес(а) через запятую: " EMAIL_RECIPIENTS
+    log_info "Email-адреса для оповещений настроены"
   fi
   
   echo -e "\n===== Настройка порогов оповещений ====="
   
-  # Настройка порогов
-  read -p "Порог отклонения метрик (%, по умолчанию $DEFAULT_METRICS_THRESHOLD): " input_metrics
+  # Пороги оповещений
+  read -r -p "Порог отклонения метрик (%, по умолчанию $DEFAULT_METRICS_THRESHOLD): " input_metrics
   METRICS_THRESHOLD=${input_metrics:-$DEFAULT_METRICS_THRESHOLD}
   
-  read -p "Порог количества ошибок (по умолчанию $DEFAULT_ERRORS_THRESHOLD): " input_errors
+  read -r -p "Порог количества ошибок (по умолчанию $DEFAULT_ERRORS_THRESHOLD): " input_errors
   ERRORS_THRESHOLD=${input_errors:-$DEFAULT_ERRORS_THRESHOLD}
   
-  read -p "Порог задержки (мс, по умолчанию $DEFAULT_LATENCY_THRESHOLD): " input_latency
+  read -r -p "Порог задержки (мс, по умолчанию $DEFAULT_LATENCY_THRESHOLD): " input_latency
   LATENCY_THRESHOLD=${input_latency:-$DEFAULT_LATENCY_THRESHOLD}
   
-  read -p "Интервал проверки (минуты, по умолчанию $DEFAULT_CHECK_INTERVAL): " input_interval
+  read -r -p "Интервал проверки (минуты, по умолчанию $DEFAULT_CHECK_INTERVAL): " input_interval
   CHECK_INTERVAL=${input_interval:-$DEFAULT_CHECK_INTERVAL}
   
   # Создание конфигурационного файла
@@ -212,7 +218,8 @@ send_slack_alert() {
   
   log_debug "Отправка оповещения в Slack (уровень: $level)"
   
-  local payload=$(cat << EOF
+  local payload
+  payload=$(cat << EOF
 {
   "attachments": [
     {
@@ -227,9 +234,7 @@ send_slack_alert() {
 EOF
 )
 
-  curl -s -X POST -H "Content-type: application/json" --data "$payload" "$SLACK_WEBHOOK" > /dev/null
-  
-  if [[ $? -eq 0 ]]; then
+  if curl -s -X POST -H "Content-type: application/json" --data "$payload" "$SLACK_WEBHOOK" > /dev/null; then
     log_info "Оповещение успешно отправлено в Slack"
     return 0
   else
@@ -268,7 +273,7 @@ send_email_alert() {
   
   echo "$message" | mail -s "$subject" "$EMAIL_RECIPIENTS"
   
-  if [[ $? -eq 0 ]]; then
+  if curl -s "$EMAIL_API_ENDPOINT" -H "Content-Type: application/json" -d "$payload" > /dev/null; then
     log_info "Оповещение успешно отправлено по Email"
     return 0
   else
@@ -281,15 +286,18 @@ send_email_alert() {
 send_test_alert() {
   log_info "Отправка тестового оповещения..."
   
-  local test_message="Это тестовое оповещение от системы мониторинга канареечных деплойментов AquaStream. Дата и время: $(date)"
+  local test_message
+  test_message="Это тестовое оповещение от системы мониторинга канареечных деплойментов AquaStream. Дата и время: $(date)"
   
   # Загружаем конфигурацию, если существует
   if [[ -f "$CONFIG_FILE" ]]; then
     SLACK_WEBHOOK=$(jq -r '.notifications.slack.webhook_url' "$CONFIG_FILE")
     EMAIL_RECIPIENTS=$(jq -r '.notifications.email.recipients' "$CONFIG_FILE")
     
-    local slack_enabled=$(jq -r '.notifications.slack.enabled' "$CONFIG_FILE")
-    local email_enabled=$(jq -r '.notifications.email.enabled' "$CONFIG_FILE")
+    local slack_enabled
+    slack_enabled=$(jq -r '.notifications.slack.enabled' "$CONFIG_FILE")
+    local email_enabled
+    email_enabled=$(jq -r '.notifications.email.enabled' "$CONFIG_FILE")
     
     if [[ "$slack_enabled" == "true" && -n "$SLACK_WEBHOOK" && "$SLACK_WEBHOOK" != "null" ]]; then
       send_slack_alert "$test_message" "info"
@@ -321,8 +329,10 @@ check_prometheus_metrics() {
   # Проверяем метрики и отправляем оповещения при необходимости
   
   # 1. Проверка задержки (latency)
-  local stable_latency=$(curl -s "$PROMETHEUS_URL/api/v1/query" --data-urlencode 'query=sum(rate(http_server_requests_seconds_sum{service="api-gateway"}[5m]))/sum(rate(http_server_requests_seconds_count{service="api-gateway"}[5m]))' | jq -r '.data.result[0].value[1]')
-  local canary_latency=$(curl -s "$PROMETHEUS_URL/api/v1/query" --data-urlencode 'query=sum(rate(http_server_requests_seconds_sum{service="api-gateway-canary"}[5m]))/sum(rate(http_server_requests_seconds_count{service="api-gateway-canary"}[5m]))' | jq -r '.data.result[0].value[1]')
+  local stable_latency
+  stable_latency=$(curl -s "$PROMETHEUS_URL/api/v1/query" --data-urlencode 'query=sum(rate(http_server_requests_seconds_sum{service="api-gateway"}[5m]))/sum(rate(http_server_requests_seconds_count{service="api-gateway"}[5m]))' | jq -r '.data.result[0].value[1]')
+  local canary_latency
+  canary_latency=$(curl -s "$PROMETHEUS_URL/api/v1/query" --data-urlencode 'query=sum(rate(http_server_requests_seconds_sum{service="api-gateway-canary"}[5m]))/sum(rate(http_server_requests_seconds_count{service="api-gateway-canary"}[5m]))' | jq -r '.data.result[0].value[1]')
   
   if [[ "$stable_latency" != "null" && "$canary_latency" != "null" ]]; then
     stable_latency=$(echo "$stable_latency * 1000" | bc)  # Convert to ms
@@ -335,7 +345,8 @@ check_prometheus_metrics() {
     fi
     
     # Проверяем отклонение от стабильной версии
-    local latency_diff_percent=$(echo "scale=2; ($canary_latency - $stable_latency) / $stable_latency * 100" | bc)
+    local latency_diff_percent
+    latency_diff_percent=$(echo "scale=2; ($canary_latency - $stable_latency) / $stable_latency * 100" | bc)
     if (( $(echo "$latency_diff_percent > $METRICS_THRESHOLD" | bc -l) )); then
       local diff_message="Задержка канареечной версии ($canary_latency мс) на $latency_diff_percent% выше, чем у стабильной версии ($stable_latency мс)"
       send_slack_alert "$diff_message" "warning"
@@ -344,7 +355,8 @@ check_prometheus_metrics() {
   fi
   
   # 2. Проверка количества ошибок
-  local canary_errors=$(curl -s "$PROMETHEUS_URL/api/v1/query" --data-urlencode 'query=sum(rate(http_server_requests_seconds_count{status=~"5..",service="api-gateway-canary"}[5m]))' | jq -r '.data.result[0].value[1]')
+  local canary_errors
+  canary_errors=$(curl -s "$PROMETHEUS_URL/api/v1/query" --data-urlencode 'query=sum(rate(http_server_requests_seconds_count{status=~"5..",service="api-gateway-canary"}[5m]))' | jq -r '.data.result[0].value[1]')
   
   if [[ "$canary_errors" != "null" ]]; then
     if (( $(echo "$canary_errors > $ERRORS_THRESHOLD" | bc -l) )); then

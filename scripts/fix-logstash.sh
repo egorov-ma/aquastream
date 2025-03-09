@@ -10,7 +10,8 @@ NC='\033[0m' # No Color
 log_message() {
     local level=$1
     local message=$2
-    local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
+    local timestamp
+    timestamp=$(date +'%Y-%m-%d %H:%M:%S')
     
     case $level in
         "INFO")
@@ -63,7 +64,7 @@ for gradle_file in "${GRADLE_FILES[@]}"; do
     '"$LOGSTASH_DEPENDENCY"'
 ' "$FULL_PATH"
         
-        if [ $? -eq 0 ]; then
+        if docker restart logstash; then
             log_message "INFO" "Зависимость успешно добавлена в $gradle_file"
         else
             log_message "ERROR" "Ошибка при добавлении зависимости в $gradle_file"

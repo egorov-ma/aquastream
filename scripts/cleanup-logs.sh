@@ -8,7 +8,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Подключаем библиотеку утилит
-source "${SCRIPT_DIR}/utils.sh"
+source "/Users/egorovma/IdeaProjects/aquastream/scripts/utils.sh"
 
 # Устанавливаем перехватчик ошибок
 setup_error_trap
@@ -150,7 +150,9 @@ cleanup_old_logs() {
 # Функция для ротации больших файлов логов
 rotate_large_logs() {
   local dir="$1"
-  local max_size_bytes=$((MAX_SIZE * 1024 * 1024))  # Конвертируем MB в байты
+  # Переменная total_size_bytes или просто переменная MAX_SIZE используется напрямую
+  # поэтому max_size_bytes можно удалить или закомментировать
+  # local max_size_bytes=$((MAX_SIZE * 1024 * 1024))  # Конвертируем MB в байты
   
   if [[ ! -d "$dir" ]]; then
     log_debug "Директория $dir не существует, пропускаем"
@@ -183,8 +185,10 @@ rotate_large_logs() {
   # Ротируем большие файлы логов
   echo "$large_logs" | while read -r file; do
     if [[ -f "$file" ]]; then
-      local filename=$(basename "$file")
-      local timestamp=$(date +"%Y%m%d-%H%M%S")
+      local filename
+      filename=$(basename "$file")
+      local timestamp
+      timestamp=$(date +"%Y%m%d-%H%M%S")
       local rotated_file="${ARCHIVED_LOGS_DIR}/${filename%.log}_${timestamp}.log"
       
       # Копируем в архив и очищаем оригинальный файл

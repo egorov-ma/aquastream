@@ -68,8 +68,8 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Переход в директорию со скриптом (если нужно)
-cd "$(dirname "$0")"
+# Переход в директорию со скриптом
+cd "$(dirname "$0")" || exit 1
 
 # Команда для работы с Docker Compose
 CMD="docker compose -f ../compose/docker-compose.yml"

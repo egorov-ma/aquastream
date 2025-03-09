@@ -8,7 +8,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Подключаем библиотеку утилит
-source "${SCRIPT_DIR}/utils.sh"
+source "/Users/egorovma/IdeaProjects/aquastream/scripts/utils.sh"
 
 # Устанавливаем перехватчик ошибок
 setup_error_trap
@@ -211,14 +211,16 @@ get_elk_status() {
 get_elasticsearch_status() {
   log_info "Проверка статуса Elasticsearch..."
   
-  local es_container=$(docker ps -q -f name=aquastream-elasticsearch)
+  local es_container
+  es_container=$(docker ps -q -f name=aquastream-elasticsearch)
   
   if [[ -z "$es_container" ]]; then
     log_error "Контейнер Elasticsearch не найден или не запущен"
     return 1
   fi
   
-  local es_status=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health" 2>/dev/null | jq -r '.status')
+  local es_status
+  es_status=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health" 2>/dev/null | jq -r '.status')
   
   if [[ "$es_status" == "green" ]]; then
     log_success "Elasticsearch работает нормально (статус: green)"
@@ -235,8 +237,10 @@ get_elasticsearch_status() {
   if [[ "$VERBOSE" == "true" ]]; then
     curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}" | jq '.version'
     
-    local indices_count=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?h=i" | wc -l)
-    local disk_usage=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/allocation?v" | grep -v ^shards)
+    local indices_count
+    indices_count=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?h=i" | wc -l)
+    local disk_usage
+    disk_usage=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/allocation?v" | grep -v ^shards)
     
     log_info "Количество индексов: $indices_count"
     log_info "Использование диска:\n$disk_usage"
@@ -249,7 +253,8 @@ get_elasticsearch_status() {
 get_logstash_status() {
   log_info "Проверка статуса Logstash..."
   
-  local ls_container=$(docker ps -q -f name=aquastream-logstash)
+  local ls_container
+  ls_container=$(docker ps -q -f name=aquastream-logstash)
   
   if [[ -z "$ls_container" ]]; then
     log_error "Контейнер Logstash не найден или не запущен"
@@ -257,7 +262,7 @@ get_logstash_status() {
   fi
   
   # Проверяем порт Logstash
-  if docker exec $ls_container bash -c "nc -z localhost $LOGSTASH_PORT"; then
+  if docker exec "$ls_container" bash -c "nc -z localhost $LOGSTASH_PORT"; then
     log_success "Logstash работает и слушает порт $LOGSTASH_PORT"
   else
     log_error "Logstash запущен, но не слушает порт $LOGSTASH_PORT"
@@ -266,7 +271,7 @@ get_logstash_status() {
   
   if [[ "$VERBOSE" == "true" ]]; then
     # Проверяем статистику Logstash
-    docker exec $ls_container bash -c "cat /usr/share/logstash/logs/logstash-plain.log | grep -i 'pipeline\|error\|failed' | tail -10"
+    docker exec "$ls_container" bash -c "cat /usr/share/logstash/logs/logstash-plain.log | grep -i 'pipeline\|error\|failed' | tail -10"
   fi
   
   return 0
@@ -276,7 +281,8 @@ get_logstash_status() {
 get_kibana_status() {
   log_info "Проверка статуса Kibana..."
   
-  local kb_container=$(docker ps -q -f name=aquastream-kibana)
+  local kb_container
+  kb_container=$(docker ps -q -f name=aquastream-kibana)
   
   if [[ -z "$kb_container" ]]; then
     log_error "Контейнер Kibana не найден или не запущен"
@@ -284,7 +290,8 @@ get_kibana_status() {
   fi
   
   # Проверяем доступность Kibana
-  local status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://${KIBANA_HOST}:${KIBANA_PORT}/app/home")
+  local status_code
+  status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://${KIBANA_HOST}:${KIBANA_PORT}/app/home")
   
   if [[ "$status_code" == "200" || "$status_code" == "302" ]]; then
     log_success "Kibana работает и доступна по адресу http://${KIBANA_HOST}:${KIBANA_PORT}"
@@ -367,7 +374,8 @@ show_component_logs() {
 show_elasticsearch_indices() {
   log_info "Получение списка индексов Elasticsearch..."
   
-  local indices=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v")
+  local indices
+  indices=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v")
   
   if [[ -z "$indices" ]]; then
     log_error "Не удалось получить список индексов"
@@ -402,27 +410,31 @@ clean_old_indices() {
   fi
   
   # Вычисляем дату, старше которой нужно удалить индексы
-  local cutoff_date=$(date -d "$days days ago" +%Y.%m.%d)
+  local cutoff_date
+  cutoff_date=$(date -d "$days days ago" +%Y.%m.%d)
   log_debug "Дата отсечения: $cutoff_date"
   
   # Получаем список индексов для удаления
-  local indices_to_delete=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices" | \
-                          grep -E "logstash-[0-9]{4}\.[0-9]{2}\.[0-9]{2}" | \
-                          awk '{gsub("logstash-", "", $3); if ($3 < "'$cutoff_date'") print $3}')
+  local indices_to_delete
+  indices_to_delete=$(curl -s "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices" | \
+                     awk '/logstash-/ {print $3}' | \
+                     awk '{gsub("logstash-", "", $3); if ($3 < "'"$cutoff_date"'") print $3}')
   
   if [[ -z "$indices_to_delete" ]]; then
     log_info "Нет индексов старше $days дней для удаления"
     return 0
   fi
   
-  local count=$(echo "$indices_to_delete" | wc -l)
+  local count
+  count=$(echo "$indices_to_delete" | wc -l)
   log_warn "Найдено $count индексов для удаления"
   
   for index_date in $indices_to_delete; do
     local index_name="logstash-$index_date"
     log_info "Удаление индекса $index_name..."
     
-    local result=$(curl -s -X DELETE "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/$index_name")
+    local result
+    result=$(curl -s -X DELETE "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/$index_name")
     
     if echo "$result" | grep -q "acknowledged" && echo "$result" | grep -q "true"; then
       log_success "Индекс $index_name успешно удален"
@@ -444,7 +456,8 @@ export_index_data() {
   # Создаем директорию для экспорта, если она не существует
   mkdir -p "$EXPORT_DIR"
   
-  local date=$(date +"%Y%m%d_%H%M%S")
+  local date
+  date=$(date +"%Y%m%d_%H%M%S")
   local export_file="${EXPORT_DIR}/${index}_${date}.json"
   
   # Проверяем существование индекса
@@ -499,7 +512,8 @@ test_logstash_connections() {
   log_info "Проверка подключений микросервисов к Logstash..."
   
   # Получаем список контейнеров микросервисов
-  local service_containers=$(docker ps --format '{{.Names}}' | grep -E 'aquastream-' | grep -v -E 'elasticsearch|logstash|kibana')
+  local service_containers
+  service_containers=$(docker ps --format '{{.Names}}' | grep -E 'aquastream-' | grep -v -E 'elasticsearch|logstash|kibana')
   
   if [[ -z "$service_containers" ]]; then
     log_warn "Не найдено запущенных контейнеров микросервисов"
@@ -510,7 +524,8 @@ test_logstash_connections() {
     log_info "Проверка подключения $container к Logstash..."
     
     # Проверяем наличие соединений к порту Logstash
-    local connections=$(docker exec $container netstat -an 2>/dev/null | grep -c "$LOGSTASH_PORT")
+    local connections
+    connections=$(docker exec "$container" netstat -an 2>/dev/null | grep -c "$LOGSTASH_PORT")
     
     if [[ $? -eq 0 && "$connections" -gt 0 ]]; then
       log_success "$container имеет $connections активных соединений с Logstash"
@@ -518,7 +533,7 @@ test_logstash_connections() {
       log_warn "$container не имеет активных соединений с Logstash"
       
       # Проверяем конфигурацию логирования в контейнере
-      if docker exec $container bash -c "grep -r logstash /app --include='*.xml' 2>/dev/null"; then
+      if docker exec "$container" bash -c "grep -r logstash /app --include='*.xml' 2>/dev/null"; then
         log_info "Найдена конфигурация Logstash в $container"
       else
         log_error "Не найдена конфигурация Logstash в $container"
