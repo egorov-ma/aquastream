@@ -79,6 +79,9 @@ infra/docker/.cache/
 infra/docker/data/
 infra/docker/tmp/
 infra/docker/logs/
+infra/docker/reports/
+infra/docker/reports/ab-test/
+infra/docker/backups/
 
 # Docker
 .dockerignore
@@ -101,3 +104,6 @@ k8s/.kubeconfig
 
 # Проектные заметки и TODO-листы
 .project_todo/
+
+# Результаты тестов
+test-reports/

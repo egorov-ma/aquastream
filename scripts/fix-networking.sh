@@ -10,7 +10,8 @@ NC='\033[0m' # No Color
 log_message() {
     local level=$1
     local message=$2
-    local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
+    local timestamp
+    timestamp=$(date +'%Y-%m-%d %H:%M:%S')
     
     case $level in
         "INFO")
@@ -192,30 +193,38 @@ for service in "api-gateway" "user-service" "planning-service" "crew-service" "n
     log_message "INFO" "Проверяем зависимости для $service..."
     
     # Для каждого сервиса проверяем наличие и правильность секции depends_on с проверкой service_healthy
+    # Эти зависимости пока не используются, но могут понадобиться в будущем
     case "$service" in
         "api-gateway")
-            dependencies=("user-service" "planning-service" "crew-service" "notification-service")
+            # dependencies=("user-service" "planning-service" "crew-service" "notification-service")
+            service_deps=("user-service" "planning-service" "crew-service" "notification-service")
             ;;
         "user-service")
-            dependencies=("postgres")
+            # dependencies=("postgres")
+            service_deps=("postgres")
             ;;
         "planning-service")
-            dependencies=("postgres")
+            # dependencies=("postgres")
+            service_deps=("postgres")
             ;;
         "crew-service")
-            dependencies=("postgres")
+            # dependencies=("postgres")
+            service_deps=("postgres")
             ;;
         "notification-service")
-            dependencies=("postgres" "kafka")
+            # dependencies=("postgres" "kafka")
+            service_deps=("postgres" "kafka")
             ;;
         "frontend")
-            dependencies=("api-gateway")
+            # dependencies=("api-gateway")
+            service_deps=("api-gateway")
             ;;
     esac
     
-    # В этом месте можно добавить аналогичный код для проверки и исправления depends_on
-    # для каждого сервиса с учетом его зависимостей. Однако, это более сложное изменение,
-    # которое может потребовать осторожности и индивидуального подхода.
+    log_message "INFO" "Обнаружены зависимости для $service: ${service_deps[*]}"
+    
+    # В этом месте можно добавить код для проверки и исправления depends_on
+    # для каждого сервиса с учетом его зависимостей.
 done
 
 log_message "INFO" "Проверка и обновление настроек docker-compose.yml завершены"

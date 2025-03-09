@@ -27,8 +27,7 @@ show_help() {
 
 # Функция для проверки поддержки флага
 check_flag_support() {
-    local cmd=$1
-    local flag=$2
+    local flag=$1
     
     if docker compose up --help | grep -q -- "$flag"; then
         return 0  # Флаг поддерживается
@@ -102,13 +101,19 @@ fi
 # но вызывает ошибку в текущей версии. Оставлен закомментированным до исправления в Docker.
 # CMD="$CMD --quiet-pull"
 
-if [ "$BUILD" = true ]; then
-    if [ -z "$SERVICE" ]; then
-        print_colored_text "36" "Пересборка всех образов..."
-        $CMD build
-    else
-        print_colored_text "36" "Пересборка образа для $SERVICE..."
-        $CMD build $SERVICE
+# Функция для логирования
+log() {
+    local level=$1
+    local msg=$2
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$level] $msg"
+}
+
+# Если указан сервис, сначала собираем его образ
+if [ -n "$SERVICE" ] && [ "$BUILD" = true ]; then
+    log "INFO" "Сборка образа для сервиса $SERVICE..."
+    if ! $CMD build "$SERVICE"; then
+        log "ERROR" "Ошибка при сборке образа для сервиса $SERVICE"
+        exit 1
     fi
 fi
 
@@ -121,10 +126,12 @@ else
     print_colored_text "36" "Запуск в интерактивном режиме"
 fi
 
-if [ -z "$SERVICE" ]; then
-    $CMD up $DETACH_FLAG
+# Запуск контейнеров
+log "INFO" "Запуск контейнеров..."
+if [ -n "$SERVICE" ]; then
+    $CMD up $DETACH_FLAG "$SERVICE"
 else
-    $CMD up $DETACH_FLAG $SERVICE
+    $CMD up $DETACH_FLAG
 fi
 
 exit_code=$?

@@ -21,6 +21,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    environment:
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=5000
 
   user-service:
     container_name: aquastream-user
@@ -35,6 +38,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=5000
     networks:
       - aquastream-network
     image: aquastream-user:latest
@@ -54,6 +59,9 @@ services:
       - "9090:9090"
     networks:
       - aquastream-network
+    environment:
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=5000
 
   crew-service:
     container_name: aquastream-crew
@@ -68,6 +76,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=5000
     networks:
       - aquastream-network
 
@@ -86,6 +96,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=5000
     networks:
       - aquastream-network
 
@@ -184,9 +196,67 @@ services:
       timeout: 10s
       retries: 3
 
+  elasticsearch:
+    container_name: aquastream-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - aquastream-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'status.*green'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  logstash:
+    container_name: aquastream-logstash
+    image: docker.elastic.co/logstash/logstash:8.12.1
+    volumes:
+      - ../../../infra/monitoring/logstash/pipeline:/usr/share/logstash/pipeline
+      - ../../../infra/monitoring/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+    networks:
+      - aquastream-network
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9600 | grep -q 'status.*green'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  kibana:
+    container_name: aquastream-kibana
+    image: docker.elastic.co/kibana/kibana:8.12.1
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - aquastream-network
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'status.*green'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 networks:
   aquastream-network:
     driver: bridge
 
 volumes:
   postgres_data:
+  elasticsearch_data:

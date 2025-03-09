@@ -12,11 +12,3 @@
 Конфигурация определяется в следующих файлах:
 - **Локальный запуск:** [application.yml](src/main/resources/application.yml)
 - **Запуск через Docker:** [application-docker.yml](src/main/resources/application-docker.yml)
-
-## Запуск
-
-См. [README.md](/README.md) в корне проекта для инструкций по запуску.
-
-## Дополнительная документация
-
-Полная документация проекта доступна в файле [PROJECT_DOCUMENTATION.md](../PROJECT_DOCUMENTATION.md). 

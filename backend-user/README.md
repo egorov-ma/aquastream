@@ -230,6 +230,51 @@ management:
       application: ${spring.application.name}
 ```
 
+## Логирование
+
+Сервис использует централизованную систему логирования на базе ELK Stack (Elasticsearch, Logstash, Kibana). 
+Подробная документация по настройке и использованию логирования доступна в [документации общего модуля](../common/README.md#логирование-и-мониторинг-elk-stack).
+
+### Основные возможности
+- Структурированное JSON-логирование
+- Централизованный сбор и анализ логов
+- Визуализация через Kibana
+- Полнотекстовый поиск по логам
+
+### Конфигурация логирования
+
+```yaml
+# Настройки логирования
+logging:
+  level:
+    root: INFO
+    org.aquastream: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Настройки Logstash
+logstash:
+  host: ${LOGSTASH_HOST:localhost}
+  port: ${LOGSTASH_PORT:5000}
+```
+
+### Примеры использования
+
+```java
+@Slf4j
+@RestController
+public class UserController {
+    
+    @GetMapping("/api/users/{id}")
+    public UserResponse getUser(@PathVariable UUID id) {
+        log.info("Получение пользователя", 
+            kv("userId", id),
+            kv("action", "get_user"));
+        // ...
+    }
+}
+```
+
 ## Запуск приложения
 
 ### Требования
@@ -367,17 +412,6 @@ docker-compose up -d prometheus grafana
    - Пароль: admin
 
 3. Импортировать дашборды из `infra/monitoring/grafana/dashboards`
-
-### Логирование
-
-Сервис использует следующие уровни логирования:
-
-- **ERROR**: Критические ошибки, требующие немедленного внимания
-- **WARN**: Предупреждения о потенциальных проблемах
-- **INFO**: Информация о важных событиях в системе
-- **DEBUG**: Детальная информация для отладки (только в среде разработки)
-
-Логи структурированы в формате JSON для удобного анализа инструментами, такими как ELK Stack (Elasticsearch, Logstash, Kibana).
 
 ## Интеграция с другими сервисами
 

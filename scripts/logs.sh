@@ -39,6 +39,7 @@ SINCE=""
 UNTIL=""
 NO_COLOR=false
 GREP=""
+VERBOSE=${VERBOSE:-false}
 
 # Обработка аргументов командной строки
 while [[ $# -gt 0 ]]; do
@@ -88,7 +89,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Переход в директорию со скриптом
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 # Команда для работы с Docker Compose
 CMD="docker compose -f ../compose/docker-compose.yml"
@@ -154,13 +155,13 @@ LOGS_OPTIONS="$LOGS_OPTIONS --tail $LINES"
 # Выполнение команды получения логов
 if [ -n "$GREP" ]; then
     if [ "$NO_COLOR" = true ]; then
-        $CMD logs $LOGS_OPTIONS $SERVICE_STR | grep "$GREP"
+        eval "$CMD logs \"$LOGS_OPTIONS\" \"$SERVICE_STR\"" | grep "$GREP"
     else
         # Подсветка найденного текста
-        $CMD logs $LOGS_OPTIONS $SERVICE_STR | grep --color=always "$GREP"
+        eval "$CMD logs \"$LOGS_OPTIONS\" \"$SERVICE_STR\"" | grep --color=always "$GREP"
     fi
 else
-    $CMD logs $LOGS_OPTIONS $SERVICE_STR
+    eval "$CMD logs \"$LOGS_OPTIONS\" \"$SERVICE_STR\""
 fi
 
 # Проверка кода возврата

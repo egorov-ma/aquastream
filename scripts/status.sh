@@ -88,12 +88,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Переход в директорию со скриптом
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 # Команда для работы с Docker Compose
-CMD="docker compose -f ../compose/docker-compose.yml"
-if [ -f "../compose/docker-compose.override.yml" ]; then
-    CMD="$CMD -f ../compose/docker-compose.override.yml"
+CMD="docker compose -f /Users/egorovma/IdeaProjects/aquastream/infra/docker/compose/docker-compose.yml"
+if [ -f "/Users/egorovma/IdeaProjects/aquastream/infra/docker/compose/docker-compose.override.yml" ]; then
+    CMD="$CMD -f /Users/egorovma/IdeaProjects/aquastream/infra/docker/compose/docker-compose.override.yml"
     [ "$VERBOSE" = true ] && echo "Найден файл docker-compose.override.yml, он будет использован"
 else
     [ "$VERBOSE" = true ] && echo "Файл docker-compose.override.yml не найден, используется только основная конфигурация"

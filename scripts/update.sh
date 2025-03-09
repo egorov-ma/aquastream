@@ -87,8 +87,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Переход в директорию со скриптом
-SCRIPT_DIR="$(dirname "$0")"
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR" || exit 1
 
 # Переход в корневую директорию проекта (на два уровня выше infra/docker)
 cd "../.."
@@ -118,9 +117,6 @@ if [ "$SKIP_PULL" != true ]; then
             exit 1
         fi
     fi
-    
-    # Сохранение текущей ветки
-    CURRENT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "detached")
     
     # Получение последних обновлений
     print_colored_text "36" "Получение последних обновлений..."
@@ -175,13 +171,13 @@ fi
 
 if [ -z "$SERVICE" ]; then
     print_colored_text "36" "Сборка всех Docker образов..."
-    if ! $CMD build $BUILD_OPTS; then
+    if ! $CMD build "$BUILD_OPTS"; then
         print_colored_text "31" "Ошибка при сборке Docker образов!"
         exit 1
     fi
 else
     print_colored_text "36" "Сборка Docker образа для '$SERVICE'..."
-    if ! $CMD build $BUILD_OPTS "$SERVICE"; then
+    if ! $CMD build "$BUILD_OPTS" "$SERVICE"; then
         print_colored_text "31" "Ошибка при сборке Docker образа для '$SERVICE'!"
         exit 1
     fi
@@ -191,14 +187,14 @@ fi
 if [ "$RESTART" = true ]; then
     print_colored_text "36" "\n=== Перезапуск сервисов ==="
     
-    cd "$SCRIPT_DIR"
+    cd "$SCRIPT_DIR" || exit 1
     
     RESTART_OPTS=""
     if [ -n "$SERVICE" ]; then
         RESTART_OPTS="$RESTART_OPTS -s $SERVICE"
     fi
     
-    if ! ./restart.sh $RESTART_OPTS; then
+    if ! ./restart.sh "$RESTART_OPTS"; then
         print_colored_text "31" "Ошибка при перезапуске сервисов!"
         exit 1
     fi
