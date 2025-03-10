@@ -3,7 +3,7 @@ services:
     container_name: aquastream-api
     build:
       context: ../../../
-      dockerfile: infra/docker/images/Dockerfile.backend-api
+      dockerfile: infra/docker/images/Dockerfile.backend-gateway
     ports:
       - "8080:8080"
     depends_on:
