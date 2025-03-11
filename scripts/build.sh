@@ -13,31 +13,31 @@ cd "$BUILD_SCRIPT_DIR"
 
 # Подключаем библиотеку утилит, если она доступна
 if [[ -f "./infra/docker/scripts/utils.sh" ]]; then
-  source "/Users/egorovma/IdeaProjects/aquastream/scripts/utils.sh"
+  source "./infra/docker/scripts/utils.sh"
 else
   # Минимальная реализация логирования, если библиотека недоступна
   log_info() {
     echo -e "\033[0;32m[INFO] $(date +"%Y-%m-%d %H:%M:%S") - $1\033[0m"
   }
-  
+
   log_error() {
     echo -e "\033[0;31m[ERROR] $(date +"%Y-%m-%d %H:%M:%S") - $1\033[0m" >&2
   }
-  
+
   log_warn() {
     echo -e "\033[0;33m[WARN] $(date +"%Y-%m-%d %H:%M:%S") - $1\033[0m"
   }
-  
+
   log_debug() {
     if [[ "${VERBOSE:-false}" == "true" ]]; then
       echo -e "\033[0;36m[DEBUG] $(date +"%Y-%m-%d %H:%M:%S") - $1\033[0m"
     fi
   }
-  
+
   setup_error_trap() {
     trap 'handle_error $LINENO' ERR
   }
-  
+
   handle_error() {
     local line="$1"
     log_error "Ошибка в скрипте $(basename "${BASH_SOURCE[0]}") на строке ${line}"
@@ -161,43 +161,43 @@ fi
 # Формирование команды для сборки backend
 build_backend() {
   log_info "Сборка Backend..."
-  
+
   local gradle_cmd="./gradlew"
   local gradle_tasks=()
-  
+
   if [[ "$CLEAN" == "true" ]]; then
     gradle_tasks+=("clean")
     log_debug "Включена очистка кэша"
   fi
-  
+
   gradle_tasks+=("build")
-  
+
   if [[ "$RUN_TESTS" == "false" ]]; then
     gradle_tasks+=("-x" "test")
     log_debug "Тесты пропущены"
   fi
-  
+
   # Добавляем профиль окружения, если указан
   if [[ "$ENV_PROFILE" != "default" ]]; then
     gradle_cmd="$gradle_cmd -Penv=$ENV_PROFILE"
     log_debug "Установлен профиль окружения: $ENV_PROFILE"
   fi
-  
+
   # Добавляем версию для канареечного развертывания, если указана
   if [[ -n "$CANARY_VERSION" ]]; then
     gradle_cmd="$gradle_cmd -Pversion=$CANARY_VERSION-canary"
     log_debug "Установлена версия для канареечного развертывания: $CANARY_VERSION-canary"
   fi
-  
+
   # Добавляем дополнительные Java опции, если указаны
   if [[ -n "$JAVA_OPTS" ]]; then
     export JAVA_OPTS="$JAVA_OPTS"
     log_debug "Установлены дополнительные Java опции: $JAVA_OPTS"
   fi
-  
+
   # Выводим команду в режиме отладки
   log_debug "Выполняется команда: $gradle_cmd ${gradle_tasks[*]}"
-  
+
   # Выполняем сборку
   if $gradle_cmd "${gradle_tasks[@]}"; then
     log_info "Backend успешно собран"
@@ -211,7 +211,7 @@ build_backend() {
 # Формирование команды для сборки frontend
 build_frontend() {
   log_info "Сборка Frontend..."
-  
+
   # Убедимся, что мы находимся в корневой директории проекта
   if [[ "$PWD" != "$BUILD_SCRIPT_DIR" ]]; then
     log_debug "Возвращаемся в корневую директорию проекта ($BUILD_SCRIPT_DIR)"
@@ -220,19 +220,19 @@ build_frontend() {
       return 1
     }
   fi
-  
+
   # Переходим в директорию frontend
   cd "$BUILD_SCRIPT_DIR/frontend" || {
     log_error "Директория frontend не найдена"
     return 1
   }
-  
+
   # Проверяем наличие package.json
   if [[ ! -f "package.json" ]]; then
     log_error "Файл package.json не найден в директории frontend"
     return 1
   fi
-  
+
   # Проверяем, нужно ли устанавливать зависимости
   local install_deps=true
   if [[ "$CLEAN" == "false" && -d "node_modules" ]]; then
@@ -242,7 +242,7 @@ build_frontend() {
       log_debug "Пропуск установки npm-зависимостей (package.json не изменился)"
     fi
   fi
-  
+
   # Устанавливаем зависимости, если необходимо
   if [[ "$install_deps" == "true" ]]; then
     log_info "Установка npm-зависимостей..."
@@ -288,7 +288,7 @@ build_frontend() {
       log_error "Не удалось вернуться в корневую директорию"
       return 1
     }
-    
+
     return 0
   else
     log_error "Ошибка при сборке frontend"

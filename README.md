@@ -6,7 +6,7 @@
 
 Проект состоит из следующих модулей:
 
-- **backend-api** — API Gateway на базе Spring Cloud Gateway для маршрутизации запросов к микросервисам.
+- **backend-gateway** — API Gateway на базе Spring Cloud Gateway для маршрутизации запросов к микросервисам.
 - **backend-user** — Сервис управления пользователями и аутентификацией (JWT). Документация REST API доступна через Swagger UI.
 - **backend-planning** — Сервис планирования сплавов, реализованный с использованием gRPC. API описано в файле `src/main/proto/planning.proto`. Для тестирования gRPC используется grpcui.
 - **backend-crew** — Сервис управления экипажами и командами. Документация REST API доступна через Swagger UI.
@@ -55,7 +55,7 @@
 
 4. **Запуск микросервисов:**
    Запустите каждый микросервис (например, с использованием Spring Boot):
-   - **API Gateway (backend-api):** `java -jar backend-api/build/libs/backend-api.jar`
+   - **API Gateway (backend-gateway):** `java -jar backend-gateway/build/libs/backend-gateway.jar`
    - **User Service (backend-user):** `java -jar backend-user/build/libs/backend-user.jar`
    - **Planning Service (backend-planning):** `java -jar backend-planning/build/libs/backend-planning.jar`
    - **Crew Service (backend-crew):** `java -jar backend-crew/build/libs/backend-crew.jar`
@@ -204,7 +204,7 @@
 
 ## Структура проекта
 
-- **backend-api** – API Gateway
+- **backend-gateway** – API Gateway
 - **backend-user** – Сервис управления пользователями
 - **backend-planning** – Сервис планирования
 - **backend-crew** – Сервис управления экипажами

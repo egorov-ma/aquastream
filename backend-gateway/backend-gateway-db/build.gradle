@@ -1,0 +1,85 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api "org.liquibase:liquibase-core:${rootProject.liquibaseVersion}"
+    runtimeOnly "org.postgresql:postgresql:${rootProject.postgresVersion}"
+}
+
+// Создание базовой структуры миграций
+task initLiquibase {
+    doLast {
+        def changelogDir = file("$projectDir/src/main/resources/db/changelog")
+        changelogDir.mkdirs()
+        
+        def masterFile = file("$changelogDir/db.changelog-master.yaml")
+        if (!masterFile.exists()) {
+            masterFile.text = """databaseChangeLog:
+  - include:
+      file: db/changelog/changes/001-initial-schema.yaml
+      relativeToChangelogFile: false
+"""
+        }
+        
+        def changesDir = file("$changelogDir/changes")
+        changesDir.mkdirs()
+        
+        def initialSchemaFile = file("$changesDir/001-initial-schema.yaml")
+        if (!initialSchemaFile.exists()) {
+            initialSchemaFile.text = """databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: aquastream
+      changes:
+        - createTable:
+            tableName: routes
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: path
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_id
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+"""
+        }
+    }
+}
+
+// Копирование миграций при сборке
+task copyMigrations(type: Copy) {
+    from "$projectDir/src/main/resources/db/changelog"
+    into "$buildDir/resources/main/db/changelog"
+    include "**/*"
+}
+
+processResources.dependsOn copyMigrations
+compileJava.dependsOn initLiquibase 

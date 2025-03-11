@@ -32,7 +32,7 @@ log_message "INFO" "Корневая директория проекта: $PROJE
 
 # Список gradle файлов для микросервисов
 GRADLE_FILES=(
-    "backend-api/build.gradle"
+    "backend-gateway/build.gradle"
     "backend-user/build.gradle"
     "backend-crew/build.gradle"
     "backend-notification/build.gradle"

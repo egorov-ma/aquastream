@@ -1,9 +1,30 @@
 rootProject.name = 'aquastream'
-include 'backend-api'
+
+// Backend User Service
 include 'backend-user'
+include 'backend-user:backend-user-api'
+include 'backend-user:backend-user-db'
+include 'backend-user:backend-user-service'
+
+// Backend Planning Service
 include 'backend-planning'
-include 'backend-crew'
+include 'backend-planning:backend-planning-api'
+include 'backend-planning:backend-planning-db'
+include 'backend-planning:backend-planning-service'
+
+// Backend Gateway Service
+include 'backend-gateway'
+include 'backend-gateway:backend-gateway-api'
+include 'backend-gateway:backend-gateway-db'
+include 'backend-gateway:backend-gateway-service'
+
+// Backend Notification Service
 include 'backend-notification'
+include 'backend-notification:backend-notification-api'
+include 'backend-notification:backend-notification-db'
+include 'backend-notification:backend-notification-service'
+
+// Other modules
 include 'frontend'
 include 'common'
 include 'infra'

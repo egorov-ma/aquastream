@@ -2,11 +2,18 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3' apply false
     id 'io.spring.dependency-management' version '1.1.4' apply false
+    id 'org.openapi.generator' version '7.2.0' apply false
 }
 
 ext {
-    set('grpcVersion', '1.58.0')
-    set('protobufVersion', '3.24.0')
+    set('springBootVersion', '3.2.3')
+    set('springCloudVersion', '2023.0.1')
+    set('grpcVersion', '1.61.1')
+    set('protobufVersion', '3.25.2')
+    set('openapiVersion', '7.2.0')
+    set('lombokVersion', '1.18.30')
+    set('liquibaseVersion', '4.25.1')
+    set('postgresVersion', '42.7.2')
 }
 
 allprojects {
@@ -20,10 +27,18 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
     
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
     dependencies {
-        testImplementation platform('org.junit:junit-bom:5.10.0')
+        testImplementation platform('org.junit:junit-bom:5.10.2')
         testImplementation 'org.junit.jupiter:junit-jupiter'
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     }
 
     test {

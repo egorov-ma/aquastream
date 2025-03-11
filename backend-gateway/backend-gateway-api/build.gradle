@@ -1,0 +1,36 @@
+plugins {
+    id 'java-library'
+    id 'org.openapi.generator'
+}
+
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    api 'io.swagger.core.v3:swagger-annotations:2.2.20'
+    api 'org.openapitools:jackson-databind-nullable:0.2.6'
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$projectDir/src/main/resources/api/gateway-api.yaml"
+    outputDir = "$buildDir/generated"
+    apiPackage = "org.aquastream.gateway.api"
+    modelPackage = "org.aquastream.gateway.model"
+    configOptions = [
+        dateLibrary: "java8",
+        interfaceOnly: "true",
+        useSpringBoot3: "true",
+        documentationProvider: "springdoc",
+        skipDefaultInterface: "true"
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/src/main/java"
+        }
+    }
+}
+
+compileJava.dependsOn('openApiGenerate') 

@@ -85,9 +85,9 @@ else
 fi
 
 # Формирование команды docker compose
-CMD="docker compose -f ../compose/docker-compose.yml"
-if [ -f "../compose/docker-compose.override.yml" ]; then
-    CMD="$CMD -f ../compose/docker-compose.override.yml"
+CMD="docker compose -f ./infra/docker/compose/docker-compose.yml"
+if [ -f "./infra/docker/compose/docker-compose.override.yml" ]; then
+    CMD="$CMD -f ./infra/docker/compose/docker-compose.override.yml"
     print_colored_text "36" "Найден файл docker-compose.override.yml, он будет использован"
 else
     print_colored_text "36" "Файл docker-compose.override.yml не найден, используется только основная конфигурация"
