@@ -222,7 +222,7 @@ services:
       - ../../../infra/monitoring/logstash/pipeline:/usr/share/logstash/pipeline
       - ../../../infra/monitoring/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
     ports:
-      - "5000:5000"
+      - "5001:5000"
       - "9600:9600"
     environment:
       - "LS_JAVA_OPTS=-Xms256m -Xmx256m"

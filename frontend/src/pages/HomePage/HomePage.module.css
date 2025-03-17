@@ -1,0 +1,220 @@
+.homePage {
+  width: 100%;
+}
+
+/* Стили для главного баннера */
+.hero {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/hero-background.jpg');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 6rem 0;
+  margin-bottom: 3rem;
+}
+
+.heroContent {
+  max-width: 800px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.heroSubtitle {
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.heroButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.heroButton {
+  min-width: 150px;
+}
+
+/* Стили для секции событий */
+.eventsSection {
+  padding: 3rem 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.sectionSubtitle {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #7f8c8d;
+}
+
+.eventCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.eventTitle {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.eventDate {
+  margin-bottom: 0.5rem;
+}
+
+.eventLocation {
+  margin-bottom: 1rem;
+  color: #7f8c8d;
+}
+
+.eventDescription {
+  flex-grow: 1;
+}
+
+.loadingContainer,
+.noEventsContainer {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.viewAllContainer {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* Стили для секции "О нас" */
+.aboutSection {
+  padding: 4rem 0;
+  background-color: #f8f9fa;
+}
+
+.aboutImageContainer {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.aboutImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.aboutTitle {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.aboutText {
+  margin-bottom: 1.5rem;
+}
+
+.aboutButton {
+  margin-top: 1rem;
+}
+
+/* Стили для секции с преимуществами */
+.featuresSection {
+  padding: 4rem 0;
+}
+
+.featureItem {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.featureIcon {
+  margin-bottom: 1.5rem;
+}
+
+.featureIcon img {
+  width: 64px;
+  height: 64px;
+}
+
+.featureTitle {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.featureText {
+  color: #7f8c8d;
+}
+
+/* Стили для секции призыва к действию */
+.ctaSection {
+  padding: 4rem 0;
+  background-color: #3498db;
+  color: white;
+  text-align: center;
+}
+
+.ctaTitle {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.ctaText {
+  margin-bottom: 2rem;
+}
+
+.ctaButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.ctaButton {
+  min-width: 150px;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 960px) {
+  .hero {
+    padding: 4rem 0;
+  }
+  
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 3rem 0;
+  }
+  
+  .heroButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .ctaButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .heroButton,
+  .ctaButton {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+} 
