@@ -1,0 +1,233 @@
+/* Главный контейнер */
+.homePage {
+  min-height: 100vh;
+}
+
+/* Стили для главного баннера */
+.hero {
+  background-image: url('/images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 500px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  padding: 50px 0;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.heroButton {
+  min-width: 150px;
+}
+
+/* Стили для секции с событиями */
+.eventsSection {
+  padding: 60px 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.sectionSubtitle {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #666;
+}
+
+.eventCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease-in-out;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.eventTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.eventDate,
+.eventLocation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.eventDescription {
+  margin-top: 1rem;
+  color: #555;
+}
+
+.loadingContainer,
+.noEventsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.viewAllContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+/* Стили для секции "О нас" */
+.aboutSection {
+  padding: 4rem 0;
+  background-color: #f8f9fa;
+}
+
+.aboutImageContainer {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.aboutImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.aboutTitle {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.aboutText {
+  margin-bottom: 1.5rem;
+}
+
+.aboutButton {
+  margin-top: 1rem;
+}
+
+/* Стили для секции с преимуществами */
+.featuresSection {
+  padding: 4rem 0;
+}
+
+.featureItem {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.featureIcon {
+  margin-bottom: 1.5rem;
+}
+
+.featureIcon img {
+  width: 64px;
+  height: 64px;
+}
+
+.featureTitle {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.featureText {
+  color: #7f8c8d;
+}
+
+/* Стили для секции призыва к действию */
+.ctaSection {
+  padding: 4rem 0;
+  background-color: #3498db;
+  color: white;
+  text-align: center;
+}
+
+.ctaTitle {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.ctaText {
+  margin-bottom: 2rem;
+}
+
+.ctaButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.ctaButton {
+  min-width: 150px;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 960px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.2rem;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .heroButton,
+  .ctaButton {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}

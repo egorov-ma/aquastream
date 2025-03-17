@@ -106,4 +106,17 @@ k8s/.kubeconfig
 .project_todo/
 
 # Результаты тестов
-test-reports/
+test-reports/*.log
+
+# Build directories
+build/
+*/build/
+*/*/build/
+# Project-specific excludes
+run
+.DS_Store
+.vscode/
+.idea/
+.gradle/
+node_modules/
+

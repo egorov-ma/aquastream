@@ -2,91 +2,185 @@
 # Скрипт для запуска других скриптов из новой директории
 # Используйте: ./run_script.sh <имя_скрипта> [аргументы]
 
-# Определяем корневую директорию проекта и директорию скриптов
-PROJECT_ROOT="/Users/egorovma/IdeaProjects/aquastream"
+# Определяем корневую директорию проекта
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_DIR="${PROJECT_ROOT}/scripts"
 
-# Переходим в корневую директорию проекта
-cd "$PROJECT_ROOT" || { echo "Ошибка: не могу перейти в директорию ${PROJECT_ROOT}"; exit 1; }
+# Функция для логирования
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Функция для проверки наличия необходимых инструментов
+check_requirements() {
+    if ! command -v docker &> /dev/null; then
+        log "[ERROR] Docker не установлен!"
+        exit 1
+    fi
+    
+    if ! command -v docker-compose &> /dev/null; then
+        log "[ERROR] Docker Compose не установлен!"
+        exit 1
+    fi
+}
+
+# Функция для остановки контейнеров
+stop_containers() {
+    log "[INFO] Остановка всех контейнеров..."
+    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
+        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down
+    else
+        log "[ERROR] Файл docker-compose.yml не найден!"
+        exit 1
+    fi
+}
+
+# Функция для запуска контейнеров
+start_containers() {
+    log "[INFO] Запуск контейнеров..."
+    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
+        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" up -d
+    else
+        log "[ERROR] Файл docker-compose.yml не найден!"
+        exit 1
+    fi
+}
+
+# Функция для перезапуска контейнеров
+restart_containers() {
+    log "[INFO] Перезапуск проекта: остановка всех контейнеров..."
+    stop_containers
+    log "[INFO] Перезапуск проекта: запуск контейнеров..."
+    start_containers
+}
+
+# Функция для просмотра логов
+view_logs() {
+    log "[INFO] Просмотр логов..."
+    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
+        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
+    else
+        log "[ERROR] Файл docker-compose.yml не найден!"
+        exit 1
+    fi
+}
 
 # Функция для отображения подробной справки
 show_help() {
-  echo "Использование: $0 <имя_скрипта|команда> [аргументы]"
-  echo
-  echo "Команды:"
-  echo "  help                    Показать эту справку"
-  echo "  list                    Показать список доступных скриптов"
-  echo
-  echo "Опции:"
-  echo "  -h, --help              Показать эту справку"
-  echo
-  echo "Доступные скрипты:"
-  for script in "$SCRIPT_DIR"/*.sh; do
-    basename "${script%.sh}"
-  done
-  echo
-  echo "Примеры:"
-  echo "  $0 status               Запустить скрипт status.sh"
-  echo "  $0 build --help         Показать справку по скрипту build.sh"
-  echo "  $0 help                 Показать эту справку"
-  echo "  $0 list                 Показать список доступных скриптов"
-  echo
-  echo "Справка по конкретному скрипту: $0 <имя_скрипта> --help"
-  exit 0
+    echo "Использование: $0 <команда> [аргументы]"
+    echo
+    echo "Команды:"
+    echo "  start                 Запустить контейнеры"
+    echo "  stop                  Остановить контейнеры"
+    echo "  restart               Перезапустить контейнеры"
+    echo "  logs                  Показать логи"
+    echo "  help                  Показать эту справку"
+    echo "  list                  Показать список доступных скриптов"
+    echo
+    echo "Опции:"
+    echo "  -h, --help            Показать эту справку"
+    echo
+    echo "Доступные скрипты:"
+    for script in "$SCRIPT_DIR"/*.sh; do
+        basename "${script%.sh}"
+    done
+    echo
+    echo "Примеры:"
+    echo "  $0 start              Запустить контейнеры"
+    echo "  $0 stop               Остановить контейнеры"
+    echo "  $0 restart            Перезапустить контейнеры"
+    echo "  $0 logs               Показать логи контейнеров"
+    echo "  $0 status             Запустить скрипт status.sh"
+    echo
+    exit 0
 }
 
 # Функция для отображения списка скриптов
 list_scripts() {
-  echo "Доступные скрипты:"
-  for script in "$SCRIPT_DIR"/*.sh; do
-    basename "${script%.sh}"
-  done
-  exit 0
+    echo "Доступные скрипты:"
+    for script in "$SCRIPT_DIR"/*.sh; do
+        basename "${script%.sh}"
+    done
+    exit 0
 }
+
+# Переходим в корневую директорию проекта
+cd "$PROJECT_ROOT" || { echo "Ошибка: не могу перейти в директорию ${PROJECT_ROOT}"; exit 1; }
 
 # Если нет аргументов или указан флаг help, показываем справку
 if [ $# -eq 0 ]; then
-  show_help
+    show_help
 fi
 
 # Проверяем первый аргумент на команды help и list
 if [ "$1" = "help" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-  show_help
+    show_help
 fi
 
 if [ "$1" = "list" ]; then
-  list_scripts
+    list_scripts
 fi
 
-SCRIPT="$1"
-shift
+# Проверяем наличие необходимых инструментов
+check_requirements
 
-# Добавляем расширение .sh, если его нет
-if [[ ! "$SCRIPT" == *.sh ]]; then
-  SCRIPT_WITH_EXT="${SCRIPT}.sh"
-else
-  SCRIPT_WITH_EXT="$SCRIPT"
-fi
+# Обработка команд для работы с контейнерами
+case "$1" in
+    "start")
+        start_containers
+        ;;
+    "stop")
+        stop_containers
+        ;;
+    "restart")
+        restart_containers
+        ;;
+    "logs")
+        view_logs
+        ;;
+    *)
+        # Обработка запуска скриптов из директории scripts
+        SCRIPT="$1"
+        shift
 
-if [ ! -f "$SCRIPT_DIR/$SCRIPT_WITH_EXT" ]; then
-  echo "Ошибка: Скрипт $SCRIPT не найден"
-  echo "Доступные скрипты:"
-  for script in "$SCRIPT_DIR"/*.sh; do
-    basename "${script%.sh}"
-  done
-  exit 1
-fi
+        # Добавляем расширение .sh, если его нет
+        if [[ ! "$SCRIPT" == *.sh ]]; then
+            SCRIPT_WITH_EXT="${SCRIPT}.sh"
+        else
+            SCRIPT_WITH_EXT="$SCRIPT"
+        fi
 
-# Создаем временную символическую ссылку в корне проекта
-TEMP_SCRIPT_LINK="${PROJECT_ROOT}/${SCRIPT_WITH_EXT}"
-ln -sf "${SCRIPT_DIR}/${SCRIPT_WITH_EXT}" "${TEMP_SCRIPT_LINK}"
+        if [ ! -f "$SCRIPT_DIR/$SCRIPT_WITH_EXT" ]; then
+            echo "Ошибка: Скрипт $SCRIPT не найден"
+            echo "Доступные скрипты:"
+            for script in "$SCRIPT_DIR"/*.sh; do
+                basename "${script%.sh}"
+            done
+            exit 1
+        fi
 
-# Запускаем требуемый скрипт через символическую ссылку с переданными аргументами
-"${TEMP_SCRIPT_LINK}" "$@"
-STATUS=$?
+        # Запускаем скрипт build.sh напрямую (без символической ссылки)
+        if [ "$SCRIPT" = "build" ]; then
+            # Запускаем скрипт сборки напрямую
+            "${SCRIPT_DIR}/${SCRIPT_WITH_EXT}" "$@"
+            STATUS=$?
+        else
+            # Для остальных скриптов используем символическую ссылку
+            # Создаем временную символическую ссылку в корне проекта
+            TEMP_SCRIPT_LINK="${PROJECT_ROOT}/${SCRIPT_WITH_EXT}"
+            ln -sf "${SCRIPT_DIR}/${SCRIPT_WITH_EXT}" "${TEMP_SCRIPT_LINK}"
 
-# Удаляем временную символическую ссылку
-rm -f "${TEMP_SCRIPT_LINK}"
+            # Запускаем требуемый скрипт через символическую ссылку с переданными аргументами
+            "${TEMP_SCRIPT_LINK}" "$@"
+            STATUS=$?
 
-# Возвращаем статус выполнения скрипта
-exit $STATUS 
+            # Удаляем временную символическую ссылку
+            rm -f "${TEMP_SCRIPT_LINK}"
+        fi
+
+        # Возвращаем статус выполнения скрипта
+        exit $STATUS
+        ;;
+esac
+
+log "[INFO] Операция завершена успешно!" 

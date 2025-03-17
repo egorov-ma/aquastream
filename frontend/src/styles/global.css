@@ -1,0 +1,303 @@
+/* Глобальные стили для всего приложения */
+
+/* Сброс стилей */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+a {
+  text-decoration: none;
+  color: #3498db;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Контейнер для основного содержимого */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Секции страницы */
+.section {
+  padding: 2rem 0;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.section-subtitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+/* Утилиты для отступов */
+.mt-1 {
+  margin-top: 0.25rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-3 {
+  margin-top: 1rem;
+}
+.mt-4 {
+  margin-top: 1.5rem;
+}
+.mt-5 {
+  margin-top: 2rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 1rem;
+}
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+.mb-5 {
+  margin-bottom: 2rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+.ml-2 {
+  margin-left: 0.5rem;
+}
+.ml-3 {
+  margin-left: 1rem;
+}
+.ml-4 {
+  margin-left: 1.5rem;
+}
+.ml-5 {
+  margin-left: 2rem;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
+}
+.mr-2 {
+  margin-right: 0.5rem;
+}
+.mr-3 {
+  margin-right: 1rem;
+}
+.mr-4 {
+  margin-right: 1.5rem;
+}
+.mr-5 {
+  margin-right: 2rem;
+}
+
+/* Утилиты для выравнивания текста */
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+
+/* Утилиты для отображения */
+.d-flex {
+  display: flex;
+}
+.d-block {
+  display: block;
+}
+.d-inline-block {
+  display: inline-block;
+}
+.d-none {
+  display: none;
+}
+
+/* Утилиты для flexbox */
+.flex-row {
+  flex-direction: row;
+}
+.flex-column {
+  flex-direction: column;
+}
+.justify-content-center {
+  justify-content: center;
+}
+.justify-content-between {
+  justify-content: space-between;
+}
+.justify-content-around {
+  justify-content: space-around;
+}
+.align-items-center {
+  align-items: center;
+}
+.align-items-start {
+  align-items: flex-start;
+}
+.align-items-end {
+  align-items: flex-end;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+.flex-1 {
+  flex: 1;
+}
+
+/* Утилиты для цветов текста */
+.text-primary {
+  color: #3498db;
+}
+.text-secondary {
+  color: #2c3e50;
+}
+.text-success {
+  color: #2ecc71;
+}
+.text-danger {
+  color: #e74c3c;
+}
+.text-warning {
+  color: #f39c12;
+}
+.text-info {
+  color: #3498db;
+}
+.text-light {
+  color: #ecf0f1;
+}
+.text-dark {
+  color: #2c3e50;
+}
+.text-muted {
+  color: #95a5a6;
+}
+
+/* Утилиты для фонов */
+.bg-primary {
+  background-color: #3498db;
+}
+.bg-secondary {
+  background-color: #2c3e50;
+}
+.bg-success {
+  background-color: #2ecc71;
+}
+.bg-danger {
+  background-color: #e74c3c;
+}
+.bg-warning {
+  background-color: #f39c12;
+}
+.bg-info {
+  background-color: #3498db;
+}
+.bg-light {
+  background-color: #ecf0f1;
+}
+.bg-dark {
+  background-color: #2c3e50;
+}
+.bg-white {
+  background-color: #ffffff;
+}
+
+/* Утилиты для границ */
+.border {
+  border: 1px solid #ddd;
+}
+.border-top {
+  border-top: 1px solid #ddd;
+}
+.border-bottom {
+  border-bottom: 1px solid #ddd;
+}
+.border-left {
+  border-left: 1px solid #ddd;
+}
+.border-right {
+  border-right: 1px solid #ddd;
+}
+.rounded {
+  border-radius: 4px;
+}
+.rounded-circle {
+  border-radius: 50%;
+}
+
+/* Утилиты для теней */
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.shadow-lg {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Утилиты для позиционирования */
+.position-relative {
+  position: relative;
+}
+.position-absolute {
+  position: absolute;
+}
+.position-fixed {
+  position: fixed;
+}
+.position-sticky {
+  position: sticky;
+}
+
+/* Утилиты для ширины и высоты */
+.w-100 {
+  width: 100%;
+}
+.h-100 {
+  height: 100%;
+}
+.w-50 {
+  width: 50%;
+}
+.h-50 {
+  height: 50%;
+}
+.w-auto {
+  width: auto;
+}
+.h-auto {
+  height: auto;
+}

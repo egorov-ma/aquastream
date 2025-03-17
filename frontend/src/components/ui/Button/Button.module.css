@@ -1,0 +1,133 @@
+/* Общие стили для кнопки */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.5;
+  gap: 0.5rem;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Размеры */
+.sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.md {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+/* Варианты */
+.primary {
+  background-color: #3498db;
+  color: #ffffff;
+}
+
+.primary:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.secondary {
+  background-color: #2c3e50;
+  color: #ffffff;
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: #1e2b38;
+}
+
+.outline {
+  background-color: transparent;
+  border: 1px solid #3498db;
+  color: #3498db;
+}
+
+.outline:hover:not(:disabled) {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.text {
+  background-color: transparent;
+  color: #3498db;
+  padding: 0.5rem;
+}
+
+.text:hover:not(:disabled) {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.danger {
+  background-color: #e74c3c;
+  color: #ffffff;
+}
+
+.danger:hover:not(:disabled) {
+  background-color: #c0392b;
+}
+
+/* Модификаторы */
+.fullWidth {
+  width: 100%;
+}
+
+.rounded {
+  border-radius: 50px;
+}
+
+/* Индикатор загрузки */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.loaderDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: currentColor;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.loaderDot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loaderDot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loaderDot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(0.5);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
