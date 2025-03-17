@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import { AppRoutes } from '@/routes/Routes';
-import theme from '@/theme/theme';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+
 import { initAuth } from '@/modules/auth/store/authSlice';
+import Routes from '@/routes/Routes';
+import theme from '@/theme/theme';
+
 import '@/styles/global.css';
 
 /**
@@ -20,9 +22,9 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppRoutes />
+      <Routes />
     </ThemeProvider>
   );
 };
 
-export default App; 
+export default App;

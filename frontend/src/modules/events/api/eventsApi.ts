@@ -1,31 +1,6 @@
-import axios from 'axios';
-import { API_URL } from '@/config';
-import { 
-  CreateEventData, 
-  UpdateEventData, 
-  EventFilters, 
-  BookingData 
-} from '../types';
+import { CreateEventData, UpdateEventData, EventFilters, BookingData } from '../types';
 
-// Создаем инстанс axios с общей конфигурацией
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-
-// Интерцептор для добавления токена к запросам
-api.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+import { apiService } from '@/services/api';
 
 /**
  * API для работы с событиями
@@ -36,7 +11,7 @@ export const eventsApi = {
    * @param filters - фильтры для событий
    */
   getEvents: (filters?: EventFilters) => {
-    return api.get('/events', { params: filters });
+    return apiService.get('/events', { params: filters });
   },
 
   /**
@@ -44,7 +19,7 @@ export const eventsApi = {
    * @param limit - максимальное количество событий
    */
   getFeaturedEvents: (limit = 3) => {
-    return api.get('/events/featured', { params: { limit } });
+    return apiService.get('/events/featured', { params: { limit } });
   },
 
   /**
@@ -52,7 +27,7 @@ export const eventsApi = {
    * @param id - идентификатор события
    */
   getEvent: (id: string) => {
-    return api.get(`/events/${id}`);
+    return apiService.get(`/events/${id}`);
   },
 
   /**
@@ -60,7 +35,7 @@ export const eventsApi = {
    * @param eventData - данные события
    */
   createEvent: (eventData: CreateEventData) => {
-    return api.post('/events', eventData);
+    return apiService.post('/events', eventData);
   },
 
   /**
@@ -69,7 +44,7 @@ export const eventsApi = {
    * @param eventData - данные для обновления
    */
   updateEvent: (id: string, eventData: UpdateEventData) => {
-    return api.put(`/events/${id}`, eventData);
+    return apiService.put(`/events/${id}`, eventData);
   },
 
   /**
@@ -77,7 +52,7 @@ export const eventsApi = {
    * @param id - идентификатор события
    */
   deleteEvent: (id: string) => {
-    return api.delete(`/events/${id}`);
+    return apiService.delete(`/events/${id}`);
   },
 
   /**
@@ -85,7 +60,7 @@ export const eventsApi = {
    * @param id - идентификатор события
    */
   publishEvent: (id: string) => {
-    return api.put(`/events/${id}/publish`);
+    return apiService.put(`/events/${id}/publish`);
   },
 
   /**
@@ -93,7 +68,7 @@ export const eventsApi = {
    * @param id - идентификатор события
    */
   cancelEvent: (id: string) => {
-    return api.put(`/events/${id}/cancel`);
+    return apiService.put(`/events/${id}/cancel`);
   },
 
   /**
@@ -101,7 +76,7 @@ export const eventsApi = {
    * @param bookingData - данные бронирования
    */
   bookEvent: (bookingData: BookingData) => {
-    return api.post('/bookings', bookingData);
+    return apiService.post('/bookings', bookingData);
   },
 
   /**
@@ -109,7 +84,7 @@ export const eventsApi = {
    * @param userId - идентификатор пользователя
    */
   getUserBookings: (userId: string) => {
-    return api.get(`/users/${userId}/bookings`);
+    return apiService.get(`/users/${userId}/bookings`);
   },
 
   /**
@@ -117,6 +92,6 @@ export const eventsApi = {
    * @param bookingId - идентификатор бронирования
    */
   cancelBooking: (bookingId: string) => {
-    return api.delete(`/bookings/${bookingId}`);
-  }
-}; 
+    return apiService.delete(`/bookings/${bookingId}`);
+  },
+};

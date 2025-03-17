@@ -2,18 +2,18 @@
  * Роль пользователя
  */
 export enum UserRole {
-  USER = 'USER',           // Обычный пользователь
+  USER = 'USER', // Обычный пользователь
   ORGANIZER = 'ORGANIZER', // Организатор мероприятий
-  ADMIN = 'ADMIN'          // Администратор
+  ADMIN = 'ADMIN', // Администратор
 }
 
 /**
  * Статус пользователя
  */
 export enum UserStatus {
-  ACTIVE = 'ACTIVE',       // Активный
-  INACTIVE = 'INACTIVE',   // Неактивный
-  BLOCKED = 'BLOCKED'      // Заблокирован
+  ACTIVE = 'ACTIVE', // Активный
+  INACTIVE = 'INACTIVE', // Неактивный
+  BLOCKED = 'BLOCKED', // Заблокирован
 }
 
 /**
@@ -105,4 +105,4 @@ export interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
-} 
+}

@@ -61,4 +61,4 @@ export interface RootState {
   contacts: ContactsState;
   profile: ProfileState;
   participant: ParticipantState;
-} 
+}

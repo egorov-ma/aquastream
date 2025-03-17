@@ -1,9 +1,11 @@
+import { Box, Container } from '@mui/material';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Box, Container } from '@mui/material';
-import { Header } from '@/components/layout/Header/Header';
-import { Footer } from '@/components/layout/Footer/Footer';
+
 import styles from './MainLayout.module.css';
+
+import { Footer } from '@/components/layout/Footer/Footer';
+import { Header } from '@/components/layout/Header/Header';
 
 /**
  * Основной макет приложения, включающий хедер, футер и основное содержимое
@@ -20,4 +22,4 @@ export const MainLayout: React.FC = () => {
       <Footer />
     </Box>
   );
-}; 
+};

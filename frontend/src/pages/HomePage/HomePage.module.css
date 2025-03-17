@@ -1,36 +1,52 @@
+/* Главный контейнер */
 .homePage {
-  width: 100%;
+  min-height: 100vh;
 }
 
 /* Стили для главного баннера */
 .hero {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/hero-background.jpg');
+  background-image: url('/images/hero-bg.jpg');
   background-size: cover;
   background-position: center;
-  color: white;
-  padding: 6rem 0;
-  margin-bottom: 3rem;
+  background-repeat: no-repeat;
+  min-height: 500px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  padding: 50px 0;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .heroContent {
+  position: relative;
+  z-index: 1;
   max-width: 800px;
-  text-align: center;
-  margin: 0 auto;
 }
 
 .heroTitle {
+  font-size: 3rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .heroSubtitle {
+  font-size: 1.5rem;
   margin-bottom: 2rem;
   font-weight: 400;
 }
 
 .heroButtons {
   display: flex;
-  justify-content: center;
   gap: 1rem;
 }
 
@@ -38,62 +54,64 @@
   min-width: 150px;
 }
 
-/* Стили для секции событий */
+/* Стили для секции с событиями */
 .eventsSection {
-  padding: 3rem 0;
+  padding: 60px 0;
 }
 
 .sectionTitle {
   text-align: center;
-  margin-bottom: 1rem;
-  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .sectionSubtitle {
   text-align: center;
-  margin-bottom: 3rem;
-  color: #7f8c8d;
+  margin-bottom: 2.5rem;
+  color: #666;
 }
 
 .eventCard {
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.2s ease-in-out;
 }
 
 .eventCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .eventTitle {
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.eventDate {
+  font-size: 1.25rem;
   margin-bottom: 0.5rem;
 }
 
+.eventDate,
 .eventLocation {
-  margin-bottom: 1rem;
-  color: #7f8c8d;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .eventDescription {
-  flex-grow: 1;
+  margin-top: 1rem;
+  color: #555;
 }
 
 .loadingContainer,
 .noEventsContainer {
-  text-align: center;
-  padding: 3rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
 
 .viewAllContainer {
-  text-align: center;
-  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
 }
 
 /* Стили для секции "О нас" */
@@ -184,37 +202,32 @@
 
 /* Медиа-запросы для адаптивности */
 @media (max-width: 960px) {
-  .hero {
-    padding: 4rem 0;
-  }
-  
   .heroTitle {
-    font-size: 2rem;
-  }
-  
-  .heroSubtitle {
-    font-size: 1.25rem;
+    font-size: 2.5rem;
   }
 }
 
 @media (max-width: 600px) {
-  .hero {
-    padding: 3rem 0;
+  .heroTitle {
+    font-size: 2rem;
   }
-  
+
+  .heroSubtitle {
+    font-size: 1.2rem;
+  }
+
   .heroButtons {
     flex-direction: column;
-    align-items: center;
   }
-  
+
   .ctaButtons {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .heroButton,
   .ctaButton {
     width: 100%;
     margin-bottom: 1rem;
   }
-} 
+}

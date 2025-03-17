@@ -1,11 +1,13 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, Container, Grid, Typography, Link, IconButton } from '@mui/material';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TelegramIcon from '@mui/icons-material/Telegram';
-import { APP_ROUTES } from '@/config/config';
+import { Box, Container, Grid, Typography, Link, IconButton } from '@mui/material';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+
 import styles from './Footer.module.css';
+
+import { APP_ROUTES } from '@/shared/config';
 
 /**
  * Компонент футера приложения
@@ -28,7 +30,8 @@ export const Footer: React.FC = () => {
               AquaStream
             </Typography>
             <Typography variant="body2" className={styles.description}>
-              Организация сплавов и водных мероприятий. Присоединяйтесь к нашим событиям или создайте свое!
+              Организация сплавов и водных мероприятий. Присоединяйтесь к нашим событиям или
+              создайте свое!
             </Typography>
           </Grid>
 
@@ -107,11 +110,9 @@ export const Footer: React.FC = () => {
 
         {/* Копирайт */}
         <Box className={styles.copyright}>
-          <Typography variant="body2">
-            © {currentYear} AquaStream. Все права защищены.
-          </Typography>
+          <Typography variant="body2">© {currentYear} AquaStream. Все права защищены.</Typography>
         </Box>
       </Container>
     </Box>
   );
-}; 
+};

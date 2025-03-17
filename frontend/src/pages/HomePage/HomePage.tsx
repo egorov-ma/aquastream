@@ -1,47 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { 
-  Container, 
-  Typography, 
-  Button, 
-  Grid, 
-  Card, 
-  CardMedia, 
-  CardContent, 
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import {
+  Container,
+  Typography,
+  Button,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
   CardActions,
   Box,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { fetchEvents } from '@/store/slices/eventSlice';
-import { RootState } from '@/store';
-import { EventStatus, Event } from '@/types/event';
-import { formatDate } from '@/utils/dateUtils';
 import styles from './HomePage.module.css';
 
+import { fetchEvents } from '@/modules/events/store/eventsSlice';
+import { Event, EventLocation } from '@/modules/events/types';
+import { RootState, AppDispatch } from '@/store';
+import { formatDate } from '@/utils/dateUtils';
+
 const HomePage: React.FC = () => {
-  const dispatch = useDispatch();
-  const { events, loading } = useSelector((state: RootState) => state.events);
+  const dispatch = useDispatch<AppDispatch>();
+  const { events, isLoading: loading } = useSelector((state: RootState) => state.events);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     // Загрузка опубликованных событий при монтировании компонента
-    dispatch(fetchEvents({ 
-      status: EventStatus.PUBLISHED,
-      limit: 3
-    }) as any);
+    void dispatch(
+      fetchEvents({
+        status: 'PUBLISHED',
+        limit: 3,
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {
     // Фильтрация предстоящих событий
     if (events.length > 0) {
-      setUpcomingEvents(events.slice(0, 3));
+      const eventsToShow = events.slice(0, 3);
+      setUpcomingEvents(eventsToShow);
     }
   }, [events]);
+
+  // Функция для отображения местоположения
+  const renderLocation = (location: string | EventLocation) => {
+    if (typeof location === 'string') {
+      return location;
+    } else {
+      return `${location.city}, ${location.address}`;
+    }
+  };
 
   return (
     <div className={styles.homePage}>
@@ -56,21 +69,21 @@ const HomePage: React.FC = () => {
               Присоединяйтесь к нашему сообществу любителей водного спорта
             </Typography>
             <Box className={styles.heroButtons}>
-              <Button 
-                variant="contained" 
-                color="primary" 
-                size="large" 
-                component={Link} 
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                component={Link}
                 to="/events"
                 className={styles.heroButton}
               >
                 Наши события
               </Button>
-              <Button 
-                variant="outlined" 
-                color="primary" 
-                size="large" 
-                component={Link} 
+              <Button
+                variant="outlined"
+                color="primary"
+                size="large"
+                component={Link}
                 to="/register"
                 className={styles.heroButton}
               >
@@ -114,20 +127,25 @@ const HomePage: React.FC = () => {
                       {formatDate(event.startDate)}
                     </Typography>
                     {event.location && (
-                      <Typography variant="body2" color="textSecondary" className={styles.eventLocation}>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        className={styles.eventLocation}
+                      >
                         <LocationOnIcon fontSize="small" style={{ marginRight: 8 }} />
-                        {event.location.city}, {event.location.address}
+                        {renderLocation(event.location)}
                       </Typography>
                     )}
                     <Typography variant="body2" className={styles.eventDescription}>
-                      {event.shortDescription || event.description.substring(0, 120) + '...'}
+                      {event.shortDescription ||
+                        (event.description && event.description.substring(0, 120) + '...')}
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button 
-                      size="small" 
-                      color="primary" 
-                      component={Link} 
+                    <Button
+                      size="small"
+                      color="primary"
+                      component={Link}
                       to={`/events/${event.id}`}
                     >
                       Подробнее
@@ -139,18 +157,16 @@ const HomePage: React.FC = () => {
           </Grid>
         ) : (
           <Box className={styles.noEventsContainer}>
-            <Typography variant="h6">
-              В настоящее время нет предстоящих событий
-            </Typography>
+            <Typography variant="h6">В настоящее время нет предстоящих событий</Typography>
           </Box>
         )}
 
         <Box className={styles.viewAllContainer}>
-          <Button 
-            variant="outlined" 
-            color="primary" 
-            endIcon={<ArrowForwardIcon />} 
-            component={Link} 
+          <Button
+            variant="outlined"
+            color="primary"
+            endIcon={<ArrowForwardIcon />}
+            component={Link}
             to="/events"
           >
             Все события
@@ -164,11 +180,7 @@ const HomePage: React.FC = () => {
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
               <Box className={styles.aboutImageContainer}>
-                <img 
-                  src="/images/about-us.jpg" 
-                  alt="О нашем клубе" 
-                  className={styles.aboutImage}
-                />
+                <img src="/images/about-us.jpg" alt="О нашем клубе" className={styles.aboutImage} />
               </Box>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -176,18 +188,17 @@ const HomePage: React.FC = () => {
                 О нашем клубе
               </Typography>
               <Typography variant="body1" paragraph className={styles.aboutText}>
-                Наш клуб водного спорта объединяет любителей активного отдыха на воде. 
-                Мы организуем тренировки, соревнования и мероприятия для всех уровней подготовки.
+                Наш клуб водного спорта объединяет любителей активного отдыха на воде. Мы организуем
+                тренировки, соревнования и мероприятия для всех уровней подготовки.
               </Typography>
               <Typography variant="body1" paragraph className={styles.aboutText}>
-                Наша миссия — сделать водный спорт доступным для каждого, 
-                создать дружное сообщество единомышленников и популяризировать 
-                здоровый образ жизни.
+                Наша миссия — сделать водный спорт доступным для каждого, создать дружное сообщество
+                единомышленников и популяризировать здоровый образ жизни.
               </Typography>
-              <Button 
-                variant="contained" 
-                color="primary" 
-                component={Link} 
+              <Button
+                variant="contained"
+                color="primary"
+                component={Link}
                 to="/about"
                 className={styles.aboutButton}
               >
@@ -273,21 +284,21 @@ const HomePage: React.FC = () => {
             Станьте частью нашего сообщества уже сегодня и откройте для себя мир водного спорта
           </Typography>
           <Box className={styles.ctaButtons}>
-            <Button 
-              variant="contained" 
-              color="secondary" 
-              size="large" 
-              component={Link} 
+            <Button
+              variant="contained"
+              color="secondary"
+              size="large"
+              component={Link}
               to="/register"
               className={styles.ctaButton}
             >
               Зарегистрироваться
             </Button>
-            <Button 
-              variant="outlined" 
-              color="secondary" 
-              size="large" 
-              component={Link} 
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="large"
+              component={Link}
               to="/contact"
               className={styles.ctaButton}
             >
@@ -300,4 +311,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage; 
+export default HomePage;

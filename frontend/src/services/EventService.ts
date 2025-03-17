@@ -1,6 +1,6 @@
-import axios from 'axios';
+import { apiService } from './api';
+
 import { Event, EventStatus } from '@/types/event';
-import { API_URL } from '@/config';
 
 /**
  * Сервис для работы с API событий
@@ -11,12 +11,8 @@ export class EventService {
    * @param params - параметры запроса
    * @returns Promise с ответом от API
    */
-  static async getEvents(params?: {
-    status?: EventStatus;
-    limit?: number;
-    page?: number;
-  }) {
-    return axios.get(`${API_URL}/events`, { params });
+  static async getEvents(params?: { status?: EventStatus; limit?: number; page?: number }) {
+    return apiService.get('/events', { params });
   }
 
   /**
@@ -25,7 +21,7 @@ export class EventService {
    * @returns Promise с ответом от API
    */
   static async getEventById(id: string) {
-    return axios.get(`${API_URL}/events/${id}`);
+    return apiService.get(`/events/${id}`);
   }
 
   /**
@@ -34,7 +30,7 @@ export class EventService {
    * @returns Promise с ответом от API
    */
   static async createEvent(eventData: Partial<Event>) {
-    return axios.post(`${API_URL}/events`, eventData);
+    return apiService.post('/events', eventData);
   }
 
   /**
@@ -44,7 +40,7 @@ export class EventService {
    * @returns Promise с ответом от API
    */
   static async updateEvent(id: string, eventData: Partial<Event>) {
-    return axios.put(`${API_URL}/events/${id}`, eventData);
+    return apiService.put(`/events/${id}`, eventData);
   }
 
   /**
@@ -53,7 +49,7 @@ export class EventService {
    * @returns Promise с ответом от API
    */
   static async deleteEvent(id: string) {
-    return axios.delete(`${API_URL}/events/${id}`);
+    return apiService.delete(`/events/${id}`);
   }
 
   /**
@@ -62,7 +58,7 @@ export class EventService {
    * @returns Promise с ответом от API
    */
   static async registerForEvent(eventId: string) {
-    return axios.post(`${API_URL}/events/${eventId}/register`);
+    return apiService.post(`/events/${eventId}/register`);
   }
 
   /**
@@ -71,7 +67,7 @@ export class EventService {
    * @returns Promise с ответом от API
    */
   static async cancelRegistration(eventId: string) {
-    return axios.delete(`${API_URL}/events/${eventId}/register`);
+    return apiService.delete(`/events/${eventId}/register`);
   }
 
   /**
@@ -80,6 +76,6 @@ export class EventService {
    * @returns Promise с ответом от API
    */
   static async getEventParticipants(eventId: string) {
-    return axios.get(`${API_URL}/events/${eventId}/participants`);
+    return apiService.get(`/events/${eventId}/participants`);
   }
 }

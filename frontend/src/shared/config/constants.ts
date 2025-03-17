@@ -1,5 +1,5 @@
 /**
- * Конфигурация приложения
+ * Константы приложения
  */
 
 // API URL
@@ -9,6 +9,15 @@ export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/ap
 export const AUTH_TOKEN_KEY = 'accessToken';
 export const REFRESH_TOKEN_KEY = 'refreshToken';
 export const USER_DATA_KEY = 'user';
+
+// Настройки хранилища
+export const STORAGE_KEYS = {
+  ACCESS_TOKEN: AUTH_TOKEN_KEY,
+  REFRESH_TOKEN: REFRESH_TOKEN_KEY,
+  USER: USER_DATA_KEY,
+  THEME: 'theme',
+  LANGUAGE: 'language',
+};
 
 // Настройки пагинации
 export const DEFAULT_PAGE_SIZE = 10;

@@ -2,19 +2,19 @@
  * Статус события
  */
 export enum EventStatus {
-  DRAFT = 'DRAFT',       // Черновик
+  DRAFT = 'DRAFT', // Черновик
   PUBLISHED = 'PUBLISHED', // Опубликовано
-  CANCELED = 'CANCELED',   // Отменено
-  COMPLETED = 'COMPLETED'  // Завершено
+  CANCELED = 'CANCELED', // Отменено
+  COMPLETED = 'COMPLETED', // Завершено
 }
 
 /**
  * Тип события
  */
 export enum EventType {
-  ONLINE = 'ONLINE',     // Онлайн
-  OFFLINE = 'OFFLINE',   // Оффлайн
-  HYBRID = 'HYBRID'      // Гибридный формат
+  ONLINE = 'ONLINE', // Онлайн
+  OFFLINE = 'OFFLINE', // Оффлайн
+  HYBRID = 'HYBRID', // Гибридный формат
 }
 
 /**
@@ -93,4 +93,4 @@ export interface Event {
   updatedAt: string;
   participants?: EventParticipant[];
   isRegistered?: boolean;
-} 
+}

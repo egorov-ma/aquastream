@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
+
 import authReducer from '@/modules/auth/store/authSlice';
 import eventsReducer from '@/modules/events/store/eventsSlice';
 // Импортируем другие редьюсеры по мере создания
@@ -7,7 +8,7 @@ import eventsReducer from '@/modules/events/store/eventsSlice';
 /**
  * Корневое хранилище Redux
  */
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     events: eventsReducer,
@@ -16,8 +17,9 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Игнорируем некоторые action для сериализуемости
-        ignoredActions: ['persist/PERSIST'],
+        // Игнорируем некоторые пути для проверки сериализуемости
+        ignoredActions: ['auth/login/fulfilled', 'auth/register/fulfilled'],
+        ignoredPaths: ['auth.user.createdAt', 'auth.user.updatedAt'],
       },
     }),
 });
@@ -29,4 +31,4 @@ export type AppDispatch = typeof store.dispatch;
 // Создаем типизированные хуки
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
-export default store; 
+export default store;

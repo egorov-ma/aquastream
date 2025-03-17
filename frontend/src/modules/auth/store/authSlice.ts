@@ -1,6 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+
 import { authApi } from '../api/authApi';
-import { AuthState, LoginData, RegisterData, UpdateProfileData, ChangePasswordData, User } from '../types';
+import {
+  AuthState,
+  LoginData,
+  RegisterData,
+  UpdateProfileData,
+  ChangePasswordData,
+  User,
+} from '../types';
+
+import { ApiError } from '@/shared/types/api';
 
 // Начальное состояние
 const initialState: AuthState = {
@@ -9,7 +19,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   error: null,
   accessToken: localStorage.getItem('accessToken'),
-  refreshToken: localStorage.getItem('refreshToken')
+  refreshToken: localStorage.getItem('refreshToken'),
 };
 
 // Асинхронный action для входа
@@ -18,7 +28,7 @@ export const login = createAsyncThunk(
   async (loginData: LoginData, { rejectWithValue }) => {
     try {
       const response = await authApi.login(loginData);
-      const { user, accessToken, refreshToken } = response.data;
+      const { user, accessToken, refreshToken } = response.data.data;
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);
@@ -26,8 +36,9 @@ export const login = createAsyncThunk(
       localStorage.setItem('user', JSON.stringify(user));
 
       return { user, accessToken, refreshToken };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Ошибка входа');
+    } catch (error: unknown) {
+      const authError = error as ApiError;
+      return rejectWithValue(authError.response?.data?.message || 'Ошибка входа');
     }
   }
 );
@@ -38,7 +49,7 @@ export const register = createAsyncThunk(
   async (registerData: RegisterData, { rejectWithValue }) => {
     try {
       const response = await authApi.register(registerData);
-      const { user, accessToken, refreshToken } = response.data;
+      const { user, accessToken, refreshToken } = response.data.data;
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);
@@ -46,50 +57,53 @@ export const register = createAsyncThunk(
       localStorage.setItem('user', JSON.stringify(user));
 
       return { user, accessToken, refreshToken };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Ошибка регистрации');
+    } catch (error: unknown) {
+      const authError = error as ApiError;
+      return rejectWithValue(authError.response?.data?.message || 'Ошибка регистрации');
     }
   }
 );
 
 // Асинхронный action для выхода
-export const logout = createAsyncThunk(
-  'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      await authApi.logout();
+export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
+  try {
+    await authApi.logout();
 
-      // Удаляем токены из localStorage
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+    // Удаляем токены из localStorage
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
 
-      return null;
-    } catch (error: any) {
-      // Даже если API вернул ошибку, мы всё равно очищаем локальные данные
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      
-      return rejectWithValue(error.response?.data?.message || 'Ошибка выхода');
-    }
+    return null;
+  } catch (error: unknown) {
+    // Даже если API вернул ошибку, мы всё равно очищаем локальные данные
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+
+    const authError = error as ApiError;
+    return rejectWithValue(authError.response?.data?.message || 'Ошибка выхода');
   }
-);
+});
 
 // Асинхронный action для обновления профиля
 export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
-  async ({ userId, profileData }: { userId: string, profileData: UpdateProfileData }, { rejectWithValue }) => {
+  async (
+    { userId, profileData }: { userId: string; profileData: UpdateProfileData },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await authApi.updateProfile(userId, profileData);
-      const updatedUser = response.data;
+      const updatedUser = response.data.data;
 
       // Обновляем данные пользователя в localStorage
       localStorage.setItem('user', JSON.stringify(updatedUser));
 
       return updatedUser;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Ошибка обновления профиля');
+    } catch (error: unknown) {
+      const authError = error as ApiError;
+      return rejectWithValue(authError.response?.data?.message || 'Ошибка обновления профиля');
     }
   }
 );
@@ -97,12 +111,16 @@ export const updateProfile = createAsyncThunk(
 // Асинхронный action для смены пароля
 export const changePassword = createAsyncThunk(
   'auth/changePassword',
-  async ({ userId, passwordData }: { userId: string, passwordData: ChangePasswordData }, { rejectWithValue }) => {
+  async (
+    { userId, passwordData }: { userId: string; passwordData: ChangePasswordData },
+    { rejectWithValue }
+  ) => {
     try {
       await authApi.changePassword(userId, passwordData);
       return null;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Ошибка смены пароля');
+    } catch (error: unknown) {
+      const authError = error as ApiError;
+      return rejectWithValue(authError.response?.data?.message || 'Ошибка смены пароля');
     }
   }
 );
@@ -124,13 +142,14 @@ const authSlice = createSlice({
       const userString = localStorage.getItem('user');
       if (userString) {
         try {
-          state.user = JSON.parse(userString);
+          const parsedUser = JSON.parse(userString) as User;
+          state.user = parsedUser;
           state.isAuthenticated = true;
         } catch (e) {
           localStorage.removeItem('user');
         }
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     // Обработка входа
@@ -212,8 +231,8 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload as string;
     });
-  }
+  },
 });
 
 export const { setUser, clearError, initAuth } = authSlice.actions;
-export default authSlice.reducer; 
+export default authSlice.reducer;

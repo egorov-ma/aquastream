@@ -1,21 +1,20 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import {
   fetchEvents,
   fetchFeaturedEvents,
   fetchEventById,
-  createEvent as createEventAction,
-  updateEvent as updateEventAction,
-  deleteEvent as deleteEventAction,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  registerForEvent,
+  cancelRegistration,
   clearCurrentEvent,
-  clearEventsError
+  clearEventsError,
 } from '../store/eventsSlice';
-import {
-  Event,
-  CreateEventData,
-  UpdateEventData,
-  EventFilters
-} from '../types';
+import { EventFilters, CreateEventData, UpdateEventData } from '../types';
+
 import { RootState, AppDispatch } from '@/store';
 
 /**
@@ -28,7 +27,10 @@ export const useEvents = () => {
     (state: RootState) => state.events
   );
 
-  // Получение всех событий
+  /**
+   * Получение списка всех событий
+   * @param filters Фильтры для событий (опционально)
+   */
   const getEvents = useCallback(
     async (filters?: EventFilters) => {
       await dispatch(fetchEvents(filters));
@@ -36,15 +38,21 @@ export const useEvents = () => {
     [dispatch]
   );
 
-  // Получение избранных событий
+  /**
+   * Получение избранных событий
+   * @param limit Количество событий для получения (опционально)
+   */
   const getFeaturedEvents = useCallback(
     async (limit?: number) => {
-      await dispatch(fetchFeaturedEvents(limit ?? 3));
+      await dispatch(fetchFeaturedEvents(limit));
     },
     [dispatch]
   );
 
-  // Получение события по ID
+  /**
+   * Получение события по ID
+   * @param id ID события
+   */
   const getEventById = useCallback(
     async (id: string) => {
       await dispatch(fetchEventById(id));
@@ -52,45 +60,75 @@ export const useEvents = () => {
     [dispatch]
   );
 
-  // Создание события
-  const createEvent = useCallback(
+  /**
+   * Создание нового события
+   * @param eventData Данные для создания события
+   */
+  const addEvent = useCallback(
     async (eventData: CreateEventData) => {
-      await dispatch(createEventAction(eventData));
+      await dispatch(createEvent(eventData));
     },
     [dispatch]
   );
 
-  // Обновление события
-  const updateEvent = useCallback(
+  /**
+   * Обновление существующего события
+   * @param id ID события
+   * @param eventData Данные для обновления события
+   */
+  const editEvent = useCallback(
     async (id: string, eventData: UpdateEventData) => {
-      await dispatch(updateEventAction({ id, eventData }));
+      await dispatch(updateEvent({ id, eventData }));
     },
     [dispatch]
   );
 
-  // Удаление события
-  const deleteEvent = useCallback(
+  /**
+   * Удаление события
+   * @param id ID события
+   */
+  const removeEvent = useCallback(
     async (id: string) => {
-      await dispatch(deleteEventAction(id));
+      await dispatch(deleteEvent(id));
     },
     [dispatch]
   );
 
-  // Очистка текущего события
-  const clearEvent = useCallback(
-    () => {
-      dispatch(clearCurrentEvent());
+  /**
+   * Регистрация на событие
+   * @param eventId ID события
+   */
+  const registerEvent = useCallback(
+    async (eventId: string) => {
+      await dispatch(registerForEvent(eventId));
     },
     [dispatch]
   );
 
-  // Очистка ошибок
-  const clearError = useCallback(
-    () => {
-      dispatch(clearEventsError());
+  /**
+   * Отмена регистрации на событие
+   * @param eventId ID события
+   */
+  const cancelEventRegistration = useCallback(
+    async (eventId: string) => {
+      await dispatch(cancelRegistration(eventId));
     },
     [dispatch]
   );
+
+  /**
+   * Очистка текущего события
+   */
+  const clearEvent = useCallback(() => {
+    dispatch(clearCurrentEvent());
+  }, [dispatch]);
+
+  /**
+   * Очистка ошибок
+   */
+  const clearError = useCallback(() => {
+    dispatch(clearEventsError());
+  }, [dispatch]);
 
   return {
     events,
@@ -101,10 +139,12 @@ export const useEvents = () => {
     getEvents,
     getFeaturedEvents,
     getEventById,
-    createEvent,
-    updateEvent,
-    deleteEvent,
+    addEvent,
+    editEvent,
+    removeEvent,
+    registerEvent,
+    cancelEventRegistration,
     clearEvent,
-    clearError
+    clearError,
   };
-}; 
+};

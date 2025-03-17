@@ -1,12 +1,12 @@
-import React from 'react';
-import { 
-  Card as MuiCard, 
-  CardContent, 
-  CardMedia, 
-  CardActions, 
+import {
+  Card as MuiCard,
+  CardContent,
+  CardMedia,
+  CardActions,
   CardHeader,
-  CardProps as MuiCardProps
+  CardProps as MuiCardProps,
 } from '@mui/material';
+import React from 'react';
 
 /**
  * Интерфейс пропсов карточки
@@ -58,23 +58,18 @@ const Card: React.FC<CustomCardProps> = ({
           action={cardAction}
         />
       )}
-      
+
       {cardMedia && (
-        <CardMedia
-          component="img"
-          height={cardMediaHeight}
-          image={cardMedia}
-          alt={cardMediaAlt}
-        />
+        <CardMedia component="img" height={cardMediaHeight} image={cardMedia} alt={cardMediaAlt} />
       )}
-      
+
       {cardContent && <CardContent>{cardContent}</CardContent>}
-      
+
       {children}
-      
+
       {cardActions && <CardActions>{cardActions}</CardActions>}
     </MuiCard>
   );
 };
 
-export default Card; 
+export default Card;

@@ -1,19 +1,16 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  login as loginAction, 
-  logout as logoutAction, 
+
+import {
+  login as loginAction,
+  logout as logoutAction,
   register as registerAction,
   updateProfile as updateProfileAction,
   changePassword as changePasswordAction,
-  clearError as clearErrorAction
+  clearError as clearErrorAction,
 } from '../store/authSlice';
-import { 
-  LoginData, 
-  RegisterData, 
-  UpdateProfileData, 
-  ChangePasswordData 
-} from '../types';
+import { LoginData, RegisterData, UpdateProfileData, ChangePasswordData } from '../types';
+
 import { RootState, AppDispatch } from '@/store';
 
 /**
@@ -22,9 +19,7 @@ import { RootState, AppDispatch } from '@/store';
  */
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, isLoading, error, isAuthenticated } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { user, isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   // Вход пользователя
   const login = useCallback(
@@ -43,12 +38,9 @@ export const useAuth = () => {
   );
 
   // Выход пользователя
-  const logout = useCallback(
-    async () => {
-      await dispatch(logoutAction());
-    },
-    [dispatch]
-  );
+  const logout = useCallback(async () => {
+    await dispatch(logoutAction());
+  }, [dispatch]);
 
   // Обновление профиля пользователя
   const updateProfile = useCallback(
@@ -67,12 +59,9 @@ export const useAuth = () => {
   );
 
   // Очистка ошибок
-  const clearError = useCallback(
-    () => {
-      dispatch(clearErrorAction());
-    },
-    [dispatch]
-  );
+  const clearError = useCallback(() => {
+    dispatch(clearErrorAction());
+  }, [dispatch]);
 
   return {
     user,
@@ -84,6 +73,6 @@ export const useAuth = () => {
     logout,
     updateProfile,
     changePassword,
-    clearError
+    clearError,
   };
-}; 
+};

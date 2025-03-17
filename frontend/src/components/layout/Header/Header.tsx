@@ -1,95 +1,232 @@
-import React, { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
 import {
   AppBar,
-  Box,
   Toolbar,
-  IconButton,
   Typography,
+  Button,
+  IconButton,
+  Box,
   Menu,
+  MenuItem,
   Container,
   Avatar,
-  Button,
-  Tooltip,
-  MenuItem,
+  useMediaQuery,
+  useTheme,
   Drawer,
   List,
   ListItem,
   ListItemText,
-  ListItemButton,
   Divider,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { RootState } from '@/store';
-import { logout } from '@/store/slices/authSlice';
-import { APP_ROUTES } from '@/config/config';
-import { UserRole } from '@/types/models';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+
 import styles from './Header.module.css';
 
-// Навигационные пункты для всех пользователей
-const publicPages = [
-  { title: 'События', path: APP_ROUTES.EVENTS },
-  { title: 'Календарь', path: APP_ROUTES.CALENDAR },
-  { title: 'Команда', path: APP_ROUTES.TEAM },
-  { title: 'Контакты', path: APP_ROUTES.CONTACTS },
-  { title: 'Участнику', path: APP_ROUTES.PARTICIPANT },
-];
-
-// Дополнительные пункты для авторизованных пользователей
-const userPages: Record<UserRole, Array<{ title: string; path: string }>> = {
-  [UserRole.USER]: [],
-  [UserRole.ORGANIZER]: [
-    { title: 'Создать событие', path: APP_ROUTES.CREATE_EVENT },
-  ],
-  [UserRole.ADMIN]: [
-    { title: 'Создать событие', path: APP_ROUTES.CREATE_EVENT },
-    { title: 'Админ-панель', path: APP_ROUTES.ADMIN },
-  ],
-};
+import { logout } from '@/modules/auth/store/authSlice';
+import { APP_ROUTES } from '@/shared/config';
+import { AppDispatch } from '@/store';
+import { RootState } from '@/store';
 
 /**
- * Компонент хедера приложения
+ * Компонент шапки приложения
  */
 export const Header: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // Состояние для мобильного меню
+  // Состояние для управления выпадающим меню пользователя
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  // Состояние для управления мобильным меню
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Состояние для меню пользователя
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  // Получаем данные о пользователе из Redux store
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
-  // Обработчики для меню пользователя
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
+  /**
+   * Обработчик открытия меню пользователя
+   */
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  /**
+   * Обработчик закрытия меню пользователя
+   */
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
-  // Обработчик для выхода из системы
+  /**
+   * Обработчик выхода из системы
+   */
   const handleLogout = () => {
-    dispatch(logout());
-    handleCloseUserMenu();
+    handleMenuClose();
+    void dispatch(logout());
     navigate(APP_ROUTES.HOME);
   };
 
-  // Получаем дополнительные пункты меню в зависимости от роли пользователя
-  const additionalPages = user ? userPages[user.role] : [];
+  /**
+   * Обработчик перехода к профилю пользователя
+   */
+  const handleProfileClick = () => {
+    handleMenuClose();
+    navigate(APP_ROUTES.PROFILE);
+  };
+
+  /**
+   * Обработчик перехода в панель администратора
+   */
+  const handleAdminClick = () => {
+    handleMenuClose();
+    navigate(APP_ROUTES.ADMIN);
+  };
+
+  /**
+   * Обработчик открытия/закрытия мобильного меню
+   */
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  /**
+   * Компонент навигационных ссылок
+   */
+  const navLinks = (
+    <>
+      <Button
+        component={RouterLink}
+        to={APP_ROUTES.EVENTS}
+        color="inherit"
+        className={styles.navButton}
+      >
+        События
+      </Button>
+      <Button
+        component={RouterLink}
+        to={APP_ROUTES.CALENDAR}
+        color="inherit"
+        className={styles.navButton}
+      >
+        Календарь
+      </Button>
+      <Button
+        component={RouterLink}
+        to={APP_ROUTES.TEAM}
+        color="inherit"
+        className={styles.navButton}
+      >
+        Команда
+      </Button>
+      <Button
+        component={RouterLink}
+        to={APP_ROUTES.CONTACTS}
+        color="inherit"
+        className={styles.navButton}
+      >
+        Контакты
+      </Button>
+      <Button
+        component={RouterLink}
+        to={APP_ROUTES.PARTICIPANT}
+        color="inherit"
+        className={styles.navButton}
+      >
+        Участнику
+      </Button>
+    </>
+  );
+
+  /**
+   * Компонент мобильного меню
+   */
+  const mobileMenu = (
+    <Drawer
+      anchor="right"
+      open={mobileMenuOpen}
+      onClose={toggleMobileMenu}
+      className={styles.drawer}
+    >
+      <Box className={styles.drawerContent}>
+        <List>
+          <ListItem component={RouterLink} to={APP_ROUTES.EVENTS} onClick={toggleMobileMenu}>
+            <ListItemText primary="События" />
+          </ListItem>
+          <ListItem component={RouterLink} to={APP_ROUTES.CALENDAR} onClick={toggleMobileMenu}>
+            <ListItemText primary="Календарь" />
+          </ListItem>
+          <ListItem component={RouterLink} to={APP_ROUTES.TEAM} onClick={toggleMobileMenu}>
+            <ListItemText primary="Команда" />
+          </ListItem>
+          <ListItem component={RouterLink} to={APP_ROUTES.CONTACTS} onClick={toggleMobileMenu}>
+            <ListItemText primary="Контакты" />
+          </ListItem>
+          <ListItem component={RouterLink} to={APP_ROUTES.PARTICIPANT} onClick={toggleMobileMenu}>
+            <ListItemText primary="Участнику" />
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          {isAuthenticated ? (
+            <>
+              <ListItem
+                onClick={() => {
+                  toggleMobileMenu();
+                  navigate(APP_ROUTES.PROFILE);
+                }}
+              >
+                <ListItemText primary="Профиль" />
+              </ListItem>
+              {user && user.role === 'admin' && (
+                <ListItem
+                  onClick={() => {
+                    toggleMobileMenu();
+                    navigate(APP_ROUTES.ADMIN);
+                  }}
+                >
+                  <ListItemText primary="Администрирование" />
+                </ListItem>
+              )}
+              <ListItem
+                onClick={() => {
+                  toggleMobileMenu();
+                  handleLogout();
+                }}
+              >
+                <ListItemText primary="Выйти" />
+              </ListItem>
+            </>
+          ) : (
+            <>
+              <ListItem component={RouterLink} to={APP_ROUTES.LOGIN} onClick={toggleMobileMenu}>
+                <ListItemText primary="Войти" />
+              </ListItem>
+              <ListItem component={RouterLink} to={APP_ROUTES.REGISTER} onClick={toggleMobileMenu}>
+                <ListItemText primary="Регистрация" />
+              </ListItem>
+            </>
+          )}
+        </List>
+      </Box>
+    </Drawer>
+  );
 
   return (
-    <AppBar position="static" className={styles.header}>
+    <AppBar position="sticky" className={styles.header}>
       <Container maxWidth="lg">
-        <Toolbar disableGutters>
-          {/* Логотип для десктопа */}
+        <Toolbar disableGutters className={styles.toolbar}>
+          {/* Логотип */}
           <Typography
             variant="h6"
-            noWrap
             component={RouterLink}
             to={APP_ROUTES.HOME}
             className={styles.logo}
@@ -97,118 +234,29 @@ export const Header: React.FC = () => {
             AquaStream
           </Typography>
 
-          {/* Мобильное меню */}
-          <Box className={styles.mobileMenuContainer}>
-            <IconButton
-              size="large"
-              aria-label="меню"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={() => setMobileMenuOpen(true)}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Drawer
-              anchor="left"
-              open={mobileMenuOpen}
-              onClose={() => setMobileMenuOpen(false)}
-            >
-              <Box
-                className={styles.mobileMenu}
-                role="presentation"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <List>
-                  {publicPages.map((page) => (
-                    <ListItem key={page.path} disablePadding>
-                      <ListItemButton component={RouterLink} to={page.path}>
-                        <ListItemText primary={page.title} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                  {additionalPages.map((page) => (
-                    <ListItem key={page.path} disablePadding>
-                      <ListItemButton component={RouterLink} to={page.path}>
-                        <ListItemText primary={page.title} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-                <Divider />
-                <List>
-                  {!isAuthenticated ? (
-                    <>
-                      <ListItem disablePadding>
-                        <ListItemButton component={RouterLink} to={APP_ROUTES.LOGIN}>
-                          <ListItemText primary="Войти" />
-                        </ListItemButton>
-                      </ListItem>
-                      <ListItem disablePadding>
-                        <ListItemButton component={RouterLink} to={APP_ROUTES.REGISTER}>
-                          <ListItemText primary="Регистрация" />
-                        </ListItemButton>
-                      </ListItem>
-                    </>
-                  ) : (
-                    <>
-                      <ListItem disablePadding>
-                        <ListItemButton component={RouterLink} to={APP_ROUTES.PROFILE}>
-                          <ListItemText primary="Профиль" />
-                        </ListItemButton>
-                      </ListItem>
-                      <ListItem disablePadding>
-                        <ListItemButton onClick={handleLogout}>
-                          <ListItemText primary="Выйти" />
-                        </ListItemButton>
-                      </ListItem>
-                    </>
-                  )}
-                </List>
-              </Box>
-            </Drawer>
-          </Box>
+          {/* Навигационные ссылки (отображаются только на десктопе) */}
+          {!isMobile && <Box className={styles.navLinks}>{navLinks}</Box>}
 
-          {/* Десктопное меню */}
-          <Box className={styles.desktopMenuContainer}>
-            {publicPages.map((page) => (
-              <Button
-                key={page.path}
-                component={RouterLink}
-                to={page.path}
-                className={styles.navButton}
-              >
-                {page.title}
-              </Button>
-            ))}
-            {additionalPages.map((page) => (
-              <Button
-                key={page.path}
-                component={RouterLink}
-                to={page.path}
-                className={styles.navButton}
-              >
-                {page.title}
-              </Button>
-            ))}
-          </Box>
-
-          {/* Меню пользователя */}
-          <Box className={styles.userMenuContainer}>
+          {/* Кнопки авторизации/профиля пользователя */}
+          <Box className={styles.authButtons}>
             {isAuthenticated ? (
               <>
-                <Tooltip title="Открыть меню">
-                  <IconButton onClick={handleOpenUserMenu} className={styles.userButton}>
-                    {user?.avatar ? (
-                      <Avatar alt={user.name} src={user.avatar} />
-                    ) : (
-                      <AccountCircleIcon />
-                    )}
-                  </IconButton>
-                </Tooltip>
+                <IconButton
+                  onClick={handleMenuOpen}
+                  color="inherit"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                >
+                  {user?.avatar ? (
+                    <Avatar src={user.avatar} alt={user.email} className={styles.avatar} />
+                  ) : (
+                    <AccountCircleIcon />
+                  )}
+                </IconButton>
                 <Menu
                   id="menu-appbar"
-                  anchorEl={anchorElUser}
+                  anchorEl={anchorEl}
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',
@@ -218,46 +266,66 @@ export const Header: React.FC = () => {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
+                  open={open}
+                  onClose={handleMenuClose}
                 >
-                  <MenuItem
-                    component={RouterLink}
-                    to={APP_ROUTES.PROFILE}
-                    onClick={handleCloseUserMenu}
-                  >
-                    <Typography textAlign="center">Профиль</Typography>
+                  <MenuItem onClick={handleProfileClick}>
+                    <PersonIcon fontSize="small" className={styles.menuIcon} />
+                    Профиль
                   </MenuItem>
+                  {user && user.role === 'admin' && (
+                    <MenuItem onClick={handleAdminClick}>
+                      <DashboardIcon fontSize="small" className={styles.menuIcon} />
+                      Администрирование
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>
-                    <Typography textAlign="center">Выйти</Typography>
+                    <ExitToAppIcon fontSize="small" className={styles.menuIcon} />
+                    Выйти
                   </MenuItem>
                 </Menu>
               </>
             ) : (
-              <Box className={styles.authButtons}>
-                <Button
-                  component={RouterLink}
-                  to={APP_ROUTES.LOGIN}
-                  variant="text"
-                  color="inherit"
-                  className={styles.loginButton}
-                >
-                  Войти
-                </Button>
-                <Button
-                  component={RouterLink}
-                  to={APP_ROUTES.REGISTER}
-                  variant="contained"
-                  color="primary"
-                  className={styles.registerButton}
-                >
-                  Регистрация
-                </Button>
-              </Box>
+              <>
+                {!isMobile && (
+                  <>
+                    <Button
+                      component={RouterLink}
+                      to={APP_ROUTES.LOGIN}
+                      color="inherit"
+                      className={styles.authButton}
+                    >
+                      Войти
+                    </Button>
+                    <Button
+                      component={RouterLink}
+                      to={APP_ROUTES.REGISTER}
+                      variant="contained"
+                      color="secondary"
+                      className={styles.authButton}
+                    >
+                      Регистрация
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+
+            {/* Кнопка мобильного меню */}
+            {isMobile && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="end"
+                onClick={toggleMobileMenu}
+              >
+                <MenuIcon />
+              </IconButton>
             )}
           </Box>
         </Toolbar>
       </Container>
+      {mobileMenu}
     </AppBar>
   );
-}; 
+};

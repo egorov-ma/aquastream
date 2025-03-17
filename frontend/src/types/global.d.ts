@@ -31,5 +31,5 @@ declare module '*.svg' {
 
 // Расширение Window для глобальных переменных
 interface Window {
-  __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: any;
-} 
+  __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof import('redux').compose;
+}

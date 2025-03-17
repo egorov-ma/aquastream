@@ -22,12 +22,11 @@ export function useLocalStorage<T>(
   const setValue = (value: T | ((val: T) => T)) => {
     try {
       // Разрешаем функцию как value
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+
       // Сохраняем в состоянии
       setStoredValue(valueToStore);
-      
+
       // Сохраняем в localStorage
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
@@ -52,10 +51,10 @@ export function useLocalStorage<T>(
         }
       }
     };
-    
+
     // Добавляем слушателя события для изменений localStorage
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Удаляем слушателя при размонтировании
     return () => {
       window.removeEventListener('storage', handleStorageChange);
@@ -63,4 +62,4 @@ export function useLocalStorage<T>(
   }, [key]);
 
   return [storedValue, setValue];
-} 
+}

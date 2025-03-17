@@ -1,132 +1,84 @@
-import axios from 'axios';
-import { 
-  LoginData, 
-  RegisterData, 
-  UpdateProfileData, 
-  ChangePasswordData 
-} from '../types';
-import { API_URL } from '@/config';
+import { LoginData, RegisterData, UpdateProfileData, ChangePasswordData, User } from '../types';
 
-// Создаем инстанс axios с общей конфигурацией
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+import { apiService } from '@/services/api';
+import { ApiResponse } from '@/shared/types/api';
 
-// Интерцептор для добавления токена к запросам
-api.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Интерцептор для обработки ошибок
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    // Если ошибка 401 и запрос не на обновление токена
-    if (error.response.status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/refresh') {
-      originalRequest._retry = true;
-      
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-        
-        // Обновляем токены
-        const { data } = await api.post('/auth/refresh', { refreshToken });
-        
-        // Сохраняем новые токены
-        localStorage.setItem('accessToken', data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        
-        // Повторяем оригинальный запрос с новым токеном
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        // Если не удалось обновить токены - разлогиниваем пользователя
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        
-        // Редирект на страницу логина
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
-    }
-    
-    return Promise.reject(error);
-  }
-);
+interface AuthResponseData {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}
 
 /**
  * API для работы с аутентификацией
  */
 export const authApi = {
   /**
-   * Вход пользователя в систему
-   * @param loginData - данные для входа
+   * Вход в систему
+   * @param loginData Данные для входа
    */
   login: (loginData: LoginData) => {
-    return api.post('/auth/login', loginData);
+    return apiService.post<ApiResponse<AuthResponseData>, LoginData>('/auth/login', loginData);
   },
 
   /**
    * Регистрация нового пользователя
-   * @param registerData - данные для регистрации
+   * @param registerData Данные для регистрации
    */
   register: (registerData: RegisterData) => {
-    return api.post('/auth/register', registerData);
+    return apiService.post<ApiResponse<AuthResponseData>, RegisterData>(
+      '/auth/register',
+      registerData
+    );
   },
 
   /**
-   * Выход пользователя из системы
+   * Выход из системы
    */
   logout: () => {
-    return api.post('/auth/logout');
+    return apiService.post<ApiResponse<null>>('/auth/logout');
   },
 
   /**
-   * Обновление токенов доступа
-   * @param refreshToken - токен обновления
+   * Обновление профиля пользователя
+   * @param userId ID пользователя
+   * @param profileData Данные для обновления профиля
    */
-  refreshTokens: (refreshToken: string) => {
-    return api.post('/auth/refresh', { refreshToken });
+  updateProfile: (userId: string, profileData: UpdateProfileData) => {
+    return apiService.put<ApiResponse<User>, UpdateProfileData>(
+      `/users/${userId}/profile`,
+      profileData
+    );
+  },
+
+  /**
+   * Смена пароля пользователя
+   * @param userId ID пользователя
+   * @param passwordData Данные для смены пароля
+   */
+  changePassword: (userId: string, passwordData: ChangePasswordData) => {
+    return apiService.put<ApiResponse<null>, ChangePasswordData>(
+      `/users/${userId}/password`,
+      passwordData
+    );
+  },
+
+  /**
+   * Обновление токена доступа
+   * @param refreshToken Токен обновления
+   */
+  refreshToken: (refreshToken: string) => {
+    return apiService.post<
+      ApiResponse<{ accessToken: string; refreshToken: string }>,
+      { refreshToken: string }
+    >('/auth/refresh', { refreshToken });
   },
 
   /**
    * Получение данных текущего пользователя
    */
   getCurrentUser: () => {
-    return api.get('/auth/me');
-  },
-
-  /**
-   * Обновление профиля пользователя
-   * @param userId - идентификатор пользователя
-   * @param profileData - данные для обновления
-   */
-  updateProfile: (userId: string, profileData: UpdateProfileData) => {
-    return api.put(`/users/${userId}`, profileData);
-  },
-
-  /**
-   * Изменение пароля пользователя
-   * @param userId - идентификатор пользователя
-   * @param passwordData - данные для смены пароля
-   */
-  changePassword: (userId: string, passwordData: ChangePasswordData) => {
-    return api.put(`/users/${userId}/password`, passwordData);
+    return apiService.get<ApiResponse<User>>('/auth/me');
   },
 
   /**
@@ -134,7 +86,7 @@ export const authApi = {
    * @param email - email пользователя
    */
   requestPasswordReset: (email: string) => {
-    return api.post('/auth/password-reset', { email });
+    return apiService.post<ApiResponse<null>>('/auth/password-reset', { email });
   },
 
   /**
@@ -143,6 +95,6 @@ export const authApi = {
    * @param newPassword - новый пароль
    */
   resetPassword: (token: string, newPassword: string) => {
-    return api.post(`/auth/password-reset/${token}`, { newPassword });
-  }
-}; 
+    return apiService.post<ApiResponse<null>>(`/auth/password-reset/${token}`, { newPassword });
+  },
+};

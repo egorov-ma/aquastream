@@ -2,52 +2,117 @@
  * Модели данных приложения
  */
 
+/**
+ * Роли пользователей
+ */
 export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-  ORGANIZER = 'organizer',
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  ORGANIZER = 'ORGANIZER',
+  GUEST = 'GUEST',
 }
 
+/**
+ * Модель пользователя
+ */
 export interface User {
   id: string;
-  email: string;
   name: string;
-  role: UserRole;
+  email: string;
   avatar?: string;
+  role: UserRole;
   phone?: string;
-  createdAt: string;
-}
-
-export interface Event {
-  id: string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  location: string;
-  imageUrl?: string;
-  organizerId: string;
-  status: EventStatus;
-  participants: string[];
-  price?: number;
-  maxParticipants?: number;
-  difficulty?: EventDifficulty;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export enum EventStatus {
-  DRAFT = 'draft',
-  PUBLISHED = 'published',
-  CANCELLED = 'cancelled',
-  COMPLETED = 'completed',
+/**
+ * Модель события (сплава)
+ */
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  price: number;
+  maxParticipants: number;
+  currentParticipants: number;
+  difficulty: EventDifficulty;
+  type: EventType;
+  status: EventStatus;
+  organizerId: string;
+  organizer?: User;
+  createdAt: string;
+  updatedAt: string;
 }
 
+/**
+ * Сложность события
+ */
 export enum EventDifficulty {
-  BEGINNER = 'beginner',
-  INTERMEDIATE = 'intermediate',
-  ADVANCED = 'advanced',
-  EXPERT = 'expert',
+  EASY = 'EASY',
+  MEDIUM = 'MEDIUM',
+  HARD = 'HARD',
+  EXTREME = 'EXTREME',
+}
+
+/**
+ * Тип события
+ */
+export enum EventType {
+  KAYAKING = 'KAYAKING',
+  RAFTING = 'RAFTING',
+  SAILING = 'SAILING',
+  CANOEING = 'CANOEING',
+  OTHER = 'OTHER',
+}
+
+/**
+ * Статус события
+ */
+export enum EventStatus {
+  UPCOMING = 'UPCOMING',
+  ONGOING = 'ONGOING',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+/**
+ * Модель участия в событии
+ */
+export interface Participation {
+  id: string;
+  userId: string;
+  eventId: string;
+  status: ParticipationStatus;
+  paymentStatus: PaymentStatus;
+  createdAt: string;
+  updatedAt: string;
+  user?: User;
+  event?: Event;
+}
+
+/**
+ * Статус участия
+ */
+export enum ParticipationStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+}
+
+/**
+ * Статус оплаты
+ */
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  REFUNDED = 'REFUNDED',
+  CANCELLED = 'CANCELLED',
 }
 
 export interface TeamMember {
@@ -99,26 +164,3 @@ export interface Feedback {
   date: string;
   imageUrl?: string;
 }
-
-export interface Participation {
-  id: string;
-  userId: string;
-  eventId: string;
-  status: ParticipationStatus;
-  paymentStatus: PaymentStatus;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export enum ParticipationStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  CANCELLED = 'cancelled',
-}
-
-export enum PaymentStatus {
-  PENDING = 'pending',
-  PAID = 'paid',
-  REFUNDED = 'refunded',
-  FAILED = 'failed',
-} 

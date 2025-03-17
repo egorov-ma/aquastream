@@ -1,5 +1,5 @@
-import React from 'react';
 import { Button as MuiButton, ButtonProps as MuiButtonProps } from '@mui/material';
+import React from 'react';
 
 /**
  * Интерфейс пропсов кнопки
@@ -48,4 +48,4 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export default Button; 
+export default Button;

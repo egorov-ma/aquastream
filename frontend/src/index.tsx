@@ -1,17 +1,20 @@
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { BrowserRouter } from 'react-router-dom';
+
+// Импортируем i18n (должен быть импортирован перед рендерингом приложения)
+import './i18n';
+
 import App from './App';
-import { store } from './store';
-import theme from './theme/theme';
-import './styles/global.css';
+import store from './store';
+import theme from './theme';
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+import './styles/index.css';
 
-root.render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>

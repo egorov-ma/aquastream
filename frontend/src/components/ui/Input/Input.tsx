@@ -1,4 +1,5 @@
 import React, { InputHTMLAttributes, forwardRef } from 'react';
+
 import styles from './Input.module.css';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -32,15 +33,10 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * Компонент поля ввода для использования во всем приложении
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ 
-    label, 
-    error, 
-    fullWidth = false, 
-    className = '', 
-    icon, 
-    iconPosition = 'right',
-    ...props 
-  }, ref) => {
+  (
+    { label, error, fullWidth = false, className = '', icon, iconPosition = 'right', ...props },
+    ref
+  ) => {
     return (
       <div className={`${styles.container} ${fullWidth ? styles.fullWidth : ''}`}>
         {label && <label className={styles.label}>{label}</label>}
@@ -68,4 +64,4 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
-Input.displayName = 'Input'; 
+Input.displayName = 'Input';

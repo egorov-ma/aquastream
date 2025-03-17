@@ -1,10 +1,28 @@
+/**
+ * Типы и интерфейсы для модуля аутентификации
+ */
+
+import { ApiError } from '@/shared/types/api';
+
+/**
+ * Роли пользователей в системе
+ */
+export enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+  GUEST = 'guest',
+}
+
+/**
+ * Интерфейс пользователя
+ */
 export interface User {
   id: string;
   email: string;
   displayName?: string;
   firstName?: string;
   lastName?: string;
-  role: 'admin' | 'user';
+  role: UserRole | string;
   avatar?: string;
   createdAt: string;
   updatedAt: string;
@@ -45,6 +63,11 @@ export interface AuthState {
   refreshToken: string | null;
 }
 
+/**
+ * Тип для ошибок аутентификации
+ */
+export interface AuthError extends ApiError {}
+
 export interface AuthContextType {
   user: User | null;
   isLoading: boolean;
@@ -56,4 +79,4 @@ export interface AuthContextType {
   updateProfile: (userId: string, data: UpdateProfileData) => Promise<void>;
   changePassword: (userId: string, data: ChangePasswordData) => Promise<void>;
   clearError: () => void;
-} 
+}

@@ -1,9 +1,9 @@
-import React from 'react';
-import { 
-  TextField as MuiTextField, 
+import {
+  TextField as MuiTextField,
   TextFieldProps as MuiTextFieldProps,
-  InputAdornment 
+  InputAdornment,
 } from '@mui/material';
+import React from 'react';
 
 /**
  * Расширенный интерфейс пропсов TextField
@@ -39,7 +39,8 @@ export interface CustomTextFieldProps {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   /** Дополнительные свойства для InputProps */
   InputProps?: MuiTextFieldProps['InputProps'];
-  [key: string]: any;
+  /** Дополнительные свойства для MUI TextField */
+  [key: string]: unknown;
 }
 
 /**
@@ -81,14 +82,18 @@ const TextField: React.FC<CustomTextFieldProps> = ({
         ...InputProps,
         startAdornment: startIcon ? (
           <InputAdornment position="start">{startIcon}</InputAdornment>
-        ) : InputProps.startAdornment,
+        ) : (
+          InputProps.startAdornment
+        ),
         endAdornment: endIcon ? (
           <InputAdornment position="end">{endIcon}</InputAdornment>
-        ) : InputProps.endAdornment,
+        ) : (
+          InputProps.endAdornment
+        ),
       }}
       {...props}
     />
   );
 };
 
-export default TextField; 
+export default TextField;
