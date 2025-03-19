@@ -102,9 +102,6 @@ k8s/*.yml
 k8s/.kubeconfig
 .kube/
 
-# Проектные заметки и TODO-листы
-.project_todo/
-
 # Результаты тестов
 test-reports/*.log
 
