@@ -24,6 +24,7 @@ export interface LoginData {
   email: string;
   password: string;
   rememberMe?: boolean;
+  [key: string]: unknown;
 }
 
 // Данные для регистрации
@@ -32,6 +33,7 @@ export interface RegisterData {
   password: string;
   displayName: string;
   role?: string;
+  [key: string]: unknown;
 }
 
 // Данные для обновления профиля
@@ -40,6 +42,7 @@ export interface UpdateProfileData {
   email?: string;
   avatar?: string;
   phone?: string;
+  [key: string]: unknown;
 }
 
 // Данные для изменения пароля
