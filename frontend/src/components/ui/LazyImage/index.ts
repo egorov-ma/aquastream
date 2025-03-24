@@ -1,1 +1,7 @@
-export { LazyImage } from './LazyImage';
+export {
+  LazyImage,
+  type LazyImageProps,
+  type LoadingMethod,
+  type ObjectFitMode,
+  type FadeInAnimation,
+} from './LazyImage';

@@ -28,7 +28,12 @@ export const login = createAsyncThunk(
   async (loginData: LoginData, { rejectWithValue }) => {
     try {
       const response = await authApi.login(loginData);
-      const { user, accessToken, refreshToken } = response.data.data;
+      const responseData = response.data.data as {
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+      };
+      const { user, accessToken, refreshToken } = responseData;
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);
@@ -49,7 +54,12 @@ export const register = createAsyncThunk(
   async (registerData: RegisterData, { rejectWithValue }) => {
     try {
       const response = await authApi.register(registerData);
-      const { user, accessToken, refreshToken } = response.data.data;
+      const responseData = response.data.data as {
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+      };
+      const { user, accessToken, refreshToken } = responseData;
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);

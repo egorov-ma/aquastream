@@ -1,25 +1,19 @@
-import { Box, Container } from '@mui/material';
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-
-import styles from './MainLayout.module.css';
-
-import { Footer } from '@/components/layout/Footer/Footer';
-import { Header } from '@/components/layout/Header/Header';
+import React, { ReactNode } from 'react';
 
 /**
- * Основной макет приложения, включающий хедер, футер и основное содержимое
+ * Интерфейс пропсов для MainLayout
  */
-export const MainLayout: React.FC = () => {
+interface MainLayoutProps {
+  children: ReactNode;
+}
+
+/**
+ * Основной макет приложения для содержимого страницы
+ */
+export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <Box className={styles.root}>
-      <Header />
-      <Box component="main" className={styles.main}>
-        <Container maxWidth="lg" className={styles.container}>
-          <Outlet />
-        </Container>
-      </Box>
-      <Footer />
-    </Box>
+    <main className="flex-1 py-8 bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4">{children}</div>
+    </main>
   );
 };

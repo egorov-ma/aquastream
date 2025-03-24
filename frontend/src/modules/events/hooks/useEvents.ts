@@ -23,9 +23,7 @@ import { RootState, AppDispatch } from '@/store';
  */
 export const useEvents = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { events, featuredEvents, currentEvent, isLoading, error } = useSelector(
-    (state: RootState) => state.events
-  );
+  const { upcoming, all, isLoading, error } = useSelector((state: RootState) => state.events);
 
   /**
    * Получение списка всех событий
@@ -131,9 +129,8 @@ export const useEvents = () => {
   }, [dispatch]);
 
   return {
-    events,
-    featuredEvents,
-    currentEvent,
+    upcoming,
+    all,
     isLoading,
     error,
     getEvents,

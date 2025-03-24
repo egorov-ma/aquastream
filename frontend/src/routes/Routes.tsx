@@ -1,33 +1,35 @@
-import { Box, CircularProgress } from '@mui/material';
 import React, { Suspense } from 'react';
-import { Route, Routes as RouterRoutes, Navigate } from 'react-router-dom';
+import { Outlet, Route, Routes as RouterRoutes } from 'react-router-dom';
+
+import { MainLayout } from '@/components/layout';
 
 // Компонент загрузки для lazy-loading
 const LoadingFallback = () => (
-  <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-    <CircularProgress />
-  </Box>
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
+  </div>
 );
 
 // Ленивая загрузка компонентов страниц
-const HomePage = React.lazy(() => import('../pages/HomePage/HomePage'));
-
-// Временный главный макет
-const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => <Box>{children}</Box>;
+const HomePage = React.lazy(() => import('@/pages/HomePage'));
+const AboutPage = React.lazy(() => import('@/pages/AboutPage'));
+const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
 
 const Routes: React.FC = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <RouterRoutes>
         <Route
-          path="/"
           element={
             <MainLayout>
-              <HomePage />
+              <Outlet />
             </MainLayout>
           }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        >
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
       </RouterRoutes>
     </Suspense>
   );

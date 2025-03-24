@@ -1,29 +1,26 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { Suspense, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 
-import { initAuth } from '@/modules/auth/store/authSlice';
-import Routes from '@/routes/Routes';
-import theme from '@/theme/theme';
+import Layout from '@/components/layout/Layout';
+import { PageLoader } from '@/components/ui';
 
-import '@/styles/global.css';
+const App = () => {
+  const [darkMode, setDarkMode] = useState(false);
 
-/**
- * Корневой компонент приложения
- */
-const App: React.FC = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    // Инициализируем состояние аутентификации из localStorage
-    dispatch(initAuth());
-  }, [dispatch]);
+  const toggleTheme = () => {
+    setDarkMode(!darkMode);
+    // При необходимости можно сохранить выбор темы в localStorage
+    // localStorage.setItem('theme', !darkMode ? 'dark' : 'light');
+  };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Routes />
-    </ThemeProvider>
+    <div className={darkMode ? 'dark' : ''}>
+      <Layout toggleTheme={toggleTheme}>
+        <Suspense fallback={<PageLoader />}>
+          <Outlet />
+        </Suspense>
+      </Layout>
+    </div>
   );
 };
 

@@ -1,24 +1,25 @@
-import { LoginData, RegisterData, UpdateProfileData, ChangePasswordData, User } from '../types';
+import {
+  LoginData,
+  RegisterData,
+  UpdateProfileData,
+  ChangePasswordData,
+  User,
+  AuthResponse,
+} from '../types';
 
 import { apiService } from '@/services/api';
 import { ApiResponse } from '@/shared/types/api';
-
-interface AuthResponseData {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
-}
 
 /**
  * API для работы с аутентификацией
  */
 export const authApi = {
   /**
-   * Вход в систему
+   * Авторизация пользователя
    * @param loginData Данные для входа
    */
   login: (loginData: LoginData) => {
-    return apiService.post<ApiResponse<AuthResponseData>, LoginData>('/auth/login', loginData);
+    return apiService.post<ApiResponse<AuthResponse>, LoginData>('/auth/login', loginData);
   },
 
   /**
@@ -26,17 +27,14 @@ export const authApi = {
    * @param registerData Данные для регистрации
    */
   register: (registerData: RegisterData) => {
-    return apiService.post<ApiResponse<AuthResponseData>, RegisterData>(
-      '/auth/register',
-      registerData
-    );
+    return apiService.post<ApiResponse<AuthResponse>, RegisterData>('/auth/register', registerData);
   },
 
   /**
    * Выход из системы
    */
   logout: () => {
-    return apiService.post<ApiResponse<null>>('/auth/logout');
+    return apiService.post<ApiResponse<{ success: boolean }>>('/auth/logout');
   },
 
   /**
@@ -57,7 +55,7 @@ export const authApi = {
    * @param passwordData Данные для смены пароля
    */
   changePassword: (userId: string, passwordData: ChangePasswordData) => {
-    return apiService.put<ApiResponse<null>, ChangePasswordData>(
+    return apiService.put<ApiResponse<{ success: boolean }>, ChangePasswordData>(
       `/users/${userId}/password`,
       passwordData
     );
@@ -86,7 +84,7 @@ export const authApi = {
    * @param email - email пользователя
    */
   requestPasswordReset: (email: string) => {
-    return apiService.post<ApiResponse<null>>('/auth/password-reset', { email });
+    return apiService.post<ApiResponse<{ success: boolean }>>('/auth/password-reset', { email });
   },
 
   /**
@@ -95,6 +93,8 @@ export const authApi = {
    * @param newPassword - новый пароль
    */
   resetPassword: (token: string, newPassword: string) => {
-    return apiService.post<ApiResponse<null>>(`/auth/password-reset/${token}`, { newPassword });
+    return apiService.post<ApiResponse<{ success: boolean }>>(`/auth/password-reset/${token}`, {
+      newPassword,
+    });
   },
 };

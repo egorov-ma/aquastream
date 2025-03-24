@@ -1,11 +1,25 @@
-import Button from './Button/Button';
-import Card from './Card';
-import TextField from './TextField';
-import Typography from './Typography';
+/**
+ * Экспорт всех UI компонентов из одного файла для удобства импорта
+ */
 
-export { Button, Card, TextField, Typography };
+// Экспорт базовых UI компонентов
+export { Button } from './Button/Button';
+export { default as Card } from './Card/Card';
+export { default as Input } from './Input/Input';
+export { default as Typography } from './Typography';
+export { default as TextField } from './TextField';
+export { default as Checkbox } from './Checkbox/Checkbox';
+export { default as Modal } from './Modal/Modal';
+export { default as PageLoader } from './PageLoader';
+export { TubelightNavBar } from './tubelight-navbar';
+export { LazyImage } from './LazyImage/LazyImage';
 
-export * from './Button/Button';
-export * from './Card';
-export * from './TextField';
-export * from './Typography';
+// Экспорт типов компонентов
+export type { ButtonProps, ButtonVariant, ButtonSize } from './Button/Button.types';
+export type { CardProps } from './Card/Card';
+export type { InputProps } from './Input/Input';
+export type { TypographyProps } from './Typography';
+export type { TextFieldProps } from './TextField';
+export type { LazyImageProps } from './LazyImage/LazyImage';
+
+export * from './Button';

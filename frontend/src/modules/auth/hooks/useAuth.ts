@@ -2,77 +2,63 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  login as loginAction,
-  logout as logoutAction,
-  register as registerAction,
-  updateProfile as updateProfileAction,
-  changePassword as changePasswordAction,
-  clearError as clearErrorAction,
+  login,
+  logout,
+  register,
+  updateProfile,
+  changePassword,
+  clearError,
 } from '../store/authSlice';
-import { LoginData, RegisterData, UpdateProfileData, ChangePasswordData } from '../types';
+import { User, LoginData, RegisterData, UpdateProfileData, ChangePasswordData } from '../types';
 
 import { RootState, AppDispatch } from '@/store';
 
 /**
  * Хук для работы с аутентификацией
- * Предоставляет доступ к состоянию аутентификации и методам для работы с ней
  */
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user, accessToken, refreshToken, isLoading, error } = useSelector(
+    (state: RootState) => state.auth
+  );
 
-  // Вход пользователя
-  const login = useCallback(
-    async (data: LoginData) => {
-      await dispatch(loginAction(data));
-    },
+  const loginUser = useCallback(
+    (credentials: LoginData) => dispatch(login(credentials)),
     [dispatch]
   );
 
-  // Регистрация пользователя
-  const register = useCallback(
-    async (data: RegisterData) => {
-      await dispatch(registerAction(data));
-    },
+  const registerUser = useCallback((data: RegisterData) => dispatch(register(data)), [dispatch]);
+
+  const logoutUser = useCallback(() => dispatch(logout()), [dispatch]);
+
+  const updateUserProfile = useCallback(
+    (userId: string, data: UpdateProfileData) =>
+      dispatch(updateProfile({ userId, profileData: data })),
     [dispatch]
   );
 
-  // Выход пользователя
-  const logout = useCallback(async () => {
-    await dispatch(logoutAction());
-  }, [dispatch]);
-
-  // Обновление профиля пользователя
-  const updateProfile = useCallback(
-    async (userId: string, data: UpdateProfileData) => {
-      await dispatch(updateProfileAction({ userId, profileData: data }));
-    },
+  const changeUserPassword = useCallback(
+    (userId: string, data: ChangePasswordData) =>
+      dispatch(changePassword({ userId, passwordData: data })),
     [dispatch]
   );
 
-  // Изменение пароля пользователя
-  const changePassword = useCallback(
-    async (userId: string, data: ChangePasswordData) => {
-      await dispatch(changePasswordAction({ userId, passwordData: data }));
-    },
-    [dispatch]
-  );
-
-  // Очистка ошибок
-  const clearError = useCallback(() => {
-    dispatch(clearErrorAction());
-  }, [dispatch]);
+  const clearAuthError = useCallback(() => dispatch(clearError()), [dispatch]);
 
   return {
+    isAuthenticated,
     user,
+    token: accessToken,
+    refreshToken,
     isLoading,
     error,
-    isAuthenticated,
-    login,
-    register,
-    logout,
-    updateProfile,
-    changePassword,
-    clearError,
+    login: loginUser,
+    register: registerUser,
+    logout: logoutUser,
+    updateProfile: updateUserProfile,
+    changePassword: changeUserPassword,
+    clearError: clearAuthError,
   };
 };
+
+export type { User, LoginData, RegisterData, UpdateProfileData, ChangePasswordData };

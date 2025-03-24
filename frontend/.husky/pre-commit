@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd frontend && npx lint-staged 
+# Проверка типов TypeScript
+echo "🔍 Проверка типов TypeScript..."
+npx tsc --noEmit || exit 1
+
+# Запуск линтера
+echo "🔍 Запуск ESLint..."
+npx lint-staged || exit 1 

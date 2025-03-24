@@ -24,7 +24,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@shared/*": ["./src/shared/*"],
       "@components/*": ["./src/components/*"],
       "@pages/*": ["./src/pages/*"],
       "@services/*": ["./src/services/*"],
@@ -33,14 +32,24 @@
       "@hooks/*": ["./src/hooks/*"],
       "@assets/*": ["./src/assets/*"],
       "@modules/*": ["./src/modules/*"],
-      "@config/*": ["./src/shared/config/*"],
+      "@shared/*": ["./src/shared/*"],
       "@types/*": ["./src/types/*"],
       "@theme/*": ["./src/theme/*"],
-      "@styles/*": ["./src/styles/*"]
+      "@styles/*": ["./src/styles/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@test/*": ["./test/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
   },
-  "include": ["src", "src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "include": [
+    "src", 
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.d.ts",
+    "test/**/*.ts", 
+    "test/**/*.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 

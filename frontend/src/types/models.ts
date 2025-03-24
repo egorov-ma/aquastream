@@ -164,3 +164,19 @@ export interface Feedback {
   date: string;
   imageUrl?: string;
 }
+
+/**
+ * Модель проекта
+ */
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  tags?: string[];
+  startDate?: string;
+  endDate?: string;
+  owner: string;
+  createdAt: string;
+  updatedAt: string;
+}

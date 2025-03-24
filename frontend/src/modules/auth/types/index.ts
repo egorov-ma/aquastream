@@ -64,6 +64,15 @@ export interface AuthState {
 }
 
 /**
+ * Ответ сервера при авторизации/регистрации
+ */
+export interface AuthResponse {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}
+
+/**
  * Тип для ошибок аутентификации
  */
 export interface AuthError extends ApiError {}

@@ -9,14 +9,16 @@ export enum UserRole {
 
 // Интерфейс пользователя
 export interface User {
-  id: string;
+  id: string | number;
   email: string;
-  displayName: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
+  name?: string;
+  displayName?: string;
   avatar?: string;
-  phone?: string;
+  role?: string;
+  permissions?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: unknown;
 }
 
 // Данные для входа
@@ -31,17 +33,19 @@ export interface LoginData {
 export interface RegisterData {
   email: string;
   password: string;
-  displayName: string;
+  displayName?: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   role?: string;
   [key: string]: unknown;
 }
 
 // Данные для обновления профиля
 export interface UpdateProfileData {
+  name?: string;
   displayName?: string;
-  email?: string;
   avatar?: string;
-  phone?: string;
   [key: string]: unknown;
 }
 
@@ -52,11 +56,21 @@ export interface ChangePasswordData {
   confirmPassword: string;
 }
 
-// Ответ аутентификации
-export interface AuthResponse {
+// Ответ аутентификации для API
+export interface AuthResponseData {
   user: User;
   accessToken: string;
   refreshToken: string;
+  [key: string]: unknown;
+}
+
+// Ответ аутентификации для локального тестирования
+export interface AuthResponse {
+  user: User;
+  token?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  [key: string]: unknown;
 }
 
 // Состояние аутентификации

@@ -1,331 +1,177 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import MenuIcon from '@mui/icons-material/Menu';
-import PersonIcon from '@mui/icons-material/Person';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Box,
-  Menu,
-  MenuItem,
-  Container,
-  Avatar,
-  useMediaQuery,
-  useTheme,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-} from '@mui/material';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
-import styles from './Header.module.css';
+import { useTheme } from '../../../theme';
 
-import { logout } from '@/modules/auth/store/authSlice';
-import { APP_ROUTES } from '@/shared/config';
-import { AppDispatch } from '@/store';
-import { RootState } from '@/store';
+interface HeaderProps {
+  toggleTheme?: () => void;
+}
 
-/**
- * Компонент шапки приложения
- */
-export const Header: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+export const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const { theme } = useTheme();
 
-  // Состояние для управления выпадающим меню пользователя
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  // Состояние для управления мобильным меню
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Получаем данные о пользователе из Redux store
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
-
-  /**
-   * Обработчик открытия меню пользователя
-   */
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  // Определяем, активна ли страница
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
-  /**
-   * Обработчик закрытия меню пользователя
-   */
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  // Навигационные ссылки
+  const navLinks = [
+    { name: 'Главная', path: '/' },
+    { name: 'О нас', path: '/about' },
+    { name: 'Мониторинг', path: '/monitoring' },
+    { name: 'Устройства', path: '/devices' },
+  ];
 
-  /**
-   * Обработчик выхода из системы
-   */
-  const handleLogout = () => {
-    handleMenuClose();
-    void dispatch(logout());
-    navigate(APP_ROUTES.HOME);
-  };
+  // Закрытие меню при клике вне компонента
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && !(event.target as Element).closest('#mobile-menu')) {
+        setIsOpen(false);
+      }
+    };
 
-  /**
-   * Обработчик перехода к профилю пользователя
-   */
-  const handleProfileClick = () => {
-    handleMenuClose();
-    navigate(APP_ROUTES.PROFILE);
-  };
-
-  /**
-   * Обработчик перехода в панель администратора
-   */
-  const handleAdminClick = () => {
-    handleMenuClose();
-    navigate(APP_ROUTES.ADMIN);
-  };
-
-  /**
-   * Обработчик открытия/закрытия мобильного меню
-   */
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
-  /**
-   * Компонент навигационных ссылок
-   */
-  const navLinks = (
-    <>
-      <Button
-        component={RouterLink}
-        to={APP_ROUTES.EVENTS}
-        color="inherit"
-        className={styles.navButton}
-      >
-        События
-      </Button>
-      <Button
-        component={RouterLink}
-        to={APP_ROUTES.CALENDAR}
-        color="inherit"
-        className={styles.navButton}
-      >
-        Календарь
-      </Button>
-      <Button
-        component={RouterLink}
-        to={APP_ROUTES.TEAM}
-        color="inherit"
-        className={styles.navButton}
-      >
-        Команда
-      </Button>
-      <Button
-        component={RouterLink}
-        to={APP_ROUTES.CONTACTS}
-        color="inherit"
-        className={styles.navButton}
-      >
-        Контакты
-      </Button>
-      <Button
-        component={RouterLink}
-        to={APP_ROUTES.PARTICIPANT}
-        color="inherit"
-        className={styles.navButton}
-      >
-        Участнику
-      </Button>
-    </>
-  );
-
-  /**
-   * Компонент мобильного меню
-   */
-  const mobileMenu = (
-    <Drawer
-      anchor="right"
-      open={mobileMenuOpen}
-      onClose={toggleMobileMenu}
-      className={styles.drawer}
-    >
-      <Box className={styles.drawerContent}>
-        <List>
-          <ListItem component={RouterLink} to={APP_ROUTES.EVENTS} onClick={toggleMobileMenu}>
-            <ListItemText primary="События" />
-          </ListItem>
-          <ListItem component={RouterLink} to={APP_ROUTES.CALENDAR} onClick={toggleMobileMenu}>
-            <ListItemText primary="Календарь" />
-          </ListItem>
-          <ListItem component={RouterLink} to={APP_ROUTES.TEAM} onClick={toggleMobileMenu}>
-            <ListItemText primary="Команда" />
-          </ListItem>
-          <ListItem component={RouterLink} to={APP_ROUTES.CONTACTS} onClick={toggleMobileMenu}>
-            <ListItemText primary="Контакты" />
-          </ListItem>
-          <ListItem component={RouterLink} to={APP_ROUTES.PARTICIPANT} onClick={toggleMobileMenu}>
-            <ListItemText primary="Участнику" />
-          </ListItem>
-        </List>
-        <Divider />
-        <List>
-          {isAuthenticated ? (
-            <>
-              <ListItem
-                onClick={() => {
-                  toggleMobileMenu();
-                  navigate(APP_ROUTES.PROFILE);
-                }}
-              >
-                <ListItemText primary="Профиль" />
-              </ListItem>
-              {user && user.role === 'admin' && (
-                <ListItem
-                  onClick={() => {
-                    toggleMobileMenu();
-                    navigate(APP_ROUTES.ADMIN);
-                  }}
-                >
-                  <ListItemText primary="Администрирование" />
-                </ListItem>
-              )}
-              <ListItem
-                onClick={() => {
-                  toggleMobileMenu();
-                  handleLogout();
-                }}
-              >
-                <ListItemText primary="Выйти" />
-              </ListItem>
-            </>
-          ) : (
-            <>
-              <ListItem component={RouterLink} to={APP_ROUTES.LOGIN} onClick={toggleMobileMenu}>
-                <ListItemText primary="Войти" />
-              </ListItem>
-              <ListItem component={RouterLink} to={APP_ROUTES.REGISTER} onClick={toggleMobileMenu}>
-                <ListItemText primary="Регистрация" />
-              </ListItem>
-            </>
-          )}
-        </List>
-      </Box>
-    </Drawer>
-  );
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <AppBar position="sticky" className={styles.header}>
-      <Container maxWidth="lg">
-        <Toolbar disableGutters className={styles.toolbar}>
+    <header className="bg-white dark:bg-gray-900 shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center py-4">
           {/* Логотип */}
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to={APP_ROUTES.HOME}
-            className={styles.logo}
-          >
-            AquaStream
-          </Typography>
+          <div className="flex items-center">
+            <Link to="/" className="text-xl font-bold text-primary-600 dark:text-primary-400">
+              AquaStream
+            </Link>
+          </div>
 
-          {/* Навигационные ссылки (отображаются только на десктопе) */}
-          {!isMobile && <Box className={styles.navLinks}>{navLinks}</Box>}
+          {/* Десктопное меню */}
+          <div className="hidden md:flex items-center space-x-4">
+            <nav className="flex items-center space-x-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`px-3 py-2 rounded-md font-medium ${
+                    isActive(link.path)
+                      ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
 
-          {/* Кнопки авторизации/профиля пользователя */}
-          <Box className={styles.authButtons}>
-            {isAuthenticated ? (
-              <>
-                <IconButton
-                  onClick={handleMenuOpen}
-                  color="inherit"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                >
-                  {user?.avatar ? (
-                    <Avatar src={user.avatar} alt={user.email} className={styles.avatar} />
-                  ) : (
-                    <AccountCircleIcon />
-                  )}
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={open}
-                  onClose={handleMenuClose}
-                >
-                  <MenuItem onClick={handleProfileClick}>
-                    <PersonIcon fontSize="small" className={styles.menuIcon} />
-                    Профиль
-                  </MenuItem>
-                  {user && user.role === 'admin' && (
-                    <MenuItem onClick={handleAdminClick}>
-                      <DashboardIcon fontSize="small" className={styles.menuIcon} />
-                      Администрирование
-                    </MenuItem>
-                  )}
-                  <MenuItem onClick={handleLogout}>
-                    <ExitToAppIcon fontSize="small" className={styles.menuIcon} />
-                    Выйти
-                  </MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <>
-                {!isMobile && (
-                  <>
-                    <Button
-                      component={RouterLink}
-                      to={APP_ROUTES.LOGIN}
-                      color="inherit"
-                      className={styles.authButton}
-                    >
-                      Войти
-                    </Button>
-                    <Button
-                      component={RouterLink}
-                      to={APP_ROUTES.REGISTER}
-                      variant="contained"
-                      color="secondary"
-                      className={styles.authButton}
-                    >
-                      Регистрация
-                    </Button>
-                  </>
+            {/* Переключатель темы */}
+            <div className="pl-4 border-l border-gray-200 dark:border-gray-700">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                aria-label="Переключить тему"
+              >
+                {theme === 'dark' ? (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    ></path>
+                  </svg>
                 )}
-              </>
-            )}
+              </button>
+            </div>
 
             {/* Кнопка мобильного меню */}
-            {isMobile && (
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="end"
-                onClick={toggleMobileMenu}
-              >
-                <MenuIcon />
-              </IconButton>
-            )}
-          </Box>
-        </Toolbar>
-      </Container>
-      {mobileMenu}
-    </AppBar>
+            <button
+              className="ml-4 p-2 rounded-md text-gray-600 dark:text-gray-300 md:hidden hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Открыть меню"
+            >
+              {isOpen ? (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16m-7 6h7"
+                  ></path>
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Мобильное меню */}
+        {isOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
+            <nav className="flex flex-col space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`px-3 py-2 rounded-md font-medium ${
+                    isActive(link.path)
+                      ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
+      </div>
+    </header>
   );
 };

@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 247, 248, 250;
+  }
+
+  .dark {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 17, 24, 39;
+    --background-end-rgb: 10, 15, 25;
+  }
+
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  /* Здесь можно добавить компонентные классы, если нужно */
+  /* Например: */
+  .card {
+    @apply bg-white dark:bg-secondary-800 rounded-lg shadow p-4;
+  }
+
+  .form-input {
+    @apply w-full p-2 border border-secondary-300 dark:border-secondary-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-600 dark:bg-secondary-800 dark:text-white;
+  }
+}
+
+@layer utilities {
+  /* Дополнительные утилитарные классы */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700;
+  }
+
+  /* Улучшенные анимации */
+  .animate-fade-in {
+    @apply opacity-0;
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    @apply opacity-0 translate-y-4;
+    animation: slide-up 0.6s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+
+  .animate-slide-down {
+    @apply opacity-0 -translate-y-4;
+    animation: slide-down 0.6s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+
+  .animate-scale {
+    @apply opacity-0 scale-95;
+    animation: scale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  /* Эффекты наведения */
+  .hover-lift {
+    @apply transition-transform duration-300;
+    &:hover {
+      @apply -translate-y-1;
+    }
+  }
+
+  /* Волновой эффект для кнопок */
+  .pulse-on-hover {
+    @apply relative overflow-hidden;
+    &:after {
+      content: '';
+      @apply absolute inset-0 rounded bg-current opacity-0;
+      transform: scale(0);
+    }
+    &:hover:after {
+      @apply opacity-10;
+      transform: scale(1.5);
+      transition:
+        transform 0.75s cubic-bezier(0.19, 1, 0.22, 1),
+        opacity 0.75s;
+    }
+  }
+}
+
+/* Определение анимаций */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

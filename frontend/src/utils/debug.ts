@@ -16,7 +16,7 @@ export function debugTime(label: string): () => void {
   if (process.env.NODE_ENV !== 'development') {
     return () => {};
   }
-  
+
   // eslint-disable-next-line no-console
   console.time(label);
   // eslint-disable-next-line no-console
@@ -47,10 +47,10 @@ export function debugMemory(label: string): void {
   if (process.env.NODE_ENV !== 'development' || !window.performance) {
     return;
   }
-  
+
   const performance = window.performance as PerformanceWithMemory;
   const memory = performance.memory;
-  
+
   if (memory) {
     // eslint-disable-next-line no-console
     console.log(`${label} - Used JS Heap: ${Math.round(memory.usedJSHeapSize / 1048576)} MB`);
@@ -64,11 +64,14 @@ export function debugMemory(label: string): void {
  * @example
  * debugRenders('UserProfile', { id: 1, name: 'John' });
  */
-export function debugRenders<T extends Record<string, unknown>>(componentName: string, props: T): void {
+export function debugRenders<T extends Record<string, unknown>>(
+  componentName: string,
+  props: T
+): void {
   if (process.env.NODE_ENV !== 'development') {
     return;
   }
-  
+
   // eslint-disable-next-line no-console
   console.group(`Render: ${componentName}`);
   // eslint-disable-next-line no-console
@@ -91,23 +94,23 @@ export function debugPropsChanges<T extends Record<string, unknown>>(
   if (process.env.NODE_ENV !== 'development') {
     return;
   }
-  
+
   // eslint-disable-next-line no-console
   console.group(`Props changed in ${componentName}`);
-  
+
   // Проверяем все ключи обоих объектов
   const allKeys = new Set([...Object.keys(prevProps), ...Object.keys(nextProps)]);
-  
+
   for (const key of allKeys) {
     if (prevProps[key] !== nextProps[key]) {
       // eslint-disable-next-line no-console
       console.log(`${key}:`, {
         from: prevProps[key],
-        to: nextProps[key]
+        to: nextProps[key],
       });
     }
   }
-  
+
   // eslint-disable-next-line no-console
   console.groupEnd();
 }
@@ -125,32 +128,32 @@ export function debugPerformance<T>(
   if (process.env.NODE_ENV !== 'development') {
     return { min: 0, max: 0, avg: 0, result: fn() };
   }
-  
+
   const times: number[] = [];
   let result: T | undefined;
-  
+
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
     result = fn();
     const end = performance.now();
     times.push(end - start);
   }
-  
+
   const min = Math.min(...times);
   const max = Math.max(...times);
   const avg = times.reduce((sum, time) => sum + time, 0) / times.length;
-  
+
   // eslint-disable-next-line no-console
   console.table({
     min: `${min.toFixed(3)} ms`,
     max: `${max.toFixed(3)} ms`,
     avg: `${avg.toFixed(3)} ms`,
-    iterations
+    iterations,
   });
-  
+
   if (result === undefined) {
     throw new Error('Result is undefined');
   }
-  
+
   return { min, max, avg, result };
-} 
+}

@@ -1,86 +1,54 @@
-import React, { forwardRef, ButtonHTMLAttributes } from 'react';
+import { cn } from '@utils/cn';
+import React from 'react';
 
-import styles from './Button.module.css';
-
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'text' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
-
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /**
-   * Вариант кнопки
-   */
-  variant?: ButtonVariant;
-  /**
-   * Размер кнопки
-   */
-  size?: ButtonSize;
-  /**
-   * Флаг, растягивающий кнопку на всю ширину контейнера
-   */
-  fullWidth?: boolean;
-  /**
-   * Флаг, показывающий состояние загрузки
-   */
-  isLoading?: boolean;
-  /**
-   * Дополнительный класс
-   */
-  className?: string;
-  /**
-   * Флаг, делающий кнопку скругленной
-   */
-  rounded?: boolean;
-  /**
-   * Содержимое кнопки
-   */
-  children: React.ReactNode;
-}
+import { ButtonProps } from './Button.types';
 
 /**
- * Кнопка - основной компонент для действий пользователя
+ * Кнопка - базовый UI компонент для взаимодействия пользователя
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      children,
-      variant = 'primary',
-      size = 'md',
-      fullWidth = false,
-      isLoading = false,
-      rounded = false,
-      className = '',
-      disabled = false,
-      ...props
-    },
-    ref
-  ) => {
-    const buttonClasses = [
-      styles.button,
-      styles[variant],
-      styles[size],
-      fullWidth ? styles.fullWidth : '',
-      rounded ? styles.rounded : '',
-      className,
-    ]
-      .filter(Boolean)
-      .join(' ');
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  className,
+  variant = 'primary',
+  size = 'medium',
+  fullWidth = false,
+  disabled = false,
+  type = 'button',
+  onClick,
+  ...props
+}) => {
+  const baseClasses =
+    'rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
 
-    return (
-      <button ref={ref} className={buttonClasses} disabled={disabled || isLoading} {...props}>
-        {isLoading ? (
-          <span className={styles.loader}>
-            <span className={styles.loaderDot}></span>
-            <span className={styles.loaderDot}></span>
-            <span className={styles.loaderDot}></span>
-          </span>
-        ) : (
-          children
-        )}
-      </button>
-    );
-  }
-);
+  const variantClasses = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500',
+    outline:
+      'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  };
 
-Button.displayName = 'Button';
+  const sizeClasses = {
+    small: 'text-sm px-3 py-1',
+    medium: 'text-base px-4 py-2',
+    large: 'text-lg px-6 py-3',
+  };
 
-export default Button;
+  const widthClass = fullWidth ? 'w-full' : '';
+  const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : '';
+
+  const buttonClasses = cn(
+    baseClasses,
+    variantClasses[variant],
+    sizeClasses[size],
+    widthClass,
+    disabledClass,
+    className
+  );
+
+  return (
+    <button type={type} className={buttonClasses} disabled={disabled} onClick={onClick} {...props}>
+      {children}
+    </button>
+  );
+};

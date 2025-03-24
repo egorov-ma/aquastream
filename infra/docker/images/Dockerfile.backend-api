@@ -1,11 +1,20 @@
-# Используем базовый образ OpenJDK 21
-FROM eclipse-temurin:21-jdk
+# Этап сборки
+FROM eclipse-temurin:21-jdk AS build
 
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
 # Копируем собранный JAR-файл из проекта в контейнер
 COPY backend-gateway/build/libs/*.jar app.jar
+
+# Этап выполнения
+FROM eclipse-temurin:21-jre-alpine AS runtime
+
+# Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем JAR-файл из этапа сборки
+COPY --from=build /app/app.jar ./app.jar
 
 # Открываем порт, который использует сервис
 EXPOSE 8080

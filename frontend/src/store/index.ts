@@ -1,27 +1,39 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
+import { combineReducers } from 'redux';
+
+import eventsReducer from './slices/eventsSlice';
+import uiReducer from './slices/uiSlice';
+import userReducer from './slices/userSlice';
 
 import authReducer from '@/modules/auth/store/authSlice';
-import eventsReducer from '@/modules/events/store/eventsSlice';
 // Импортируем другие редьюсеры по мере создания
+
+/**
+ * Корневой редюсер, объединяющий все слайсы
+ */
+const rootReducer = combineReducers({
+  user: userReducer,
+  events: eventsReducer,
+  ui: uiReducer,
+  auth: authReducer,
+  // Добавляем другие редьюсеры по мере создания
+});
 
 /**
  * Корневое хранилище Redux
  */
 const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    events: eventsReducer,
-    // Добавляем другие редьюсеры по мере создания
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Игнорируем некоторые пути для проверки сериализуемости
-        ignoredActions: ['auth/login/fulfilled', 'auth/register/fulfilled'],
-        ignoredPaths: ['auth.user.createdAt', 'auth.user.updatedAt'],
+        // Игнорируем специфичные действия или пути для проверки сериализуемости
+        ignoredActions: ['persist/PERSIST'],
+        ignoredPaths: ['ui.notifications'],
       },
     }),
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 // Типы для хранилища и диспетчера
