@@ -7,6 +7,9 @@
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 255, 255, 255;
     --background-end-rgb: 247, 248, 250;
+    --header-height: 85px;
+    --header-top-padding: 24px;
+    --content-top-padding: calc(var(--header-height) + var(--header-top-padding) + 20px);
   }
 
   .dark {
@@ -23,6 +26,11 @@
       rgb(var(--background-end-rgb))
     );
     min-height: 100vh;
+  }
+  
+  /* Отступ для основного контента под фиксированным меню */
+  main, .main-content {
+    padding-top: var(--content-top-padding);
   }
 }
 

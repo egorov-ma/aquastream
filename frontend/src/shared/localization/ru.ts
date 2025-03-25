@@ -16,6 +16,20 @@ export const ru = {
     register: 'Регистрация',
   },
 
+  // Пункты меню
+  menu: {
+    home: 'Главная',
+    events: 'События',
+    monitoring: 'Мониторинг',
+    profile: 'Профиль',
+    admin: 'Администрирование',
+    calendar: 'Календарь',
+    team: 'Команда',
+    participant: 'Участнику',
+    login: 'Вход',
+    theme: 'Тема',
+  },
+
   // Общие тексты
   common: {
     loading: 'Загрузка...',

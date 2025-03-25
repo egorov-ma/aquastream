@@ -12,8 +12,8 @@ interface MainLayoutProps {
  */
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <main className="flex-1 py-8 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4">{children}</div>
+    <main className="main-content flex-1 pb-8 bg-gray-50 dark:bg-gray-900">
+      <div className="container max-w-full md:max-w-screen-md mx-auto px-4">{children}</div>
     </main>
   );
 };

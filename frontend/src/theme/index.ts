@@ -61,24 +61,24 @@ export const createTheme = (options: ThemeOptions = {}): AppTheme => {
  * Классы для светлой темы компонентов UI
  */
 export const lightTheme = {
-  header: 'bg-white border-b border-gray-200',
+  header: 'bg-[#1E2841] rounded-xl',
   logo: 'text-primary-500',
-  navItem: 'text-secondary-800 hover:text-primary-500 hover:bg-gray-100',
-  activeNavItem: 'text-primary-600 font-medium',
-  themeToggle: 'text-secondary-800 hover:text-primary-500 hover:bg-gray-100',
-  mobileMenuButton: 'text-secondary-800 hover:text-primary-500 hover:bg-gray-100',
-  mobileMenu: 'bg-white border-t border-gray-200',
+  navItem: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800/60 rounded-md',
+  activeNavItem: 'text-primary-400 bg-secondary-800/30 font-medium rounded-md',
+  themeToggle: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800/60',
+  mobileMenuButton: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800/60',
+  mobileMenu: 'bg-[#1E2841] border-t border-secondary-800',
 };
 
 /**
  * Классы для темной темы компонентов UI
  */
 export const darkTheme = {
-  header: 'bg-secondary-900',
+  header: 'bg-[#1E2841] rounded-xl',
   logo: 'text-primary-400',
-  navItem: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800',
-  activeNavItem: 'text-primary-400 font-medium',
-  themeToggle: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800',
-  mobileMenuButton: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800',
-  mobileMenu: 'bg-secondary-900 border-t border-secondary-800',
+  navItem: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800/60 rounded-md',
+  activeNavItem: 'text-primary-400 bg-secondary-800/30 font-medium rounded-md',
+  themeToggle: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800/60',
+  mobileMenuButton: 'text-gray-300 hover:text-primary-400 hover:bg-secondary-800/60',
+  mobileMenu: 'bg-[#1E2841] border-t border-secondary-800',
 };

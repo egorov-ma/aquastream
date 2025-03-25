@@ -3,13 +3,13 @@ import { Outlet } from 'react-router-dom';
 
 import Layout from '@/components/layout/Layout';
 import { PageLoader } from '@/components/ui';
-import { useNavigation } from '@/hooks';
+import { useAppSelector } from '@/hooks/redux';
+import { selectUserState } from '@/store/slices/userSlice';
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
-
-  // Получаем пункты меню из хука
-  const { navItems } = useNavigation();
+  const userState = useAppSelector(selectUserState);
+  const isAuthenticated = !!userState.currentUser;
 
   // Получаем тему из localStorage при загрузке
   useEffect(() => {
@@ -27,7 +27,12 @@ const App = () => {
 
   return (
     <div className={darkMode ? 'dark' : ''}>
-      <Layout toggleTheme={toggleTheme} navItems={navItems} headerAppearEffect="fade-in">
+      <Layout 
+        toggleTheme={toggleTheme} 
+        headerAppearEffect="fade-in"
+        isAuthenticated={isAuthenticated}
+        theme={darkMode ? 'dark' : 'light'}
+      >
         <Suspense fallback={<PageLoader />}>
           <Outlet />
         </Suspense>
