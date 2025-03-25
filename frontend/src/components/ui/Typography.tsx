@@ -20,6 +20,7 @@ export type TypographyVariant =
 export type TypographyColor =
   | 'primary'
   | 'secondary'
+  | 'accent'
   | 'error'
   | 'warning'
   | 'success'
@@ -80,13 +81,14 @@ const Typography: React.FC<TypographyProps> = ({
   // Маппинг цветов к классам Tailwind
   const colorClasses = {
     primary: 'text-primary-600 dark:text-primary-400',
-    secondary: 'text-secondary-600 dark:text-secondary-400',
+    secondary: 'text-secondary-800 dark:text-secondary-400',
+    accent: 'text-accent-600 dark:text-accent-400',
     error: 'text-red-600 dark:text-red-400',
     warning: 'text-yellow-600 dark:text-yellow-400',
     info: 'text-blue-600 dark:text-blue-400',
     success: 'text-green-600 dark:text-green-400',
-    'text-primary': 'text-gray-900 dark:text-white',
-    'text-secondary': 'text-gray-600 dark:text-gray-300',
+    'text-primary': 'text-secondary-900 dark:text-white',
+    'text-secondary': 'text-secondary-700 dark:text-secondary-300',
     inherit: '',
   };
 

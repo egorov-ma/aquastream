@@ -13,7 +13,7 @@ export interface CardProps {
   /**
    * Вариант отображения карточки
    */
-  variant?: 'default' | 'outlined' | 'elevated' | 'flat';
+  variant?: 'default' | 'outlined' | 'elevated' | 'flat' | 'primary' | 'accent';
   /**
    * Убрать отступы для карточки
    */
@@ -98,6 +98,8 @@ export const Card: React.FC<CardProps> = ({
       'bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700',
     elevated: 'bg-white dark:bg-secondary-800 shadow-md',
     flat: 'bg-secondary-50 dark:bg-secondary-900',
+    primary: 'bg-primary-500 text-white dark:bg-primary-600',
+    accent: 'bg-accent-400 text-secondary-900 dark:bg-accent-500',
   };
 
   // Классы для эффектов наведения

@@ -4,7 +4,7 @@ import React, { forwardRef, useState } from 'react';
 // Типы для размеров и вариантов текстового поля
 export type TextFieldSize = 'sm' | 'md' | 'lg';
 export type TextFieldVariant = 'outlined' | 'filled' | 'underlined' | 'floating';
-export type TextFieldColor = 'primary' | 'secondary' | 'error' | 'warning' | 'success' | 'info';
+export type TextFieldColor = 'primary' | 'secondary' | 'accent' | 'error' | 'warning' | 'success' | 'info';
 
 /**
  * Интерфейс пропсов TextField
@@ -99,8 +99,14 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       secondary: {
         border: 'border-gray-300 dark:border-gray-600',
         focus:
-          'focus:border-gray-500 focus:ring-gray-500 dark:focus:border-gray-400 dark:focus:ring-gray-400',
-        text: 'text-gray-600 dark:text-gray-400',
+          'focus:border-secondary-700 focus:ring-secondary-700 dark:focus:border-secondary-600 dark:focus:ring-secondary-600',
+        text: 'text-secondary-800 dark:text-secondary-400',
+      },
+      accent: {
+        border: 'border-accent-300 dark:border-accent-600',
+        focus:
+          'focus:border-accent-500 focus:ring-accent-500 dark:focus:border-accent-400 dark:focus:ring-accent-400',
+        text: 'text-accent-600 dark:text-accent-400',
       },
       error: {
         border: 'border-red-300 dark:border-red-600',
@@ -158,7 +164,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     // Базовые стили для инпута
     const inputClasses = clsx(
       'w-full transition-colors duration-200 outline-none focus:ring-2 focus:ring-offset-0',
-      'placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white',
+      'placeholder-gray-400 dark:placeholder-gray-500 text-secondary-900 dark:text-white',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       variantClasses[variant],
       sizeClasses[size],
@@ -178,7 +184,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     // Классы для лейбла
     const labelClasses = clsx(
       'block text-sm font-medium mb-1',
-      isFocused ? text : 'text-gray-700 dark:text-gray-300',
+      isFocused ? text : 'text-secondary-800 dark:text-secondary-300',
       disabled && 'opacity-50'
     );
 
@@ -188,7 +194,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       'left-2.5 bg-white dark:bg-gray-800 px-1 pointer-events-none',
       isFocused || hasValue
         ? `${text} -translate-y-3 scale-75 origin-left`
-        : 'text-gray-500 dark:text-gray-400 translate-y-2.5'
+        : 'text-secondary-500 dark:text-secondary-400 translate-y-2.5'
     );
 
     // Используем errorText как helperText при наличии ошибки

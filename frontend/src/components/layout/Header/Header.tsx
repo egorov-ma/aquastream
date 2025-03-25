@@ -6,6 +6,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useTranslate } from '@/hooks';
 import { useElementSize } from '@/hooks/useElementSize';
 import { lightTheme, darkTheme } from '@/theme';
+import { NeoSplav } from '@/components/icons';
 
 /**
  * Интерфейс для пункта навигации
@@ -114,12 +115,10 @@ const Header: React.FC<HeaderProps> = ({ navItems = [], onThemeToggle, theme = '
           <div className="flex-shrink-0">
             <Link
               to="/"
-              className={`text-2xl font-bold tracking-tight ${
-                theme === 'dark' ? darkTheme.logo : lightTheme.logo
-              }`}
+              className="flex items-center"
               onClick={closeMenu}
             >
-              AquaStream
+              <NeoSplav className="h-8 w-auto" />
             </Link>
           </div>
 
@@ -154,7 +153,7 @@ const Header: React.FC<HeaderProps> = ({ navItems = [], onThemeToggle, theme = '
               }`}
               onClick={onThemeToggle}
             >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              {theme === 'dark' ? <Sun size={20} className="text-accent-400" /> : <Moon size={20} />}
             </button>
           </nav>
 
@@ -222,7 +221,7 @@ const Header: React.FC<HeaderProps> = ({ navItems = [], onThemeToggle, theme = '
                     }}
                   >
                     <span className="mr-2">
-                      {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                      {theme === 'dark' ? <Sun size={20} className="text-accent-400" /> : <Moon size={20} />}
                     </span>
                     <span>{theme === 'dark' ? 'Светлая тема' : 'Темная тема'}</span>
                   </button>
