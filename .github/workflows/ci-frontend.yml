@@ -40,9 +40,20 @@ jobs:
     - name: Type check
       run: npx tsc --noEmit
       
-    - name: Test
-      run: npm test
+    - name: Run tests with coverage
+      run: npm run test:ci
       
+    - name: Generate coverage badges
+      run: node scripts/generate-coverage-badge.js
+      
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: |
+          frontend/coverage/
+          frontend/coverage-report.json
+          
     - name: Build
       run: npm run build
       
@@ -51,6 +62,15 @@ jobs:
       with:
         name: build-files
         path: frontend/dist/
+
+    # Опционально: интеграция с Codecov для отображения покрытия
+    - name: Upload coverage to Codecov
+      if: github.event_name == 'push' || github.event_name == 'pull_request'
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./frontend/coverage/
+        fail_ci_if_error: false
+        verbose: true
 
   deploy:
     needs: build

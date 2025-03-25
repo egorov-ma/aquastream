@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
   login,
@@ -11,15 +10,15 @@ import {
 } from '../store/authSlice';
 import { User, LoginData, RegisterData, UpdateProfileData, ChangePasswordData } from '../types';
 
-import { RootState, AppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 
 /**
  * Хук для работы с аутентификацией
  */
 export const useAuth = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated, user, accessToken, refreshToken, isLoading, error } = useSelector(
-    (state: RootState) => state.auth
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user, accessToken, refreshToken, isLoading, error } = useAppSelector(
+    (state) => state.auth
   );
 
   const loginUser = useCallback(

@@ -3,6 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { authApi } from '@/modules/auth/api/authApi';
 import type { LoginData, RegisterData } from '@/modules/auth/types';
+import { UserRole } from '@/shared/config/menu';
 import type { RootState } from '@/store';
 
 // Локальный интерфейс User для sliceUser, чтобы избежать конфликта с импортом
@@ -12,6 +13,7 @@ interface UserData {
   email: string;
   displayName?: string;
   avatar?: string;
+  role?: UserRole; // Роль пользователя
 }
 
 interface UserState {
@@ -154,6 +156,12 @@ export const selectIsLoading = createSelector(
 
 export const selectError = createSelector([selectUserState], (userState) => userState.error);
 
+// Селектор для получения роли текущего пользователя (гость, если не авторизован)
+export const selectUserRole = createSelector([selectCurrentUser], (currentUser): UserRole => {
+  if (!currentUser) return UserRole.GUEST;
+  return currentUser.role || UserRole.USER; // По умолчанию обычный пользователь
+});
+
 // Селектор для получения простых данных пользователя
 export const selectUserBasicInfo = createSelector([selectCurrentUser], (currentUser) => {
   if (!currentUser) return null;
@@ -163,6 +171,6 @@ export const selectUserBasicInfo = createSelector([selectCurrentUser], (currentU
     name: currentUser.username,
     email: currentUser.email,
     avatar: currentUser.avatar,
-    role: currentUser.displayName,
+    role: currentUser.role || UserRole.USER,
   };
 });

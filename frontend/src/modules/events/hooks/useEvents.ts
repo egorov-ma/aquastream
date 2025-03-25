@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
   fetchEvents,
@@ -15,15 +14,17 @@ import {
 } from '../store/eventsSlice';
 import { EventFilters, CreateEventData, UpdateEventData } from '../types';
 
-import { RootState, AppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 
 /**
  * Хук для работы с событиями
  * Предоставляет доступ к состоянию событий и методам для работы с ними
  */
 export const useEvents = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { upcoming, all, isLoading, error } = useSelector((state: RootState) => state.events);
+  const dispatch = useAppDispatch();
+  const { events, featuredEvents, currentEvent, isLoading, error } = useAppSelector(
+    (state) => state.events
+  );
 
   /**
    * Получение списка всех событий
@@ -129,8 +130,10 @@ export const useEvents = () => {
   }, [dispatch]);
 
   return {
-    upcoming,
-    all,
+    all: events,
+    upcoming: events?.filter((event) => new Date(event.startDate) > new Date()),
+    featured: featuredEvents,
+    current: currentEvent,
     isLoading,
     error,
     getEvents,

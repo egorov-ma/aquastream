@@ -21,6 +21,37 @@ interface CacheEntry<T> {
 type Dependencies = readonly unknown[];
 
 /**
+ * Проверяет валидность кэшированных данных
+ * @param cachedData Кэшированные данные
+ * @param ttl Время жизни кэша
+ * @param version Версия кэша
+ * @returns Валидны ли данные
+ */
+function isValidCache<T>(cachedData: CacheEntry<T> | null, ttl: number, version: string): boolean {
+  if (!cachedData) return false;
+
+  const now = Date.now();
+  return now - cachedData.timestamp < ttl && cachedData.version === version;
+}
+
+/**
+ * Пытается получить данные из кэша
+ * @param key Ключ кэша
+ * @returns Данные из кэша или null
+ */
+function getFromCache<T>(key: string): CacheEntry<T> | null {
+  const cachedDataString = localStorage.getItem(key);
+  if (!cachedDataString) return null;
+
+  try {
+    return JSON.parse(cachedDataString) as CacheEntry<T>;
+  } catch (err) {
+    console.warn('Ошибка при разборе кэша:', err);
+    return null;
+  }
+}
+
+/**
  * Хук для кэширования данных с использованием localStorage
  * @param fetcher Функция для загрузки данных
  * @param dependencies Зависимости для повторной загрузки данных
@@ -59,28 +90,18 @@ export function useCache<T>(
       setIsLoading(true);
       setError(null);
 
-      try {
-        // Проверяем кэш, если не игнорируем его
-        if (!ignoreCache) {
-          const cachedDataString = localStorage.getItem(key);
-          if (cachedDataString) {
-            try {
-              const parsed = JSON.parse(cachedDataString) as CacheEntry<T>;
-              const now = Date.now();
+      // Проверяем кэш, если не игнорируем его
+      if (!ignoreCache) {
+        const cachedData = getFromCache<T>(key);
 
-              // Проверяем время жизни и версию
-              if (now - parsed.timestamp < ttl && parsed.version === version) {
-                setData(parsed.data);
-                setIsLoading(false);
-                return;
-              }
-            } catch (err) {
-              // Если ошибка при разборе кэша, просто продолжаем загрузку
-              console.warn('Ошибка при разборе кэша:', err);
-            }
-          }
+        if (cachedData && isValidCache(cachedData, ttl, version)) {
+          setData(cachedData.data);
+          setIsLoading(false);
+          return;
         }
+      }
 
+      try {
         // Получаем новые данные
         const result = await fetcher();
 
@@ -92,7 +113,6 @@ export function useCache<T>(
         };
 
         localStorage.setItem(key, JSON.stringify(cacheEntry));
-
         setData(result);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));

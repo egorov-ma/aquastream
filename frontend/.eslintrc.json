@@ -28,8 +28,11 @@
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "eqeqeq": "error",
+    "max-depth": ["warn", 4],
+    "max-lines": ["warn", 300],
     "import/order": [
       "error",
       {

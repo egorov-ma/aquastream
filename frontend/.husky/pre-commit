@@ -7,4 +7,10 @@ npx tsc --noEmit || exit 1
 
 # Запуск линтера
 echo "🔍 Запуск ESLint..."
-npx lint-staged || exit 1 
+npx lint-staged || exit 1
+
+# Генерация бейджей покрытия, если они существуют
+if [ -f "coverage/coverage-final.json" ]; then
+  echo "🔍 Обновление бейджей покрытия кода..."
+  node scripts/generate-coverage-badge.js || exit 1
+fi 

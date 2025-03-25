@@ -1,112 +1,176 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
+
+import { logger } from './logger';
+import { storageService } from './storage';
 
 import { STORAGE_KEYS, API_URL } from '@/shared/config';
 
-// Расширяем тип AxiosRequestConfig для обработки повторных запросов
-interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
+/**
+ * Расширение интерфейса AxiosRequestConfig для добавления метаданных и признака повторного запроса
+ */
+export interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
+  _metadata?: {
+    startTime: number;
+    method: string;
+    url: string;
+  };
   _retry?: boolean;
 }
 
 /**
- * Интерфейс для ответа API с рефреш-токеном
+ * Интерфейс для ответа от сервера при обновлении токена
  */
-interface RefreshTokenResponse {
+interface RefreshTokenResponseData {
   accessToken: string;
   refreshToken: string;
 }
 
-// Таймаут запросов
-const TIMEOUT = 10000; // 10 секунд
-
 /**
- * Базовый API сервис для работы с axios
+ * API-сервис для взаимодействия с сервером
  */
-class ApiService {
-  private api: AxiosInstance;
+export class ApiService {
+  private readonly instance: AxiosInstance;
+  private isRefreshing = false;
+  private refreshSubscribers: Array<(token: string) => void> = [];
 
-  constructor() {
-    this.api = axios.create({
-      baseURL: API_URL,
-      timeout: TIMEOUT,
+  /**
+   * Создает экземпляр ApiService
+   * @param baseURL - базовый URL для API
+   */
+  constructor(baseURL: string) {
+    logger.debug('Initializing API service', { baseURL });
+
+    this.instance = axios.create({
+      baseURL,
       headers: {
         'Content-Type': 'application/json',
       },
+      timeout: 15000,
     });
 
     this.setupInterceptors();
   }
 
   /**
-   * Настройка перехватчиков запросов и ответов
+   * Настраивает перехватчики запросов и ответов
    */
   private setupInterceptors(): void {
     // Перехватчик запросов
-    this.api.interceptors.request.use(
-      (config) => {
-        const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    this.instance.interceptors.request.use(
+      (config: InternalAxiosRequestConfig) => {
+        const token = storageService.getAccessToken();
+        const extendedConfig = config as unknown as ExtendedAxiosRequestConfig;
+
+        extendedConfig._metadata = {
+          startTime: Date.now(),
+          method: config.method?.toUpperCase() || 'UNKNOWN',
+          url: config.url || 'UNKNOWN',
+        };
+
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => {
+        logger.error('Request interceptor error', error);
+        return Promise.reject(error);
+      }
     );
 
     // Перехватчик ответов
-    this.api.interceptors.response.use(
-      (response) => response,
-      async (error: unknown) => {
-        // Проверяем, что error имеет нужную структуру
-        if (error && typeof error === 'object' && 'config' in error) {
-          const originalRequest = error.config as ExtendedAxiosRequestConfig;
+    this.instance.interceptors.response.use(
+      (response) => {
+        const config = response.config as ExtendedAxiosRequestConfig;
+        const metadata = config._metadata;
 
-          // Проверяем, что error.response существует и имеет свойство status
-          if (
-            error &&
-            typeof error === 'object' &&
-            'response' in error &&
-            error.response &&
-            typeof error.response === 'object' &&
-            'status' in error.response &&
-            error.response.status === 401 &&
-            !originalRequest._retry
-          ) {
-            originalRequest._retry = true;
+        if (metadata) {
+          const duration = Date.now() - metadata.startTime;
+          logger.debug(`${metadata.method} ${metadata.url} - ${response.status} (${duration}ms)`);
+        }
 
+        return response;
+      },
+      async (error: AxiosError) => {
+        const originalRequest = error.config as ExtendedAxiosRequestConfig;
+
+        if (!originalRequest) {
+          return Promise.reject(error);
+        }
+
+        const metadata = originalRequest._metadata;
+        if (metadata) {
+          const duration = Date.now() - metadata.startTime;
+          logger.error(
+            `${metadata.method} ${metadata.url} - ${error.response?.status || 'ERROR'} (${duration}ms)`,
+            error
+          );
+        }
+
+        // Проверка на ошибку 401 (Unauthorized)
+        if (
+          error.response &&
+          error.response.status === 401 &&
+          originalRequest.url !== '/auth/refresh' &&
+          !originalRequest._retry
+        ) {
+          if (this.isRefreshing) {
             try {
-              // Получаем refresh token
-              const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
-
-              if (!refreshToken) {
-                // Если нет refresh token, выходим из системы
-                this.logout();
-                return Promise.reject(error);
-              }
-
-              // Пытаемся обновить токен
-              const response = await axios.post<RefreshTokenResponse>(`${API_URL}/auth/refresh`, {
-                refreshToken,
+              const token = await new Promise<string>((resolve) => {
+                this.addRefreshSubscriber((token) => {
+                  resolve(token);
+                });
               });
 
-              const { accessToken, refreshToken: newRefreshToken } = response.data;
-
-              // Сохраняем новые токены
-              localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
-              localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newRefreshToken);
-
-              // Обновляем заголовок и повторяем запрос
-              this.api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-              originalRequest.headers = {
-                ...originalRequest.headers,
-                Authorization: `Bearer ${accessToken}`,
-              };
-
-              return this.api(originalRequest);
+              if (originalRequest.headers) {
+                originalRequest.headers.Authorization = `Bearer ${token}`;
+              }
+              return this.instance(originalRequest);
             } catch (refreshError) {
-              // Если не удалось обновить токен, выходим из системы
-              this.logout();
               return Promise.reject(refreshError);
             }
+          }
+
+          originalRequest._retry = true;
+          this.isRefreshing = true;
+
+          try {
+            const refreshToken = storageService.getRefreshToken();
+
+            if (!refreshToken) {
+              this.logout();
+              return Promise.reject(new Error('No refresh token available'));
+            }
+
+            const response = await this.instance.post<{ data: RefreshTokenResponseData }>(
+              '/auth/refresh',
+              {
+                refreshToken,
+              }
+            );
+
+            const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+
+            storageService.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+            storageService.setItem(STORAGE_KEYS.REFRESH_TOKEN, newRefreshToken);
+            this.onRefreshSuccess(accessToken);
+
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            }
+
+            return this.instance(originalRequest);
+          } catch (refreshError) {
+            this.onRefreshFailure(refreshError as Error);
+            this.logout();
+            return Promise.reject(refreshError);
           }
         }
 
@@ -116,82 +180,113 @@ class ApiService {
   }
 
   /**
-   * Выход из системы (очистка localStorage)
+   * Добавляет подписчика для обновления токена
+   * @param callback - функция обратного вызова
    */
-  private logout(): void {
-    localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.USER);
-
-    // Перенаправление на страницу входа
-    window.location.href = '/login';
+  private addRefreshSubscriber(callback: (token: string) => void): void {
+    this.refreshSubscribers.push(callback);
   }
 
   /**
-   * GET запрос
-   * @param url URL запроса
-   * @param config Конфигурация запроса
+   * Вызывается при успешном обновлении токена
+   * @param token - новый токен
+   */
+  private onRefreshSuccess(token: string): void {
+    this.refreshSubscribers.forEach((callback) => callback(token));
+    this.refreshSubscribers = [];
+    this.isRefreshing = false;
+  }
+
+  /**
+   * Вызывается при ошибке обновления токена
+   * @param error - объект ошибки
+   */
+  private onRefreshFailure(error: Error): void {
+    logger.error('Token refresh failed', error);
+    this.refreshSubscribers = [];
+    this.isRefreshing = false;
+  }
+
+  /**
+   * Выполняет GET-запрос к API
+   * @param url - URL-адрес
+   * @param config - конфигурация запроса
    * @returns Promise с ответом
    */
-  public get<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.api.get<T>(url, config);
+  public get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return this.instance.get<T, AxiosResponse<T>>(url, config).then((response) => response.data);
   }
 
   /**
-   * POST запрос
-   * @param url URL запроса
-   * @param data Данные запроса
-   * @param config Конфигурация запроса
+   * Выполняет POST-запрос к API
+   * @param url - URL-адрес
+   * @param data - данные для отправки
+   * @param config - конфигурация запроса
    * @returns Promise с ответом
    */
   public post<T, D = Record<string, unknown>>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
-    return this.api.post<T>(url, data, config);
+  ): Promise<T> {
+    return this.instance
+      .post<T, AxiosResponse<T>, D>(url, data, config)
+      .then((response) => response.data);
   }
 
   /**
-   * PUT запрос
-   * @param url URL запроса
-   * @param data Данные запроса
-   * @param config Конфигурация запроса
+   * Выполняет PUT-запрос к API
+   * @param url - URL-адрес
+   * @param data - данные для отправки
+   * @param config - конфигурация запроса
    * @returns Promise с ответом
    */
   public put<T, D = Record<string, unknown>>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
-    return this.api.put<T>(url, data, config);
+  ): Promise<T> {
+    return this.instance
+      .put<T, AxiosResponse<T>, D>(url, data, config)
+      .then((response) => response.data);
   }
 
   /**
-   * DELETE запрос
-   * @param url URL запроса
-   * @param config Конфигурация запроса
-   * @returns Promise с ответом
-   */
-  public delete<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.api.delete<T>(url, config);
-  }
-
-  /**
-   * PATCH запрос
-   * @param url URL запроса
-   * @param data Данные запроса
-   * @param config Конфигурация запроса
+   * Выполняет PATCH-запрос к API
+   * @param url - URL-адрес
+   * @param data - данные для отправки
+   * @param config - конфигурация запроса
    * @returns Promise с ответом
    */
   public patch<T, D = Record<string, unknown>>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
-    return this.api.patch<T>(url, data, config);
+  ): Promise<T> {
+    return this.instance
+      .patch<T, AxiosResponse<T>, D>(url, data, config)
+      .then((response) => response.data);
+  }
+
+  /**
+   * Выполняет DELETE-запрос к API
+   * @param url - URL-адрес
+   * @param config - конфигурация запроса
+   * @returns Promise с ответом
+   */
+  public delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return this.instance.delete<T, AxiosResponse<T>>(url, config).then((response) => response.data);
+  }
+
+  /**
+   * Выполняет выход пользователя
+   */
+  public logout(): void {
+    logger.debug('Logging out user (API service)');
+    storageService.clearAuthData();
+    window.location.href = '/login';
   }
 }
 
-// Экспортируем экземпляр сервиса
-export const apiService = new ApiService();
+// Экспортируем singleton-экземпляр
+export const apiService = new ApiService(API_URL);

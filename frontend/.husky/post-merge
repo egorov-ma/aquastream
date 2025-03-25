@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Генерация бейджей покрытия, если они существуют
+if [ -f "coverage/coverage-final.json" ]; then
+  echo "🔍 Обновление бейджей покрытия кода после слияния..."
+  node scripts/generate-coverage-badge.js || exit 1
+fi 

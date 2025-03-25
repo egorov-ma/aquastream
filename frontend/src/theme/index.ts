@@ -53,3 +53,29 @@ export const createTheme = (options: ThemeOptions = {}): AppTheme => {
     borderRadius: options.borderRadius || '0.375rem', // rounded-md
   };
 };
+
+/**
+ * Классы для светлой темы компонентов UI
+ */
+export const lightTheme = {
+  header: 'bg-white',
+  logo: 'text-blue-600',
+  navItem: 'text-gray-700 hover:text-blue-600 hover:bg-gray-100',
+  activeNavItem: 'text-blue-600 font-medium',
+  themeToggle: 'text-gray-700 hover:text-blue-600 hover:bg-gray-100',
+  mobileMenuButton: 'text-gray-700 hover:text-blue-600 hover:bg-gray-100',
+  mobileMenu: 'bg-white border-t border-gray-200',
+};
+
+/**
+ * Классы для темной темы компонентов UI
+ */
+export const darkTheme = {
+  header: 'bg-gray-900',
+  logo: 'text-blue-400',
+  navItem: 'text-gray-300 hover:text-blue-400 hover:bg-gray-800',
+  activeNavItem: 'text-blue-400 font-medium',
+  themeToggle: 'text-gray-300 hover:text-blue-400 hover:bg-gray-800',
+  mobileMenuButton: 'text-gray-300 hover:text-blue-400 hover:bg-gray-800',
+  mobileMenu: 'bg-gray-900 border-t border-gray-700',
+};

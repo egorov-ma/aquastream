@@ -11,7 +11,6 @@ export { default as TextField } from './TextField';
 export { default as Checkbox } from './Checkbox/Checkbox';
 export { default as Modal } from './Modal/Modal';
 export { default as PageLoader } from './PageLoader';
-export { TubelightNavBar } from './tubelight-navbar';
 export { LazyImage } from './LazyImage/LazyImage';
 
 // Экспорт типов компонентов

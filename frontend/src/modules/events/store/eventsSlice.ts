@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
+import { eventsApi } from '../api/eventsApi';
 import { Event, EventsState, EventFilters, CreateEventData, UpdateEventData } from '../types';
 
-import { eventsApi } from '@/services/eventsApi';
 import { ApiError } from '@/shared/types/api';
+import { RootState } from '@/store';
 
 // Начальное состояние
 const initialState: EventsState = {
@@ -275,3 +276,10 @@ const eventsSlice = createSlice({
 
 export const { clearCurrentEvent, clearEventsError } = eventsSlice.actions;
 export default eventsSlice.reducer;
+
+// Селекторы
+export const selectEvents = (state: RootState) => state.events.events;
+export const selectFeaturedEvents = (state: RootState) => state.events.featuredEvents;
+export const selectCurrentEvent = (state: RootState) => state.events.currentEvent;
+export const selectEventsLoading = (state: RootState) => state.events.isLoading;
+export const selectEventsError = (state: RootState) => state.events.error;

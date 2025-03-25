@@ -63,8 +63,7 @@ export interface LazyImageProps {
 }
 
 /**
- * Компонент для ленивой загрузки изображений.
- * Изображение загружается только когда попадает в область видимости.
+ * Компонент для "ленивой" загрузки изображений с различными эффектами
  */
 export const LazyImage: React.FC<LazyImageProps> = ({
   src,
@@ -88,225 +87,203 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   showPreloader = true,
   fallbackSrc,
 }) => {
-  // Состояния для отслеживания загрузки и видимости
+  // Состояния для управления загрузкой и отображением
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(loading !== 'lazy');
-  const [hasError, setHasError] = useState(false);
-  const imgRef = useRef<HTMLDivElement>(null);
+  const [isError, setIsError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState<string | undefined>(
+    lowQualityPreview ? previewSrc : undefined
+  );
+  const imageRef = useRef<HTMLImageElement>(null);
+  const observer = useRef<IntersectionObserver | null>(null);
 
-  // Наблюдаем за появлением элемента в области видимости
-  useEffect(() => {
-    if (loading !== 'lazy') {
-      setIsInView(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1, rootMargin: '200px' }
-    );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [loading]);
-
-  // Обработчик загрузки изображения
-  const handleImageLoad = useCallback(() => {
+  // Обработчик успешной загрузки изображения
+  const handleImageLoaded = useCallback(() => {
     setIsLoaded(true);
-    if (onLoad) {
-      onLoad();
-    }
+    if (onLoad) onLoad();
   }, [onLoad]);
 
-  // Обработчик ошибки загрузки
-  const handleImageError = useCallback(
-    (_: React.SyntheticEvent<HTMLImageElement, Event>) => {
-      setHasError(true);
-      if (onError) {
-        onError(new Error(`Failed to load image: ${src}`));
+  // Обработчик ошибки загрузки изображения
+  const handleImageError = useCallback(() => {
+    setIsError(true);
+    if (onError) onError(new Error(`Failed to load image: ${src}`));
+    if (fallbackSrc) {
+      setCurrentSrc(fallbackSrc);
+    }
+  }, [fallbackSrc, onError, src]);
+
+  // Устанавливаем наблюдатель за пересечением viewport и изображения
+  useEffect(() => {
+    if (loading !== 'lazy' || !imageRef.current) return;
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setCurrentSrc(src);
+        observer.current?.disconnect();
       }
-    },
-    [onError, src]
-  );
+    });
 
-  // Классы для скругления
-  const roundedClasses = {
-    none: 'rounded-none',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    xl: 'rounded-xl',
-    full: 'rounded-full',
-  };
+    observer.current.observe(imageRef.current);
 
-  // Классы для тени
-  const shadowClasses = {
-    none: '',
-    sm: 'shadow-sm',
-    md: 'shadow',
-    lg: 'shadow-lg',
-    xl: 'shadow-xl',
-  };
-
-  // Классы для анимации
-  const getAnimationStyles = (): React.CSSProperties => {
-    const baseStyles: React.CSSProperties = {
-      transition: `opacity ${animationDuration}ms ease-out`,
+    return () => {
+      observer.current?.disconnect();
     };
+  }, [loading, src]);
 
-    if (!isLoaded) return baseStyles;
+  // Сбрасываем состояния при смене источника изображения
+  useEffect(() => {
+    if (loading === 'eager') {
+      setCurrentSrc(src);
+    }
+    setIsLoaded(false);
+    setIsError(false);
+  }, [src, loading]);
+
+  // Определение стилей на основе пропсов
+  const getBorderRadius = () => {
+    const borderRadiusMap: Record<string, string> = {
+      none: '0',
+      sm: '0.125rem',
+      md: '0.375rem',
+      lg: '0.5rem',
+      xl: '0.75rem',
+      full: '9999px',
+    };
+    return borderRadiusMap[rounded] || borderRadiusMap.md;
+  };
+
+  const getBoxShadow = () => {
+    const shadowMap: Record<string, string> = {
+      none: 'none',
+      sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+      md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    };
+    return shadowMap[shadow] || shadowMap.none;
+  };
+
+  const getAnimationStyle = () => {
+    const baseTransition = `opacity ${animationDuration}ms ease-out`;
 
     switch (fadeAnimation) {
       case 'none':
         return {};
       case 'zoom':
         return {
-          ...baseStyles,
-          transform: 'scale(1)',
-          transition: `opacity ${animationDuration}ms ease-out, transform ${animationDuration}ms ease-out`,
+          transform: isLoaded ? 'scale(1)' : 'scale(1.1)',
+          transition: `${baseTransition}, transform ${animationDuration}ms ease-out`,
         };
       case 'blur':
         return {
-          ...baseStyles,
-          filter: 'blur(0)',
-          transition: `opacity ${animationDuration}ms ease-out, filter ${animationDuration}ms ease-out`,
+          filter: isLoaded ? 'blur(0)' : 'blur(10px)',
+          transition: `${baseTransition}, filter ${animationDuration}ms ease-out`,
         };
       case 'slide-up':
         return {
-          ...baseStyles,
-          transform: 'translateY(0)',
-          transition: `opacity ${animationDuration}ms ease-out, transform ${animationDuration}ms ease-out`,
+          transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
+          transition: `${baseTransition}, transform ${animationDuration}ms ease-out`,
         };
       case 'fade':
       default:
-        return baseStyles;
+        return {
+          transition: baseTransition,
+        };
     }
   };
 
-  // Классы для эффекта наведения
-  const hoverClasses = {
-    none: '',
-    zoom: 'group-hover:scale-110 transition-transform duration-300',
-    brightness: 'group-hover:brightness-110 transition-all duration-300',
-    scale: 'group-hover:scale-[1.02] transition-transform duration-300',
-    lift: 'group-hover:-translate-y-1 transition-transform duration-300',
-  };
-
-  // Составляем стили для контейнера и изображения
-  const containerStyle: React.CSSProperties = {
-    width,
-    height,
-    backgroundColor: !isLoaded ? placeholderColor : 'transparent',
-    overflow: 'hidden',
+  // Вычисляем стили для контейнера
+  const containerStyles: React.CSSProperties = {
     position: 'relative',
+    overflow: 'hidden',
+    display: 'inline-block',
+    width: width || 'auto',
+    height: height || 'auto',
+    backgroundColor: isLoaded ? 'transparent' : placeholderColor,
+    transition: 'background-color 0.3s ease',
+    borderRadius: getBorderRadius(),
+    boxShadow: getBoxShadow(),
     ...style,
   };
 
-  // Начальные стили для обычного изображения
-  let initialImageStyles: React.CSSProperties = {
-    objectFit,
-    opacity: isLoaded ? 1 : 0,
+  // Вычисляем стили для изображения
+  const imageStyles: React.CSSProperties = {
     width: '100%',
     height: '100%',
+    objectFit,
+    opacity: isLoaded ? 1 : 0,
+    ...getAnimationStyle(),
   };
 
-  // Применяем анимационные стили
-  if (fadeAnimation !== 'none') {
-    switch (fadeAnimation) {
+  // Определяем классы для эффекта при наведении
+  const getHoverClass = () => {
+    switch (hoverEffect) {
       case 'zoom':
-        initialImageStyles = {
-          ...initialImageStyles,
-          transform: isLoaded ? 'scale(1)' : 'scale(1.1)',
-        };
-        break;
-      case 'blur':
-        initialImageStyles = {
-          ...initialImageStyles,
-          filter: isLoaded ? 'blur(0)' : 'blur(10px)',
-        };
-        break;
-      case 'slide-up':
-        initialImageStyles = {
-          ...initialImageStyles,
-          transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-        };
-        break;
+        return 'lazy-image-hover-zoom';
+      case 'brightness':
+        return 'lazy-image-hover-brightness';
+      case 'scale':
+        return 'lazy-image-hover-scale';
+      case 'lift':
+        return 'lazy-image-hover-lift';
+      default:
+        return '';
     }
-  }
-
-  const imageStyles = {
-    ...initialImageStyles,
-    ...getAnimationStyles(),
   };
 
-  // Отображаем заглушку, если произошла ошибка загрузки
-  if (hasError && fallbackSrc) {
-    return (
-      <div
-        ref={imgRef}
-        className={clsx(className, roundedClasses[rounded], shadowClasses[shadow], 'group')}
-        style={containerStyle}
-      >
-        <img
-          src={fallbackSrc}
-          alt={alt}
-          className={clsx('w-full h-full', hoverClasses[hoverEffect])}
-          style={{ objectFit }}
-        />
-      </div>
-    );
-  }
+  // Определяем классы для контейнера
+  const containerClasses = clsx(
+    'lazy-image-container',
+    className,
+    {
+      'lazy-image-loaded': isLoaded,
+      'lazy-image-error': isError,
+    },
+    getHoverClass()
+  );
+
+  // CSS для анимации лоадера
+  const loaderStyle: React.CSSProperties = {
+    width: '30px',
+    height: '30px',
+    border: '3px solid rgba(0, 0, 0, 0.1)',
+    borderTop: '3px solid #3498db',
+    borderRadius: '50%',
+    animation: 'lazyImageSpin 1s linear infinite',
+  };
 
   return (
-    <div
-      ref={imgRef}
-      className={clsx(className, roundedClasses[rounded], shadowClasses[shadow], 'group')}
-      style={containerStyle}
-    >
-      {/* Изображение с низким разрешением (превью) */}
-      {lowQualityPreview && previewSrc && !isLoaded && (
-        <img
-          src={previewSrc}
-          alt={alt}
-          className="absolute top-0 left-0 w-full h-full"
-          style={{
-            objectFit,
-            filter: 'blur(8px)',
-            transform: 'scale(1.05)',
-            opacity: 0.5,
-          }}
-        />
-      )}
-
+    <div className={containerClasses} style={containerStyles}>
       {/* Прелоадер */}
-      {showPreloader && !isLoaded && isInView && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="w-8 h-8 border-4 border-gray-200 rounded-full animate-spin border-t-blue-500"></div>
+      {!isLoaded && showPreloader && (
+        <div
+          className="lazy-image-placeholder"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: placeholderColor,
+          }}
+        >
+          <div className="lazy-image-loader" style={loaderStyle} />
         </div>
       )}
 
-      {/* Основное изображение */}
-      {isInView && (
-        <img
-          src={src}
-          alt={alt}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-          className={clsx('transition-all duration-300 ease-out', hoverClasses[hoverEffect])}
-          style={imageStyles}
-          loading={loading}
-        />
-      )}
+      {/* Изображение */}
+      <img
+        ref={imageRef}
+        src={currentSrc || (loading === 'eager' ? src : undefined)}
+        alt={alt}
+        className="lazy-image"
+        style={imageStyles}
+        onLoad={handleImageLoaded}
+        onError={handleImageError}
+        loading={loading}
+      />
     </div>
   );
 };

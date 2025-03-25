@@ -1,177 +1,239 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Sun, Moon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 
-import { useTheme } from '../../../theme';
+import { useTranslate } from '@/hooks';
+import { useElementSize } from '@/hooks/useElementSize';
+import { lightTheme, darkTheme } from '@/theme';
 
-interface HeaderProps {
-  toggleTheme?: () => void;
+/**
+ * Интерфейс для пункта навигации
+ */
+export interface NavItem {
+  /** Идентификатор пункта меню */
+  id?: string;
+  /** Название пункта меню */
+  name: string;
+  /** Путь для перехода */
+  path: string;
+  /** Ключ для локализации (необязательный) */
+  labelKey?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
-  const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
-  const { theme } = useTheme();
+/**
+ * Свойства компонента Header
+ */
+interface HeaderProps {
+  /**
+   * Элементы навигации
+   */
+  navItems?: NavItem[];
+  /**
+   * Функция обратного вызова для изменения темы
+   */
+  onThemeToggle?: () => void;
+  /**
+   * Текущая тема
+   */
+  theme?: 'light' | 'dark';
+}
 
-  // Определяем, активна ли страница
-  const isActive = (path: string) => {
-    return location.pathname === path;
+/**
+ * Компонент Header - шапка сайта с навигацией и логотипом
+ */
+const Header: React.FC<HeaderProps> = ({ navItems = [], onThemeToggle, theme = 'light' }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [headerRef, headerSize] = useElementSize<HTMLDivElement>();
+  const translate = useTranslate();
+
+  // Определяет, является ли текущий вид мобильным
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    // Проверяем при загрузке
+    checkIfMobile();
+
+    // Добавляем слушатель изменения размера окна
+    window.addEventListener('resize', checkIfMobile);
+
+    // Удаляем слушатель при размонтировании
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
+  // Закрываем меню при переходе с мобильного на десктопный вид
+  useEffect(() => {
+    if (!isMobileView && isMenuOpen) {
+      setIsMenuOpen(false);
+    }
+  }, [isMobileView, isMenuOpen]);
+
+  // Блокируем прокрутку страницы при открытом мобильном меню
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isMenuOpen]);
+
+  // Обработчик открытия/закрытия меню
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
-  // Навигационные ссылки
-  const navLinks = [
-    { name: 'Главная', path: '/' },
-    { name: 'О нас', path: '/about' },
-    { name: 'Мониторинг', path: '/monitoring' },
-    { name: 'Устройства', path: '/devices' },
-  ];
+  // Обработчик закрытия меню
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
-  // Закрытие меню при клике вне компонента
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isOpen && !(event.target as Element).closest('#mobile-menu')) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+  // Функция для получения отображаемого имени пункта меню (с учетом локализации)
+  const getItemDisplayName = (item: NavItem): string => {
+    return item.labelKey ? translate(item.labelKey) : item.name;
+  };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm">
+    <header
+      ref={headerRef}
+      className={`fixed top-0 left-0 right-0 z-50 shadow-md transition-colors ${
+        theme === 'dark' ? darkTheme.header : lightTheme.header
+      }`}
+    >
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex items-center justify-between h-16">
           {/* Логотип */}
-          <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold text-primary-600 dark:text-primary-400">
+          <div className="flex-shrink-0">
+            <Link
+              to="/"
+              className={`text-2xl font-bold tracking-tight ${
+                theme === 'dark' ? darkTheme.logo : lightTheme.logo
+              }`}
+              onClick={closeMenu}
+            >
               AquaStream
             </Link>
           </div>
 
           {/* Десктопное меню */}
-          <div className="hidden md:flex items-center space-x-4">
-            <nav className="flex items-center space-x-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={`px-3 py-2 rounded-md font-medium ${
-                    isActive(link.path)
-                      ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
+          <nav className="hidden md:flex space-x-4">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => `
+                  px-3 py-2 rounded-md text-sm font-medium transition-colors
+                  ${
+                    theme === 'dark'
+                      ? isActive
+                        ? darkTheme.activeNavItem
+                        : darkTheme.navItem
+                      : isActive
+                        ? lightTheme.activeNavItem
+                        : lightTheme.navItem
+                  }
+                `}
+              >
+                {getItemDisplayName(item)}
+              </NavLink>
+            ))}
 
             {/* Переключатель темы */}
-            <div className="pl-4 border-l border-gray-200 dark:border-gray-700">
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                aria-label="Переключить тему"
-              >
-                {theme === 'dark' ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                    ></path>
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                    ></path>
-                  </svg>
-                )}
-              </button>
-            </div>
-
-            {/* Кнопка мобильного меню */}
             <button
-              className="ml-4 p-2 rounded-md text-gray-600 dark:text-gray-300 md:hidden hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label="Открыть меню"
+              aria-label="Toggle theme"
+              className={`p-2 rounded-full transition-colors ${
+                theme === 'dark' ? darkTheme.themeToggle : lightTheme.themeToggle
+              }`}
+              onClick={onThemeToggle}
             >
-              {isOpen ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  ></path>
-                </svg>
-              ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16m-7 6h7"
-                  ></path>
-                </svg>
-              )}
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+          </nav>
+
+          {/* Мобильная кнопка меню */}
+          <div className="md:hidden flex items-center">
+            <button
+              aria-label="Toggle mobile menu"
+              className={`p-2 rounded-md ${
+                theme === 'dark' ? darkTheme.mobileMenuButton : lightTheme.mobileMenuButton
+              }`}
+              onClick={toggleMenu}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
-
-        {/* Мобильное меню */}
-        {isOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
-            <nav className="flex flex-col space-y-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={`px-3 py-2 rounded-md font-medium ${
-                    isActive(link.path)
-                      ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
       </div>
+
+      {/* Мобильное меню */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: `calc(100vh - ${headerSize.height}px)` }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`absolute top-16 left-0 right-0 overflow-hidden ${
+              theme === 'dark' ? darkTheme.mobileMenu : lightTheme.mobileMenu
+            }`}
+          >
+            <div className="container mx-auto px-4 py-4">
+              <nav className="flex flex-col space-y-2">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={closeMenu}
+                    className={({ isActive }) => `
+                      px-3 py-2 rounded-md text-base font-medium transition-colors
+                      ${
+                        theme === 'dark'
+                          ? isActive
+                            ? darkTheme.activeNavItem
+                            : darkTheme.navItem
+                          : isActive
+                            ? lightTheme.activeNavItem
+                            : lightTheme.navItem
+                      }
+                    `}
+                  >
+                    {getItemDisplayName(item)}
+                  </NavLink>
+                ))}
+
+                {/* Переключатель темы в мобильном меню */}
+                <div className="mt-4 flex items-center">
+                  <button
+                    aria-label="Toggle theme"
+                    className={`flex items-center px-3 py-2 rounded-md text-base font-medium w-full ${
+                      theme === 'dark' ? darkTheme.themeToggle : lightTheme.themeToggle
+                    }`}
+                    onClick={() => {
+                      onThemeToggle?.();
+                      closeMenu();
+                    }}
+                  >
+                    <span className="mr-2">
+                      {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                    </span>
+                    <span>{theme === 'dark' ? 'Светлая тема' : 'Темная тема'}</span>
+                  </button>
+                </div>
+              </nav>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
+
+export default Header;

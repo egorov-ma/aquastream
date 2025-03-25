@@ -95,6 +95,7 @@ export interface EventFilters {
   status?: string;
   search?: string;
   limit?: number;
+  upcoming?: boolean;
 }
 
 // Интерфейс для бронирования события

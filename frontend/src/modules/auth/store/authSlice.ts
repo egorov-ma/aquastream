@@ -245,4 +245,15 @@ const authSlice = createSlice({
 });
 
 export const { setUser, clearError, initAuth } = authSlice.actions;
+
+// Селекторы для получения данных из состояния
+export const selectUser = (state: { auth: AuthState }) => state.auth.user;
+export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
+export const selectIsLoading = (state: { auth: AuthState }) => state.auth.isLoading;
+export const selectError = (state: { auth: AuthState }) => state.auth.error;
+export const selectAuthTokens = (state: { auth: AuthState }) => ({
+  accessToken: state.auth.accessToken,
+  refreshToken: state.auth.refreshToken,
+});
+
 export default authSlice.reducer;

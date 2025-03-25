@@ -1,13 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
 import { combineReducers } from 'redux';
 
-import eventsReducer from './slices/eventsSlice';
-import uiReducer from './slices/uiSlice';
-import userReducer from './slices/userSlice';
-
+// Импортируем редьюсеры из модулей
 import authReducer from '@/modules/auth/store/authSlice';
-// Импортируем другие редьюсеры по мере создания
+import eventsReducer from '@/modules/events/store/eventsSlice';
+import uiReducer from '@/modules/ui/store/uiSlice';
+import userReducer from '@/store/slices/userSlice';
 
 /**
  * Корневой редюсер, объединяющий все слайсы
@@ -39,8 +37,5 @@ const store = configureStore({
 // Типы для хранилища и диспетчера
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-// Создаем типизированные хуки
-export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export default store;
