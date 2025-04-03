@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { forwardRef, InputHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, InputHTMLAttributes, ReactNode, useCallback, useId } from 'react';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /**
@@ -38,6 +38,14 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
    * Дополнительный класс для поля ввода
    */
   inputClassName?: string;
+  /**
+   * Флаг, отображающий кнопку очистки
+   */
+  clearable?: boolean;
+  /**
+   * Функция, вызываемая при очистке поля
+   */
+  onClear?: () => void;
 }
 
 /**
@@ -57,42 +65,59 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       inputClassName,
       disabled,
       id,
+      value,
+      onChange,
+      clearable = false,
+      onClear,
       ...props
     },
     ref
   ) => {
-    const uniqueId = id || `input-${Math.random().toString(36).substring(2, 9)}`;
+    const reactId = useId();
+    const uniqueId = id || reactId;
+    
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      if (onChange) onChange(e);
+    }, [onChange]);
+    
+    const handleClear = useCallback(() => {
+      if (onClear) onClear();
 
-    // Базовые классы для враппера
+      if (onChange) {
+        const pseudoEvent = {
+          target: { value: '' } as HTMLInputElement,
+          currentTarget: { value: '' } as HTMLInputElement,
+        } as React.ChangeEvent<HTMLInputElement>;
+        onChange(pseudoEvent);
+      }
+    }, [onChange, onClear]);
+
     const wrapperClasses = clsx('flex flex-col', fullWidth ? 'w-full' : '', wrapperClassName);
 
-    // Базовые классы для поля ввода
     const baseInputClasses =
-      'bg-white dark:bg-gray-900 border rounded-md focus:outline-none transition-colors';
+      'bg-secondary-50 dark:bg-secondary-900 border rounded-md focus:outline-none transition-colors';
 
-    // Размер поля ввода
     const sizeClasses = {
       sm: 'text-xs py-1 px-2',
       md: 'text-sm py-2 px-3',
       lg: 'text-base py-3 px-4',
     };
 
-    // Классы состояния
     const stateClasses = {
       normal:
-        'border-gray-300 dark:border-gray-700 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-500',
+        'border-secondary-300 dark:border-secondary-700 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400',
       error:
-        'border-red-500 focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-500',
-      disabled: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed',
+        'border-error-500 dark:border-error-400 focus:ring-1 focus:ring-error-500 focus:border-error-500 dark:focus:ring-error-400 dark:focus:border-error-400',
+      disabled: 'bg-secondary-100 dark:bg-secondary-800 text-secondary-500 dark:text-secondary-400 cursor-not-allowed',
     };
 
-    // Классы с иконками
+    const showClearButton = clearable && value && !disabled;
+    
     const iconClasses = {
       left: leftIcon ? 'pl-9' : '',
-      right: rightIcon ? 'pr-9' : '',
+      right: (rightIcon || showClearButton) ? 'pr-9' : '',
     };
 
-    // Компоновка классов для поля ввода
     const inputClasses = clsx(
       baseInputClasses,
       sizeClasses[size],
@@ -109,7 +134,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={uniqueId}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-1"
+            data-testid={`${uniqueId}-label`}
           >
             {label}
           </label>
@@ -117,15 +143,48 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         <div className="relative">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-secondary-500">
               {leftIcon}
             </div>
           )}
 
-          <input ref={ref} id={uniqueId} className={inputClasses} disabled={disabled} {...props} />
+          <input
+            ref={ref}
+            id={uniqueId}
+            className={inputClasses}
+            disabled={disabled}
+            data-testid={uniqueId}
+            value={value}
+            onChange={handleChange}
+            {...props}
+          />
 
-          {rightIcon && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+          {showClearButton && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300 transition-colors"
+              data-testid={`${uniqueId}-clear-button`}
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          )}
+
+          {rightIcon && !showClearButton && (
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-secondary-500">
               {rightIcon}
             </div>
           )}
@@ -134,9 +193,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {(error || helperText) && (
           <div className="mt-1">
             {error ? (
-              <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+              <p className="text-xs text-error-600 dark:text-error-500" data-testid={`${uniqueId}-error-text`}>{error}</p>
             ) : helperText ? (
-              <p className="text-xs text-gray-500 dark:text-gray-400">{helperText}</p>
+              <p className="text-xs text-secondary-500 dark:text-secondary-400" data-testid={`${uniqueId}-helper-text`}>{helperText}</p>
             ) : null}
           </div>
         )}

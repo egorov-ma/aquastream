@@ -35,7 +35,7 @@ export interface ModalProps {
 /**
  * Компонент Modal - модальное окно для отображения контента поверх основного содержимого страницы
  */
-const Modal: React.FC<ModalProps> = ({
+export const Modal: React.FC<ModalProps> = ({
   open,
   onClose,
   title,
@@ -95,7 +95,7 @@ const Modal: React.FC<ModalProps> = ({
 
   // Формируем классы для модального окна
   const modalClasses = clsx(
-    'bg-white dark:bg-secondary-800 rounded-lg shadow-xl',
+    'bg-secondary-50 dark:bg-secondary-900 rounded-lg shadow-xl',
     'overflow-hidden',
     'transition-all duration-300',
     'flex flex-col',
@@ -107,8 +107,9 @@ const Modal: React.FC<ModalProps> = ({
     <div
       ref={backdropRef}
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 transition-opacity"
+      className="modal-backdrop"
       role="presentation"
+      data-testid="modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -116,13 +117,15 @@ const Modal: React.FC<ModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
+        data-testid="modal-container"
       >
         {/* Заголовок модального окна */}
         {title && (
-          <div className="px-6 py-4 border-b border-secondary-200 dark:border-secondary-700">
+          <div className="px-6 py-4 border-b border-secondary-200 dark:border-secondary-700" data-testid="modal-header">
             <h2
               id="modal-title"
-              className="text-lg font-semibold text-secondary-900 dark:text-white"
+              className="text-lg font-semibold text-secondary-950 dark:text-secondary-50"
+              data-testid="modal-title"
             >
               {title}
             </h2>
@@ -130,11 +133,11 @@ const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Содержимое модального окна */}
-        <div className="px-6 py-4 overflow-auto">{children}</div>
+        <div className="px-6 py-4 overflow-auto" data-testid="modal-content">{children}</div>
 
         {/* Действия модального окна */}
         {actions && (
-          <div className="px-6 py-3 border-t border-secondary-200 dark:border-secondary-700 flex justify-end space-x-2">
+          <div className="px-6 py-3 border-t border-secondary-200 dark:border-secondary-700 flex justify-end space-x-2" data-testid="modal-actions">
             {actions}
           </div>
         )}
@@ -142,5 +145,3 @@ const Modal: React.FC<ModalProps> = ({
     </div>
   );
 };
-
-export default Modal;

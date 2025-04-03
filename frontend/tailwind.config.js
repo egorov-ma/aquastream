@@ -47,6 +47,58 @@ export default {
           900: '#654a2f',
           950: '#372716',
         },
+        error: { // Палитра ошибки (красные оттенки)
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
+          950: '#450a0a',
+        },
+        warning: { // Палитра предупреждения (желтые/оранжевые оттенки)
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
+          950: '#451a03',
+        },
+        success: { // Палитра успеха (зеленые оттенки)
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
+          950: '#052e16',
+        },
+        info: { // Палитра информации (синие оттенки)
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
+        },
         border: 'rgb(var(--border))',
         muted: 'rgb(var(--muted))',
       },
@@ -68,6 +120,8 @@ export default {
         'inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
         'glow': '0 0 15px 2px rgba(234, 79, 59, 0.15)',
         'glow-lg': '0 0 25px 5px rgba(234, 79, 59, 0.25)',
+        'glow-accent': '0 0 15px 2px rgba(218, 188, 118, 0.2)',
+        'glow-dark': '0 0 15px 2px rgba(54, 62, 83, 0.3)',
       },
       spacing: {
         // Добавляем особые значения отступов, если нужно
@@ -96,6 +150,10 @@ export default {
         'slide-in-right': 'slideInRight 0.5s ease-out forwards',
         'slide-in-left': 'slideInLeft 0.5s ease-out forwards',
         'scale': 'scale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+        'zoom-in': 'zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+        'blur-in': 'blurIn 0.5s ease-out forwards',
+        'fade-up': 'fadeUp 0.5s ease-out forwards',
+        'card-hover': 'cardHover 0.3s ease-out forwards',
       },
       keyframes: {
         float: {
@@ -130,6 +188,22 @@ export default {
           from: { opacity: '0', transform: 'scale(0.95)' },
           to: { opacity: '1', transform: 'scale(1)' },
         },
+        zoomIn: {
+          from: { opacity: '0', transform: 'scale(0.85)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+        blurIn: {
+          from: { opacity: '0', filter: 'blur(8px)' },
+          to: { opacity: '1', filter: 'blur(0)' },
+        },
+        fadeUp: {
+          from: { opacity: '0', transform: 'translateY(10px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        cardHover: {
+          from: { transform: 'translateY(0)', boxShadow: '0 0 0 rgba(0, 0, 0, 0)' },
+          to: { transform: 'translateY(-5px)', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' },
+        },
       },
       transitionDuration: {
         '400': '400ms',
@@ -150,5 +224,42 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      const newUtilities = {
+        '.loaded': {
+          opacity: '1',
+          transform: 'scale(1)',
+          filter: 'blur(0)',
+        },
+        '.flex-center': {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        '.absolute-center': {
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        },
+        '.transition-base': {
+          transition: 'all 0.3s ease',
+        },
+        '.shadow-hover': {
+          transition: 'box-shadow 0.3s ease',
+          '&:hover': {
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+          },
+        },
+        '.shadow-hover-primary': {
+          transition: 'box-shadow 0.3s ease',
+          '&:hover': {
+            boxShadow: '0 0 15px 2px rgba(234, 79, 59, 0.15)',
+          },
+        },
+      };
+      addUtilities(newUtilities);
+    },
+  ],
 } 

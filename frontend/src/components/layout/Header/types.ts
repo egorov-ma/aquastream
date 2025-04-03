@@ -1,40 +1,70 @@
 import React from 'react';
 
 /**
- * Интерфейс для пункта навигации
+ * Базовые свойства навигационного пункта
  */
-export interface NavItem {
+export interface NavItemBase {
+  /** Идентификатор пункта меню */
+  id?: string;
   /** Название пункта меню */
   name: string;
   /** Путь для перехода */
   path: string;
-  /** Опциональная иконка */
-  icon?: React.FC<{ className?: string }>;
-  /** Опциональный бейдж с уведомлением */
-  badge?: {
-    content: string | number;
-    color: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success';
-  };
   /** Ключ для локализации (необязательный) */
   labelKey?: string;
 }
 
 /**
- * Интерфейс для props компонента Header
+ * Свойства иконки навигационного пункта
  */
-export interface HeaderProps {
-  /** Функция переключения темы */
-  toggleTheme?: () => void;
-  /** Пользовательский список пунктов меню */
-  items?: NavItem[];
+export interface NavItemIcon {
+  /** Иконка (необязательная) */
+  icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+}
+
+/**
+ * Полный интерфейс для пункта навигации
+ */
+export type NavItem = NavItemBase & NavItemIcon;
+
+/**
+ * Базовые свойства компонента Header
+ */
+export interface HeaderBaseProps {
   /** Дополнительные CSS классы */
   className?: string;
-  /** Показывать мобильное меню внизу экрана */
-  mobileMenuAsFooter?: boolean;
-  /** Прозрачный фон */
-  transparent?: boolean;
-  /** Выравнивание меню */
-  alignment?: 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly';
-  /** Эффект появления */
-  appearEffect?: 'none' | 'fade-in' | 'slide-up' | 'slide-down';
 }
+
+/**
+ * Свойства, связанные с темой
+ */
+export interface HeaderThemeProps {
+  /** Функция переключения темы */
+  onThemeToggle?: () => void;
+  /** Текущая тема */
+  theme?: 'light' | 'dark';
+}
+
+/**
+ * Свойства аутентификации
+ */
+export interface HeaderAuthProps {
+  /** Статус авторизации пользователя */
+  isAuthenticated?: boolean;
+}
+
+/**
+ * Свойства для управления навигацией
+ */
+export interface HeaderNavigationProps {
+  /** Пользовательский список пунктов меню */
+  items?: NavItem[];
+}
+
+/**
+ * Полные свойства компонента Header
+ */
+export type HeaderProps = HeaderBaseProps & 
+  HeaderThemeProps & 
+  HeaderAuthProps & 
+  HeaderNavigationProps;

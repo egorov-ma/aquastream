@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-import React from 'react';
+import React, { useId } from 'react';
 
-import Typography from '../Typography';
+import { Typography } from '../Typography';
 
 export interface CheckboxProps {
   /**
@@ -49,7 +49,7 @@ export interface CheckboxProps {
 /**
  * Компонент Checkbox - переключатель для выбора значения
  */
-const Checkbox: React.FC<CheckboxProps> = ({
+export const Checkbox: React.FC<CheckboxProps> = ({
   checked = false,
   onChange,
   label,
@@ -61,8 +61,9 @@ const Checkbox: React.FC<CheckboxProps> = ({
   name,
   value,
 }) => {
-  // Генерируем уникальный ID, если он не был передан
-  const checkboxId = id || `checkbox-${Math.random().toString(36).substring(2, 9)}`;
+  // Генерируем уникальный ID с помощью хука useId, если он не был передан
+  const reactId = useId();
+  const checkboxId = id || reactId;
 
   // Стили для разных размеров чекбокса
   const sizeClasses = {
@@ -87,12 +88,12 @@ const Checkbox: React.FC<CheckboxProps> = ({
     'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
     sizeClasses[size],
     {
-      'bg-primary-600 border-primary-600': checked && !disabled && !error,
-      'bg-white border-secondary-300 dark:bg-secondary-800 dark:border-secondary-600':
+      'bg-primary-600 border-primary-600 dark:bg-primary-500 dark:border-primary-500': checked && !disabled && !error,
+      'bg-secondary-50 border-secondary-300 dark:bg-secondary-800 dark:border-secondary-600':
         !checked && !disabled && !error,
       'bg-secondary-200 border-secondary-200 dark:bg-secondary-700 dark:border-secondary-700':
         disabled,
-      'border-red-500 dark:border-red-400': error,
+      'border-error-500 dark:border-error-400': error,
       'cursor-pointer': !disabled,
       'cursor-not-allowed opacity-60': disabled,
     },
@@ -106,14 +107,14 @@ const Checkbox: React.FC<CheckboxProps> = ({
   });
 
   // Классы для видимого индикатора чекбокса (галочка)
-  const indicatorClasses = clsx('absolute inset-0 flex items-center justify-center text-white', {
-    'text-white': checked && !disabled,
-    'text-secondary-700': checked && disabled,
+  const indicatorClasses = clsx('absolute inset-0 flex items-center justify-center', {
+    'text-primary-100': checked && !disabled,
+    'text-secondary-400 dark:text-secondary-500': checked && disabled,
   });
 
   return (
     <label htmlFor={checkboxId} className={containerClasses}>
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         <input
           type="checkbox"
           id={checkboxId}
@@ -123,6 +124,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
           aria-invalid={error}
           name={name}
           value={value}
+          data-testid={checkboxId}
           className={checkboxClasses}
         />
         {checked && (
@@ -140,7 +142,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
         )}
       </div>
       {label && (
-        <div className="ml-2">
+        <div className="ml-2 flex items-center">
           {typeof label === 'string' ? (
             <Typography
               variant="body-2"
@@ -157,5 +159,3 @@ const Checkbox: React.FC<CheckboxProps> = ({
     </label>
   );
 };
-
-export default Checkbox;

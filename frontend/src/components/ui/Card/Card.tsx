@@ -21,11 +21,11 @@ export interface CardProps {
   /**
    * Эффект анимации при наведении
    */
-  hoverEffect?: 'none' | 'lift' | 'glow' | 'scale';
+  hoverEffect?: 'none' | 'lift' | 'glow' | 'scale' | 'glow-accent' | 'card-hover';
   /**
    * Эффект анимации при появлении
    */
-  appearEffect?: 'none' | 'fade-in' | 'slide-up' | 'scale';
+  appearEffect?: 'none' | 'fade-in' | 'slide-up' | 'scale' | 'zoom-in' | 'blur-in' | 'fade-up';
   /**
    * Обработчик клика по карточке
    */
@@ -89,25 +89,27 @@ export const Card: React.FC<CardProps> = ({
   onClick,
 }) => {
   // Базовые классы для всех карточек
-  const baseClasses = 'rounded-lg overflow-hidden';
+  const baseClasses = 'rounded-lg overflow-hidden transition-all duration-300';
 
   // Классы для вариантов
   const variantClasses = {
-    default: 'bg-white dark:bg-secondary-800 shadow',
+    default: 'bg-secondary-50 dark:bg-secondary-900 shadow',
     outlined:
-      'bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700',
-    elevated: 'bg-white dark:bg-secondary-800 shadow-md',
-    flat: 'bg-secondary-50 dark:bg-secondary-900',
-    primary: 'bg-primary-500 text-white dark:bg-primary-600',
-    accent: 'bg-accent-400 text-secondary-900 dark:bg-accent-500',
+      'bg-secondary-50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-700',
+    elevated: 'bg-secondary-50 dark:bg-secondary-900 shadow-md',
+    flat: 'bg-secondary-100 dark:bg-secondary-950',
+    primary: 'bg-primary-600 text-secondary-50 dark:bg-primary-700',
+    accent: 'bg-accent-400 text-secondary-950 dark:bg-accent-500',
   };
 
   // Классы для эффектов наведения
   const hoverEffectClasses = {
     none: '',
-    lift: 'transition-transform duration-300 hover:-translate-y-1',
+    lift: 'transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg',
     glow: 'transition-shadow duration-300 hover:shadow-glow dark:hover:shadow-glow',
+    'glow-accent': 'transition-shadow duration-300 hover:shadow-glow-accent',
     scale: 'transition-transform duration-300 hover:scale-[1.01]',
+    'card-hover': 'animate-card-hover',
   };
 
   // Классы для эффектов появления
@@ -115,16 +117,26 @@ export const Card: React.FC<CardProps> = ({
     none: '',
     'fade-in': 'animate-fade-in',
     'slide-up': 'animate-slide-up',
-    scale: 'animate-scale',
+    'scale': 'animate-scale',
+    'zoom-in': 'animate-zoom-in',
+    'blur-in': 'animate-blur-in',
+    'fade-up': 'animate-fade-up',
   };
+
+  // Применяем hover-эффект scale для elevated варианта, если не задан другой
+  const finalHoverEffect = variant === 'elevated' && hoverEffect === 'none' ? 'scale' : hoverEffect;
+
+  // Определяем, является ли карточка интерактивной
+  const isInteractive = !!onClick;
 
   // Составляем финальные классы
   const cardClasses = clsx(
     baseClasses,
     variantClasses[variant],
-    hoverEffectClasses[hoverEffect],
+    finalHoverEffect !== 'none' && hoverEffectClasses[finalHoverEffect],
     appearEffectClasses[appearEffect],
-    !noPadding && 'p-4',
+    isInteractive && 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+    !noPadding && 'p-4 md:p-6',
     className
   );
 
@@ -141,6 +153,7 @@ export const Card: React.FC<CardProps> = ({
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       aria-label={onClick ? 'Interactive card' : undefined}
+      data-testid={`card-${variant}`}
     >
       {children}
     </div>
@@ -152,15 +165,15 @@ export const Card: React.FC<CardProps> = ({
  */
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className = '' }) => {
   const classes = clsx('flex items-center mb-4', className);
-  return <div className={classes}>{children}</div>;
+  return <div className={classes} data-testid="card-header">{children}</div>;
 };
 
 /**
  * Компонент CardTitle - название карточки
  */
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className = '' }) => {
-  const classes = clsx('text-lg font-semibold dark:text-white', className);
-  return <div className={classes}>{children}</div>;
+  const classes = clsx('text-lg font-semibold text-secondary-950 dark:text-secondary-50', className);
+  return <div className={classes} data-testid="card-title">{children}</div>;
 };
 
 /**
@@ -168,7 +181,7 @@ export const CardTitle: React.FC<CardTitleProps> = ({ children, className = '' }
  */
 export const CardContent: React.FC<CardContentProps> = ({ children, className = '' }) => {
   const classes = clsx('', className);
-  return <div className={classes}>{children}</div>;
+  return <div className={classes} data-testid="card-content">{children}</div>;
 };
 
 /**
@@ -179,7 +192,7 @@ export const CardFooter: React.FC<CardFooterProps> = ({ children, className = ''
     'flex items-center justify-end mt-4 pt-4 border-t border-secondary-200 dark:border-secondary-700',
     className
   );
-  return <div className={classes}>{children}</div>;
+  return <div className={classes} data-testid="card-footer">{children}</div>;
 };
 
 export default Card;

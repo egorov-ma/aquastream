@@ -8,3 +8,4 @@ export { default as ProfilePage } from './ProfilePage';
 export { default as EventsPage } from './EventsPage';
 export { default as EventDetailsPage } from './EventDetailsPage';
 export { default as NotFoundPage } from './NotFoundPage';
+export { default as UIKitPage } from './UIKitPage';

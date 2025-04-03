@@ -4,18 +4,30 @@
 
 @layer base {
   :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 255, 255, 255;
-    --background-end-rgb: 247, 248, 250;
+    /* RGB для secondary.950 (#1f2332) */
+    --foreground-rgb: 31, 35, 50;
+    /* RGB для secondary.50 (#f5f7fa) */
+    --background-start-rgb: 245, 247, 250;
+    /* RGB для secondary.100 (#ebeef3) - немного темнее для градиента */
+    --background-end-rgb: 235, 238, 243;
     --header-height: 85px;
     --header-top-padding: 24px;
     --content-top-padding: calc(var(--header-height) + var(--header-top-padding) + 20px);
+    /* Добавляем переменные для цветов из tailwind.config.js для border и muted */
+    --border: 216, 220, 229; /* secondary.200 */
+    --muted: 114, 129, 157; /* secondary.500 */
   }
 
   .dark {
-    --foreground-rgb: 255, 255, 255;
+    /* RGB для secondary.50 (#f5f7fa) */
+    --foreground-rgb: 245, 247, 250;
+    /* RGB для #111827 */
     --background-start-rgb: 17, 24, 39;
-    --background-end-rgb: 10, 15, 25;
+    /* RGB для secondary.950 (#1f2332) - немного светлее для градиента */
+    --background-end-rgb: 31, 35, 50;
+    /* Переменные для темной темы */
+    --border: 77, 88, 114; /* secondary.700 */
+    --muted: 144, 156, 181; /* secondary.400 */
   }
 
   body {
@@ -38,11 +50,16 @@
   /* Здесь можно добавить компонентные классы, если нужно */
   /* Например: */
   .card {
-    @apply bg-white dark:bg-secondary-800 rounded-lg shadow p-4;
+    @apply bg-secondary-50 dark:bg-secondary-900 rounded-lg shadow p-4;
   }
 
   .form-input {
-    @apply w-full p-2 border border-secondary-300 dark:border-secondary-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-600 dark:bg-secondary-800 dark:text-white;
+    @apply w-full p-2 border border-secondary-300 dark:border-secondary-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-600 dark:bg-secondary-900 dark:text-secondary-50;
+  }
+
+  /* Добавим стили для фона модального окна */
+  .modal-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-secondary-950 bg-opacity-60 transition-opacity;
   }
 }
 

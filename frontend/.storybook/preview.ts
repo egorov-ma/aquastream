@@ -1,33 +1,32 @@
-import type { Preview } from '@storybook/react';
+// import type { Preview } from '@storybook/react'; // Временно убираем тип
 import '../src/index.css'; // импортируем глобальные стили, включая Tailwind CSS
+import { themes } from '@storybook/theming';
 
-const preview: Preview = {
+// Конфигурация preview с поддержкой темной темы
+const preview = {
   parameters: {
-    actions: { argTypesRegex: '^on[A-Z].*' },
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-    layout: 'centered',
     backgrounds: {
       default: 'light',
       values: [
-        {
-          name: 'light',
-          value: '#f8fafc', // светлый фон, соответствует Tailwind slate-50
-        },
-        {
-          name: 'dark',
-          value: '#0f172a', // темный фон, соответствует Tailwind slate-900
-        },
-        {
-          name: 'gray',
-          value: '#e2e8f0', // серый фон, соответствует Tailwind slate-200
-        },
+        { name: 'light', value: '#ffffff' },
+        { name: 'dark', value: '#1a202c' },
       ],
     },
+    darkMode: {
+      // Override the default dark theme
+      dark: { ...themes.dark, appBg: '#1a202c', appContentBg: '#1a202c', barBg: '#171923' },
+      // Override the default light theme
+      light: { ...themes.normal },
+      current: 'light'
+    },
+    actions: { argTypesRegex: "^on[A-Z].*" },
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/,
+      },
+    },
+    layout: 'centered',
     viewport: {
       viewports: {
         mobile: {

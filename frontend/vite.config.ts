@@ -2,7 +2,7 @@
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import path from 'path';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
@@ -26,22 +26,22 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
-      '@components': resolve(__dirname, './src/components'),
-      '@pages': resolve(__dirname, './src/pages'),
-      '@services': resolve(__dirname, './src/services'),
-      '@store': resolve(__dirname, './src/store'),
-      '@utils': resolve(__dirname, './src/utils'),
-      '@hooks': resolve(__dirname, './src/hooks'),
-      '@assets': resolve(__dirname, './src/assets'),
-      '@modules': resolve(__dirname, './src/modules'),
-      '@shared': resolve(__dirname, './src/shared'),
-      '@types': resolve(__dirname, './src/types'),
-      '@theme': resolve(__dirname, './src/theme'),
-      '@styles': resolve(__dirname, './src/styles'),
-      '@routes': resolve(__dirname, './src/routes'),
-      '@lib': resolve(__dirname, './src/lib'),
-      '@layouts': resolve(__dirname, './src/layouts'),
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@services': path.resolve(__dirname, './src/services'),
+      '@store': path.resolve(__dirname, './src/store'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@assets': path.resolve(__dirname, './src/assets'),
+      '@modules': path.resolve(__dirname, './src/modules'),
+      '@shared': path.resolve(__dirname, './src/shared'),
+      '@types': path.resolve(__dirname, './src/types'),
+      '@theme': path.resolve(__dirname, './src/theme'),
+      '@styles': path.resolve(__dirname, './src/styles'),
+      '@routes': path.resolve(__dirname, './src/routes'),
+      '@lib': path.resolve(__dirname, './src/lib'),
+      '@layouts': path.resolve(__dirname, './src/layouts'),
     },
   },
 });

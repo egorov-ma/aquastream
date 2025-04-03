@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Button from './Button';
+import { Button } from './Button';
 
 const meta = {
   title: 'UI/Button',
@@ -12,7 +12,7 @@ const meta = {
   argTypes: {
     variant: {
       control: { type: 'select' },
-      options: ['primary', 'secondary', 'outlined'],
+      options: ['primary', 'secondary', 'outline', 'danger', 'accent', 'ghost'],
       description: 'Вариант стиля кнопки',
     },
     size: {
@@ -28,17 +28,17 @@ const meta = {
       control: { type: 'boolean' },
       description: 'Отключение кнопки',
     },
-    startIcon: {
-      control: { type: 'text' },
-      description: 'Иконка в начале кнопки (React-компонент)',
-    },
-    endIcon: {
-      control: { type: 'text' },
-      description: 'Иконка в конце кнопки (React-компонент)',
+    loading: {
+      control: { type: 'boolean' },
+      description: 'Состояние загрузки кнопки',
     },
     onClick: {
       action: 'clicked',
       description: 'Обработчик клика',
+    },
+    children: {
+      control: { type: 'text' },
+      description: 'Содержимое кнопки (текст, иконки)',
     },
   },
 } satisfies Meta<typeof Button>;
@@ -63,29 +63,51 @@ export const Secondary: Story = {
 
 export const Outlined: Story = {
   args: {
-    variant: 'outlined',
+    variant: 'outline',
     children: 'Кнопка',
+  },
+};
+
+// Добавляем истории для новых вариантов
+export const Danger: Story = {
+  args: {
+    variant: 'danger',
+    children: 'Опасная кнопка',
+  },
+};
+
+export const Accent: Story = {
+  args: {
+    variant: 'accent',
+    children: 'Акцентная кнопка',
+  },
+};
+
+export const Ghost: Story = {
+  args: {
+    variant: 'ghost',
+    children: 'Призрачная кнопка',
   },
 };
 
 // Размеры кнопок
 export const Small: Story = {
   args: {
-    size: 'sm',
+    size: 'small',
     children: 'Маленькая кнопка',
   },
 };
 
 export const Medium: Story = {
   args: {
-    size: 'md',
+    size: 'medium',
     children: 'Средняя кнопка',
   },
 };
 
 export const Large: Story = {
   args: {
-    size: 'lg',
+    size: 'large',
     children: 'Большая кнопка',
   },
 };
@@ -105,12 +127,29 @@ export const Disabled: Story = {
   },
 };
 
+// Добавляем историю для loading
+export const Loading: Story = {
+  args: {
+    loading: true,
+    children: 'Загрузка...',
+  },
+};
+
 // Пример с иконками (в Storybook будут отображены строки вместо иконок)
 export const WithIcons: Story = {
   args: {
-    children: 'Кнопка с иконками',
-    startIcon: <span>🚀</span>,
-    endIcon: <span>👍</span>,
+    variant: 'primary',
+    children: (
+      <>
+        <span role="img" aria-label="rocket" style={{ marginRight: '8px' }}>
+          🚀
+        </span>
+        Кнопка с иконками
+        <span role="img" aria-label="thumbs up" style={{ marginLeft: '8px' }}>
+          👍
+        </span>
+      </>
+    ),
   },
   parameters: {
     docs: {

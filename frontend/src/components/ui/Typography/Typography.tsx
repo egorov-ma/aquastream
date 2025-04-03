@@ -18,15 +18,14 @@ export type TypographyVariant =
   | 'overline';
 
 export type TypographyColor =
-  | 'primary'
-  | 'secondary'
-  | 'accent'
+  | 'primary' // Акцентный 1 (оранжевый)
+  | 'accent'  // Акцентный 2 (золотой)
   | 'error'
   | 'warning'
   | 'success'
   | 'info'
-  | 'text-primary'
-  | 'text-secondary'
+  | 'default' // Основной цвет текста (темно-серый/светло-серый)
+  | 'muted'   // Приглушенный цвет текста (серый)
   | 'inherit';
 
 export type TypographyAlign = 'inherit' | 'left' | 'center' | 'right' | 'justify';
@@ -52,7 +51,7 @@ export interface TypographyProps {
 /**
  * Типографика - компонент для отображения текста с использованием Tailwind CSS
  */
-const Typography: React.FC<TypographyProps> = ({
+export const Typography: React.FC<TypographyProps> = ({
   variant = 'body-1',
   color = 'inherit',
   align = 'inherit',
@@ -78,18 +77,17 @@ const Typography: React.FC<TypographyProps> = ({
     overline: 'text-xs font-medium uppercase tracking-wider',
   };
 
-  // Маппинг цветов к классам Tailwind
+  // Маппинг цветов к классам Tailwind (ОБНОВЛЕНО)
   const colorClasses = {
     primary: 'text-primary-600 dark:text-primary-400',
-    secondary: 'text-secondary-800 dark:text-secondary-400',
-    accent: 'text-accent-600 dark:text-accent-400',
-    error: 'text-red-600 dark:text-red-400',
-    warning: 'text-yellow-600 dark:text-yellow-400',
-    info: 'text-blue-600 dark:text-blue-400',
-    success: 'text-green-600 dark:text-green-400',
-    'text-primary': 'text-secondary-900 dark:text-white',
-    'text-secondary': 'text-secondary-700 dark:text-secondary-300',
-    inherit: '',
+    accent: 'text-accent-500 dark:text-accent-400',
+    error: 'text-error-600 dark:text-error-500', // Используем 500 для темной темы у ошибки для лучшей читаемости
+    warning: 'text-warning-600 dark:text-warning-400',
+    info: 'text-info-600 dark:text-info-400',
+    success: 'text-success-600 dark:text-success-400',
+    default: 'text-secondary-950 dark:text-secondary-50', // Основной текст
+    muted: 'text-secondary-500 dark:text-secondary-400', // Приглушенный текст
+    inherit: '', // Наследуемый цвет
   };
 
   // Маппинг выравнивания к классам Tailwind
@@ -127,10 +125,13 @@ const Typography: React.FC<TypographyProps> = ({
                 : 'p');
 
   return (
-    <Component className={classes} {...props}>
+    <Component
+      className={classes}
+      // Добавляем data-testid
+      data-testid={`typography-${variant}`}
+      {...props}
+    >
       {children}
     </Component>
   );
 };
-
-export default Typography;

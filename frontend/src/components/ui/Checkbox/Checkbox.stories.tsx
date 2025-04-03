@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
-import Typography from '../Typography';
+// Исправляем импорт Typography на именованный
+import { Typography } from '../Typography/Typography';
 
-import Checkbox from './Checkbox';
+// Импорт Checkbox уже именованный
+import { Checkbox } from './Checkbox';
 
 const meta = {
   title: 'UI/Checkbox',
@@ -43,6 +45,13 @@ const meta = {
       description: 'Дополнительные CSS-классы',
     },
   },
+  args: {
+    label: 'Пример Checkbox',
+    checked: false,
+    disabled: false,
+    error: false,
+    size: 'medium',
+  }
 } satisfies Meta<typeof Checkbox>;
 
 export default meta;
@@ -74,6 +83,7 @@ export const Disabled: Story = {
   args: {
     label: 'Отключенный переключатель',
     disabled: true,
+    checked: false,
   },
 };
 
@@ -89,6 +99,15 @@ export const Error: Story = {
   args: {
     label: 'Переключатель с ошибкой',
     error: true,
+    checked: false,
+  },
+};
+
+export const ErrorChecked: Story = {
+  args: {
+    label: 'Выбранный переключатель с ошибкой',
+    error: true,
+    checked: true,
   },
 };
 
@@ -150,6 +169,7 @@ export const Interactive: Story = {
       description: {
         story: 'Интерактивный пример переключателя с отображением текущего состояния.',
       },
+      controls: { include: [] },
     },
   },
 };

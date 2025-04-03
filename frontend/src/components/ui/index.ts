@@ -2,23 +2,31 @@
  * Экспорт всех UI компонентов из одного файла для удобства импорта
  */
 
-// Экспорт базовых UI компонентов
-export { Button } from './Button/Button';
-export { default as Card } from './Card/Card';
-export { default as Input } from './Input/Input';
-export { default as Typography } from './Typography';
-export { default as TextField } from './TextField';
-export { default as Checkbox } from './Checkbox/Checkbox';
-export { default as Modal } from './Modal/Modal';
-export { default as PageLoader } from './PageLoader';
-export { LazyImage } from './LazyImage/LazyImage';
+// Явный реэкспорт КАЖДОГО именованного компонента и типа
 
-// Экспорт типов компонентов
-export type { ButtonProps, ButtonVariant, ButtonSize } from './Button/Button.types';
-export type { CardProps } from './Card/Card';
-export type { InputProps } from './Input/Input';
-export type { TypographyProps } from './Typography';
-export type { TextFieldProps } from './TextField';
-export type { LazyImageProps } from './LazyImage/LazyImage';
+export { Button } from './Button';
+export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
 
-export * from './Button';
+export { Card, CardHeader, CardTitle, CardContent, CardFooter } from './Card';
+export type { CardProps, CardHeaderProps, CardTitleProps, CardContentProps, CardFooterProps } from './Card';
+
+export { Input } from './Input';
+export type { InputProps } from './Input';
+
+export { Typography } from './Typography';
+export type { TypographyProps, TypographyVariant, TypographyColor, TypographyAlign } from './Typography';
+
+export { TextField } from './TextField';
+export type { TextFieldProps, TextFieldSize, TextFieldVariant, TextFieldColor } from './TextField';
+
+export { Checkbox } from './Checkbox';
+export type { CheckboxProps } from './Checkbox';
+
+export { Modal } from './Modal';
+export type { ModalProps } from './Modal';
+
+export { PageLoader } from './PageLoader';
+// У PageLoader нет отдельных пропсов для экспорта
+
+export { LazyImage } from './LazyImage';
+export type { LazyImageProps, LoadingMethod, ObjectFitMode, FadeInAnimation, RoundedSize, ShadowSize, HoverEffect } from './LazyImage';

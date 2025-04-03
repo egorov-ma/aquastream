@@ -1,0 +1,4 @@
+ export const framework = {
+   name: "@storybook/react-vite",
+   options: {}
+ };

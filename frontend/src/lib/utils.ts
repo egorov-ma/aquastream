@@ -1,9 +1,11 @@
-import { clsx, type ClassValue } from 'clsx';
+import { ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
- * Объединяет классы с помощью clsx
- * Использует clsx для обработки условных классов
+ * Утилита для объединения классов с поддержкой Tailwind
+ * @param inputs Классы для объединения
+ * @returns Объединенная строка классов
  */
 export function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
+  return twMerge(clsx(inputs));
 }

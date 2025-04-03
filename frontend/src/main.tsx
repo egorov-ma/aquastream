@@ -20,6 +20,7 @@ const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
 const EventsPage = React.lazy(() => import('./pages/EventsPage'));
 const EventDetailPage = React.lazy(() => import('./pages/EventDetailsPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+const UIKitPage = React.lazy(() => import('./pages/UIKitPage'));
 
 // Обертка для защищенных маршрутов
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -60,6 +61,7 @@ const router = createBrowserRouter([
       },
       { path: 'events', element: <EventsPage /> },
       { path: 'events/:id', element: <EventDetailPage /> },
+      { path: 'ui-kit', element: <UIKitPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

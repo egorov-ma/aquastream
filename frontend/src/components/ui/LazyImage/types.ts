@@ -16,6 +16,21 @@ export type ObjectFitMode = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
 export type FadeInAnimation = 'none' | 'fade' | 'zoom' | 'blur' | 'slide-up';
 
 /**
+ * Размеры скругления углов
+ */
+export type RoundedSize = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
+/**
+ * Размеры тени
+ */
+export type ShadowSize = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+
+/**
+ * Эффекты при наведении
+ */
+export type HoverEffect = 'none' | 'zoom' | 'brightness' | 'scale' | 'lift';
+
+/**
  * Пропсы для компонента LazyImage
  */
 export interface LazyImageProps {
@@ -46,17 +61,19 @@ export interface LazyImageProps {
   /** Режим отображения изображения */
   objectFit?: ObjectFitMode;
   /** Радиус скругления углов */
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  rounded?: RoundedSize;
   /** Применить тень */
-  shadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  shadow?: ShadowSize;
   /** Тип анимации появления */
   fadeAnimation?: FadeInAnimation;
   /** Длительность анимации в мс */
   animationDuration?: number;
   /** Эффект при наведении */
-  hoverEffect?: 'none' | 'zoom' | 'brightness' | 'scale' | 'lift';
+  hoverEffect?: HoverEffect;
   /** Показывать прелоадер */
   showPreloader?: boolean;
   /** Заменяющее изображение при ошибке */
   fallbackSrc?: string;
+  /** Обработчик клика по изображению */
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }

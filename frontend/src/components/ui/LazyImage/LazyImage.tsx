@@ -1,76 +1,60 @@
 import clsx from 'clsx';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { LazyImageProps, LoadingMethod, ObjectFitMode, FadeInAnimation, RoundedSize, ShadowSize, HoverEffect } from './types';
+
+// Маппинги пропсов на классы Tailwind
+const roundedClasses: Record<RoundedSize, string> = {
+  none: 'rounded-none',
+  sm: 'rounded-sm',
+  md: 'rounded-md',
+  lg: 'rounded-lg',
+  xl: 'rounded-xl',
+  full: 'rounded-full',
+};
+
+const shadowClasses: Record<ShadowSize, string> = {
+  none: 'shadow-none',
+  sm: 'shadow-sm',
+  md: 'shadow-md',
+  lg: 'shadow-lg',
+  xl: 'shadow-xl',
+};
+
+const objectFitClasses: Record<ObjectFitMode, string> = {
+  cover: 'object-cover',
+  contain: 'object-contain',
+  fill: 'object-fill',
+  none: 'object-none',
+  'scale-down': 'object-scale-down',
+};
+
+// Анимации появления
+const fadeAnimationClasses: Record<FadeInAnimation, string> = {
+  none: '',
+  fade: 'transition-opacity duration-500 ease-in-out',
+  zoom: 'transition-transform duration-500 ease-in-out scale-95 opacity-0 loaded:scale-100 loaded:opacity-100',
+  blur: 'transition-all duration-500 ease-in-out filter blur-sm opacity-0 loaded:blur-0 loaded:opacity-100',
+  'slide-up': 'transition-all duration-500 ease-in-out transform translate-y-4 opacity-0 loaded:translate-y-0 loaded:opacity-100',
+};
+
+// Эффекты при наведении
+const hoverEffectClasses: Record<HoverEffect, string> = {
+  none: '',
+  zoom: 'transition-transform duration-300 hover:scale-110',
+  brightness: 'transition-all duration-300 hover:brightness-110',
+  scale: 'transition-transform duration-300 hover:scale-[1.02]',
+  lift: 'transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg',
+};
 
 /**
- * Доступные методы загрузки изображений
- */
-export type LoadingMethod = 'lazy' | 'eager';
-
-/**
- * Доступные режимы отображения изображений
- */
-export type ObjectFitMode = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
-
-/**
- * Тип анимации появления изображения
- */
-export type FadeInAnimation = 'none' | 'fade' | 'zoom' | 'blur' | 'slide-up';
-
-/**
- * Пропсы для компонента LazyImage
- */
-export interface LazyImageProps {
-  /** URL изображения */
-  src: string;
-  /** Альтернативный текст */
-  alt: string;
-  /** Ширина изображения */
-  width?: number | string;
-  /** Высота изображения */
-  height?: number | string;
-  /** Цвет placeholder'а до загрузки изображения */
-  placeholderColor?: string;
-  /** CSS-класс */
-  className?: string;
-  /** Инлайн-стили */
-  style?: React.CSSProperties;
-  /** Загружать изображение с низким разрешением */
-  lowQualityPreview?: boolean;
-  /** URL изображения с низким разрешением */
-  previewSrc?: string;
-  /** Обработчик завершения загрузки */
-  onLoad?: () => void;
-  /** Обработчик ошибки загрузки */
-  onError?: (error: Error) => void;
-  /** Метод загрузки изображения */
-  loading?: LoadingMethod;
-  /** Режим отображения изображения */
-  objectFit?: ObjectFitMode;
-  /** Радиус скругления углов */
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
-  /** Применить тень */
-  shadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
-  /** Тип анимации появления */
-  fadeAnimation?: FadeInAnimation;
-  /** Длительность анимации в мс */
-  animationDuration?: number;
-  /** Эффект при наведении */
-  hoverEffect?: 'none' | 'zoom' | 'brightness' | 'scale' | 'lift';
-  /** Показывать прелоадер */
-  showPreloader?: boolean;
-  /** Заменяющее изображение при ошибке */
-  fallbackSrc?: string;
-}
-
-/**
- * Компонент для "ленивой" загрузки изображений с различными эффектами
+ * Улучшенный компонент для "ленивой" загрузки изображений с различными эффектами
  */
 export const LazyImage: React.FC<LazyImageProps> = ({
   src,
   alt,
   width,
   height,
-  placeholderColor = '#f0f0f0',
+  placeholderColor = 'bg-secondary-200 dark:bg-secondary-700',
   className = '',
   style = {},
   lowQualityPreview = false,
@@ -86,9 +70,10 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   hoverEffect = 'none',
   showPreloader = true,
   fallbackSrc,
+  onClick,
 }) => {
-  // Состояния для управления загрузкой и отображением
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(loading === 'lazy');
   const [isError, setIsError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(
     lowQualityPreview ? previewSrc : undefined
@@ -99,27 +84,45 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   // Обработчик успешной загрузки изображения
   const handleImageLoaded = useCallback(() => {
     setIsLoaded(true);
+    setIsLoading(false);
     if (onLoad) onLoad();
   }, [onLoad]);
 
   // Обработчик ошибки загрузки изображения
   const handleImageError = useCallback(() => {
     setIsError(true);
+    setIsLoading(false);
     if (onError) onError(new Error(`Failed to load image: ${src}`));
     if (fallbackSrc) {
       setCurrentSrc(fallbackSrc);
+      // Если fallback загрузился успешно, считаем isLoaded = true, чтобы убрать плейсхолдер/лоадер
+      const img = new Image();
+      img.src = fallbackSrc;
+      img.onload = () => setIsLoaded(true);
+      img.onerror = () => setIsLoaded(true); // Даже если fallback не загрузился, убираем лоадер
+    } else {
+      setIsLoaded(true); // Убираем лоадер, даже если картинки нет
     }
   }, [fallbackSrc, onError, src]);
 
-  // Устанавливаем наблюдатель за пересечением viewport и изображения
+  // Настройка Intersection Observer для ленивой загрузки
   useEffect(() => {
-    if (loading !== 'lazy' || !imageRef.current) return;
+    if (loading !== 'lazy') {
+      setIsLoading(true);
+      setCurrentSrc(src);
+      return;
+    }
+    if (!imageRef.current) return;
 
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
+        setIsLoading(true); // Начинаем загрузку
         setCurrentSrc(src);
         observer.current?.disconnect();
       }
+    }, {
+      rootMargin: '200px 0px', // Предзагрузка изображений, которые в пределах 200px от видимой области
+      threshold: 0.01, // Загружать, когда хотя бы 1% изображения видим
     });
 
     observer.current.observe(imageRef.current);
@@ -129,161 +132,111 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     };
   }, [loading, src]);
 
-  // Сбрасываем состояния при смене источника изображения
+  // Обновление источника изображения при изменении src
   useEffect(() => {
     if (loading === 'eager') {
       setCurrentSrc(src);
+      setIsLoading(true);
     }
     setIsLoaded(false);
     setIsError(false);
   }, [src, loading]);
 
-  // Определение стилей на основе пропсов
-  const getBorderRadius = () => {
-    const borderRadiusMap: Record<string, string> = {
-      none: '0',
-      sm: '0.125rem',
-      md: '0.375rem',
-      lg: '0.5rem',
-      xl: '0.75rem',
-      full: '9999px',
-    };
-    return borderRadiusMap[rounded] || borderRadiusMap.md;
-  };
-
-  const getBoxShadow = () => {
-    const shadowMap: Record<string, string> = {
-      none: 'none',
-      sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-      md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    };
-    return shadowMap[shadow] || shadowMap.none;
-  };
-
-  const getAnimationStyle = () => {
-    const baseTransition = `opacity ${animationDuration}ms ease-out`;
-
-    switch (fadeAnimation) {
-      case 'none':
-        return {};
-      case 'zoom':
-        return {
-          transform: isLoaded ? 'scale(1)' : 'scale(1.1)',
-          transition: `${baseTransition}, transform ${animationDuration}ms ease-out`,
-        };
-      case 'blur':
-        return {
-          filter: isLoaded ? 'blur(0)' : 'blur(10px)',
-          transition: `${baseTransition}, filter ${animationDuration}ms ease-out`,
-        };
-      case 'slide-up':
-        return {
-          transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-          transition: `${baseTransition}, transform ${animationDuration}ms ease-out`,
-        };
-      case 'fade':
-      default:
-        return {
-          transition: baseTransition,
-        };
-    }
-  };
-
-  // Вычисляем стили для контейнера
+  // Вычисляем инлайн-стили для контейнера
   const containerStyles: React.CSSProperties = {
-    position: 'relative',
-    overflow: 'hidden',
-    display: 'inline-block',
-    width: width || 'auto',
-    height: height || 'auto',
-    backgroundColor: isLoaded ? 'transparent' : placeholderColor,
-    transition: 'background-color 0.3s ease',
-    borderRadius: getBorderRadius(),
-    boxShadow: getBoxShadow(),
+    width: width,
+    height: height,
     ...style,
-  };
-
-  // Вычисляем стили для изображения
-  const imageStyles: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
-    objectFit,
-    opacity: isLoaded ? 1 : 0,
-    ...getAnimationStyle(),
-  };
-
-  // Определяем классы для эффекта при наведении
-  const getHoverClass = () => {
-    switch (hoverEffect) {
-      case 'zoom':
-        return 'lazy-image-hover-zoom';
-      case 'brightness':
-        return 'lazy-image-hover-brightness';
-      case 'scale':
-        return 'lazy-image-hover-scale';
-      case 'lift':
-        return 'lazy-image-hover-lift';
-      default:
-        return '';
-    }
   };
 
   // Определяем классы для контейнера
   const containerClasses = clsx(
-    'lazy-image-container',
+    'lazy-image-container relative inline-block overflow-hidden align-top',
+    placeholderColor,
+    roundedClasses[rounded],
+    shadowClasses[shadow],
+    hoverEffect === 'lift' && hoverEffectClasses[hoverEffect],
     className,
     {
       'lazy-image-loaded': isLoaded,
       'lazy-image-error': isError,
-    },
-    getHoverClass()
+      'cursor-pointer': onClick,
+    }
   );
 
-  // CSS для анимации лоадера
-  const loaderStyle: React.CSSProperties = {
-    width: '30px',
-    height: '30px',
-    border: '3px solid rgba(0, 0, 0, 0.1)',
-    borderTop: '3px solid #3498db',
-    borderRadius: '50%',
-    animation: 'lazyImageSpin 1s linear infinite',
-  };
+  // Определяем классы для изображения
+  const imageClasses = clsx(
+    'block w-full h-full',
+    objectFitClasses[objectFit],
+    fadeAnimationClasses[fadeAnimation],
+    (hoverEffect === 'zoom' || hoverEffect === 'brightness' || hoverEffect === 'scale') && hoverEffectClasses[hoverEffect],
+    isLoaded ? 'opacity-100 loaded' : 'opacity-0'
+  );
+
+  // Классы для прелоадера
+  const preloaderClasses = clsx(
+    'absolute inset-0 flex items-center justify-center transition-opacity duration-300',
+    isLoaded || isError ? 'opacity-0 pointer-events-none' : 'opacity-100'
+  );
+
+  // Классы для информации о состоянии ошибки
+  const errorClasses = clsx(
+    'absolute inset-0 flex flex-col items-center justify-center bg-secondary-100 dark:bg-secondary-800 transition-opacity duration-300',
+    isError && !fallbackSrc ? 'opacity-100' : 'opacity-0 pointer-events-none'
+  );
 
   return (
-    <div className={containerClasses} style={containerStyles}>
-      {/* Прелоадер */}
-      {!isLoaded && showPreloader && (
-        <div
-          className="lazy-image-placeholder"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: placeholderColor,
-          }}
-        >
-          <div className="lazy-image-loader" style={loaderStyle} />
+    <div
+      className={containerClasses}
+      style={containerStyles}
+      data-testid="lazy-image-container"
+      onClick={onClick}
+    >
+      {/* Прелоадер с кастомным спиннером */}
+      {showPreloader && isLoading && (
+        <div className={preloaderClasses} data-testid="lazy-image-preloader">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 dark:border-primary-400 border-t-transparent dark:border-t-transparent"></div>
+            <div className="mt-2 text-xs text-secondary-500 dark:text-secondary-400">Загрузка...</div>
+          </div>
         </div>
       )}
 
-      {/* Изображение */}
+      {/* Сообщение об ошибке загрузки */}
+      <div className={errorClasses} data-testid="lazy-image-error">
+        <svg 
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-error-500 dark:text-error-400 mb-2"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        <span className="text-sm text-secondary-700 dark:text-secondary-300">Не удалось загрузить изображение</span>
+      </div>
+
+      {/* Изображение */}  
       <img
         ref={imageRef}
-        src={currentSrc || (loading === 'eager' ? src : undefined)}
+        src={currentSrc}
         alt={alt}
-        className="lazy-image"
-        style={imageStyles}
+        className={imageClasses}
         onLoad={handleImageLoaded}
         onError={handleImageError}
-        loading={loading}
+        loading={loading === 'lazy' ? 'lazy' : undefined}
+        data-testid="lazy-image-img"
+        style={{ transitionDuration: `${animationDuration}ms` }}
       />
     </div>
   );
 };
+
+export default LazyImage;

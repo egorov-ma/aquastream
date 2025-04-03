@@ -1,14 +1,13 @@
-// Экспорт UI компонентов
-export * from './ui';
+/**
+ * Экспорт компонентов для удобного импорта в других модулях
+ */
 
-// Экспорт иконок
-export * from './icons';
-
-// Экспорт компонентов разметки
+// Экспорт базовых компонентов
 export * from './layout';
+export { ProjectCard } from './features/cards/ProjectCard';
+export { default as EventCard } from './EventCard';
 
-// Экспорт общих компонентов
+// Экспорт переиспользуемых компонентов
+export * from './ui';
 export * from './common';
-
-// Экспорт shared компонентов
-export * from './shared';
+export * from './icons';

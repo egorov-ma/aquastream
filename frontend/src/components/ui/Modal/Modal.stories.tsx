@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
-import Button from '../Button/Button';
-import Typography from '../Typography';
+import { Button } from '../Button';
+import { Typography } from '../Typography/Typography';
 
-import Modal from './Modal';
+import { Modal } from './Modal';
 
 const meta = {
   title: 'UI/Modal',
@@ -43,6 +43,11 @@ const meta = {
       description: 'Дополнительные CSS-классы',
     },
   },
+  args: {
+    title: 'Заголовок по умолчанию',
+    children: 'Содержимое модального окна по умолчанию.',
+    maxWidth: 'md',
+  }
 } satisfies Meta<typeof Modal>;
 
 export default meta;
@@ -61,7 +66,7 @@ export const Basic: Story = {
       'Это содержимое модального окна. Здесь можно разместить любую информацию или компоненты.',
     actions: (
       <>
-        <Button variant="outlined" onClick={noop}>
+        <Button variant="outline" onClick={noop}>
           Отмена
         </Button>
         <Button variant="primary" onClick={noop}>
@@ -106,9 +111,9 @@ export const WithDetailedContent: Story = {
 // Модальные окна разных размеров
 export const SmallSize: Story = {
   args: {
-    open: true,
+    open: false,
     onClose: noop,
-    title: 'Маленькое модальное окно',
+    title: 'Маленькое модальное окно (sm)',
     maxWidth: 'sm',
     children: 'Это маленькое модальное окно.',
     actions: (
@@ -117,13 +122,17 @@ export const SmallSize: Story = {
       </Button>
     ),
   },
+  render: (args) => {
+    const [open, setOpen] = useState(true);
+    return <Modal {...args} open={open} onClose={() => setOpen(false)} />
+  }
 };
 
 export const MediumSize: Story = {
   args: {
-    open: true,
+    open: false,
     onClose: noop,
-    title: 'Среднее модальное окно',
+    title: 'Среднее модальное окно (md)',
     maxWidth: 'md',
     children: 'Это модальное окно среднего размера.',
     actions: (
@@ -132,13 +141,17 @@ export const MediumSize: Story = {
       </Button>
     ),
   },
+  render: (args) => {
+    const [open, setOpen] = useState(true);
+    return <Modal {...args} open={open} onClose={() => setOpen(false)} />
+  }
 };
 
 export const LargeSize: Story = {
   args: {
-    open: true,
+    open: false,
     onClose: noop,
-    title: 'Большое модальное окно',
+    title: 'Большое модальное окно (lg)',
     maxWidth: 'lg',
     children: 'Это большое модальное окно.',
     actions: (
@@ -147,13 +160,36 @@ export const LargeSize: Story = {
       </Button>
     ),
   },
+  render: (args) => {
+    const [open, setOpen] = useState(true);
+    return <Modal {...args} open={open} onClose={() => setOpen(false)} />
+  }
+};
+
+export const ExtraLargeSize: Story = {
+  args: {
+    open: false,
+    onClose: noop,
+    title: 'Очень большое модальное окно (xl)',
+    maxWidth: 'xl',
+    children: 'Это очень большое модальное окно.',
+    actions: (
+      <Button variant="primary" onClick={noop}>
+        ОК
+      </Button>
+    ),
+  },
+  render: (args) => {
+    const [open, setOpen] = useState(true);
+    return <Modal {...args} open={open} onClose={() => setOpen(false)} />
+  }
 };
 
 export const FullWidth: Story = {
   args: {
-    open: true,
+    open: false,
     onClose: noop,
-    title: 'Модальное окно на всю ширину',
+    title: 'Модальное окно на всю ширину (full)',
     maxWidth: 'full',
     children: 'Это модальное окно на всю ширину экрана.',
     actions: (
@@ -162,6 +198,10 @@ export const FullWidth: Story = {
       </Button>
     ),
   },
+  render: (args) => {
+    const [open, setOpen] = useState(true);
+    return <Modal {...args} open={open} onClose={() => setOpen(false)} />
+  }
 };
 
 // Интерактивное демо
@@ -179,7 +219,7 @@ const ModalDemo = () => {
         title="Интерактивное модальное окно"
         actions={
           <>
-            <Button variant="outlined" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)}>
               Отмена
             </Button>
             <Button variant="primary" onClick={() => setOpen(false)}>
@@ -202,6 +242,13 @@ export const Interactive: Story = {
   args: {
     open: false,
     onClose: noop,
-    children: 'Этот контент будет заменён при рендере компонента ModalDemo',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Интерактивное модальное окно, открываемое по клику на кнопку.'
+      }
+    },
+    controls: { include: [] },
   },
 };
