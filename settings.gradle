@@ -24,6 +24,12 @@ include 'backend-notification:backend-notification-api'
 include 'backend-notification:backend-notification-db'
 include 'backend-notification:backend-notification-service'
 
+// Backend Crew Service
+include 'backend-crew'
+include 'backend-crew:backend-crew-api'
+include 'backend-crew:backend-crew-db'
+include 'backend-crew:backend-crew-service'
+
 // Other modules
 include 'frontend'
 include 'common'
