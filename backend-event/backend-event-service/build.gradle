@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    implementation project(':backend-planning:backend-planning-api')
-    implementation project(':backend-planning:backend-planning-db')
+    implementation project(':backend-event:backend-event-api')
+    implementation project(':backend-event:backend-event-db')
     implementation project(':common')
     
     implementation 'org.springframework.boot:spring-boot-starter-web'

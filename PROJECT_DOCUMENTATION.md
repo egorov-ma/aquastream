@@ -31,7 +31,7 @@
   - Управление данными пользователей.
   - Использование JWT для обеспечения безопасности.
   
-- **Planning Service (backend-planning):**
+- **Planning Service (backend-event):**
   - Планирование сплавов, расчёт маршрутов и оценка их сложности.
   - Поддержка gRPC API с использованием Protobuf.
   - Включение gRPC Reflection для автоматической генерации схемы API.
@@ -95,7 +95,7 @@
 
 ---
 
-### 3.3. Planning Service (backend-planning)
+### 3.3. Planning Service (backend-event)
 - **Назначение:**  
   Планирование сплавов, расчёт маршрутов, оценка сложности и длительности.
   
@@ -287,7 +287,7 @@
 
 ### 7.2. gRPC API
 - **Planning Service:**  
-  - Реализует gRPC API, описание которого находится в `planning.proto` (директория `backend-planning/src/main/proto`).
+  - Реализует gRPC API, описание которого находится в `planning.proto` (директория `backend-event/src/main/proto/planning.proto`).
   - Для тестирования и визуализации используйте `grpcui`:
     - Локально: `grpcui -plaintext localhost:9090`
     - Через Docker: запустите соответствующий контейнер.

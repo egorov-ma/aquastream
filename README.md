@@ -8,7 +8,7 @@
 
 - **backend-gateway** — API Gateway на базе Spring Cloud Gateway для маршрутизации запросов к микросервисам.
 - **backend-user** — Сервис управления пользователями и аутентификацией (JWT). Документация REST API доступна через Swagger UI.
-- **backend-planning** — Сервис планирования сплавов, реализованный с использованием gRPC. API описано в файле `src/main/proto/planning.proto`. Для тестирования gRPC используется grpcui.
+- **backend-event** — Сервис планирования сплавов, реализованный с использованием gRPC. API описано в файле `src/main/proto/planning.proto`. Для тестирования gRPC используется grpcui.
 - **backend-crew** — Сервис управления экипажами и командами. Документация REST API доступна через Swagger UI.
 - **backend-notification** — Сервис уведомлений с использованием Kafka. Документация REST API доступна через Swagger UI.
 - **frontend** — Веб-интерфейс, построенный на React.
@@ -57,7 +57,7 @@
    Запустите каждый микросервис (например, с использованием Spring Boot):
    - **API Gateway (backend-gateway):** `java -jar backend-gateway/build/libs/backend-gateway.jar`
    - **User Service (backend-user):** `java -jar backend-user/build/libs/backend-user.jar`
-   - **Planning Service (backend-planning):** `java -jar backend-planning/build/libs/backend-planning.jar`
+   - **Planning Service (backend-event):** `java -jar backend-event/build/libs/backend-event.jar`
    - **Crew Service (backend-crew):** `java -jar backend-crew/build/libs/backend-crew.jar`
    - **Notification Service (backend-notification):** `java -jar backend-notification/build/libs/backend-notification.jar`
    
@@ -100,7 +100,7 @@
    aquastream-api                java -jar app.jar                Up      0.0.0.0:8080->8080/tcp
    aquastream-crew               java -jar app.jar                Up      0.0.0.0:8083->8083/tcp
    aquastream-notification       java -jar app.jar                Up      0.0.0.0:8084->8084/tcp
-   aquastream-planning           java -jar app.jar                Up      0.0.0.0:8082->8082/tcp
+   aquastream-event              java -jar app.jar                Up      0.0.0.0:8082->8082/tcp
    aquastream-user               java -jar app.jar                Up      0.0.0.0:8081->8081/tcp
    aquastream-postgres           docker-entrypoint.sh postgres    Up      0.0.0.0:5432->5432/tcp
    aquastream-zookeeper          /etc/confluent/docker/run        Up      2181/tcp, 2888/tcp, 3888/tcp
@@ -200,13 +200,13 @@
 ## Документация API
 
 - **REST API:** Используйте Swagger UI для визуализации и тестирования.
-- **gRPC API (Planning):** Смотрите [planning.proto](backend-planning/src/main/proto/planning.proto) и используйте grpcui для визуализации.
+- **gRPC API (Planning):** Смотрите [planning.proto](backend-event/src/main/proto/planning.proto) и используйте grpcui для визуализации.
 
 ## Структура проекта
 
 - **backend-gateway** – API Gateway
 - **backend-user** – Сервис управления пользователями
-- **backend-planning** – Сервис планирования
+- **backend-event** – Сервис планирования
 - **backend-crew** – Сервис управления экипажами
 - **backend-notification** – Сервис уведомлений
 - **frontend** – Веб-интерфейс

@@ -6,11 +6,11 @@ include 'backend-user:backend-user-api'
 include 'backend-user:backend-user-db'
 include 'backend-user:backend-user-service'
 
-// Backend Planning Service
-include 'backend-planning'
-include 'backend-planning:backend-planning-api'
-include 'backend-planning:backend-planning-db'
-include 'backend-planning:backend-planning-service'
+// Backend Event Service
+include 'backend-event'
+include 'backend-event:backend-event-api'
+include 'backend-event:backend-event-db'
+include 'backend-event:backend-event-service'
 
 // Backend Gateway Service
 include 'backend-gateway'
