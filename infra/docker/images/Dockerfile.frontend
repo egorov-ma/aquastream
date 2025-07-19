@@ -11,13 +11,15 @@ ENV NPM_CONFIG_IGNORE_SCRIPTS=true
 COPY frontend/package.json frontend/package-lock.json ./
 
 # Устанавливаем все зависимости
-RUN npm install --omit=dev --no-optional && \
+RUN npm install --no-optional && \
     # Очищаем кэш npm для уменьшения размера образа
     npm cache clean --force
 
 # Копируем конфигурационные файлы
 COPY frontend/tsconfig.json frontend/tsconfig.node.json ./
 COPY frontend/vite.config.ts ./
+COPY frontend/postcss.config.cjs ./
+COPY frontend/tailwind.config.js ./
 COPY frontend/.eslintrc.json frontend/.prettierrc ./
 
 # Создаем пустой файл .env с переменными окружения для production
@@ -28,6 +30,8 @@ RUN echo "VITE_API_URL=http://localhost:8080/api" > .env && \
 COPY frontend/public ./public
 COPY frontend/index.html ./
 COPY frontend/src ./src
+# Добавляем копирование скриптов сборки и разработки
+COPY frontend/scripts ./scripts
 
 # Устанавливаем dev-зависимости для сборки
 RUN npm install --no-save terser vite typescript @vitejs/plugin-react
@@ -38,39 +42,11 @@ RUN npm run build
 # 2. Используем легковесный образ Nginx для раздачи фронтенда с brotli модулем
 FROM nginx:alpine AS runtime
 
-# Устанавливаем необходимые пакеты для сборки brotli модуля
-RUN apk add --no-cache git build-base pcre-dev openssl-dev zlib-dev linux-headers openssl
-
-# Создаем директорию для сборки модуля
-WORKDIR /build
-
-# Клонируем исходники Nginx brotli модуля
-RUN git clone --recursive https://github.com/google/ngx_brotli.git
-
-# Получаем исходники nginx той же версии, что и установленный
-RUN nginx_version=$(nginx -v 2>&1 | sed -r 's/^nginx version: nginx\/([0-9]+\.[0-9]+\.[0-9]+).*/\1/') && \
-    wget "http://nginx.org/download/nginx-${nginx_version}.tar.gz" && \
-    tar -xzvf "nginx-${nginx_version}.tar.gz" && \
-    cd "nginx-${nginx_version}" && \
-    ./configure --with-compat --add-dynamic-module=../ngx_brotli && \
-    make modules
-
-# Копируем собранный модуль в директорию модулей Nginx
-RUN mkdir -p /usr/lib/nginx/modules/ && \
-    cp /build/nginx-*/objs/ngx_http_brotli_filter_module.so /usr/lib/nginx/modules/ && \
-    cp /build/nginx-*/objs/ngx_http_brotli_static_module.so /usr/lib/nginx/modules/
-
-# Создаем директорию для SSL и генерируем параметры Diffie-Hellman
-RUN mkdir -p /etc/nginx/ssl && \
-    openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
-
-# Очищаем build директорию для уменьшения размера образа
-RUN rm -rf /build
-
-# Создаем каталог для модулей и создаем конфигурацию для загрузки модуля
-RUN mkdir -p /etc/nginx/modules/ && \
-    echo 'load_module /usr/lib/nginx/modules/ngx_http_brotli_filter_module.so;' > /etc/nginx/modules/brotli.conf && \
-    echo 'load_module /usr/lib/nginx/modules/ngx_http_brotli_static_module.so;' >> /etc/nginx/modules/brotli.conf
+# Устанавливаем brotli-модуль и необходимые пакеты
+RUN apk add --no-cache openssl \
+    && mkdir -p /etc/nginx/ssl \
+    && openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048 \
+    && openssl req -x509 -nodes -days 365 -subj "/CN=localhost" -newkey rsa:2048 -keyout /etc/nginx/ssl/key.pem -out /etc/nginx/ssl/cert.pem
 
 # Удаляем дефолтные конфиги Nginx
 RUN rm -rf /etc/nginx/conf.d
