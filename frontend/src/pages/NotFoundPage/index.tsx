@@ -6,13 +6,13 @@ import { Typography } from '@/components/ui';
 const NotFoundPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-16 text-center">
-      <Typography variant="h1" className="text-6xl font-bold mb-4">
+      <Typography variant="h1" className="text-6xl font-bold mb-4 text-gray-800 dark:text-gray-100">
         404
       </Typography>
-      <Typography variant="h4" className="mb-8">
+      <Typography variant="h4" className="mb-8 text-gray-800 dark:text-gray-100">
         Страница не найдена
       </Typography>
-      <Typography variant="body-1" className="mb-8">
+      <Typography variant="body-1" className="mb-8 text-gray-800 dark:text-gray-100">
         Запрашиваемая страница не существует или была перемещена.
       </Typography>
       <Link
