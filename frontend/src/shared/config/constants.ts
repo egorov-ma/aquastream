@@ -3,7 +3,7 @@
  */
 
 // API URL
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+export const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Настройки аутентификации
 export const AUTH_TOKEN_KEY = 'accessToken';

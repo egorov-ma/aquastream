@@ -14,6 +14,8 @@ const LoadingFallback = () => (
 const HomePage = React.lazy(() => import('@/pages/HomePage'));
 const AboutPage = React.lazy(() => import('@/pages/AboutPage'));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
+const LoginPage = React.lazy(() => import('@/pages/LoginPage'));
+const RegisterPage = React.lazy(() => import('@/pages/RegisterPage'));
 const UIKitPage = React.lazy(() => import('@/pages/UIKitPage'));
 
 const Routes: React.FC = () => {
@@ -30,6 +32,8 @@ const Routes: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/ui-kit" element={<UIKitPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </RouterRoutes>

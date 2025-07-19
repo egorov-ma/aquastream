@@ -23,7 +23,8 @@ COPY frontend/tailwind.config.js ./
 COPY frontend/.eslintrc.json frontend/.prettierrc ./
 
 # Создаем пустой файл .env с переменными окружения для production
-RUN echo "VITE_API_URL=http://localhost:8080/api" > .env && \
+# Используем относительный путь, чтобы запросы шли через сам фронтенд-домен (Nginx)
+RUN echo "VITE_API_URL=/api" > .env && \
     echo "VITE_APP_VERSION=1.0.0" >> .env
 
 # Копируем публичные ресурсы и код приложения

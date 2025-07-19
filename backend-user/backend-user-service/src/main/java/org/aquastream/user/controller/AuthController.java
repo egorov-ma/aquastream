@@ -93,7 +93,7 @@ public class AuthController {
         return ResponseEntity.ok(tokens);
     }
 
-    @PostMapping("/signup")
+    @PostMapping({"/signup", "/register"})
     @Operation(summary = "Регистрация нового пользователя", 
                description = "Регистрирует нового пользователя в системе")
     @ApiResponses(value = {
