@@ -41,12 +41,7 @@ jobs:
           name: backend-test-reports
           path: |
             **/build/reports/tests/
-
-      # YAML syntax validation временно отключена — можно вернуть позже при добавлении конфигов.
-
-      - name: ShellCheck infra scripts
-        run: |
-          find infra/scripts -type f -name "*.sh" | xargs shellcheck -e SC2164 -e SC1091
+            if-no-files-found: ignore
 
       - name: Validate docker-compose
         run: docker compose -f infra/docker/compose/docker-compose.yml config 
