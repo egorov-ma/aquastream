@@ -1,0 +1,57 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run unit & integration tests
+        run: ./gradlew clean test integrationTest
+
+      - name: Generate coverage report
+        if: always()
+        run: ./gradlew jacocoTestReport
+
+      - name: Upload test & coverage reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-test-reports
+          path: |
+            **/build/reports/tests/
+            **/build/reports/jacoco/
+
+      - name: Validate Spring YAML configs
+        run: |
+          sudo apt-get update && sudo apt-get install -y yamllint shellcheck
+          # Проверяем YAML конфиги
+          files=$(git ls-files | grep -E 'application.*\.ya?ml$' || true)
+          if [ -n "$files" ]; then
+            yamllint $files
+          else
+            echo "No application YAML files found"
+          fi
+
+      - name: ShellCheck infra scripts
+        run: |
+          find infra/scripts -type f -name "*.sh" | xargs shellcheck -e SC2164 -e SC1091
+
+      - name: Validate docker-compose
+        run: docker compose -f infra/docker/compose/docker-compose.yml config 

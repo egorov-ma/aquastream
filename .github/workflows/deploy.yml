@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build images defined in docker-compose
+        run: docker compose -f infra/docker/compose/docker-compose.yml build
+
+      # здесь будет пуш в registry и деплой на сервер.
+      - name: Deploy placeholder
+        run: echo "🚀 Deployment step (placeholder)" 

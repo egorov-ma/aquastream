@@ -4,7 +4,7 @@
 
 # Определяем корневую директорию проекта
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPT_DIR="${PROJECT_ROOT}/scripts"
+SCRIPT_DIR="${PROJECT_ROOT}/infra/scripts"
 
 # Функция для логирования
 log() {
@@ -74,8 +74,10 @@ show_help() {
     echo "  stop                  Остановить контейнеры"
     echo "  restart               Перезапустить контейнеры"
     echo "  logs                  Показать логи"
+    echo "  status                Показать статус контейнеров"
     echo "  help                  Показать эту справку"
     echo "  list                  Показать список доступных скриптов"
+    echo "  exec <скрипт> [...]   Запустить произвольный скрипт из infra/scripts"
     echo
     echo "Опции:"
     echo "  -h, --help            Показать эту справку"
@@ -138,6 +140,9 @@ case "$1" in
     "logs")
         view_logs
         ;;
+    "status")
+        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
+        ;;
     *)
         # Обработка запуска скриптов из директории scripts
         SCRIPT="$1"
@@ -159,27 +164,9 @@ case "$1" in
             exit 1
         fi
 
-        # Запускаем скрипт build.sh напрямую (без символической ссылки)
-        if [ "$SCRIPT" = "build" ]; then
-            # Запускаем скрипт сборки напрямую
-            "${SCRIPT_DIR}/${SCRIPT_WITH_EXT}" "$@"
-            STATUS=$?
-        else
-            # Для остальных скриптов используем символическую ссылку
-            # Создаем временную символическую ссылку в корне проекта
-            TEMP_SCRIPT_LINK="${PROJECT_ROOT}/${SCRIPT_WITH_EXT}"
-            ln -sf "${SCRIPT_DIR}/${SCRIPT_WITH_EXT}" "${TEMP_SCRIPT_LINK}"
-
-            # Запускаем требуемый скрипт через символическую ссылку с переданными аргументами
-            "${TEMP_SCRIPT_LINK}" "$@"
-            STATUS=$?
-
-            # Удаляем временную символическую ссылку
-            rm -f "${TEMP_SCRIPT_LINK}"
-        fi
-
-        # Возвращаем статус выполнения скрипта
-        exit $STATUS
+        # Просто запускаем нужный скрипт из infra/scripts
+        "${SCRIPT_DIR}/${SCRIPT_WITH_EXT}" "$@"
+        exit $?
         ;;
 esac
 
