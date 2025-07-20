@@ -22,8 +22,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run unit & integration tests
-        run: ./gradlew clean test integrationTest
+      - name: Run unit tests
+        run: ./gradlew clean test
+
+      - name: Run integration tests (optional)
+        run: |
+          if ./gradlew tasks --all | grep -q "integrationTest"; then
+            ./gradlew integrationTest
+          else
+            echo "No integrationTest task defined — skipping"
+          fi
 
       - name: Assemble JARs
         run: ./gradlew build -x test
