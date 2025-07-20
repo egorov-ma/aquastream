@@ -34,18 +34,13 @@ jobs:
           name: backend-build
           path: "**/build/libs/*.jar"
 
-      - name: Generate coverage report
-        if: always()
-        run: ./gradlew jacocoTestReport
-
-      - name: Upload test & coverage reports
+      - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: backend-test-reports
           path: |
             **/build/reports/tests/
-            **/build/reports/jacoco/
 
       - name: Validate Spring YAML configs
         run: |
