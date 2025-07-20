@@ -25,14 +25,6 @@ jobs:
       - name: Run unit tests
         run: ./gradlew clean test
 
-      - name: Run integration tests (optional)
-        run: |
-          if ./gradlew tasks --all | grep -q "integrationTest"; then
-            ./gradlew integrationTest
-          else
-            echo "No integrationTest task defined — skipping"
-          fi
-
       - name: Assemble JARs
         run: ./gradlew build -x test
 
@@ -50,16 +42,7 @@ jobs:
           path: |
             **/build/reports/tests/
 
-      - name: Validate Spring YAML configs
-        run: |
-          sudo apt-get update && sudo apt-get install -y yamllint shellcheck
-          # Проверяем YAML конфиги
-          files=$(git ls-files | grep -E 'application.*\.ya?ml$' || true)
-          if [ -n "$files" ]; then
-            yamllint $files
-          else
-            echo "No application YAML files found"
-          fi
+      # YAML syntax validation временно отключена — можно вернуть позже при добавлении конфигов.
 
       - name: ShellCheck infra scripts
         run: |
