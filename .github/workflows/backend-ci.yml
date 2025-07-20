@@ -25,6 +25,15 @@ jobs:
       - name: Run unit & integration tests
         run: ./gradlew clean test integrationTest
 
+      - name: Assemble JARs
+        run: ./gradlew build -x test
+
+      - name: Upload backend build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: "**/build/libs/*.jar"
+
       - name: Generate coverage report
         if: always()
         run: ./gradlew jacocoTestReport
