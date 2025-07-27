@@ -2,9 +2,11 @@
 
 ![Statements](https://img.shields.io/badge/Statements-17%25-red) ![Branches](https://img.shields.io/badge/Branches-9%25-red) ![Functions](https://img.shields.io/badge/Functions-13%25-red) ![Lines](https://img.shields.io/badge/Lines-17%25-red)
 
+![Frontend CI](https://github.com/egorov-ma/aquastream/actions/workflows/frontend-ci.yml/badge.svg)
+
 # AquaStream Frontend
 
-Фронтенд для платформы планирования сплавов AquaStream. Проект построен на React, TypeScript, Redux Toolkit и Tailwind CSS, следуя принципам Feature-Sliced Design и Atomic Design.
+Полная документация переехала в [infra/docs/frontend](../infra/docs/frontend/README.md). Ниже сохранена краткая справка.
 
 ## Структура проекта
 
