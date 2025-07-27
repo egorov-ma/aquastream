@@ -2349,7 +2349,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U event_service -d event_db"]
+      test: [ "CMD-SHELL", "pg_isready -U event_service -d event_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -2361,7 +2361,7 @@ services:
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 2s
       retries: 3
@@ -2374,7 +2374,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
+      test: [ "CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -2394,7 +2394,7 @@ services:
     depends_on:
       - zookeeper
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      test: [ "CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -2411,7 +2411,7 @@ services:
   # Сам сервис backend-event
   backend-event:
     build:
-      context: ..
+      context: ../../..
       dockerfile: docker/Dockerfile
     ports:
       - "8080:8080"
@@ -2436,7 +2436,7 @@ services:
       - kafka
       - wiremock
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 3

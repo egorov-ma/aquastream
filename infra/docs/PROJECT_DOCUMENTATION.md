@@ -31,7 +31,8 @@
   - Управление данными пользователей.
   - Использование JWT для обеспечения безопасности.
   
-- **Planning Service (backend-event):**
+- **Event Service (backend-event):**
+  - Управление событиями сплавов (ранее Planning Service).
   - Планирование сплавов, расчёт маршрутов и оценка их сложности.
   - Поддержка gRPC API с использованием Protobuf.
   - Включение gRPC Reflection для автоматической генерации схемы API.
@@ -95,10 +96,9 @@
 
 ---
 
-### 3.3. Planning Service (backend-event)
-- **Назначение:**  
-  Планирование сплавов, расчёт маршрутов, оценка сложности и длительности.
-  
+### 3.3. Event Service (backend-event)
+- **Назначение:**  Управление событиями сплавов (ранее Planning Service).
+
 - **Технологии:**  
   Spring Boot, gRPC, Protocol Buffers, Spring Actuator.
   
@@ -184,8 +184,9 @@
     - `stop.sh` — остановка контейнеров.
     - `restart.sh` — перезапуск контейнеров.
   
-- **CI/CD:**  
-  - Конфигурация пайплайна в файле `.github/workflows/ci-cd.yml` для автоматизированного тестирования, сборки и деплоя.
+- **CI/CD:**
+  - Конфигурация GitHub Actions описана в `ci-cd/README.md`. Публикация Docker-образов и их запуск через `docker compose`.
+  - Деплой на production будет реализован позднее скриптом bash/Ansible (Kubernetes не используется в MVP).
   
 - **Резервное копирование:**  
   - Скрипт `backup.sh` для резервного копирования базы данных с использованием `pg_dump`, ротации и загрузки в AWS S3.
@@ -315,3 +316,9 @@
 Регулярное обновление и поддержание документации поможет обеспечить высокое качество разработки и надежность эксплуатации проекта.
 
 --- 
+
+## Ссылки на подробные разделы
+- System Analysis – `infra/docs/system-analysis/`
+- Business Architecture – `infra/docs/business-architecture/`
+- CI/CD – `infra/docs/ci-cd/`
+- Дополнительные материалы – `infra/docs/other/` 
