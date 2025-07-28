@@ -51,7 +51,8 @@
     "src/**/*.stories.ts",
     "src/**/*.test.tsx",
     "src/**/*.test.ts",
-    "test"
+    "test",
+    "src/store/**"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 

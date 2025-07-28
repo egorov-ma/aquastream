@@ -6,7 +6,7 @@ import { EventFilters, CreateEventData, UpdateEventData } from '../types';
 // Получение списка событий
 export const fetchEvents = createAsyncThunk(
   'events/fetchAll',
-  async (filters?: EventFilters, { rejectWithValue }) => {
+  async (filters: EventFilters | undefined, { rejectWithValue }) => {
     try {
       const response = await eventsApi.getEvents(filters);
       return response.data.data;
@@ -19,7 +19,7 @@ export const fetchEvents = createAsyncThunk(
 // Получение рекомендуемых событий для главной страницы
 export const fetchFeaturedEvents = createAsyncThunk(
   'events/fetchFeatured',
-  async (limit = 3, { rejectWithValue }) => {
+  async (limit: number | undefined, { rejectWithValue }) => {
     try {
       const response = await eventsApi.getFeaturedEvents(limit);
       return response.data.data;

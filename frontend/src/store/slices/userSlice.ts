@@ -90,7 +90,8 @@ export const userSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         // Безопасное преобразование из API ответа
-        const userData = action.payload.data?.user as unknown as UserData;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const userData = (action.payload as any).data?.user as UserData;
         state.currentUser = userData;
         state.error = null;
       })
@@ -108,7 +109,8 @@ export const userSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         // Безопасное преобразование из API ответа
-        const userData = action.payload.data?.user as unknown as UserData;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const userData = (action.payload as any).data?.user as UserData;
         state.currentUser = userData;
         state.error = null;
       })
@@ -126,7 +128,8 @@ export const userSlice = createSlice({
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.isLoading = false;
         // Безопасное преобразование из API ответа
-        const userData = action.payload.data as unknown as UserData;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const userData = (action.payload as any).data as UserData;
         state.currentUser = userData;
         state.error = null;
       })

@@ -21,7 +21,7 @@ export const fetchEvents = createAsyncThunk(
   async (filters: EventFilters | undefined, { rejectWithValue }) => {
     try {
       const response = await eventsApi.getEvents(filters);
-      return response.data;
+      return response.data.data as Event[];
     } catch (error: unknown) {
       const eventsError = error as ApiError;
       return rejectWithValue(eventsError.response?.data?.message || 'Ошибка при загрузке событий');
@@ -34,7 +34,7 @@ export const fetchFeaturedEvents = createAsyncThunk(
   async (limit: number | undefined, { rejectWithValue }) => {
     try {
       const response = await eventsApi.getFeaturedEvents(limit);
-      return response.data;
+      return response.data.data as Event[];
     } catch (error: unknown) {
       const eventsError = error as ApiError;
       return rejectWithValue(
@@ -103,7 +103,7 @@ export const registerForEvent = createAsyncThunk(
   async (eventId: string, { rejectWithValue }) => {
     try {
       const response = await eventsApi.registerForEvent(eventId);
-      return response.data.data;
+      return response.data as Event;
     } catch (error: unknown) {
       const eventsError = error as ApiError;
       return rejectWithValue(
@@ -118,7 +118,7 @@ export const cancelRegistration = createAsyncThunk(
   async (eventId: string, { rejectWithValue }) => {
     try {
       const response = await eventsApi.cancelRegistration(eventId);
-      return response.data.data;
+      return response.data as Event;
     } catch (error: unknown) {
       const eventsError = error as ApiError;
       return rejectWithValue(

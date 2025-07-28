@@ -3,8 +3,17 @@ name: Backend CI
 on:
   push:
     branches: [ main, develop ]
+    paths:
+      - 'backend-*/**'
+      - 'infra/**'
+      - 'common/**'
+      - '!frontend/**'
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'backend-*/**'
+      - 'infra/**'
+      - 'common/**'
 
 jobs:
   test:

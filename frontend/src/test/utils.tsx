@@ -1,7 +1,7 @@
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import { render, RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React, { ReactElement, PropsWithChildren } from 'react';
+import type { ReactElement, PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { combineReducers } from 'redux';
