@@ -89,9 +89,8 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Безопасное преобразование из API ответа
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const userData = (action.payload as any).data?.user as UserData;
+        // Извлекаем user из формата { data: { user: ... } }
+        const userData = (action.payload as { data?: { user: UserData } }).data?.user ?? null;
         state.currentUser = userData;
         state.error = null;
       })
@@ -108,9 +107,7 @@ export const userSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Безопасное преобразование из API ответа
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const userData = (action.payload as any).data?.user as UserData;
+        const userData = (action.payload as { data?: { user: UserData } }).data?.user ?? null;
         state.currentUser = userData;
         state.error = null;
       })
@@ -127,9 +124,7 @@ export const userSlice = createSlice({
       })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Безопасное преобразование из API ответа
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const userData = (action.payload as any).data as UserData;
+        const userData = (action.payload as { data?: UserData }).data ?? null;
         state.currentUser = userData;
         state.error = null;
       })

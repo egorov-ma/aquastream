@@ -5,10 +5,16 @@ on:
     branches: [ main, develop ]
     paths:
       - 'frontend/**'
+      - 'infra/**'
+      - 'common/**'
+      - '!backend-*/**'
   pull_request:
     branches: [ main, develop ]
     paths:
       - 'frontend/**'
+      - 'infra/**'
+      - 'common/**'
+      - '!backend-*/**'
 
 jobs:
   test:

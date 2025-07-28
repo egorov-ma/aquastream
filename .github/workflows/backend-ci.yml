@@ -14,6 +14,7 @@ on:
       - 'backend-*/**'
       - 'infra/**'
       - 'common/**'
+      - '!frontend/**'
 
 jobs:
   test:
