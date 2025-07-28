@@ -1,7 +1,7 @@
 import { cn } from '@utils/cn';
 import React from 'react';
 
-import { ButtonProps, ButtonVariant, ButtonSize } from './Button.types';
+import { ButtonProps, ButtonSize } from './Button.types';
 
 // Добавляем компонент спиннера для состояния loading
 const Spinner: React.FC<{ sizeClass: string }> = ({ sizeClass }) => (

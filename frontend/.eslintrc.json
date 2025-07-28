@@ -21,7 +21,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.eslint.json"
   },
   "plugins": ["@typescript-eslint", "react", "react-hooks", "jsx-a11y", "import"],
   "rules": {
@@ -72,6 +72,15 @@
         "react-hooks/rules-of-hooks": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "import/order": "off"
+      }
+    },
+    {
+      "files": ["**/*.stories.ts", "**/*.stories.tsx", "**/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx"],
+      "parserOptions": {
+        "project": null
+      },
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off"
       }
     }
   ]
