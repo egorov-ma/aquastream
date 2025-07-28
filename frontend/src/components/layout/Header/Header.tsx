@@ -17,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({
   theme = 'light',
   isAuthenticated = false,
   items,
+  navItems,
   className,
 }) => {
   // Определение стандартных пунктов меню, если не переданы пользовательские
@@ -45,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({
   ];
 
   // Используем переданные пункты меню или стандартные
-  const menuItems = items || defaultMenuItems;
+  const menuItems = items || navItems || defaultMenuItems;
 
   // Получаем setMenuOpen из контекста один раз на уровне компонента
   const { setMenuOpen } = useContext(MenuContext);

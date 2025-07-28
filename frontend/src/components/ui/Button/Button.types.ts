@@ -1,7 +1,21 @@
 import { ButtonHTMLAttributes } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'accent' | 'ghost';
-export type ButtonSize = 'small' | 'medium' | 'large';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'outlined' // alias для совместимости со старыми примерами
+  | 'danger'
+  | 'accent'
+  | 'ghost';
+
+export type ButtonSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'sm' // alias
+  | 'md'
+  | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**

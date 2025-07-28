@@ -19,6 +19,7 @@ export type TypographyVariant =
 
 export type TypographyColor =
   | 'primary' // Акцентный 1 (оранжевый)
+  | 'secondary'
   | 'accent'  // Акцентный 2 (золотой)
   | 'error'
   | 'warning'
@@ -80,6 +81,7 @@ export const Typography: React.FC<TypographyProps> = ({
   // Маппинг цветов к классам Tailwind (ОБНОВЛЕНО)
   const colorClasses = {
     primary: 'text-primary-600 dark:text-primary-400',
+    secondary: 'text-secondary-700 dark:text-secondary-300',
     accent: 'text-accent-500 dark:text-accent-400',
     error: 'text-error-600 dark:text-error-500', // Используем 500 для темной темы у ошибки для лучшей читаемости
     warning: 'text-warning-600 dark:text-warning-400',
@@ -88,6 +90,8 @@ export const Typography: React.FC<TypographyProps> = ({
     default: 'text-secondary-950 dark:text-secondary-50', // Основной текст
     muted: 'text-secondary-500 dark:text-secondary-400', // Приглушенный текст
     inherit: '', // Наследуемый цвет
+    'text-primary': 'text-primary-600',
+    'text-secondary': 'text-secondary-600',
   };
 
   // Маппинг выравнивания к классам Tailwind

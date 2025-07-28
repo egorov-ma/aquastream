@@ -1,7 +1,7 @@
 import { cn } from '@utils/cn';
 import React from 'react';
 
-import { ButtonProps } from './Button.types';
+import { ButtonProps, ButtonVariant, ButtonSize } from './Button.types';
 
 // Добавляем компонент спиннера для состояния loading
 const Spinner: React.FC<{ sizeClass: string }> = ({ sizeClass }) => (
@@ -45,7 +45,7 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses =
     'inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-secondary-900';
 
-  const variantClasses = {
+  const variantClasses: Record<string, string> = {
     primary:
       'bg-primary-600 text-secondary-50 hover:bg-primary-700 focus:ring-primary-500 active:bg-primary-800 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-primary-400 dark:active:bg-primary-700',
     secondary:
@@ -60,13 +60,16 @@ export const Button: React.FC<ButtonProps> = ({
       'bg-transparent text-secondary-700 hover:bg-secondary-100 focus:ring-secondary-500 active:bg-secondary-200 dark:text-secondary-300 dark:hover:bg-secondary-700 dark:focus:ring-secondary-400 dark:active:bg-secondary-600',
   };
 
-  const sizeClasses = {
+  const sizeClasses: Record<ButtonSize, string> = {
     small: 'text-sm px-3 py-1.5',
+    sm: 'text-sm px-3 py-1.5',
     medium: 'text-base px-4 py-2',
+    md: 'text-base px-4 py-2',
     large: 'text-lg px-6 py-3',
+    lg: 'text-lg px-6 py-3',
   };
 
-  const spinnerSizeClasses = {
+  const spinnerSizeClasses: Record<'small' | 'medium' | 'large', string> = {
     small: 'h-4 w-4',
     medium: 'h-5 w-5',
     large: 'h-6 w-6',
@@ -76,10 +79,12 @@ export const Button: React.FC<ButtonProps> = ({
   const isDisabled = disabled || loading;
   const disabledClass = isDisabled ? 'opacity-50 cursor-not-allowed' : '';
 
+  const normalizedSize = size === 'sm' ? 'small' : size === 'md' ? 'medium' : size === 'lg' ? 'large' : size;
+
   const buttonClasses = cn(
     baseClasses,
-    variantClasses[variant],
-    sizeClasses[size],
+    variantClasses[variant === 'outlined' ? 'outline' : variant],
+    sizeClasses[size as ButtonSize],
     widthClass,
     disabledClass,
     className
@@ -94,7 +99,7 @@ export const Button: React.FC<ButtonProps> = ({
       data-testid={`button-${variant}`}
       {...props}
     >
-      {loading && <Spinner sizeClass={spinnerSizeClasses[size]} />}
+      {loading && <Spinner sizeClass={spinnerSizeClasses[normalizedSize as 'small'|'medium'|'large']} />}
       {children}
     </button>
   );

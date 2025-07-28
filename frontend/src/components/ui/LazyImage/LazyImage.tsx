@@ -97,7 +97,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     if (fallbackSrc) {
       setCurrentSrc(fallbackSrc);
       // Если fallback загрузился успешно, считаем isLoaded = true, чтобы убрать плейсхолдер/лоадер
-      const img = new Image();
+      const img = document.createElement('img');
       img.src = fallbackSrc;
       img.onload = () => setIsLoaded(true);
       img.onerror = () => setIsLoaded(true); // Даже если fallback не загрузился, убираем лоадер

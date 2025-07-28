@@ -1,9 +1,4 @@
-import {
-  ButtonAppearEffect,
-  ButtonHoverEffect,
-  ButtonSize,
-  ButtonVariant,
-} from '@/components/ui/Button/Button';
+import { ButtonSize, ButtonVariant } from '@/components/ui/Button';
 import { TextFieldColor, TextFieldSize, TextFieldVariant } from '@/components/ui/TextField';
 import { TypographyAlign, TypographyColor, TypographyVariant } from '@/components/ui/Typography';
 
@@ -15,18 +10,21 @@ import { TypographyAlign, TypographyColor, TypographyVariant } from '@/component
 export type Size = 'sm' | 'md' | 'lg';
 
 // Основные типы вариантов
-export type Variant = 'primary' | 'secondary' | 'outlined' | 'text' | 'filled' | 'gradient';
+export type Variant = 'primary' | 'secondary' | 'outlined' | 'outline' | 'text' | 'filled' | 'gradient';
 
 // Основные типы цветов
 export type Color =
   | 'primary'
   | 'secondary'
+  | 'accent'
   | 'error'
   | 'warning'
   | 'success'
   | 'info'
   | 'text-primary'
   | 'text-secondary'
+  | 'default'
+  | 'muted'
   | 'inherit';
 
 // Типы выравнивания
@@ -42,8 +40,6 @@ export type HoverEffect = 'none' | 'lift' | 'pulse' | 'glow';
 export type {
   ButtonVariant,
   ButtonSize,
-  ButtonHoverEffect,
-  ButtonAppearEffect,
   TextFieldColor,
   TextFieldSize,
   TextFieldVariant,

@@ -8,7 +8,7 @@ import { useAppDispatch } from '@/store/hooks';
 import { useAppSelector } from '@/store/hooks';
 
 interface LoginFormData {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await dispatch(login({ username: data.username, password: data.password })).unwrap();
+      await dispatch(login({ email: data.email, password: data.password })).unwrap();
       navigate('/');
     } catch (err) {
       // Ошибка обрабатывается через состояние auth.error
@@ -42,9 +42,12 @@ const LoginPage: React.FC = () => {
         className="bg-white dark:bg-secondary-800 rounded-lg shadow-md p-6 space-y-4"
       >
         <Input
-          label="Логин"
-          {...register('username', { required: 'Введите логин' })}
-          error={errors.username?.message}
+          label="E-mail"
+          {...register('email', {
+            required: 'Введите e-mail',
+            pattern: { value: /.+@.+\..+/, message: 'Неверный формат e-mail' },
+          })}
+          error={errors.email?.message}
         />
         <Input
           type="password"

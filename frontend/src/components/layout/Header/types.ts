@@ -59,6 +59,10 @@ export interface HeaderAuthProps {
 export interface HeaderNavigationProps {
   /** Пользовательский список пунктов меню */
   items?: NavItem[];
+  /**
+   * @deprecated Используйте `items`.
+   */
+  navItems?: NavItem[];
 }
 
 /**

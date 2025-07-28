@@ -44,12 +44,14 @@
     "esModuleInterop": true
   },
   "include": [
-    "src", 
-    "src/**/*.ts", 
-    "src/**/*.tsx", 
-    "src/**/*.d.ts",
-    "test/**/*.ts", 
-    "test/**/*.tsx"
+    "src"
+  ],
+  "exclude": [
+    "src/**/*.stories.tsx",
+    "src/**/*.stories.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.test.ts",
+    "test"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 
