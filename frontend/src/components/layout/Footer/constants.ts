@@ -1,5 +1,5 @@
-import { NavLink, SocialLink, ContactInfo } from './types';
 import { TelegramIcon, GitHubIcon, EmailIcon } from './SocialIcons';
+import { NavLink, SocialLink, ContactInfo } from './types';
 
 /**
  * Стандартные навигационные ссылки для футера

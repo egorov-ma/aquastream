@@ -1,9 +1,10 @@
+import { Eye, EyeOff } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useAppDispatch } from '@/store/hooks';
-import { register as registerThunk } from '@/modules/auth/store/authSlice';
+
 import { Typography, Input, Button } from '@/components/ui';
-import { Eye, EyeOff } from 'lucide-react';
+import { register as registerThunk } from '@/modules/auth/store/authSlice';
+import { useAppDispatch } from '@/store/hooks';
 
 interface RegisterFormData {
   username: string;
@@ -27,13 +28,18 @@ const RegisterPage: React.FC = () => {
   const [showConfirm, setShowConfirm] = React.useState(false);
 
   const onSubmit = async (data: RegisterFormData) => {
-    await dispatch(
-      registerThunk({
-        username: data.username,
-        password: data.password,
-        name: data.name,
-      } as any)
-    );
+    try {
+      await dispatch(
+        registerThunk({
+          email: data.username,
+          password: data.password,
+          displayName: data.name,
+        })
+      ).unwrap();
+      // TODO: возможно, редирект на главную или страницу профиля
+    } catch (err) {
+      // Ошибка обрабатывается в состоянии auth.error
+    }
   };
 
   return (

@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
-import { NavItem } from './types';
-import NavigationItem from './NavigationItem';
 import { UserCircle } from 'lucide-react';
-import ThemeSwitcher from './ThemeSwitcher';
-import { useTranslate } from '@/hooks';
+import React, { useContext } from 'react';
+
 import { MenuContext } from './HeaderScroll';
+import NavigationItem from './NavigationItem';
+import ThemeSwitcher from './ThemeSwitcher';
+import { NavItem } from './types';
+
+import { useTranslate } from '@/hooks';
+
 
 /**
  * Свойства компонента навигационного меню
@@ -53,7 +56,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(({
   className,
 }) => {
   const translate = useTranslate();
-  const { isMenuOpen, setMenuOpen } = useContext(MenuContext);
+  const { setMenuOpen } = useContext(MenuContext);
 
   // Функция для получения отображаемого имени пункта меню
   const getItemDisplayName = React.useCallback((item: NavItem): string => {

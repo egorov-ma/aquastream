@@ -1,14 +1,15 @@
 import React from 'react';
-import { FooterProps } from './types';
+
 import CompanyInfo from './CompanyInfo';
-import QuickLinks from './QuickLinks';
-import SocialLinks from './SocialLinks';
-import Copyright from './Copyright';
 import { 
   DEFAULT_NAV_LINKS,
   DEFAULT_SOCIAL_LINKS,
   DEFAULT_COMPANY_DESCRIPTION 
 } from './constants';
+import Copyright from './Copyright';
+import QuickLinks from './QuickLinks';
+import SocialLinks from './SocialLinks';
+import { FooterProps } from './types';
 
 /**
  * Компонент Footer - подвал сайта с навигацией, контактами и информацией

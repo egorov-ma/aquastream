@@ -1,11 +1,13 @@
-import React, { useCallback, useContext } from 'react';
 import { Calendar, Users, HelpCircle } from 'lucide-react';
-import { lightTheme, darkTheme } from '@/theme';
+import React, { useCallback, useContext } from 'react';
 
-import { NavItem, HeaderProps } from './types';
+
 import HeaderScroll, { MenuContext } from './HeaderScroll';
-import NavigationMenu from './NavigationMenu';
 import Logo from './Logo';
+import NavigationMenu from './NavigationMenu';
+import { NavItem, HeaderProps } from './types';
+
+import { lightTheme, darkTheme } from '@/theme';
 
 /**
  * Компонент Header - шапка сайта с навигацией и логотипом
@@ -45,12 +47,13 @@ const Header: React.FC<HeaderProps> = ({
   // Используем переданные пункты меню или стандартные
   const menuItems = items || defaultMenuItems;
 
+  // Получаем setMenuOpen из контекста один раз на уровне компонента
+  const { setMenuOpen } = useContext(MenuContext);
+
   // Обработчик закрытия меню
   const closeMenu = useCallback(() => {
-    // Используем контекст для доступа к setMenuOpen
-    const { setMenuOpen } = useContext(MenuContext);
     setMenuOpen(false);
-  }, []);
+  }, [setMenuOpen]);
 
   // Рендер иконки для пункта меню
   const renderIcon = useCallback((item: NavItem) => {

@@ -1,14 +1,16 @@
 import React from 'react';
-import { cn } from '../../utils/cn';
-import { Button } from '../../components/ui/Button/Button';
 import { Link } from 'react-router-dom';
-import { EventCardProps } from './types';
+
+import { Button } from '../../components/ui/Button/Button';
+import { cn } from '../../utils/cn';
+
 
 // Импорт компонентов
 import DifficultyIndicator from './DifficultyIndicator';
 import FeaturesList from './FeaturesList';
 import ParticipantsProgress from './ParticipantsProgress';
 import TimelineInfo from './TimelineInfo';
+import { EventCardProps } from './types';
 
 /**
  * Компонент карточки события

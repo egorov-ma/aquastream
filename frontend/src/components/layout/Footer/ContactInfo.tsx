@@ -1,6 +1,7 @@
 import React from 'react';
-import { ContactInfo as ContactInfoType } from './types';
+
 import { EmailIcon, PhoneIcon } from './SocialIcons';
+import { ContactInfo as ContactInfoType } from './types';
 
 /**
  * Свойства компонента контактной информации

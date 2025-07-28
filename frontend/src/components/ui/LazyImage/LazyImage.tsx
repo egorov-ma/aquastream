@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { LazyImageProps, LoadingMethod, ObjectFitMode, FadeInAnimation, RoundedSize, ShadowSize, HoverEffect } from './types';
+
+import { LazyImageProps, ObjectFitMode, FadeInAnimation, RoundedSize, ShadowSize, HoverEffect } from './types';
 
 // Маппинги пропсов на классы Tailwind
 const roundedClasses: Record<RoundedSize, string> = {
@@ -185,12 +186,27 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     isError && !fallbackSrc ? 'opacity-100' : 'opacity-0 pointer-events-none'
   );
 
+  // Обработчик клавиш для доступности (Enter или Space нажаты)
+  const handleKeyPress = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!onClick) return;
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onClick();
+      }
+    },
+    [onClick]
+  );
+
   return (
     <div
       className={containerClasses}
       style={containerStyles}
       data-testid="lazy-image-container"
       onClick={onClick}
+      onKeyDown={handleKeyPress}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
       {/* Прелоадер с кастомным спиннером */}
       {showPreloader && isLoading && (

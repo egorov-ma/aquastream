@@ -1,21 +1,21 @@
-import { Footer } from './Footer';
 import CompanyInfo from './CompanyInfo';
-import QuickLinks from './QuickLinks';
-import ContactInfo from './ContactInfo';
-import SocialLinks from './SocialLinks';
-import Copyright from './Copyright';
 import { 
   DEFAULT_NAV_LINKS, 
   DEFAULT_SOCIAL_LINKS, 
   DEFAULT_CONTACT_INFO, 
   DEFAULT_COMPANY_DESCRIPTION 
 } from './constants';
+import ContactInfo from './ContactInfo';
+import Copyright from './Copyright';
+import { Footer } from './Footer';
+import QuickLinks from './QuickLinks';
 import { 
   TelegramIcon, 
   GitHubIcon,
   EmailIcon, 
   PhoneIcon 
 } from './SocialIcons';
+import SocialLinks from './SocialLinks';
 import type { 
   NavLink, 
   SocialLink, 

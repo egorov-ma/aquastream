@@ -1,5 +1,6 @@
-import { cn } from '../../utils/cn';
 import { MapPinIcon } from 'lucide-react';
+
+import { cn } from '../../utils/cn';
 
 /**
  * Свойства компонента временной шкалы

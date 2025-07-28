@@ -1,9 +1,10 @@
 import React from 'react';
-import { Typography, Input, Button } from '@/components/ui';
-import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAppDispatch } from '@/store/hooks';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { Typography, Input, Button } from '@/components/ui';
 import { login } from '@/modules/auth/store/authSlice';
+import { useAppDispatch } from '@/store/hooks';
 import { useAppSelector } from '@/store/hooks';
 
 interface LoginFormData {
@@ -23,9 +24,11 @@ const LoginPage: React.FC = () => {
   const { error } = useAppSelector((state) => state.auth);
 
   const onSubmit = async (data: LoginFormData) => {
-    const result = await dispatch(login({ username: data.username, password: data.password } as any));
-    if (login.fulfilled.match(result)) {
+    try {
+      await dispatch(login({ username: data.username, password: data.password })).unwrap();
       navigate('/');
+    } catch (err) {
+      // Ошибка обрабатывается через состояние auth.error
     }
   };
 

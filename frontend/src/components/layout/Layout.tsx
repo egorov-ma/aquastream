@@ -21,7 +21,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({
   children,
   toggleTheme,
-  headerAppearEffect = 'none',
+  headerAppearEffect: _headerAppearEffect = 'none',
   isAuthenticated = false,
   theme = 'light',
 }) => {

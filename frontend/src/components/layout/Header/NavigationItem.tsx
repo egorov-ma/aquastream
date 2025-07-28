@@ -1,7 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { lightTheme, darkTheme } from '@/theme';
+
 import { NavItem } from './types';
+
+import { lightTheme, darkTheme } from '@/theme';
 
 /**
  * Свойства компонента навигационного пункта
@@ -86,7 +88,7 @@ const NavigationItem: React.FC<NavigationItemProps> = React.memo(({
   `;
 
   // Обработчик клика с вызовом внешнего обработчика
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     onClick?.();
   };
 

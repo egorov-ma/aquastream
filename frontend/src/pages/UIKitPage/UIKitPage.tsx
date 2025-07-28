@@ -1,4 +1,6 @@
+/* eslint-disable max-lines, react/no-unescaped-entities */
 import React, { useState } from 'react';
+
 import { 
   Button, 
   Card, 

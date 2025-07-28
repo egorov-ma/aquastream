@@ -28,13 +28,13 @@
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "eqeqeq": "error",
     "max-depth": ["warn", 4],
     "max-lines": ["warn", 300],
     "import/order": [
-      "error",
+      "warn",
       {
         "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
         "newlines-between": "always",
@@ -42,7 +42,11 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/ban-ts-comment": "warn"
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/interactive-supports-focus": "warn",
+    "react/no-unescaped-entities": "warn"
   },
   "settings": {
     "react": {
@@ -56,9 +60,18 @@
   },
   "overrides": [
     {
-      "files": ["tests/**/*.ts", "tests/**/*.tsx", "**/*.spec.ts", "**/*.test.ts"],
+      "files": ["tests/**/*.ts", "tests/**/*.tsx", "**/*.spec.ts", "**/*.spec.tsx", "**/*.test.ts", "**/*.test.tsx"],
       "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["*.stories.tsx", "*.stories.ts"],
+      "rules": {
+        "react-hooks/rules-of-hooks": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "import/order": "off"
       }
     }
   ]

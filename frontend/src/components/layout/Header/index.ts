@@ -1,10 +1,10 @@
 import Header from './Header';
-import { NavItem, HeaderProps } from './types';
 import HeaderScroll from './HeaderScroll';
 import Logo from './Logo';
 import NavigationItem from './NavigationItem';
 import NavigationMenu from './NavigationMenu';
 import ThemeSwitcher from './ThemeSwitcher';
+import { NavItem, HeaderProps } from './types';
 
 export { 
   Header,

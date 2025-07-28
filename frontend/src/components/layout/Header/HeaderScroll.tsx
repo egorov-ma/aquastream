@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback, createContext } from 'react';
 import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback, useMemo, createContext } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
@@ -117,32 +117,32 @@ const HeaderScroll: React.FC<HeaderScrollProps> = React.memo(({
   // Текущий путь страницы
   const location = useLocation();
   
-  // Настройки скролла по умолчанию
-  const defaultScrollSettings: ScrollSettings = {
-    initialVisibilityThreshold: 60,
-    scrollDeltaThreshold: 50,
-    hideDelay: 800,
-  };
+  // Объединяем пользовательские настройки со значениями по умолчанию (мемоизируем)
+  const scrollSettings = useMemo(() => {
+    const defaults: ScrollSettings = {
+      initialVisibilityThreshold: 60,
+      scrollDeltaThreshold: 50,
+      hideDelay: 800,
+    };
+    return {
+      ...defaults,
+      ...customScrollSettings,
+    };
+  }, [customScrollSettings]);
   
-  // Объединяем пользовательские настройки с настройками по умолчанию
-  const scrollSettings = {
-    ...defaultScrollSettings,
-    ...customScrollSettings,
-  };
-  
-  // Настройки анимации по умолчанию
-  const defaultAnimationSettings: AnimationSettings = {
-    stiffness: 300,
-    damping: 30,
-    mass: 0.8,
-    opacityDuration: 0.15,
-  };
-  
-  // Объединяем пользовательские настройки анимации с настройками по умолчанию
-  const animationSettings = {
-    ...defaultAnimationSettings,
-    ...customAnimationSettings,
-  };
+  // Объединяем пользовательские настройки анимации со значениями по умолчанию (мемоизируем)
+  const animationSettings = useMemo(() => {
+    const defaults: AnimationSettings = {
+      stiffness: 300,
+      damping: 30,
+      mass: 0.8,
+      opacityDuration: 0.15,
+    };
+    return {
+      ...defaults,
+      ...customAnimationSettings,
+    };
+  }, [customAnimationSettings]);
   
   // Функция для установки состояния isMenuOpen (для использования в дочерних компонентах)
   const setMenuOpen = useCallback((value: boolean) => {
