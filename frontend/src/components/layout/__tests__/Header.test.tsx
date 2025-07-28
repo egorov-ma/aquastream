@@ -50,7 +50,7 @@ describe('Header Component', () => {
     expect(screen.getByText('Мероприятия')).toBeInTheDocument();
 
     // Проверяем, что кнопка смены темы есть на странице
-    const themeToggleButton = screen.getByRole('button', { name: /theme/i });
+    const themeToggleButton = screen.getAllByTestId('theme-switcher')[0];
     expect(themeToggleButton).toBeInTheDocument();
   });
 
@@ -63,8 +63,8 @@ describe('Header Component', () => {
     );
 
     // Проверяем, что шапка имеет правильные классы для темной темы
-    const darkHeader = screen.getByRole('banner');
-    expect(darkHeader).toHaveClass(darkTheme.header);
+    const darkHeaderInner = screen.getByTestId('header-scroll').querySelector('div');
+    expect(darkHeaderInner).toHaveClass(darkTheme.header);
 
     // Размонтируем компонент и очищаем DOM
     unmount();
@@ -77,8 +77,8 @@ describe('Header Component', () => {
       </MemoryRouter>
     );
 
-    const lightHeader = screen.getByRole('banner');
-    expect(lightHeader).toHaveClass(lightTheme.header);
+    const lightHeaderInner = screen.getByTestId('header-scroll').querySelector('div');
+    expect(lightHeaderInner).toHaveClass(lightTheme.header);
   });
 
   it('calls onThemeToggle when theme button is clicked', () => {
@@ -91,7 +91,7 @@ describe('Header Component', () => {
     );
 
     // Находим кнопку смены темы
-    const themeToggleButton = screen.getByRole('button', { name: /theme/i });
+    const themeToggleButton = screen.getAllByTestId('theme-switcher')[0];
 
     // Используем fireEvent вместо user.click
     fireEvent.click(themeToggleButton);
