@@ -1,6 +1,9 @@
+import '@testing-library/jest-dom';
 import { screen, cleanup, fireEvent } from '@testing-library/react';
+import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+
 
 import Header from '../Header/Header';
 
@@ -39,15 +42,15 @@ describe('Header Component', () => {
       </MemoryRouter>
     );
 
-    // Проверяем, что логотип есть на странице
-    expect(screen.getByText('AquaStream')).toBeInTheDocument();
+    // Проверяем, что логотип (ссылка) есть на странице
+    expect(screen.getByTestId('logo-link')).toBeInTheDocument();
 
     // Проверяем, что все пункты меню отображаются с переведенными названиями
     expect(screen.getByText('Домой')).toBeInTheDocument();
     expect(screen.getByText('Мероприятия')).toBeInTheDocument();
 
     // Проверяем, что кнопка смены темы есть на странице
-    const themeToggleButton = screen.getByLabelText('Toggle theme');
+    const themeToggleButton = screen.getByRole('button', { name: /theme/i });
     expect(themeToggleButton).toBeInTheDocument();
   });
 
@@ -88,7 +91,7 @@ describe('Header Component', () => {
     );
 
     // Находим кнопку смены темы
-    const themeToggleButton = screen.getByLabelText('Toggle theme');
+    const themeToggleButton = screen.getByRole('button', { name: /theme/i });
 
     // Используем fireEvent вместо user.click
     fireEvent.click(themeToggleButton);
