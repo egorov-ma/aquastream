@@ -43,7 +43,7 @@ export function loginDataToApi(data: LoginData): LoginRequest {
  */
 export function registerDataToApi(data: RegisterData): RegisterRequest {
   return {
-    username: data.username,
+    username: data.username ?? data.email,
     email: data.email,
     password: data.password,
     displayName: data.displayName,
@@ -57,7 +57,6 @@ export function registerDataToApi(data: RegisterData): RegisterRequest {
 export function updateProfileToApi(data: UpdateProfileData): Record<string, string | undefined> {
   const result: Record<string, string | undefined> = {};
 
-  if (data.username) result.username = data.username;
   if (data.displayName) result.displayName = data.displayName;
   if (data.avatar) result.avatar = data.avatar;
 

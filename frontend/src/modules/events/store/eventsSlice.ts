@@ -21,7 +21,7 @@ export const fetchEvents = createAsyncThunk(
   async (filters: EventFilters | undefined, { rejectWithValue }) => {
     try {
       const response = await eventsApi.getEvents(filters);
-      return response.data.data;
+      return response.data;
     } catch (error: unknown) {
       const eventsError = error as ApiError;
       return rejectWithValue(eventsError.response?.data?.message || 'Ошибка при загрузке событий');
@@ -34,7 +34,7 @@ export const fetchFeaturedEvents = createAsyncThunk(
   async (limit: number | undefined, { rejectWithValue }) => {
     try {
       const response = await eventsApi.getFeaturedEvents(limit);
-      return response.data.data;
+      return response.data;
     } catch (error: unknown) {
       const eventsError = error as ApiError;
       return rejectWithValue(

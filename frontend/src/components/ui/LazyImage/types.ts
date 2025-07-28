@@ -75,5 +75,5 @@ export interface LazyImageProps {
   /** Заменяющее изображение при ошибке */
   fallbackSrc?: string;
   /** Обработчик клика по изображению */
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
 }
