@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
-import { screen, cleanup, fireEvent } from '@testing-library/react';
+import { screen, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -81,7 +82,7 @@ describe('Header Component', () => {
     expect(lightHeaderInner).toHaveClass(lightTheme.header);
   });
 
-  it('calls onThemeToggle when theme button is clicked', () => {
+  it('calls onThemeToggle when theme button is clicked', async () => {
     const handleThemeToggle = vi.fn();
 
     renderWithProviders(
@@ -93,8 +94,8 @@ describe('Header Component', () => {
     // Находим кнопку смены темы
     const themeToggleButton = screen.getAllByTestId('theme-switcher')[0];
 
-    // Используем fireEvent вместо user.click
-    fireEvent.click(themeToggleButton);
+    // Используем userEvent.click для имитации клика
+    await userEvent.click(themeToggleButton);
 
     // Проверяем, что обработчик был вызван
     expect(handleThemeToggle).toHaveBeenCalledTimes(1);
