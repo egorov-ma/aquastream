@@ -28,16 +28,28 @@ export const login = createAsyncThunk(
   async (loginData: LoginData, { rejectWithValue }) => {
     try {
       const response = await authApi.login(loginData);
-      const responseData = response.data.data as {
-        user: User;
-        accessToken: string;
+      const jwtRes = response.data.data as {
+        token: string;
+        id: string;
+        username: string;
+        name: string;
+        role: string;
         refreshToken: string;
       };
-      const { user, accessToken, refreshToken } = responseData;
+      const accessToken = jwtRes.token;
+      const refreshToken = jwtRes.refreshToken || '';
+      const user: User = {
+        id: jwtRes.id,
+        email: jwtRes.username,
+        displayName: jwtRes.name,
+        role: jwtRes.role,
+        createdAt: '',
+        updatedAt: '',
+      } as unknown as User;
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
 
       return { user, accessToken, refreshToken };
@@ -54,16 +66,28 @@ export const register = createAsyncThunk(
   async (registerData: RegisterData, { rejectWithValue }) => {
     try {
       const response = await authApi.register(registerData);
-      const responseData = response.data.data as {
-        user: User;
-        accessToken: string;
+      const jwtRes = response.data.data as {
+        token: string;
+        id: string;
+        username: string;
+        name: string;
+        role: string;
         refreshToken: string;
       };
-      const { user, accessToken, refreshToken } = responseData;
+      const accessToken = jwtRes.token;
+      const refreshToken = jwtRes.refreshToken || '';
+      const user: User = {
+        id: jwtRes.id,
+        email: jwtRes.username,
+        displayName: jwtRes.name,
+        role: jwtRes.role,
+        createdAt: '',
+        updatedAt: '',
+      } as unknown as User;
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
 
       return { user, accessToken, refreshToken };

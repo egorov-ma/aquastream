@@ -16,6 +16,9 @@ import java.util.UUID;
 public class JwtResponse {
     @Schema(description = "JWT токен аутентификации", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
     private String token;
+
+    @Schema(description = "Refresh токен", example = "3fdd...d91")
+    private String refreshToken;
     
     @Schema(description = "Тип токена", example = "Bearer", defaultValue = "Bearer")
     @Builder.Default

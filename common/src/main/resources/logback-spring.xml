@@ -37,7 +37,7 @@
         <ringBufferSize>131072</ringBufferSize>
         
         <!-- Настройки переподключения -->
-        <reconnectionDelay>1 second</reconnectionDelay>
+        <reconnectionDelay>5 seconds</reconnectionDelay>
         <maxReconnectionDelay>1 minute</maxReconnectionDelay>
         <connectionStrategy>
             <roundRobin>

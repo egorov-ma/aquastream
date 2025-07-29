@@ -1,34 +1,78 @@
 #!/bin/bash
-# Скрипт для запуска других скриптов из новой директории
+set -euo pipefail
 # Используйте: ./run.sh <команда> [аргументы]
 
 # Определяем корневую директорию проекта
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_DIR="${PROJECT_ROOT}/infra/scripts"
 
-# Функция для логирования
+# Цвета
+NC="\033[0m"; GREEN="\033[0;32m"; YELLOW="\033[0;33m"; RED="\033[0;31m"
+
+# Функция логирования с уровнями
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+    local level="$1"; shift
+    # Удаляем квадратные скобки, если переданы
+    level="${level//[\[\]]/}"
+    local msg="$*"
+    local color="$GREEN"
+    case "$level" in
+      INFO)  color="$GREEN";;
+      WARN)  color="$YELLOW";;
+      ERROR) color="$RED";;
+    esac
+    echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] ${color}${level}${NC} ${msg}"
 }
 
 # Функция для проверки наличия необходимых инструментов
 check_requirements() {
     if ! command -v docker &> /dev/null; then
-        log "[ERROR] Docker не установлен!"
+        log ERROR "Docker не установлен!"
         exit 1
     fi
-    
-    if ! command -v docker-compose &> /dev/null; then
-        log "[ERROR] Docker Compose не установлен!"
+
+    if ! docker compose version &> /dev/null; then
+        log ERROR "Плагин Docker Compose (docker compose) не найден! Обновите Docker до актуальной версии."
         exit 1
     fi
 }
 
 # Функция для остановки контейнеров
 stop_containers() {
-    log "[INFO] Остановка всех контейнеров..."
+    log "[INFO] Остановка всех контейнеров и очистка ресурсов..."
     if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down
+        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down -v --remove-orphans
+    else
+        log "[ERROR] Файл docker-compose.yml не найден!"
+        exit 1
+    fi
+    # Очистка данных ZooKeeper (если volume существует)
+    ZOOKEEPER_VOLUME=$(docker volume ls -q | grep zookeeper | head -n1 || true)
+    if [ -n "$ZOOKEEPER_VOLUME" ]; then
+        MNT=$(docker volume inspect "$ZOOKEEPER_VOLUME" -f '{{ .Mountpoint }}')
+        if [ -d "$MNT/version-2" ]; then
+            log INFO "Очистка данных ZooKeeper в $MNT..."
+            rm -rf "$MNT/version-2"/*
+            log INFO "Данные ZooKeeper очищены"
+        fi
+    fi
+}
+
+# Функция для запуска контейнеров
+start_containers() {
+    log "[INFO] Полный перезапуск контейнеров..."
+    stop_containers
+    log "[INFO] Запускаем docker compose..."
+
+    local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.yml"
+    if [ -f "$compose_file" ]; then
+        # Тянем образы без секции build
+        docker compose -f "$compose_file" pull --quiet --ignore-buildable 2>/dev/null || true
+        # Собираем build-образа
+        docker compose -f "$compose_file" build --quiet
+        # Запускаем контейнеры
+        docker compose -f "$compose_file" up -d
+        wait_healthy 180
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
         exit 1
@@ -36,29 +80,42 @@ stop_containers() {
 }
 
 # Функция для запуска контейнеров
-start_containers() {
-    log "[INFO] Запуск контейнеров..."
-    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" up -d
-    else
-        log "[ERROR] Файл docker-compose.yml не найден!"
-        exit 1
-    fi
+wait_healthy() {
+    local max_wait=${1:-120}
+    local elapsed=0
+    log "[INFO] Ожидание готовности контейнеров (до ${max_wait}s)..."
+    while [ $elapsed -lt $max_wait ]; do
+        if ! command -v jq &>/dev/null; then
+            log "[WARN] jq не установлен — пропускаю проверку healthcheck"
+            return 0
+        fi
+        unhealthy=$(docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps --format json | jq -r '.[]? | select(.State? != "running" or .Health? != "healthy") | .Name')
+        if [ -z "$unhealthy" ]; then
+            log "[INFO] Все контейнеры в статусе healthy."
+            return 0
+        fi
+        sleep 5
+        elapsed=$((elapsed+5))
+    done
+    log "[WARN] Некоторые контейнеры не стартовали вовремя:" $unhealthy
 }
 
-# Функция для перезапуска контейнеров
-restart_containers() {
-    log "[INFO] Перезапуск проекта: остановка всех контейнеров..."
-    stop_containers
-    log "[INFO] Перезапуск проекта: запуск контейнеров..."
-    start_containers
+# Функция для сборки проекта (backend, frontend, Docker images)
+build_project() {
+    log "[INFO] Сборка backend (Gradle) и frontend..."
+    ./gradlew clean build -x test || { log "[ERROR] Gradle build failed"; exit 1; }
+
+    (cd frontend && npm ci && npm run build) || { log "[ERROR] Frontend build failed"; exit 1; }
+
+    log "[INFO] Docker compose build..."
+    docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log "[ERROR] Docker build failed"; exit 1; }
 }
 
 # Функция для просмотра логов
 view_logs() {
     log "[INFO] Просмотр логов..."
     if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
+        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
         exit 1
@@ -70,39 +127,17 @@ show_help() {
     echo "Использование: $0 <команда> [аргументы]"
     echo
     echo "Команды:"
-    echo "  start                 Запустить контейнеры"
-    echo "  stop                  Остановить контейнеры"
-    echo "  restart               Перезапустить контейнеры"
-    echo "  logs                  Показать логи"
-    echo "  status                Показать статус контейнеров"
-    echo "  help                  Показать эту справку"
-    echo "  list                  Показать список доступных скриптов"
-    echo "  exec <скрипт> [...]   Запустить произвольный скрипт из infra/scripts"
-    echo
-    echo "Опции:"
-    echo "  -h, --help            Показать эту справку"
-    echo
-    echo "Доступные скрипты:"
-    for script in "$SCRIPT_DIR"/*.sh; do
-        basename "${script%.sh}"
-    done
+    echo "  build                 Собрать backend, frontend и образы Docker"
+    echo "  start                 Запустить контейнеры (pull/build + up -d)"
+    echo "  stop                  Остановить контейнеры и очистить ресурсы"
+    echo "  logs [service]        Показать логи (docker compose logs -f)"
+    echo "  status                Показать статус контейнеров (docker compose ps)"
     echo
     echo "Примеры:"
-    echo "  $0 start              Запустить контейнеры"
-    echo "  $0 stop               Остановить контейнеры"
-    echo "  $0 restart            Перезапустить контейнеры"
-    echo "  $0 logs               Показать логи контейнеров"
-    echo "  $0 status             Запустить скрипт status.sh"
+    echo "  $0 build                      Скомпилировать проект и собрать образы"
+    echo "  $0 start                      Запустить контейнеры"
+    echo "  $0 logs api-gateway           Tail -f логов сервиса api-gateway"
     echo
-    exit 0
-}
-
-# Функция для отображения списка скриптов
-list_scripts() {
-    echo "Доступные скрипты:"
-    for script in "$SCRIPT_DIR"/*.sh; do
-        basename "${script%.sh}"
-    done
     exit 0
 }
 
@@ -114,13 +149,9 @@ if [ $# -eq 0 ]; then
     show_help
 fi
 
-# Проверяем первый аргумент на команды help и list
+# Проверяем первый аргумент на команду help
 if [ "$1" = "help" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     show_help
-fi
-
-if [ "$1" = "list" ]; then
-    list_scripts
 fi
 
 # Проверяем наличие необходимых инструментов
@@ -134,39 +165,23 @@ case "$1" in
     "stop")
         stop_containers
         ;;
-    "restart")
-        restart_containers
+    "build")
+        build_project
         ;;
     "logs")
-        view_logs
+        shift
+        if [ -n "$1" ]; then
+            docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f "$1"
+        else
+            view_logs
+        fi
         ;;
     "status")
-        docker-compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
+        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
         ;;
     *)
-        # Обработка запуска скриптов из директории scripts
-        SCRIPT="$1"
-        shift
-
-        # Добавляем расширение .sh, если его нет
-        if [[ ! "$SCRIPT" == *.sh ]]; then
-            SCRIPT_WITH_EXT="${SCRIPT}.sh"
-        else
-            SCRIPT_WITH_EXT="$SCRIPT"
-        fi
-
-        if [ ! -f "$SCRIPT_DIR/$SCRIPT_WITH_EXT" ]; then
-            echo "Ошибка: Скрипт $SCRIPT не найден"
-            echo "Доступные скрипты:"
-            for script in "$SCRIPT_DIR"/*.sh; do
-                basename "${script%.sh}"
-            done
-            exit 1
-        fi
-
-        # Просто запускаем нужный скрипт из infra/scripts
-        "${SCRIPT_DIR}/${SCRIPT_WITH_EXT}" "$@"
-        exit $?
+        log "[ERROR] Неизвестная команда: $1"
+        show_help
         ;;
 esac
 

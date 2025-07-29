@@ -13,7 +13,7 @@ concurrency:
     paths:
       - 'backend-*/**'
       - 'infra/**'
-      - 'common/**'
+       
       - '!frontend/**'
   pull_request:
     branches: [main, develop]

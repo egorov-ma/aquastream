@@ -7,10 +7,16 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - user-service
-      - planning-service
-      - crew-service
-      - notification-service
+      user-service:
+        condition: service_healthy
+      event-service:
+        condition: service_healthy
+      crew-service:
+        condition: service_healthy
+      notification-service:
+        condition: service_healthy
+      logstash:
+        condition: service_healthy
     networks:
       aquastream-network:
         aliases:
@@ -33,7 +39,8 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_db
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -49,8 +56,8 @@ services:
       timeout: 10s
       retries: 3
 
-  planning-service:
-    container_name: aquastream-planning
+  event-service:
+    container_name: aquastream-event
     build:
       context: ../../../
       dockerfile: infra/docker/images/Dockerfile.backend-event
@@ -71,7 +78,8 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_db
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -89,8 +97,12 @@ services:
     ports:
       - "8084:8084"
     depends_on:
-      - postgres
-      - kafka
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      logstash:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_db
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -133,7 +145,8 @@ services:
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     networks:
       - aquastream-network
     healthcheck:
@@ -151,6 +164,11 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - aquastream-network
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruOK | nc -w 2 localhost 2181 | grep imok || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
 
   frontend:
     container_name: aquastream-frontend
@@ -160,7 +178,8 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      - api-gateway
+      api-gateway:
+        condition: service_healthy
     networks:
       - aquastream-network
 
@@ -229,7 +248,8 @@ services:
     networks:
       - aquastream-network
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:9600 | grep -q 'status.*green'"]
       interval: 30s
@@ -246,7 +266,8 @@ services:
     networks:
       - aquastream-network
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'status.*green'"]
       interval: 30s

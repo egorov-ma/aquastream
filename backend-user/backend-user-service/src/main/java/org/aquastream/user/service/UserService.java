@@ -7,7 +7,7 @@ import org.aquastream.user.dto.request.UpdateUserRequest;
 import org.aquastream.user.dto.request.UserRoleRequest;
 import org.aquastream.user.dto.response.MessageResponse;
 import org.aquastream.user.dto.response.UserResponse;
-import org.aquastream.user.entity.ERole;
+import org.aquastream.common.dto.ERole;
 import org.aquastream.user.entity.User;
 import org.aquastream.user.repository.UserRepository;
 import org.springframework.data.domain.Page;

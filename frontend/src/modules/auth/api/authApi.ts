@@ -20,7 +20,11 @@ export const authApi = {
    */
   login: (loginData: LoginData) => {
     logger.debug('Logging in user', { email: loginData.email });
-    return apiService.post<ApiResponse<AuthResponse>, LoginData>('/auth/login', loginData);
+    const payload = {
+      username: loginData.email,
+      password: loginData.password,
+    };
+    return apiService.post<ApiResponse<AuthResponse>, typeof payload>('/auth/signin', payload);
   },
 
   /**
@@ -29,7 +33,13 @@ export const authApi = {
    */
   register: (registerData: RegisterData) => {
     logger.debug('Registering new user', { email: registerData.email });
-    return apiService.post<ApiResponse<AuthResponse>, RegisterData>('/auth/register', registerData);
+    const payload = {
+      name:
+        registerData.displayName || `${registerData.firstName || ''} ${registerData.lastName || ''}`.trim() || registerData.email,
+      username: registerData.email,
+      password: registerData.password,
+    };
+    return apiService.post<ApiResponse<AuthResponse>, typeof payload>('/auth/register', payload);
   },
 
   /**
@@ -83,7 +93,7 @@ export const authApi = {
    */
   getCurrentUser: () => {
     logger.debug('Getting current user data');
-    return apiService.get<ApiResponse<User>>('/auth/me');
+    return apiService.get<ApiResponse<User>>('/users/me');
   },
 
   /**

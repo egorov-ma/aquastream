@@ -1,143 +1,22 @@
-# Пример файла docker-compose.override.yml для локальной разработки
-# Скопируйте этот файл в docker-compose.override.yml и настройте под свои нужды
+# Минимальный пример `docker-compose.override.yml` для локальной разработки.
+# Скопируйте (или переименуйте) этот файл в `docker-compose.override.yml` и
+# измените только то, что действительно требуется в вашей среде.
 
 services:
-  # Переопределение настроек API Gateway
   api-gateway:
-    # Пример переопределения порта
     ports:
-      - "8888:8080"  # Изменение порта с 8080 на 8888
-    # Пример добавления переменных окружения
+      - "8888:8080"     # Меняем внешний порт с 8080 на 8888
     environment:
       - SPRING_PROFILES_ACTIVE=local,dev
-      - LOGGING_LEVEL_ROOT=DEBUG
-      - USER_SERVICE_URL=http://user-service:8081
-      - PLANNING_SERVICE_URL=http://planning-service:8082
-      - CREW_SERVICE_URL=http://crew-service:8083
-      - NOTIFICATION_SERVICE_URL=http://notification-service:8084
-    # Пример монтирования локальных файлов
-    volumes:
-      - ./config/api-gateway:/app/config
 
-  # Переопределение настроек frontend
   frontend:
-    # Пример использования локальной разработки с горячей перезагрузкой
-    build:
-      context: ../../../
-      dockerfile: infra/docker/images/Dockerfile.frontend.dev
     ports:
-      - "3001:3000"  # Изменение порта с 3000 на 3001
-    volumes:
-      - ../../../frontend:/app  # Монтирование локального кода в контейнер
-    environment:
-      - NODE_ENV=development
-      - REACT_APP_API_URL=http://localhost:8888  # Указание URL API
-      - REACT_APP_DEBUG=true
+      - "3001:80"       # Хотим держать фронт на 3001
 
-  # Переопределение сервиса пользователей
   user-service:
-    ports:
-      - "8081:8081"  # Открытие порта для локальной разработки
     environment:
       - SPRING_PROFILES_ACTIVE=local,dev
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_user
       - LOGGING_LEVEL_ROOT=DEBUG
-    volumes:
-      - ./config/user-service:/app/config
 
-  # Переопределение сервиса планирования
-  planning-service:
-    ports:
-      - "8082:8082"  # Открытие порта для локальной разработки
-    environment:
-      - SPRING_PROFILES_ACTIVE=local,dev
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_planning
-      - LOGGING_LEVEL_ROOT=DEBUG
-    volumes:
-      - ./config/planning-service:/app/config
-
-  # Переопределение сервиса экипажей
-  crew-service:
-    ports:
-      - "8083:8083"  # Открытие порта для локальной разработки
-    environment:
-      - SPRING_PROFILES_ACTIVE=local,dev
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_crew
-      - LOGGING_LEVEL_ROOT=DEBUG
-    volumes:
-      - ./config/crew-service:/app/config
-
-  # Переопределение сервиса уведомлений
-  notification-service:
-    ports:
-      - "8084:8084"  # Открытие порта для локальной разработки
-    environment:
-      - SPRING_PROFILES_ACTIVE=local,dev
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/aquastream_notification
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - LOGGING_LEVEL_ROOT=DEBUG
-    volumes:
-      - ./config/notification-service:/app/config
-
-  # Переопределение настроек базы данных
-  postgres:
-    # Пример открытия порта для локального подключения
-    ports:
-      - "5433:5432"  # Изменение порта с 5432 на 5433
-    # Пример монтирования локального каталога для данных
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d  # Скрипты инициализации
-    environment:
-      - POSTGRES_USER=aquastream
-      - POSTGRES_PASSWORD=aquastream
-      - POSTGRES_DB=aquastream
-
-  # Переопределение настроек Kafka
-  kafka:
-    # Пример открытия порта для локальной разработки
-    ports:
-      - "9092:9092"  # Внешний доступ к Kafka
-      - "29092:29092"  # Внутренний доступ
-    environment:
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-
-  # Переопределение настроек Zookeeper
-  zookeeper:
-    # Пример монтирования локального каталога для данных
-    volumes:
-      - ./zkdata:/var/lib/zookeeper/data
-
-  # Переопределение настроек Prometheus
-  prometheus:
-    ports:
-      - "9090:9090"  # Внешний доступ к Prometheus
-    volumes:
-      - ./config/prometheus/prometheus.local.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-
-  # Переопределение настроек Grafana
-  grafana:
-    ports:
-      - "3000:3000"  # Внешний доступ к Grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin  # Пример изменения пароля по умолчанию
-    volumes:
-      - ./config/grafana/provisioning:/etc/grafana/provisioning
-      - grafana_data:/var/lib/grafana
-
-  # Инструмент для работы с базами данных
-  adminer:
-    image: adminer:latest
-    ports:
-      - "8888:8080"  # Перемещен порт на 8888, чтобы не конфликтовать с api-gateway
-    depends_on:
-      - postgres
-    networks:
-      - aquastream-network
-
-# Дополнительные тома
-volumes:
-  prometheus_data:
-  grafana_data: 
+# Для Postgres/MQ/прочего можно переопределить порты так же, при необходимости.
+# Остальные сервисы будут использовать значения из основного compose файла. 

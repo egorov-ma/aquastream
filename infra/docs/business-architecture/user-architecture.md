@@ -31,5 +31,5 @@ flowchart LR
 
 ## 5. Roadmap
 1. JWT HS256 → RS256 & JWKS
-2. Email / Telegram verification
+2. Telegram verification
 3. 2FA (TOTP) 

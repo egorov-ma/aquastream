@@ -8,4 +8,5 @@
     <!-- Включаем файлы миграции -->
     <include file="db/changelog/changes/001-create-user-tables.xml"/>
     <include file="db/changelog/changes/002-create-admin-user.xml"/>
+    <include file="db/changelog/changes/003-create-refresh-tokens.xml"/>
 </databaseChangeLog> 

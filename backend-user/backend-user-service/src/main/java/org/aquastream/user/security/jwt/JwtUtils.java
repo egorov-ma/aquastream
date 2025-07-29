@@ -3,7 +3,7 @@ package org.aquastream.user.security.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.aquastream.user.entity.ERole;
+import org.aquastream.common.dto.ERole;
 import org.aquastream.user.security.services.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

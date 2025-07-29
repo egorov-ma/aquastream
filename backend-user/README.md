@@ -44,6 +44,31 @@ curl -X POST http://localhost:8081/api/v1/auth/register \
 ./gradlew :backend-user-service:test
 ```
 
+## Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/auth/signin` | Login, returns `token` & `refreshToken` |
+| POST | `/api/auth/register` | Registration (also returns tokens) |
+| POST | `/api/auth/refresh` | Refresh access token using `refreshToken` |
+| GET  | `/api/users/me` | Current user profile |
+
+Ответ *Signin/Register*:
+
+```json
+{
+  "data": {
+    "token": "<JWT>",
+    "refreshToken": "<refreshToken>",
+    "id": "...",
+    "username": "...",
+    "name": "...",
+    "role": "ROLE_USER"
+  },
+  "success": true
+}
+```
+
 ## CI/CD
 ![Backend CI](https://github.com/egorov-ma/aquastream/actions/workflows/backend-ci.yml/badge.svg)
 

@@ -149,14 +149,14 @@ export class ApiService {
               return Promise.reject(new Error('No refresh token available'));
             }
 
-            const response = await this.instance.post<{ data: RefreshTokenResponseData }>(
+            const response = await this.instance.post<{ data: { token: string; refreshToken: string } }>(
               '/auth/refresh',
               {
                 refreshToken,
               }
             );
 
-            const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+            const { token: accessToken, refreshToken: newRefreshToken } = response.data.data;
 
             storageService.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
             storageService.setItem(STORAGE_KEYS.REFRESH_TOKEN, newRefreshToken);

@@ -27,6 +27,27 @@
 
 ## Запуск проекта
 
+### Быстрый старт через скрипт
+
+```bash
+# Полный перезапуск стека (останавливает контейнеры, очищает тома ZooKeeper, строит и ждёт healthchecks)
+./run.sh start
+
+# Перезапуск без пересборки
+./run.sh restart
+
+# Остановка и очистка
+./run.sh stop
+```
+
+Скрипт выполняет:
+1. `docker compose down -v --remove-orphans` – гарантирует, что старые данные ZooKeeper/Kafka не вызовут конфликт `NodeExists`.
+2. Очистку каталога ZooKeeper (`infra/scripts/zk-clean.sh`).
+3. `docker compose pull && build` при необходимости.
+4. `docker compose up -d` и ожидание, пока все контейнеры станут `healthy`.
+
+Health-checks настроены во всех сервисах, а порядок запуска описан в `infra/docker/compose/docker-compose.yml` через `depends_on: condition: service_healthy`.
+
 Для запуска проекта существует несколько вариантов, в зависимости от ваших требований и среды разработки. Ниже приведены подробные инструкции для локального запуска и запуска через Docker.
 
 ### 1. Локальный запуск (без Docker)
