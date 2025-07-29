@@ -10,3 +10,6 @@ name: Backend CI
 1. **test** – unit-тесты с кэшированием Gradle и выгрузкой отчётов.
 2. **build** – сборка JAR-файлов после тестов, публикация артефактов.
 3. **compose-validate** – валидация `docker-compose.yml`.
+
+Workflow настроен с минимальными правами (`contents: read`, `actions: write`) и
+использует `concurrency` для отмены повторяющихся запусков.

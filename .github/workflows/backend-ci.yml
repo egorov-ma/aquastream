@@ -1,15 +1,22 @@
+---
 name: Backend CI
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-on:
+'on':
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'backend-*/**'
       - 'infra/**'
       - 'common/**'
       - '!frontend/**'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'backend-*/**'
       - 'infra/**'
@@ -78,4 +85,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate docker-compose.yml
-        run: docker compose -f infra/docker/compose/docker-compose.yml config 
+        run: docker compose -f infra/docker/compose/docker-compose.yml config

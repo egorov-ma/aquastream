@@ -14,3 +14,7 @@ name: Frontend CI
 - генерацию бейджей и продакшн-сборку (`npm run build`).
 
 Артефакты: `coverage-report`, `frontend-build`.
+
+Как и для backend, workflow использует минимальные разрешения
+(`contents: read`, `actions: write`) и директиву `concurrency` для отмены
+повторяющихся запусков.
