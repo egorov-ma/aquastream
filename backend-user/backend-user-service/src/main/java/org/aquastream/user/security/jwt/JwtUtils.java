@@ -31,7 +31,13 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration}")
+    /**
+     * Reads the JWT expiration time from the {@code jwt.expiration-ms}
+     * configuration property. The previous key {@code jwt.expiration}
+     * did not match the property defined in application.yml, which could
+     * lead to startup failures if the property was missing.
+     */
+    @Value("${jwt.expiration-ms}")
     private int jwtExpirationMs;
     
     // Инициализация статических токенов
