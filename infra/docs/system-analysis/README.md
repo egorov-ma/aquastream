@@ -11,7 +11,9 @@
 | Crew | crew-analysis.md |
 | Event | event-analysis.md |
 | Notification | notification-analysis.md |
-| Common | common-analysis.md |
+| Frontend | frontend/frontend-analysis.md |
+| Common | common/common-analysis.md |
+| Infra | infra/infra-analysis.md |
 
 Каждый файл описывает:
 1. Область ответственности и границы сервиса

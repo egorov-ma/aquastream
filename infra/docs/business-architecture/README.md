@@ -9,9 +9,11 @@
 | Gateway | gateway-architecture.md |
 | User | user-architecture.md |
 | Crew | crew-architecture.md |
-| Event (Planning) | planning-architecture.md |
+| Event | event-architecture.md |
 | Notification | notification-architecture.md |
 | Frontend | frontend-architecture.md |
+| Common | common-architecture.md |
+| Infra | infra-architecture.md |
 
 Каждый документ включает:
 1. Описание пользовательских историй, которые поддерживает сервис
