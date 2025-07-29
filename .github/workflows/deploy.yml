@@ -1,6 +1,12 @@
+---
 name: Deploy
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-on:
+'on':
   workflow_dispatch:
 
 jobs:
@@ -17,4 +23,4 @@ jobs:
 
       # здесь будет пуш в registry и деплой на сервер.
       - name: Deploy placeholder
-        run: echo "🚀 Deployment step (placeholder)" 
+        run: echo "🚀 Deployment step (placeholder)"

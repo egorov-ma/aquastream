@@ -262,5 +262,6 @@ src/
 
 ![Backend CI](https://github.com/<ORG>/aquastream/actions/workflows/backend-ci.yml/badge.svg)
 ![Frontend CI](https://github.com/<ORG>/aquastream/actions/workflows/frontend-ci.yml/badge.svg)
+![Workflow Lint](https://github.com/<ORG>/aquastream/actions/workflows/workflow-lint.yml/badge.svg)
 
 Полное описание процессов CI/CD находится в [infra/docs/ci-cd](infra/docs/ci-cd/README.md).
