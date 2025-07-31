@@ -12,7 +12,7 @@ COPY common /workspace/common
 COPY backend-user /workspace/backend-user
 
 # Скачиваем зависимости и собираем jar
-RUN ./gradlew :backend-user:backend-user-service:jar --no-daemon
+RUN ./gradlew :backend-user:backend-user-service:bootJar --no-daemon
 
 # --- Stage 2: runtime -----------------------------
 FROM eclipse-temurin:21-jre AS runtime
