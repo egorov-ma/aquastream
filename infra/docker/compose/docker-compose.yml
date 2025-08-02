@@ -527,7 +527,8 @@ services:
       context: ../../..
       dockerfile: infra/docker/images/Dockerfile.backend-crew
       args:
-        ALPINE_TAG: ${ALPINE_TAG}
+        ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
+        ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-crew:latest
     restart: unless-stopped
     expose: ['8083']
@@ -559,7 +560,8 @@ services:
       context: ../../..
       dockerfile: infra/docker/images/Dockerfile.backend-event
       args:
-        ALPINE_TAG: ${ALPINE_TAG}
+        ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
+        ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-event:latest
     restart: unless-stopped
     expose: ['8082']
@@ -587,7 +589,8 @@ services:
       context: ../../..
       dockerfile: infra/docker/images/Dockerfile.backend-notification
       args:
-        ALPINE_TAG: ${ALPINE_TAG}
+        ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
+        ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-notification:latest
     restart: unless-stopped
     expose: ['8084']

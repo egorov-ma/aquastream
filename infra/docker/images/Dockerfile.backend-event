@@ -1,4 +1,41 @@
-ARG ALPINE_TAG=3.19.1
-FROM alpine:${ALPINE_TAG}
+# Global ARGs for multi-stage build
+ARG ECLIPSE_TEMURIN_JDK_TAG=21-jdk
+ARG ECLIPSE_TEMURIN_JRE_TAG=21-jre
+
+# --- Stage 1: build jar ----------------------------
+FROM eclipse-temurin:${ECLIPSE_TEMURIN_JDK_TAG} AS build
+
+WORKDIR /workspace
+
+# Копируем Gradle wrapper и настройки
+COPY gradlew settings.gradle build.gradle /workspace/
+COPY gradle /workspace/gradle
+
+# Копируем только backend-event модули и common (для более быстрого кеша)
+COPY common /workspace/common
+COPY backend-event /workspace/backend-event
+
+# Скачиваем зависимости и собираем jar
+RUN ./gradlew :backend-event:backend-event-service:bootJar --no-daemon
+
+# --- Stage 2: runtime -----------------------------
+FROM eclipse-temurin:${ECLIPSE_TEMURIN_JRE_TAG} AS runtime
+
 WORKDIR /app
-CMD ["sh", "-c", "echo 'Planning service is running on port 8082' && sleep infinity"] 
+
+# Копируем собранный jar
+COPY --from=build /workspace/backend-event/backend-event-service/build/libs/backend-event-service-*.jar app.jar
+
+EXPOSE 8082
+
+# JVM настройки для небольшой нагрузки
+ENTRYPOINT ["java", \
+    "-Xms96m", \
+    "-Xmx160m", \
+    "-XX:+UseG1GC", \
+    "-XX:MaxGCPauseMillis=100", \
+    "-XX:+UseContainerSupport", \
+    "-XX:MaxRAMPercentage=80.0", \
+    "-Djava.security.egd=file:/dev/./urandom", \
+    "-Dspring.profiles.active=docker", \
+    "-jar", "/app/app.jar"] 
