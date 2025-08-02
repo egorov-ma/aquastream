@@ -1,14 +1,18 @@
 ---
-name: Lint Workflows
+name: Lint Infrastructure
 
 'on':
   push:
     branches: [main, develop]
     paths:
       - '.github/workflows/**'
+      - 'infra/**'
+      - '*.sh'
   pull_request:
     paths:
       - '.github/workflows/**'
+      - 'infra/**'
+      - '*.sh'
 
 permissions:
   contents: read
@@ -18,7 +22,60 @@ concurrency:
 
 jobs:
   actionlint:
+    name: Lint GitHub Actions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: rhysd/actionlint@v1.7.7
+
+  infrastructure-lint:
+    name: Lint Infrastructure Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install linting tools
+        run: |
+          # yq для YAML
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          
+          # shellcheck для shell скриптов  
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          
+          # hadolint для Dockerfile
+          sudo wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+          sudo chmod +x /usr/local/bin/hadolint
+
+      - name: Lint YAML files
+        run: |
+          echo "📄 Проверка YAML файлов..."
+          find infra -name "*.yml" -o -name "*.yaml" | while read yaml_file; do
+            echo "Проверка: $yaml_file"
+            yq eval '.' "$yaml_file" > /dev/null
+          done
+
+      - name: Lint shell scripts
+        run: |
+          echo "🔧 Проверка shell скриптов..."
+          find . -name "*.sh" -not -path "./node_modules/*" | while read script; do
+            echo "Проверка: $script"
+            shellcheck -x "$script"
+          done
+
+      - name: Lint Dockerfiles
+        run: |
+          echo "🐳 Проверка Dockerfile файлов..."
+          find infra/docker/images -name "Dockerfile.*" | while read dockerfile; do
+            echo "Проверка: $dockerfile"
+            hadolint "$dockerfile"
+          done
+
+      - name: Quick infrastructure validation
+        run: |
+          echo "⚡ Быстрая валидация инфраструктуры..."
+          if [ -f "infra/scripts/validate-infrastructure.sh" ]; then
+            chmod +x infra/scripts/validate-infrastructure.sh
+            ./infra/scripts/validate-infrastructure.sh --quick || echo "⚠️ Найдены предупреждения валидации"
+          fi

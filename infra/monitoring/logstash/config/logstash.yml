@@ -1,5 +1,31 @@
 http.host: "0.0.0.0"
-xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"]
+http.port: 9600
+
+# Мониторинг Elasticsearch с SSL
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: ["https://elasticsearch:9200"]
+xpack.monitoring.elasticsearch.username: "elastic"
+xpack.monitoring.elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
+xpack.monitoring.elasticsearch.ssl.certificate_authority: "/usr/share/logstash/config/certs/ca/ca.crt"
+xpack.monitoring.elasticsearch.ssl.verification_mode: "certificate"
+
+# Конфигурация пайплайнов
 path.config: /usr/share/logstash/pipeline
 config.reload.automatic: true
-config.reload.interval: 3s 
+config.reload.interval: 3s
+
+# Настройки безопасности
+pipeline.workers: 2
+pipeline.batch.size: 1000
+pipeline.batch.delay: 50
+
+# Логирование
+log.level: info
+path.logs: /usr/share/logstash/logs
+
+# Настройки для улучшенной производительности
+pipeline.ecs_compatibility: disabled
+
+# Настройки памяти для небольшой нагрузки
+queue.type: memory
+queue.max_bytes: 1gb 

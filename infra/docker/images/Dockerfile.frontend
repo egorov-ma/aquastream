@@ -1,5 +1,9 @@
+# Global ARGs for multi-stage build
+ARG NODE_TAG=20.11.1-slim
+ARG NGINX_TAG=1.25.4-alpine
+
 # 1. Используем официальный образ Node.js для сборки фронтенда
-FROM node:20-slim AS build
+FROM node:${NODE_TAG} AS build
 
 WORKDIR /app
 
@@ -41,7 +45,7 @@ RUN npm install --no-save terser vite typescript @vitejs/plugin-react
 RUN npm run build
 
 # 2. Используем легковесный образ Nginx для раздачи фронтенда с brotli модулем
-FROM nginx:alpine AS runtime
+FROM nginx:${NGINX_TAG} AS runtime
 
 # Устанавливаем brotli-модуль и необходимые пакеты
 RUN apk add --no-cache openssl \

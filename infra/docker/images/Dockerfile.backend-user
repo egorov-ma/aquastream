@@ -1,5 +1,9 @@
+# Global ARGs for multi-stage build
+ARG ECLIPSE_TEMURIN_JDK_TAG=21-jdk
+ARG ECLIPSE_TEMURIN_JRE_TAG=21-jre
+
 # --- Stage 1: build jar ----------------------------
-FROM eclipse-temurin:21-jdk AS build
+FROM eclipse-temurin:${ECLIPSE_TEMURIN_JDK_TAG} AS build
 
 WORKDIR /workspace
 
@@ -15,7 +19,7 @@ COPY backend-user /workspace/backend-user
 RUN ./gradlew :backend-user:backend-user-service:bootJar --no-daemon
 
 # --- Stage 2: runtime -----------------------------
-FROM eclipse-temurin:21-jre AS runtime
+FROM eclipse-temurin:${ECLIPSE_TEMURIN_JRE_TAG} AS runtime
 
 WORKDIR /app
 
@@ -24,4 +28,14 @@ COPY --from=build /workspace/backend-user/backend-user-service/build/libs/backen
 
 EXPOSE 8081
 
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# JVM настройки для небольшой нагрузки
+ENTRYPOINT ["java", \
+    "-Xms96m", \
+    "-Xmx160m", \
+    "-XX:+UseG1GC", \
+    "-XX:MaxGCPauseMillis=100", \
+    "-XX:+UseContainerSupport", \
+    "-XX:MaxRAMPercentage=80.0", \
+    "-Djava.security.egd=file:/dev/./urandom", \
+    "-Dspring.profiles.active=docker", \
+    "-jar", "/app/app.jar"]

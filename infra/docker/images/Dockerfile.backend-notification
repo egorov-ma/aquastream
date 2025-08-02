@@ -1,3 +1,4 @@
-FROM alpine:latest
+ARG ALPINE_TAG=3.19.1
+FROM alpine:${ALPINE_TAG}
 WORKDIR /app
 CMD ["sh", "-c", "echo 'Notification service is running on port 8084' && sleep infinity"]

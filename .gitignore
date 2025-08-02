@@ -1,129 +1,20 @@
-# Gradle
+# Build artifacts
 .gradle/
-.gradle-cache/
-.gradle-build/
 build/
-*/build/
-*/*/build/
-!gradle/wrapper/gradle-wrapper.jar
+out/
+dist/
+coverage/
+test-reports/
 
-# IntelliJ IDEA
+# IDE files
 .idea/
+.vscode/
 *.iml
 *.iws
 *.ipr
-out/
-
-# Eclipse
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-# VS Code
-.vscode/
 *.code-workspace
 
-# Mac OS
-.DS_Store
-._*
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-.nfs*
-
-# Logs & Temp files
-logs/
-*.log
-*.tmp
-hs_err_pid*.log
-*/hs_err_pid*.log
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
-lerna-debug.log*
-*.log.*
-
-# Test reports
-test-reports/
-*/test-reports/
-
-# Frontend (Node.js)
-node_modules/
-frontend/node_modules/
-*/node_modules/
-dist/
-frontend/dist/
-coverage/
-frontend/coverage/
-.parcel-cache/
-.next/
-.nuxt/
-.turbo/
-.cache/
-.eslintcache
-out/
-temp/
-tmp/
-public/*.cache
-public/**/*.cache
-
-# Infrastructure
-infra/.terraform/
-infra/.terraform.lock.hcl
-infra/*.tfstate
-infra/*.tfstate.backup
-infra/docker/.cache/
-infra/docker/data/
-infra/docker/tmp/
-infra/docker/logs/
-infra/docker/reports/
-infra/docker/backups/
-
-# Docker
-.dockerignore
-docker-compose.override.yml
-docker-compose.yml.bak
-Dockerfile.bak
-
-# Kubernetes
-k8s/*.yaml
-k8s/*.yml
-k8s/.kubeconfig
-.kube/
-
-# Environment variables
-.env
-.env.local
-.env.development
-.env.production
-.env.test
-.env.staging
-.envrc
-frontend/.env
-frontend/.npmrc
-frontend/.yarnrc
-
-# Java/Kotlin specific
+# Java/Kotlin
 *.class
 *.jar
 *.war
@@ -133,9 +24,66 @@ frontend/.yarnrc
 *.tar.gz
 *.rar
 .mtj.tmp/
-*.ctxt
+
+# Node.js
+node_modules/
+.parcel-cache/
+.next/
+.nuxt/
+.turbo/
+.cache/
+.eslintcache
+
+# Logs
+logs/
+*.log
+*.log.*
+hs_err_pid*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Temporary files
+*.tmp
 *.swp
-*~.nib
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# OS files
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Environment & config
+.env*
+.envrc
+*.secret
+*_password.txt
+*_secret.txt
+
+# Infrastructure
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/*.tfstate*
+infra/docker/data/
+infra/docker/logs/
+infra/docker/backups/
+infra/docker/compose/secrets/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+*.bak
 
 # Project specific
 run
+.claude/
+
+# Gradle wrapper (keep)
+!gradle/wrapper/gradle-wrapper.jar

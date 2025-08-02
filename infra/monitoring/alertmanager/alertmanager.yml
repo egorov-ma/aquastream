@@ -1,0 +1,270 @@
+# Конфигурация Alertmanager для AquaStream
+# Настройка маршрутизации и отправки уведомлений
+
+global:
+  # SMTP настройки для email уведомлений
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@aquastream.company.com'
+  smtp_auth_username: 'alerts@aquastream.company.com'
+  smtp_auth_password: 'your-app-password'  # Используйте переменные окружения!
+  smtp_auth_secret: 'your-app-password'
+  smtp_require_tls: true
+
+  # Slack настройки (глобальные)
+  slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+
+# Шаблоны уведомлений
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Маршрутизация алертов
+route:
+  # Группировка алертов
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s          # Ожидание перед отправкой первого алерта в группе
+  group_interval: 10s      # Интервал между группами
+  repeat_interval: 1h      # Повтор уведомлений
+
+  # Получатель по умолчанию
+  receiver: 'web.hook'
+
+  # Маршруты для разных типов алертов
+  routes:
+    # 🚨 КРИТИЧНЫЕ АЛЕРТЫ - немедленное уведомление
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 5s
+      repeat_interval: 5m
+
+    # 🔒 АЛЕРТЫ БЕЗОПАСНОСТИ - в отдельный канал
+    - match:
+        category: security
+      receiver: 'security-team'
+      group_wait: 5s
+      repeat_interval: 15m
+
+    # 🏥 АЛЕРТЫ ИНФРАСТРУКТУРЫ
+    - match:
+        category: infrastructure
+      receiver: 'ops-team'
+      group_wait: 30s
+      repeat_interval: 30m
+
+    # 📊 АЛЕРТЫ ПРОИЗВОДИТЕЛЬНОСТИ
+    - match:
+        category: performance
+      receiver: 'performance-alerts'
+      group_wait: 1m
+      repeat_interval: 1h
+
+    # 💾 АЛЕРТЫ РЕЗЕРВНОГО КОПИРОВАНИЯ
+    - match:
+        category: backup
+      receiver: 'backup-alerts'
+      group_wait: 5m
+      repeat_interval: 12h
+
+    # 💼 BUSINESS АЛЕРТЫ
+    - match:
+        category: business
+      receiver: 'business-alerts'
+      group_wait: 5m
+      repeat_interval: 2h
+
+# Получатели уведомлений
+receivers:
+  # Заглушка по умолчанию
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://localhost:5001/'
+        send_resolved: true
+
+  # 🚨 КРИТИЧНЫЕ АЛЕРТЫ - мультиканальные уведомления
+  - name: 'critical-alerts'
+    # Email для критичных алертов
+    email_configs:
+      - to: 'ops-oncall@company.com,security@company.com'
+        subject: '🚨 КРИТИЧЕСКИЙ АЛЕРТ AquaStream: {{ .GroupLabels.alertname }}'
+        body: |
+          🚨 КРИТИЧЕСКИЙ АЛЕРТ в системе AquaStream
+
+          Алерт: {{ .GroupLabels.alertname }}
+          Серьезность: {{ .CommonLabels.severity }}
+          Сервис: {{ .CommonLabels.service }}
+          
+          Детали:
+          {{ range .Alerts }}
+          - {{ .Annotations.summary }}
+            {{ .Annotations.description }}
+            Время: {{ .StartsAt.Format "02.01.2006 15:04:05" }}
+          {{ end }}
+
+          Ссылка на дашборд: http://localhost/monitoring/grafana/
+          Runbook: {{ .CommonAnnotations.runbook_url }}
+
+    # Slack для критичных алертов
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/CRITICAL/WEBHOOK'
+        channel: '#alerts-critical'
+        title: '🚨 КРИТИЧЕСКИЙ АЛЕРТ AquaStream'
+        text: |
+          *Алерт:* {{ .GroupLabels.alertname }}
+          *Серьезность:* {{ .CommonLabels.severity }}
+          *Сервис:* {{ .CommonLabels.service }}
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+        send_resolved: true
+
+  # 🔒 АЛЕРТЫ БЕЗОПАСНОСТИ
+  - name: 'security-team'
+    email_configs:
+      - to: 'security@company.com'
+        subject: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          🔒 АЛЕРТ БЕЗОПАСНОСТИ AquaStream
+
+          Тип атаки: {{ .CommonLabels.attack_type }}
+          Алерт: {{ .GroupLabels.alertname }}
+          
+          {{ range .Alerts }}
+          {{ .Annotations.summary }}
+          {{ .Annotations.description }}
+          
+          Время: {{ .StartsAt.Format "02.01.2006 15:04:05" }}
+          {{ end }}
+          
+          ТРЕБУЕТСЯ НЕМЕДЛЕННАЯ ПРОВЕРКА!
+          
+          Логи безопасности: http://localhost/monitoring/kibana/
+          Runbook: {{ .CommonAnnotations.runbook_url }}
+
+    slack_configs:
+      - channel: '#security-alerts'
+        title: '🔒 Security Alert'
+        text: |
+          *Тип:* {{ .CommonLabels.attack_type }}
+          *Алерт:* {{ .GroupLabels.alertname }}
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+
+  # 🏥 АЛЕРТЫ ИНФРАСТРУКТУРЫ
+  - name: 'ops-team'
+    email_configs:
+      - to: 'ops@company.com'
+        subject: '🏥 Infrastructure Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          🏥 АЛЕРТ ИНФРАСТРУКТУРЫ AquaStream
+
+          Компонент: {{ .CommonLabels.component }}
+          Алерт: {{ .GroupLabels.alertname }}
+          
+          {{ range .Alerts }}
+          {{ .Annotations.summary }}
+          {{ .Annotations.description }}
+          {{ end }}
+          
+          Мониторинг: http://localhost/monitoring/grafana/
+
+    slack_configs:
+      - channel: '#ops-alerts'
+        title: '🏥 Infrastructure Alert'
+        text: |
+          *Компонент:* {{ .CommonLabels.component }}
+          *Алерт:* {{ .GroupLabels.alertname }}
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+
+  # 📊 АЛЕРТЫ ПРОИЗВОДИТЕЛЬНОСТИ
+  - name: 'performance-alerts'
+    slack_configs:
+      - channel: '#performance'
+        title: '📊 Performance Alert'
+        text: |
+          *Ресурс:* {{ .CommonLabels.resource }}
+          *Алерт:* {{ .GroupLabels.alertname }}
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+
+  # 💾 АЛЕРТЫ РЕЗЕРВНОГО КОПИРОВАНИЯ
+  - name: 'backup-alerts'
+    email_configs:
+      - to: 'ops@company.com'
+        subject: '💾 Backup Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          💾 АЛЕРТ РЕЗЕРВНОГО КОПИРОВАНИЯ
+
+          Сервис: {{ .CommonLabels.service }}
+          
+          {{ range .Alerts }}
+          {{ .Annotations.summary }}
+          {{ .Annotations.description }}
+          {{ end }}
+          
+          Проверьте систему резервного копирования!
+
+    slack_configs:
+      - channel: '#ops-alerts'
+        title: '💾 Backup Alert'
+        text: |
+          *Сервис:* {{ .CommonLabels.service }}
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+
+  # 💼 BUSINESS АЛЕРТЫ
+  - name: 'business-alerts'
+    email_configs:
+      - to: 'product@company.com,management@company.com'
+        subject: '💼 Business Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          💼 BUSINESS АЛЕРТ AquaStream
+
+          Метрика: {{ .CommonLabels.type }}
+          
+          {{ range .Alerts }}
+          {{ .Annotations.summary }}
+          {{ .Annotations.description }}
+          {{ end }}
+          
+          Аналитика: http://localhost/monitoring/grafana/
+
+# Подавление повторяющихся алертов
+inhibit_rules:
+  # Если контейнер down, не отправлять алерты о высоком CPU/памяти
+  - source_match:
+      alertname: ContainerDown
+    target_match:
+      alertname: HighCPUUsage
+    equal: ['instance']
+
+  - source_match:
+      alertname: ContainerDown
+    target_match:
+      alertname: HighMemoryUsage
+    equal: ['instance']
+
+  # Если PostgreSQL down, не отправлять алерты приложений
+  - source_match:
+      alertname: PostgreSQLDown
+    target_match:
+      category: application
+    equal: ['cluster']
+
+  # Если критичный алерт безопасности, подавить менее серьезные
+  - source_match:
+      category: security
+      severity: critical
+    target_match:
+      category: security
+      severity: warning
+    equal: ['instance']

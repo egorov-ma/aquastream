@@ -1,21 +1,70 @@
 server:
-  port: 8083
+  port: 8080
 
 spring:
   application:
-    name: crew-service
-  config:
-    import: classpath:db-common.yml
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/aquastream_db}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: user-service
+          uri: http://user-service:8081
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+        - id: crew-service
+          uri: http://crew-service:8083
+          predicates:
+            - Path=/api/crews/**
+          filters:
+            - StripPrefix=1
+        - id: event-service
+          uri: http://event-service:8082
+          predicates:
+            - Path=/api/events/**
+          filters:
+            - StripPrefix=1
+        - id: notification-service
+          uri: http://notification-service:8084
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - StripPrefix=1
+
 management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,prometheus
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: when_authorized
   metrics:
     tags:
-      application: ${spring.application.name} 
+      application: ${spring.application.name}
+
+# Logging configuration for Docker environment
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.aquastream.gateway: INFO
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{36}] - %msg%n" 

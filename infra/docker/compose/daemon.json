@@ -1,0 +1,23 @@
+{
+  "icc": false,
+  "userland-proxy": false,
+  "live-restore": true,
+  "no-new-privileges": true,
+  "seccomp-profile": "/etc/docker/seccomp/default.json",
+  "default-ulimits": {
+    "nofile": {
+      "Hard": 64000,
+      "Name": "nofile",
+      "Soft": 64000
+    }
+  },
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ]
+}
