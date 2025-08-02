@@ -23,4 +23,4 @@ Workflow настроен с минимальными правами (`contents:
 ./run.sh stop    # stop & cleanup
 ```
 
-`planning-service` renamed to `event-service` inside `docker-compose.yml`.
+Service was renamed from `planning-service` to `event-service` inside `docker-compose.yml`.

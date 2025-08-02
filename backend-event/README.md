@@ -31,7 +31,7 @@ docker run -p 8082:8082 -p 9090:9090 aquastream-event
 ## Использование gRPC API
 Пример вызова метода `CreatePlan` через **grpcurl**:
 ```bash
-grpcurl -plaintext -d '{"name":"Autumn Trip","description":"Test"}' localhost:9090 org.aquastream.planning.PlanningService/CreatePlan
+grpcurl -plaintext -d '{"name":"Autumn Trip","description":"Test"}' localhost:9090 org.aquastream.event.EventService/CreateEvent
 ```
 Ответ:
 ```json
@@ -57,4 +57,4 @@ Integration-тесты используют Testcontainers (PostgreSQL, Kafka).
 
 ## Дополнительная документация
 - Системный анализ: [`event-analysis`](../infra/docs/system-analysis/event-analysis.md)
-- Бизнес-архитектура: [`planning-architecture`](../infra/docs/business-architecture/planning-architecture.md)
+- Бизнес-архитектура: [`event-architecture`](../infra/docs/business-architecture/event-architecture.md)

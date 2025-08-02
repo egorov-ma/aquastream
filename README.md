@@ -213,7 +213,7 @@ Health-checks настроены во всех сервисах, а порядо
 ## Документация API
 
 - **REST API:** Используйте Swagger UI для визуализации и тестирования.
-- **gRPC API (Planning):** Смотрите [planning.proto](backend-event/src/main/proto/planning.proto) и используйте grpcui для визуализации.
+- **gRPC API (Event):** Смотрите [event.proto](backend-event/backend-event-service/src/main/proto/event.proto) и используйте grpcui для визуализации.
 
 ## Структура проекта
 

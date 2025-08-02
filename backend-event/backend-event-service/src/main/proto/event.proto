@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package org.aquastream.event;
+
+option java_multiple_files = true;
+option java_package = "org.aquastream.event.grpc";
+
+service EventService {
+    rpc CreateEvent (EventRequest) returns (EventResponse);
+}
+
+message EventRequest {
+    string name = 1;
+    string description = 2;
+}
+
+message EventResponse {
+    int64 id = 1;
+    string status = 2;
+} 

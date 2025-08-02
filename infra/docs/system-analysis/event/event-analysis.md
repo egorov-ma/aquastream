@@ -25,7 +25,7 @@ graph LR
 ```
 
 ## 3. Контракт gRPC
-`event.proto` (ex-planning.proto) содержит методы `CreateEvent`, `ListEvents`, `UpdateStatus`.
+`event.proto` содержит методы `CreateEvent`, `ListEvents`, `UpdateStatus`.
 
 ## 4. Модель данных
 Таблицы `event`, `waypoint`.

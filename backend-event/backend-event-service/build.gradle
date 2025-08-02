@@ -93,5 +93,5 @@ tasks.processResources {
 }
 
 bootJar {
-    mainClass = 'org.aquastream.planning.PlanningApplication'
+    mainClass = 'org.aquastream.event.EventApplication'
 }

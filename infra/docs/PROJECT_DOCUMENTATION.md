@@ -287,8 +287,8 @@
     - Notification Service: [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html)
 
 ### 7.2. gRPC API
-- **Planning Service:**  
-  - Реализует gRPC API, описание которого находится в `planning.proto` (директория `backend-event/src/main/proto/planning.proto`).
+- **Event Service:**  
+  - Реализует gRPC API, описание которого находится в `event.proto` (директория `backend-event/backend-event-service/src/main/proto/event.proto`).
   - Для тестирования и визуализации используйте `grpcui`:
     - Локально: `grpcui -plaintext localhost:9090`
     - Через Docker: запустите соответствующий контейнер.

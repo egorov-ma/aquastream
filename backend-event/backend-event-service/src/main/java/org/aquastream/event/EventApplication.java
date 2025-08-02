@@ -1,11 +1,11 @@
-package org.aquastream.planning;
+package org.aquastream.event;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PlanningApplication {
+public class EventApplication {
     public static void main(String[] args) {
-        SpringApplication.run(PlanningApplication.class, args);
+        SpringApplication.run(EventApplication.class, args);
     }
 } 
