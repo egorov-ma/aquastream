@@ -69,12 +69,25 @@ jobs:
 
       - name: Prepare environment for validation
         run: |
+          # Проверяем наличие .env.example
+          echo "Checking for .env.example file:"
+          ls -la infra/docker/compose/
+          
           # Создаем .env файл из .env.example с тестовыми паролями для валидации
           if [ -f "infra/docker/compose/.env.example" ]; then
+            echo "Creating .env file from .env.example..."
             sed 's/POSTGRES_PASSWORD=$/POSTGRES_PASSWORD=test_password_123/' infra/docker/compose/.env.example | \
             sed 's/GRAFANA_ADMIN_PASSWORD=$/GRAFANA_ADMIN_PASSWORD=test_password_123/' | \
             sed 's/ELASTIC_PASSWORD=$/ELASTIC_PASSWORD=test_password_123/' | \
             sed 's/KIBANA_PASSWORD=$/KIBANA_PASSWORD=test_password_123/' > infra/docker/compose/.env
+            
+            echo "Verifying .env file was created:"
+            ls -la infra/docker/compose/.env
+            echo "First few lines of .env:"
+            head -5 infra/docker/compose/.env
+          else
+            echo "ERROR: .env.example file not found!"
+            exit 1
           fi
 
       - name: Quick infrastructure validation
