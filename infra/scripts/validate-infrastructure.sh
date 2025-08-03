@@ -112,6 +112,7 @@ validate_docker_compose() {
         fi
         
         # Проверка использования secrets вместо environment для паролей
+        # shellcheck disable=SC2016
         if grep -E "(PASSWORD|SECRET|KEY).*=" "$compose_file" | grep -v '\${' >/dev/null; then
             report_check "FAIL" "Найдены hardcoded пароли/секреты в $(basename "$compose_file")"
         else
