@@ -40,7 +40,7 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
           
-          # Install shellcheck for validating shell scripts
+          # shellcheck для shell скриптов  
           sudo apt-get update
           sudo apt-get install -y shellcheck
           
@@ -51,7 +51,7 @@ jobs:
       - name: Lint YAML files
         run: |
           echo "📄 Проверка YAML файлов..."
-          find infra -name "*.yml" -o -name "*.yaml" | while read -r yaml_file; do
+          find infra -name "*.yml" -o -name "*.yaml" | while read yaml_file; do
             echo "Проверка: $yaml_file"
             yq eval '.' "$yaml_file" > /dev/null
           done
@@ -59,7 +59,7 @@ jobs:
       - name: Lint shell scripts
         run: |
           echo "🔧 Проверка shell скриптов..."
-          find . -name "*.sh" -not -path "./node_modules/*" | while read -r script; do
+          find . -name "*.sh" -not -path "./node_modules/*" | while read script; do
             echo "Проверка: $script"
             shellcheck -x "$script"
           done
@@ -67,7 +67,7 @@ jobs:
       - name: Lint Dockerfiles
         run: |
           echo "🐳 Проверка Dockerfile файлов..."
-          find infra/docker/images -name "Dockerfile.*" | while read -r dockerfile; do
+          find infra/docker/images -name "Dockerfile.*" | while read dockerfile; do
             echo "Проверка: $dockerfile"
             hadolint "$dockerfile"
           done

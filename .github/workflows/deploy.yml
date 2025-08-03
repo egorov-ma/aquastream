@@ -34,7 +34,7 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
           
-          # Install shellcheck for validating shell scripts
+          # shellcheck для shell скриптов
           sudo apt-get update
           sudo apt-get install -y shellcheck
 
@@ -94,7 +94,7 @@ jobs:
       - name: Validate shell scripts
         run: |
           echo "🔧 Валидация shell скриптов..."
-          find . -name "*.sh" -not -path "./node_modules/*" | while read -r script; do
+          find . -name "*.sh" -not -path "./node_modules/*" | while read script; do
             echo "Проверка: $script"
             shellcheck -x "$script" || echo "⚠️ Предупреждения в $script"
           done
