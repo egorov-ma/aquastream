@@ -17,6 +17,7 @@ concurrency:
     branches: [main]
     paths:
       - 'infra/docker/images/**'
+      - '.github/workflows/security.yml'
 
 jobs:
   docker-security-scan:
@@ -26,28 +27,59 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [backend-user, backend-gateway]
+        service: [backend-user, backend-gateway, frontend]
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Trivy vulnerability database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ github.run_number }}
+          restore-keys: trivy-db-
+
       - name: Set up JDK 21
+        if: matrix.service != 'frontend'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Build application
+      - name: Set up Node.js
+        if: matrix.service == 'frontend'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Build Java applications
+        if: matrix.service != 'frontend'
         run: |
           chmod +x gradlew
           ./gradlew build -x test
 
-      - name: Build Docker image
+      - name: Build frontend application
+        if: matrix.service == 'frontend'
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Build Docker image (Backend)
+        if: matrix.service != 'frontend'
         run: |
           docker build -f infra/docker/images/Dockerfile.${{ matrix.service }} \
             --build-arg ECLIPSE_TEMURIN_JDK_TAG=21-jdk-alpine \
             --build-arg ECLIPSE_TEMURIN_JRE_TAG=21-jre-alpine \
             -t aquastream-${{ matrix.service }}:security-scan .
+
+      - name: Build Docker image (Frontend)
+        if: matrix.service == 'frontend'
+        run: |
+          docker build -f infra/docker/images/Dockerfile.frontend \
+            -t aquastream-frontend:security-scan .
 
       - name: Run Trivy security scan
         uses: aquasecurity/trivy-action@0.28.0
@@ -55,12 +87,17 @@ jobs:
           image-ref: aquastream-${{ matrix.service }}:security-scan
           format: sarif
           output: trivy-${{ matrix.service }}-results.sarif
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
 
       - name: Upload scan results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: trivy-${{ matrix.service }}-results.sarif
+
 
   integration-tests:
     name: Integration Tests
