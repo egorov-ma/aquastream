@@ -448,6 +448,32 @@ update_passwords() {
     fi
 }
 
+# Функция для ротации секретов
+run_secrets_rotation() {
+    log INFO "Ротация секретов..."
+    local rotation_script="$SCRIPT_DIR/secrets-rotation.sh"
+    
+    if [ -f "$rotation_script" ]; then
+        bash "$rotation_script" "$@"
+    else
+        log ERROR "Скрипт ротации секретов не найден: $rotation_script"
+        exit 1
+    fi
+}
+
+# Функция для настройки автоматической ротации
+run_rotation_setup() {
+    log INFO "Настройка автоматической ротации секретов..."
+    local setup_script="$SCRIPT_DIR/setup-rotation-cron.sh"
+    
+    if [ -f "$setup_script" ]; then
+        bash "$setup_script" "$@"
+    else
+        log ERROR "Скрипт настройки ротации не найден: $setup_script"
+        exit 1
+    fi
+}
+
 # Функция для управления безопасностью и паролями  
 run_security() {
     log INFO "Управление безопасностью..."
@@ -460,9 +486,21 @@ run_security() {
         "update"|"upd")
             update_passwords
             ;;
+        "rotate")
+            shift # убираем ключевое слово rotate
+            run_secrets_rotation "$@"
+            ;;
+        "rotation-setup")
+            shift # убираем ключевое слово rotation-setup
+            run_rotation_setup "$@"
+            ;;
         *)
             log ERROR "Неизвестное действие безопасности: $action"
-            log INFO "Доступные действия: generate (gen), update (upd)"
+            log INFO "Доступные действия:"
+            echo "  generate (gen)        Генерация новых паролей"
+            echo "  update (upd)          Обновление существующих паролей"
+            echo "  rotate [опции]        Ротация секретов"
+            echo "  rotation-setup        Настройка автоматической ротации"
             exit 1
             ;;
     esac
@@ -797,6 +835,8 @@ show_help_options() {
     echo "  security [действие]   Управление безопасностью"
     echo "    generate, gen       Генерация новых секретов и паролей"
     echo "    update, upd         Обновление существующих паролей"
+    echo "    rotate [опции]      Ротация секретов"
+    echo "    rotation-setup      Настройка автоматической ротации"
     echo
     echo "  setup-dev [опция]     Настройка среды разработчика (встроено)"
     echo "    full                Полная настройка (hooks, инструменты, документация)"
