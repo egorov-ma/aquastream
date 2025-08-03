@@ -9,6 +9,9 @@ SCRIPT_DIR="${PROJECT_ROOT}/infra/scripts"
 # Цвета
 NC="\033[0m"; GREEN="\033[0;32m"; YELLOW="\033[0;33m"; RED="\033[0;31m"
 
+# По умолчанию используем Docker Compose v2
+DOCKER_COMPOSE_CMD="docker compose"
+
 # Функция логирования с уровнями
 log() {
     local level="$1"; shift
@@ -34,8 +37,13 @@ check_requirements() {
 
     # Проверка Docker Compose
     if ! docker compose version &> /dev/null; then
-        log ERROR "Плагин Docker Compose (docker compose) не найден! Обновите Docker до актуальной версии."
-        exit 1
+        if command -v docker-compose &> /dev/null; then
+            DOCKER_COMPOSE_CMD="docker-compose"
+            log WARN "Плагин Docker Compose (docker compose) не найден. Используем устаревший docker-compose v1. Рекомендуется установить Docker Compose v2."
+        else
+            log ERROR "Плагин Docker Compose (docker compose) не найден! Установите Docker Compose v2: https://docs.docker.com/compose/install/"
+            exit 1
+        fi
     fi
 
     # Проверка Docker daemon
@@ -94,7 +102,7 @@ check_docker_resources() {
 stop_containers() {
     log "[INFO] Остановка всех контейнеров и очистка ресурсов..."
     if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down -v --remove-orphans
+        $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down -v --remove-orphans
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
         exit 1
@@ -120,11 +128,11 @@ start_containers() {
     local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.yml"
     if [ -f "$compose_file" ]; then
         # Тянем образы без секции build
-        docker compose -f "$compose_file" pull --quiet --ignore-buildable 2>/dev/null || true
+        $DOCKER_COMPOSE_CMD -f "$compose_file" pull --quiet --ignore-buildable 2>/dev/null || true
         # Собираем build-образа
-        docker compose -f "$compose_file" build --quiet
+        $DOCKER_COMPOSE_CMD -f "$compose_file" build --quiet
         # Запускаем контейнеры
-        docker compose -f "$compose_file" up -d
+        $DOCKER_COMPOSE_CMD -f "$compose_file" up -d
         wait_healthy 180
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
@@ -144,7 +152,7 @@ wait_healthy() {
     while [ $elapsed -lt $max_wait ]; do
         # Получаем статус без jq для совместимости
         local status_info
-        status_info=$(docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}" 2>/dev/null || true)
+        status_info=$($DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}" 2>/dev/null || true)
         
         # Подсчитываем контейнеры
         local total_containers running_containers healthy_containers
@@ -499,7 +507,7 @@ check_basic_tools() {
         missing_tools+=("docker")
     fi
     
-    if ! docker compose version >/dev/null 2>&1; then
+    if ! $DOCKER_COMPOSE_CMD version >/dev/null 2>&1; then
         missing_tools+=("docker-compose")
     fi
     
@@ -690,10 +698,10 @@ build_project() {
     # ========================= Docker images =========================
     log INFO "========== Docker compose build (${mode}) =========="
     if [ "$mode" = "full" ]; then
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
+        $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
     else
         docker_log=$(mktemp)
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1
+        $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1
         if [ $? -eq 0 ]; then
             log INFO "Docker images build SUCCESS"
         else
@@ -707,7 +715,7 @@ build_project() {
 view_logs() {
     log "[INFO] Просмотр логов..."
     if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
+        $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
         exit 1
@@ -881,13 +889,13 @@ case "$1" in
     "logs")
         shift
         if [ -n "$1" ]; then
-            docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f "$1"
+            $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f "$1"
         else
             view_logs
         fi
         ;;
     "status")
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
+        $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
         ;;
     "backup")
         shift  # убираем ключевое слово backup
