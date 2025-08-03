@@ -1,4 +1,4 @@
-package org.aquastream.common.dto.auth;
+package org.aquastream.common.domain.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

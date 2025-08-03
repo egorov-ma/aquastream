@@ -1,4 +1,4 @@
-package org.aquastream.common.dto;
+package org.aquastream.common.domain.user;
 
 import java.util.UUID;
 

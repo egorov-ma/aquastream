@@ -1,4 +1,4 @@
-package org.aquastream.common.dto.auth;
+package org.aquastream.common.domain.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
