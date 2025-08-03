@@ -37,7 +37,8 @@ log_error() {
 
 # Initialize logging
 init_logging() {
-    local timestamp=$(date +"%Y%m%d_%H%M%S")
+    local timestamp
+    timestamp=$(date +"%Y%m%d_%H%M%S")
     mkdir -p "$ROTATION_LOG_DIR"
     rotation_log_file="$ROTATION_LOG_DIR/rotation_$timestamp.log"
     
@@ -63,7 +64,7 @@ needs_rotation() {
     
     # Find the latest backup for this secret
     local latest_backup
-    latest_backup=$(ls -t $backup_pattern 2>/dev/null | head -1 || echo "")
+    latest_backup=$(find "$SECRETS_BACKUP_DIR" -name "secrets_backup_*_${secret_name}.env" -type f -exec ls -t {} + 2>/dev/null | head -1 || echo "")
     
     if [[ -z "$latest_backup" ]]; then
         log_info "No previous backup found for $secret_name - rotation needed"
@@ -78,7 +79,8 @@ needs_rotation() {
     local backup_date
     backup_date=$(date -d "${backup_timestamp:0:8} ${backup_timestamp:9:2}:${backup_timestamp:11:2}:${backup_timestamp:13:2}" +%s 2>/dev/null || echo "0")
     
-    local current_date=$(date +%s)
+    local current_date
+    current_date=$(date +%s)
     local age_days=$(( (current_date - backup_date) / 86400 ))
     
     if [[ $age_days -ge $max_age_days ]]; then
@@ -94,7 +96,7 @@ needs_rotation() {
 generate_secure_password() {
     local length=${1:-32}
     if command -v openssl >/dev/null 2>&1; then
-        openssl rand -base64 $((length * 3 / 4)) | tr -d "=+/" | cut -c1-${length}
+        openssl rand -base64 $((length * 3 / 4)) | tr -d "=+/" | cut -c1-"${length}"
     elif command -v python3 >/dev/null 2>&1; then
         python3 -c "import secrets, string; print(''.join(secrets.choice(string.ascii_letters + string.digits + '@#%^&*') for _ in range(${length})))"
     else
@@ -111,8 +113,10 @@ create_audit_entry() {
     local details="$4"
     
     local audit_file="$ROTATION_LOG_DIR/audit_trail.log"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local user=$(whoami)
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local user
+    user=$(whoami)
     
     echo "$timestamp,$user,$secret_name,$action,$status,$details" >> "$audit_file"
 }
@@ -121,7 +125,8 @@ create_audit_entry() {
 backup_secret() {
     local secret_name="$1"
     local current_value="$2"
-    local timestamp=$(date +"%Y%m%d_%H%M%S")
+    local timestamp
+    timestamp=$(date +"%Y%m%d_%H%M%S")
     
     mkdir -p "$SECRETS_BACKUP_DIR"
     
@@ -161,7 +166,8 @@ update_secret_in_env() {
 update_docker_secret() {
     local secret_name="$1"
     local new_value="$2"
-    local docker_secret_name="aquastream_$(echo "$secret_name" | tr '[:upper:]' '[:lower:]')"
+    local docker_secret_name
+    docker_secret_name="aquastream_$(echo "$secret_name" | tr '[:upper:]' '[:lower:]')"
     
     # Check if Docker Swarm is active
     if ! docker info --format '{{.Swarm.LocalNodeState}}' | grep -q active; then
@@ -311,7 +317,7 @@ cleanup_old_backups() {
     log_info "Cleaning up backups older than $retention_days days"
     
     local deleted_count=0
-    find "$SECRETS_BACKUP_DIR" -name "secrets_backup_*.env" -type f -mtime +${retention_days} -print0 2>/dev/null | \
+    find "$SECRETS_BACKUP_DIR" -name "secrets_backup_*.env" -type f -mtime +"${retention_days}" -print0 2>/dev/null | \
     while IFS= read -r -d '' file; do
         log_info "Removing old backup: $(basename "$file")"
         rm -f "$file"
@@ -330,7 +336,7 @@ show_rotation_status() {
         local backup_pattern="${SECRETS_BACKUP_DIR}/secrets_backup_*_${secret_name}.env"
         
         local latest_backup
-        latest_backup=$(ls -t $backup_pattern 2>/dev/null | head -1 || echo "")
+        latest_backup=$(find "$SECRETS_BACKUP_DIR" -name "secrets_backup_*_${secret_name}.env" -type f -exec ls -t {} + 2>/dev/null | head -1 || echo "")
         
         if [[ -z "$latest_backup" ]]; then
             echo "  $secret_name: Never rotated (max age: $max_age_days days)"
@@ -341,7 +347,8 @@ show_rotation_status() {
             local backup_date
             backup_date=$(date -d "${backup_timestamp:0:8} ${backup_timestamp:9:2}:${backup_timestamp:11:2}:${backup_timestamp:13:2}" +%s 2>/dev/null || echo "0")
             
-            local current_date=$(date +%s)
+            local current_date
+            current_date=$(date +%s)
             local age_days=$(( (current_date - backup_date) / 86400 ))
             
             local status="OK"
@@ -360,7 +367,7 @@ rollback_secret() {
     local backup_pattern="${SECRETS_BACKUP_DIR}/secrets_backup_*_${secret_name}.env"
     
     local latest_backup
-    latest_backup=$(ls -t $backup_pattern 2>/dev/null | head -1 || echo "")
+    latest_backup=$(find "$SECRETS_BACKUP_DIR" -name "secrets_backup_*_${secret_name}.env" -type f -exec ls -t {} + 2>/dev/null | head -1 || echo "")
     
     if [[ -z "$latest_backup" ]]; then
         log_error "No backup found for $secret_name - cannot rollback"
