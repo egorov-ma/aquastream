@@ -447,13 +447,18 @@ validate_security() {
     fi
     
     # Проверка на чувствительные файлы в репозитории
-    local sensitive_files_found=0
-    find "$PROJECT_ROOT" -name "*.env" -not -path "*/node_modules/*" -not -name "*.env.example" 2>/dev/null | while read -r file; do
-        if [ -f "$file" ]; then
-            sensitive_files_found=$((sensitive_files_found + 1))
-            report_check "WARN" "Найден .env файл в репозитории: $(basename "$file")"
-        fi
-    done
+    # Пропускаем проверку в CI окружении, где .env создается временно
+    if [ -z "${CI:-}" ] && [ -z "${GITHUB_ACTIONS:-}" ]; then
+        local sensitive_files_found=0
+        find "$PROJECT_ROOT" -name "*.env" -not -path "*/node_modules/*" -not -name "*.env.example" 2>/dev/null | while read -r file; do
+            if [ -f "$file" ]; then
+                sensitive_files_found=$((sensitive_files_found + 1))
+                report_check "WARN" "Найден .env файл в репозитории: $(basename "$file")"
+            fi
+        done
+    else
+        report_check "PASS" "Проверка .env файлов в репозитории пропущена (CI окружение)"
+    fi
     
     # Проверка прав доступа к критичным файлам
     local critical_files=(

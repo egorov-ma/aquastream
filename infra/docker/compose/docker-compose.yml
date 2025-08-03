@@ -127,6 +127,7 @@ services:
     volumes: [ elasticsearch_certs:/usr/share/elasticsearch/config/certs ]
     networks: [ infra-network ]
     user: "0"
+    deploy: { resources: { limits: *limit-tiny } }
     security_opt:
       - no-new-privileges:true
     command: >
@@ -176,6 +177,7 @@ services:
       KIBANA_PASSWORD: ${KIBANA_PASSWORD}
     depends_on:
       elasticsearch: { condition: service_healthy }
+    deploy: { resources: { limits: *limit-tiny } }
     security_opt:
       - no-new-privileges:true
     command: >
