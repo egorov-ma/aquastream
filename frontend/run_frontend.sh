@@ -11,8 +11,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Пути к файлам
-FRONTEND_DIR="$(pwd)"
-INFRA_DOCKER_FILE="../infra/docker/images/Dockerfile.frontend"
+# FRONTEND_DIR="$(pwd)"  # Unused variable
+# INFRA_DOCKER_FILE="../infra/docker/images/Dockerfile.frontend"  # Unused variable
 
 # Функция для освобождения порта 3000
 free_port() {
@@ -20,14 +20,14 @@ free_port() {
     
     # Останавливаем Docker-контейнеры на порту 3000
     if command -v docker &> /dev/null; then
-        docker stop $(docker ps -q --filter "publish=3000") 2>/dev/null || true
+        docker stop "$(docker ps -q --filter "publish=3000")" 2>/dev/null || true
     fi
     
     # Если порт все еще занят, завершаем процессы
     PID=$(lsof -t -i :3000 2>/dev/null)
     if [ -n "$PID" ]; then
         echo -e "${YELLOW}Завершаем процессы на порту 3000...${NC}"
-        kill $PID &>/dev/null || kill -9 $PID &>/dev/null 2>&1
+        kill "$PID" &>/dev/null || kill -9 "$PID" &>/dev/null 2>&1
     fi
     
     echo -e "${GREEN}Порт 3000 свободен.${NC}"
@@ -39,14 +39,14 @@ free_test_port() {
     
     # Останавливаем Docker-контейнеры на порту 5173
     if command -v docker &> /dev/null; then
-        docker stop $(docker ps -q --filter "publish=5173") 2>/dev/null || true
+        docker stop "$(docker ps -q --filter "publish=5173")" 2>/dev/null || true
     fi
     
     # Если порт все еще занят, завершаем процессы
     PID=$(lsof -t -i :5173 2>/dev/null)
     if [ -n "$PID" ]; then
         echo -e "${YELLOW}Завершаем процессы на порту 5173...${NC}"
-        kill $PID &>/dev/null || kill -9 $PID &>/dev/null 2>&1
+        kill "$PID" &>/dev/null || kill -9 "$PID" &>/dev/null 2>&1
     fi
     
     echo -e "${GREEN}Порт 5173 свободен.${NC}"
@@ -58,14 +58,14 @@ free_storybook_port() {
     
     # Останавливаем Docker-контейнеры на порту 6006
     if command -v docker &> /dev/null; then
-        docker stop $(docker ps -q --filter "publish=6006") 2>/dev/null || true
+        docker stop "$(docker ps -q --filter "publish=6006")" 2>/dev/null || true
     fi
     
     # Если порт все еще занят, завершаем процессы
     PID=$(lsof -t -i :6006 2>/dev/null)
     if [ -n "$PID" ]; then
         echo -e "${YELLOW}Завершаем процессы на порту 6006...${NC}"
-        kill $PID &>/dev/null || kill -9 $PID &>/dev/null 2>&1
+        kill "$PID" &>/dev/null || kill -9 "$PID" &>/dev/null 2>&1
     fi
     
     echo -e "${GREEN}Порт 6006 свободен.${NC}"
@@ -76,7 +76,8 @@ check_storybook_deps() {
     echo -e "${YELLOW}Проверка зависимостей Storybook...${NC}"
     
     # Определяем текущую версию Storybook
-    local sb_version=$(npm list @storybook/react | grep -o '@storybook/react@[0-9.]*' | cut -d '@' -f 3)
+    local sb_version
+    sb_version=$(npm list @storybook/react | grep -o '@storybook/react@[0-9.]*' | cut -d '@' -f 3)
     
     if [ -z "$sb_version" ]; then
         echo -e "${RED}Не удалось определить версию Storybook. Используем последнюю версию.${NC}"
@@ -169,8 +170,8 @@ show_help() {
 # Основные функции
 run_clean() {
     echo -e "${YELLOW}Очистка...${NC}"
-    docker stop $(docker ps -q --filter ancestor=aquastream-frontend) 2>/dev/null || true
-    docker rm $(docker ps -a -q --filter ancestor=aquastream-frontend) 2>/dev/null || true
+    docker stop "$(docker ps -q --filter ancestor=aquastream-frontend)" 2>/dev/null || true
+    docker rm "$(docker ps -a -q --filter ancestor=aquastream-frontend)" 2>/dev/null || true
     docker rmi aquastream-frontend:latest 2>/dev/null || true
     npm cache clean --force
     echo -e "${GREEN}Очистка завершена${NC}"
