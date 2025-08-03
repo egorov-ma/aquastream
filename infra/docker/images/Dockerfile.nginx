@@ -6,9 +6,9 @@ FROM nginx:${NGINX_TAG} AS config-setup
 
 # Установка необходимых пакетов
 RUN apk add --no-cache \
-    apache2-utils \
-    openssl \
-    curl \
+    apache2-utils=2.4.58-r0 \
+    openssl=3.1.4-r5 \
+    curl=8.5.0-r0 \
     && rm -rf /var/cache/apk/*
 
 # Создание SSL сертификатов
