@@ -81,13 +81,15 @@ validate_docker_compose() {
         # Проверка Docker Compose конфигурации
         local compose_dir
         compose_dir=$(dirname "$compose_file")
-        if docker compose -f "$compose_file" --env-file "$compose_dir/.env" config >/dev/null 2>&1; then
+        local env_file="$compose_dir/.env"
+        
+        if docker compose -f "$compose_file" --env-file "$env_file" config >/dev/null 2>&1; then
             report_check "PASS" "Docker Compose конфигурация валидна: $(basename "$compose_file")"
         else
             report_check "FAIL" "Ошибка Docker Compose конфигурации: $(basename "$compose_file")"
             # Показываем детали ошибки
             log ERROR "Детали ошибки:"
-            docker compose -f "$compose_file" --env-file "$compose_dir/.env" config 2>&1 | head -10 | while read -r line; do
+            docker compose -f "$compose_file" --env-file "$env_file" config 2>&1 | head -10 | while read -r line; do
                 log ERROR "  $line"
             done
         fi
@@ -101,7 +103,7 @@ validate_docker_compose() {
         
         # Проверка наличия health checks для всех сервисов
         local services_without_healthcheck
-        services_without_healthcheck=$(docker compose -f "$compose_file" --env-file "$compose_dir/.env" config 2>/dev/null | yq eval '.services | to_entries | map(select(.value.healthcheck == null)) | .[].key' - 2>/dev/null || echo "")
+        services_without_healthcheck=$(docker compose -f "$compose_file" --env-file "$env_file" config 2>/dev/null | yq eval '.services | to_entries | map(select(.value.healthcheck == null)) | .[].key' - 2>/dev/null || echo "")
         
         if [ -n "$services_without_healthcheck" ]; then
             report_check "WARN" "Сервисы без health checks: $services_without_healthcheck"
@@ -118,7 +120,7 @@ validate_docker_compose() {
         
         # Проверка resource limits
         local services_without_limits
-        services_without_limits=$(docker compose -f "$compose_file" --env-file "$compose_dir/.env" config 2>/dev/null | yq eval '.services | to_entries | map(select(.value.deploy.resources.limits == null)) | .[].key' - 2>/dev/null || echo "")
+        services_without_limits=$(docker compose -f "$compose_file" --env-file "$env_file" config 2>/dev/null | yq eval '.services | to_entries | map(select(.value.deploy.resources.limits == null)) | .[].key' - 2>/dev/null || echo "")
         
         if [ -n "$services_without_limits" ]; then
             report_check "WARN" "Сервисы без resource limits: $services_without_limits"

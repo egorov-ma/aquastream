@@ -67,6 +67,16 @@ jobs:
             hadolint "$dockerfile"
           done
 
+      - name: Prepare environment for validation
+        run: |
+          # Создаем .env файл из .env.example с тестовыми паролями для валидации
+          if [ -f "infra/docker/compose/.env.example" ]; then
+            sed 's/POSTGRES_PASSWORD=$/POSTGRES_PASSWORD=test_password_123/' infra/docker/compose/.env.example | \
+            sed 's/GRAFANA_ADMIN_PASSWORD=$/GRAFANA_ADMIN_PASSWORD=test_password_123/' | \
+            sed 's/ELASTIC_PASSWORD=$/ELASTIC_PASSWORD=test_password_123/' | \
+            sed 's/KIBANA_PASSWORD=$/KIBANA_PASSWORD=test_password_123/' > infra/docker/compose/.env
+          fi
+
       - name: Quick infrastructure validation
         run: |
           if [ -f "infra/scripts/validate-infrastructure.sh" ]; then
