@@ -85,7 +85,7 @@ validate_docker_compose() {
             report_check "FAIL" "Ошибка Docker Compose конфигурации: $(basename "$compose_file")"
             # Показываем детали ошибки
             log ERROR "Детали ошибки:"
-            docker compose -f "$compose_file" config 2>&1 | head -10 | while read line; do
+            docker compose -f "$compose_file" config 2>&1 | head -10 | while read -r line; do
                 log ERROR "  $line"
             done
         fi
@@ -141,7 +141,8 @@ validate_environment_files() {
         local weak_passwords=0
         while IFS= read -r line; do
             if [[ "$line" =~ ^[A-Z_]+_PASSWORD= ]]; then
-                local password_value=$(echo "$line" | cut -d'=' -f2-)
+                local password_value
+                password_value=$(echo "$line" | cut -d'=' -f2-)
                 if [[ ${#password_value} -lt 12 ]] || [[ "$password_value" =~ ^(password|123456|admin|test)$ ]]; then
                     weak_passwords=$((weak_passwords + 1))
                 fi
@@ -185,7 +186,8 @@ validate_environment_files() {
             local missing_in_example=0
             while IFS= read -r line; do
                 if [[ "$line" =~ ^[A-Z_]+=.*$ ]]; then
-                    local var_name=$(echo "$line" | cut -d'=' -f1)
+                    local var_name
+                    var_name=$(echo "$line" | cut -d'=' -f1)
                     if ! grep -q "^${var_name}=" "$env_example"; then
                         missing_in_example=$((missing_in_example + 1))
                     fi
@@ -214,8 +216,9 @@ validate_dockerfiles() {
         return
     fi
     
-    find "$dockerfile_dir" -name "Dockerfile.*" | while read dockerfile; do
-        local filename=$(basename "$dockerfile")
+    find "$dockerfile_dir" -name "Dockerfile.*" | while read -r dockerfile; do
+        local filename
+        filename=$(basename "$dockerfile")
         
         # Проверка базовых образов
         if grep -q "FROM.*:latest" "$dockerfile"; then
@@ -353,8 +356,9 @@ validate_scripts() {
     fi
     
     # Проверка всех shell скриптов
-    find "$scripts_dir" -name "*.sh" | while read script; do
-        local script_name=$(basename "$script")
+    find "$scripts_dir" -name "*.sh" | while read -r script; do
+        local script_name
+        script_name=$(basename "$script")
         
         # Проверка синтаксиса bash
         if bash -n "$script" 2>/dev/null; then
@@ -439,7 +443,7 @@ validate_security() {
     
     # Проверка на чувствительные файлы в репозитории
     local sensitive_files_found=0
-    find "$PROJECT_ROOT" -name "*.env" -not -path "*/node_modules/*" -not -name "*.env.example" 2>/dev/null | while read file; do
+    find "$PROJECT_ROOT" -name "*.env" -not -path "*/node_modules/*" -not -name "*.env.example" 2>/dev/null | while read -r file; do
         if [ -f "$file" ]; then
             sensitive_files_found=$((sensitive_files_found + 1))
             report_check "WARN" "Найден .env файл в репозитории: $(basename "$file")"
@@ -455,7 +459,8 @@ validate_security() {
     
     for file in "${critical_files[@]}"; do
         if [ -f "$file" ]; then
-            local perms=$(stat -c "%a" "$file" 2>/dev/null || stat -f "%A" "$file" 2>/dev/null || echo "unknown")
+            local perms
+            perms=$(stat -c "%a" "$file" 2>/dev/null || stat -f "%A" "$file" 2>/dev/null || echo "unknown")
             if [[ "$perms" =~ ^[67][04][04]$ ]]; then
                 report_check "PASS" "Правильные права доступа: $(basename "$file") ($perms)"
             else
@@ -504,7 +509,8 @@ validate_project_structure() {
 generate_report() {
     log INFO "=== Генерация отчета валидации ==="
     
-    local report_file="${PROJECT_ROOT}/validation_report_$(date +%Y%m%d_%H%M%S).txt"
+    local report_file
+    report_file="${PROJECT_ROOT}/validation_report_$(date +%Y%m%d_%H%M%S).txt"
     
     cat > "$report_file" << EOF
 AquaStream Infrastructure Validation Report
@@ -515,12 +521,14 @@ AquaStream Infrastructure Validation Report
 РЕЗУЛЬТАТЫ ВАЛИДАЦИИ:
 EOF
     
-    echo "📊 Статистика проверок:" >> "$report_file"
-    echo "  • Всего проверок: $TOTAL_CHECKS" >> "$report_file"
-    echo "  • ✅ Пройдено: $PASSED_CHECKS" >> "$report_file"
-    echo "  • ❌ Провалено: $FAILED_CHECKS" >> "$report_file"
-    echo "  • ⚠️ Предупреждения: $WARNING_CHECKS" >> "$report_file"
-    echo "" >> "$report_file"
+    {
+        echo "📊 Статистика проверок:"
+        echo "  • Всего проверок: $TOTAL_CHECKS"
+        echo "  • ✅ Пройдено: $PASSED_CHECKS"
+        echo "  • ❌ Провалено: $FAILED_CHECKS"
+        echo "  • ⚠️ Предупреждения: $WARNING_CHECKS"
+        echo ""
+    } >> "$report_file"
     
     local success_rate=0
     if [ $TOTAL_CHECKS -gt 0 ]; then
@@ -531,15 +539,19 @@ EOF
     echo "" >> "$report_file"
     
     if [ $FAILED_CHECKS -gt 0 ]; then
-        echo "🚨 КРИТИЧНЫЕ ПРОБЛЕМЫ:" >> "$report_file"
-        echo "Обнаружено $FAILED_CHECKS критичных проблем, требующих немедленного исправления." >> "$report_file"
-        echo "" >> "$report_file"
+        {
+            echo "🚨 КРИТИЧНЫЕ ПРОБЛЕМЫ:"
+            echo "Обнаружено $FAILED_CHECKS критичных проблем, требующих немедленного исправления."
+            echo ""
+        } >> "$report_file"
     fi
     
     if [ $WARNING_CHECKS -gt 0 ]; then
-        echo "⚠️ ПРЕДУПРЕЖДЕНИЯ:" >> "$report_file"
-        echo "Обнаружено $WARNING_CHECKS предупреждений для улучшения." >> "$report_file"
-        echo "" >> "$report_file"
+        {
+            echo "⚠️ ПРЕДУПРЕЖДЕНИЯ:"
+            echo "Обнаружено $WARNING_CHECKS предупреждений для улучшения."
+            echo ""
+        } >> "$report_file"
     fi
     
     echo "РЕКОМЕНДАЦИИ:" >> "$report_file"
