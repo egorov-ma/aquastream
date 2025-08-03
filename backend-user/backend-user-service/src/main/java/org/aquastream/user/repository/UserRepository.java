@@ -1,6 +1,6 @@
 package org.aquastream.user.repository;
 
-import org.aquastream.common.dto.ERole;
+import org.aquastream.common.domain.user.ERole;
 import org.aquastream.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

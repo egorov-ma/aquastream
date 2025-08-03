@@ -12,7 +12,7 @@ import org.aquastream.user.dto.request.LoginRequest;
 import org.aquastream.user.dto.request.SignupRequest;
 import org.aquastream.user.dto.response.JwtResponse;
 import org.aquastream.user.dto.response.MessageResponse;
-import org.aquastream.common.dto.ERole;
+import org.aquastream.common.domain.user.ERole;
 import org.aquastream.user.entity.User;
 import org.aquastream.user.event.UserEventProducer;
 import org.aquastream.user.repository.UserRepository;
