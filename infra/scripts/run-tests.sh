@@ -32,7 +32,7 @@ wait_for_services() {
     
     log INFO "Ожидание готовности сервисов для интеграционных тестов..."
     
-    while [ $elapsed -lt $max_wait ]; do
+    while [ $elapsed -lt "$max_wait" ]; do
         local healthy_services=0
         local total_services=0
         
@@ -71,10 +71,9 @@ run_backend_tests() {
     
     if [ -f "gradlew" ]; then
         log INFO "Запуск Gradle тестов..."
-        ./gradlew test --info
         
         # Проверяем результаты тестов
-        if [ $? -eq 0 ]; then
+        if ./gradlew test --info; then
             log INFO "Backend тесты прошли успешно"
             
             # Генерируем отчеты о покрытии, если они настроены
@@ -109,9 +108,7 @@ run_frontend_tests() {
         log INFO "Запуск frontend тестов..."
         
         # Запускаем тесты без watch режима
-        npm test -- --watchAll=false --coverage=true
-        
-        if [ $? -eq 0 ]; then
+        if npm test -- --watchAll=false --coverage=true; then
             log INFO "Frontend тесты прошли успешно"
             
             # Генерируем coverage badge если скрипт есть
@@ -133,7 +130,7 @@ run_frontend_tests() {
 test_api_gateway() {
     log INFO "=== Тестирование API Gateway ==="
     
-    local gateway_url="https://localhost/api"
+    # local gateway_url="https://localhost/api"  # Unused variable
     local health_url="https://localhost/health"
     
     # Тест health check
@@ -356,7 +353,7 @@ run_integration_tests() {
     
     # Ожидание готовности сервисов
     if [ "$skip_service_wait" != "true" ]; then
-        if ! wait_for_services; then
+        if ! wait_for_services "$@"; then
             log ERROR "Сервисы не готовы, но продолжаем тестирование..."
         fi
         echo
@@ -410,9 +407,8 @@ run_infrastructure_tests() {
     
     if [ -f "$validation_script" ]; then
         log INFO "Запуск валидации инфраструктуры..."
-        bash "$validation_script" --quick
         
-        if [ $? -eq 0 ]; then
+        if bash "$validation_script" --quick; then
             log INFO "Валидация инфраструктуры прошла успешно"
         else
             log ERROR "Валидация инфраструктуры провалилась"
@@ -440,7 +436,8 @@ run_infrastructure_tests() {
 generate_test_report() {
     log INFO "========== Генерация сводного отчета =========="
     
-    local report_file="$PROJECT_ROOT/test_report_$(date +%Y%m%d_%H%M%S).txt"
+    local report_file
+    report_file="$PROJECT_ROOT/test_report_$(date +%Y%m%d_%H%M%S).txt"
     
     cat > "$report_file" << EOF
 AquaStream Test Report
