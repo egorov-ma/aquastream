@@ -213,9 +213,14 @@ backup_volumes() {
     
     log INFO "Создание backup Docker volumes..."
     
+    # Создаем volume arguments
+    local volume_args
+    volume_args=$(echo "$project_volumes" | sed 's/^/-v /' | sed 's/$/:\\/backup\\/&:ro/' | tr '\n' ' ')
+    
     # Создаем временный контейнер для backup
+    # shellcheck disable=SC2086
     docker run --rm \
-        $(echo "$project_volumes" | sed 's/^/-v /' | sed 's/$/:\\/backup\\/&:ro/' | tr '\n' ' ') \
+        $volume_args \
         -v "$BACKUP_DIR:/host_backup" \
         alpine:latest \
         tar czf "/host_backup/volumes_${BACKUP_DATE}.tar.gz" -C /backup .
