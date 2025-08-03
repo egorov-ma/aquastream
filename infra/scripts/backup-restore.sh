@@ -35,6 +35,7 @@ mkdir -p "$BACKUP_DIR"
 # Загружаем переменные окружения
 load_env() {
     if [ -f "${PROJECT_ROOT}/infra/docker/compose/.env" ]; then
+        # shellcheck source=/dev/null
         source "${PROJECT_ROOT}/infra/docker/compose/.env"
     else
         log ERROR "Файл .env не найден!"
@@ -95,9 +96,8 @@ backup_postgresql() {
     local backup_file="$BACKUP_DIR/postgres_${BACKUP_DATE}.sql.gz"
     
     log INFO "Создание backup PostgreSQL..."
-    docker exec "$pg_container" pg_dumpall -U postgres | gzip > "$backup_file"
     
-    if [ $? -eq 0 ] && [ -f "$backup_file" ]; then
+    if docker exec "$pg_container" pg_dumpall -U postgres | gzip > "$backup_file" && [ -f "$backup_file" ]; then
         local backup_size
         backup_size=$(du -h "$backup_file" | cut -f1)
         log INFO "✅ PostgreSQL backup создан: $backup_file ($backup_size)"
@@ -128,9 +128,8 @@ backup_elasticsearch() {
     local backup_file="$BACKUP_DIR/elasticsearch_${BACKUP_DATE}.tar.gz"
     
     log INFO "Создание backup Elasticsearch данных..."
-    docker exec "$es_container" tar czf - /usr/share/elasticsearch/data > "$backup_file"
     
-    if [ $? -eq 0 ] && [ -f "$backup_file" ]; then
+    if docker exec "$es_container" tar czf - /usr/share/elasticsearch/data > "$backup_file" && [ -f "$backup_file" ]; then
         local backup_size
         backup_size=$(du -h "$backup_file" | cut -f1)
         log INFO "✅ Elasticsearch backup создан: $backup_file ($backup_size)"
@@ -216,7 +215,7 @@ backup_volumes() {
     
     # Создаем временный контейнер для backup
     docker run --rm \
-        $(echo "$project_volumes" | sed 's/^/-v /' | sed 's/$/:\/backup\/&:ro/') \
+        $(echo "$project_volumes" | sed 's/^/-v /' | sed 's/$/:\\/backup\\/&:ro/' | tr '\n' ' ') \
         -v "$BACKUP_DIR:/host_backup" \
         alpine:latest \
         tar czf "/host_backup/volumes_${BACKUP_DATE}.tar.gz" -C /backup .
@@ -268,9 +267,7 @@ restore_postgresql() {
     log INFO "Восстановление PostgreSQL из $backup_file..."
     
     # Останавливаем подключения и восстанавливаем
-    zcat "$backup_file" | docker exec -i "$pg_container" psql -U postgres
-    
-    if [ $? -eq 0 ]; then
+    if zcat "$backup_file" | docker exec -i "$pg_container" psql -U postgres; then
         log INFO "✅ PostgreSQL restore завершен успешно"
         return 0
     else
@@ -311,7 +308,7 @@ restore_elasticsearch() {
     
     # Останавливаем Elasticsearch, восстанавливаем данные и запускаем
     docker compose -f "$COMPOSE_FILE" stop elasticsearch
-    cat "$backup_file" | docker exec -i "$es_container" tar xzf - -C /
+    docker exec -i "$es_container" tar xzf - -C / < "$backup_file"
     docker compose -f "$COMPOSE_FILE" start elasticsearch
     
     if check_service_health "elasticsearch"; then
@@ -330,7 +327,7 @@ cleanup_old_backups() {
     log INFO "Удаление backup'ов старше $RETENTION_DAYS дней..."
     
     local deleted_count=0
-    find "$BACKUP_DIR" -name "*.gz" -type f -mtime +${RETENTION_DAYS} -print0 | \
+    find "$BACKUP_DIR" -name "*.gz" -type f -mtime +"${RETENTION_DAYS}" -print0 | \
     while IFS= read -r -d '' file; do
         log INFO "Удаляем старый backup: $(basename "$file")"
         rm -f "$file"
@@ -387,7 +384,7 @@ AquaStream Backup Manifest
 Проект: $PROJECT_ROOT
 
 Файлы backup'а:
-$(ls -la "$BACKUP_DIR"/*_${BACKUP_DATE}.* 2>/dev/null || echo "Нет файлов backup'а")
+$(ls -la "$BACKUP_DIR"/*_"${BACKUP_DATE}".* 2>/dev/null || echo "Нет файлов backup'а")
 
 Размер backup'а:
 $(du -sh "$BACKUP_DIR" | cut -f1)
@@ -516,7 +513,7 @@ list_backups() {
     
     # Группируем backup'ы по дате
     local backup_dates
-    backup_dates=$(ls "$BACKUP_DIR"/*.gz 2>/dev/null | sed 's/.*_\([0-9]\{8\}_[0-9]\{6\}\)\..*$/\1/' | sort -u)
+    backup_dates=$(find "$BACKUP_DIR" -name "*.gz" -type f -exec basename {} \; 2>/dev/null | sed 's/.*_\([0-9]\{8\}_[0-9]\{6\}\)\..*$/\1/' | sort -u)
     
     for date in $backup_dates; do
         echo "📅 Backup: $date"
