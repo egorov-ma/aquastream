@@ -52,7 +52,10 @@ describe('authApi', () => {
       await authApi.login(loginData);
 
       // Проверяем, что apiService.post вызван с правильными параметрами
-      expect(apiService.post).toHaveBeenCalledWith('/auth/login', loginData);
+      expect(apiService.post).toHaveBeenCalledWith('/auth/signin', {
+        username: loginData.email,
+        password: loginData.password,
+      });
     });
   });
 
@@ -60,8 +63,7 @@ describe('authApi', () => {
     const registerData = {
       email: 'test@example.com',
       password: 'password123',
-      name: 'Test User',
-      confirmPassword: 'password123',
+      displayName: 'Test User',
     };
 
     const mockUser = {
@@ -87,7 +89,11 @@ describe('authApi', () => {
       await authApi.register(registerData);
 
       // Проверяем, что apiService.post вызван с правильными параметрами
-      expect(apiService.post).toHaveBeenCalledWith('/auth/register', registerData);
+      expect(apiService.post).toHaveBeenCalledWith('/auth/register', {
+        name: 'Test User',
+        username: 'test@example.com',
+        password: 'password123',
+      });
     });
   });
 
@@ -177,7 +183,7 @@ describe('authApi', () => {
       await authApi.getCurrentUser();
 
       // Проверяем, что apiService.get вызван с правильным путем
-      expect(apiService.get).toHaveBeenCalledWith('/auth/me');
+      expect(apiService.get).toHaveBeenCalledWith('/users/me');
     });
   });
 });
