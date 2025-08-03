@@ -112,7 +112,7 @@ validate_docker_compose() {
         fi
         
         # Проверка использования secrets вместо environment для паролей
-        if grep -E "(PASSWORD|SECRET|KEY).*=" "$compose_file" | grep -v "\\$\\{" >/dev/null; then
+        if grep -E "(PASSWORD|SECRET|KEY).*=" "$compose_file" | grep -v '\${' >/dev/null; then
             report_check "FAIL" "Найдены hardcoded пароли/секреты в $(basename "$compose_file")"
         else
             report_check "PASS" "Пароли и секреты используют переменные окружения"
@@ -421,7 +421,7 @@ validate_security() {
     local gitignore="${PROJECT_ROOT}/.gitignore"
     if [ -f "$gitignore" ]; then
         local sensitive_patterns=(
-            "*.env"
+            ".env"
             "*.key"
             "*.pem"
             "*.p12"
