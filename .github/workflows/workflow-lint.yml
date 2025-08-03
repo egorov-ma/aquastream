@@ -48,21 +48,21 @@ jobs:
 
       - name: Lint YAML files
         run: |
-          find infra -name "*.yml" -o -name "*.yaml" | while read yaml_file; do
+          find infra -name "*.yml" -o -name "*.yaml" | while read -r yaml_file; do
             echo "Checking: $yaml_file"
             yq eval '.' "$yaml_file" > /dev/null
           done
 
       - name: Lint shell scripts
         run: |
-          find . -name "*.sh" -not -path "./node_modules/*" | while read script; do
+          find . -name "*.sh" -not -path "./node_modules/*" | while read -r script; do
             echo "Checking: $script"
             shellcheck -x "$script"
           done
 
       - name: Lint Dockerfiles
         run: |
-          find infra/docker/images -name "Dockerfile.*" | while read dockerfile; do
+          find infra/docker/images -name "Dockerfile.*" | while read -r dockerfile; do
             echo "Checking: $dockerfile"
             hadolint "$dockerfile"
           done
