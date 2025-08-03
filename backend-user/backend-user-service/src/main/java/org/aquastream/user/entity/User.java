@@ -5,11 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.aquastream.common.dto.ERole;
+import org.aquastream.common.domain.user.ERole;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * JPA entity representing an application user.
+ * <p>
+ * The {@code role} field relies on {@link org.aquastream.common.domain.user.ERole}
+ * from the common domain package instead of the former
+ * {@code org.aquastream.common.dto.ERole} enum.
+ */
 @Entity
 @Table(name = "users")
 @Data

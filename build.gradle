@@ -89,5 +89,9 @@ subprojects {
         formats = ['SARIF', 'HTML']
         outputDirectory = "${buildDir}/reports"
         failBuildOnCVSS = 7.0
+        nvd {
+            apiKey = System.getenv('NVD_API_KEY')
+        }
+        skip = System.getenv('NVD_API_KEY') == null
     }
 }
