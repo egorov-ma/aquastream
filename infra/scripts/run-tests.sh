@@ -423,7 +423,9 @@ run_infrastructure_tests() {
     if [ -f "$compose_file" ]; then
         log INFO "Проверка синтаксиса Docker Compose..."
         
-        if docker compose -f "$compose_file" config > /dev/null 2>&1; then
+        local compose_dir
+        compose_dir=$(dirname "$compose_file")
+        if docker compose -f "$compose_file" --env-file "$compose_dir/.env" config > /dev/null 2>&1; then
             log INFO "Docker Compose конфигурация валидна"
         else
             log ERROR "Ошибка в Docker Compose конфигурации"

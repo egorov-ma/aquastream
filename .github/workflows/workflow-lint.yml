@@ -71,5 +71,5 @@ jobs:
         run: |
           if [ -f "infra/scripts/validate-infrastructure.sh" ]; then
             chmod +x infra/scripts/validate-infrastructure.sh
-            ./infra/scripts/validate-infrastructure.sh --quick || echo "Warning: validation issues found"
+            ./infra/scripts/validate-infrastructure.sh --quick
           fi
