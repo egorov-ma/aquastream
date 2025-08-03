@@ -34,6 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * REST controller providing authentication and registration endpoints.
+ * <p>
+ * User roles are represented by {@link org.aquastream.common.domain.user.ERole}
+ * from the common domain package. This replaces the previous dependency on
+ * <code>org.aquastream.common.dto.ERole</code> and documents the enum's new
+ * location for future maintenance.
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
@@ -84,6 +92,10 @@ public class AuthController {
                 .build());
     }
 
+    /**
+     * Получить статические JWT токены для ролей из
+     * {@link org.aquastream.common.domain.user.ERole}.
+     */
     @GetMapping("/static-tokens")
     @Operation(summary = "Получить статические JWT токены", description = "Возвращает предварительно сгенерированные JWT токены для разных ролей (для тестирования)")
     @ApiResponses(value = {
@@ -97,6 +109,10 @@ public class AuthController {
         return ResponseEntity.ok(tokens);
     }
 
+    /**
+     * Регистрация нового пользователя. Роль присваивается с использованием
+     * {@link org.aquastream.common.domain.user.ERole} из пакета common domain.
+     */
     @PostMapping({ "/signup", "/register" })
     @Operation(summary = "Регистрация нового пользователя", description = "Регистрирует нового пользователя в системе")
     @ApiResponses(value = {
@@ -117,7 +133,7 @@ public class AuthController {
                     .body(new MessageResponse("Error: Telegram username is already in use!"));
         }
 
-        // Определение роли
+        // Определение роли (используем ERole из пакета org.aquastream.common.domain.user)
         ERole role = ERole.ROLE_USER; // По умолчанию обычный пользователь
         if (signUpRequest.getRole() != null) {
             switch (signUpRequest.getRole().toLowerCase()) {

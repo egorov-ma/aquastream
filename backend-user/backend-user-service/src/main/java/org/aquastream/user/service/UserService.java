@@ -24,12 +24,24 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service layer for user management.
+ * <p>
+ * Role-related operations rely on
+ * {@link org.aquastream.common.domain.user.ERole} from the common domain
+ * package, replacing the deprecated {@code org.aquastream.common.dto.ERole}.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Retrieves all users optionally filtered by role. The provided role name is
+     * mapped to {@link org.aquastream.common.domain.user.ERole} from the common
+     * domain package.
+     */
     @Transactional(readOnly = true)
     public Page<UserProfileDto> getAllUsers(String role, Pageable pageable) {
         Page<User> users;
@@ -63,6 +75,10 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    /**
+     * Updates user information and, if requested by an administrator, changes the
+     * user's role using {@link org.aquastream.common.domain.user.ERole}.
+     */
     @Transactional
     public User updateUser(UUID id, UserDto userDto, String currentUsername) {
         User user = userRepository.findById(id)
@@ -162,6 +178,9 @@ public class UserService {
         return convertToUserProfileDto(savedUser);
     }
     
+    /**
+     * Updates a user's role using {@link org.aquastream.common.domain.user.ERole}.
+     */
     @Transactional
     public void updateUserRole(UUID id, String roleName) {
         User user = userRepository.findById(id)
@@ -266,7 +285,9 @@ public class UserService {
     }
     
     /**
-     * Обновление роли пользователя
+     * Обновление роли пользователя с использованием
+     * {@link org.aquastream.common.domain.user.ERole}.
+     *
      * @param id идентификатор пользователя
      * @param userRoleRequest запрос с новой ролью
      * @return сообщение о результате операции

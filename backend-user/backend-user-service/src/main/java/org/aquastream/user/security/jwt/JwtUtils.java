@@ -16,6 +16,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility methods for working with JWT tokens.
+ * <p>
+ * Static token handling and role resolution use
+ * {@link org.aquastream.common.domain.user.ERole} from the common domain
+ * package rather than the former DTO-based enum.
+ */
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
@@ -96,9 +103,11 @@ public class JwtUtils {
     }
     
     /**
-     * Возвращает статический токен для заданной роли
-     * @param role Роль пользователя
-     * @return Статический токен
+     * Возвращает статический токен для заданной роли из
+     * {@link org.aquastream.common.domain.user.ERole}.
+     *
+     * @param role роль пользователя
+     * @return статический токен
      */
     public String getStaticTokenForRole(ERole role) {
         switch (role) {
