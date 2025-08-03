@@ -60,7 +60,6 @@ declare -A SECRET_ROTATION_CONFIG=(
 needs_rotation() {
     local secret_name="$1"
     local max_age_days="${SECRET_ROTATION_CONFIG[$secret_name]:-30}"
-    local backup_pattern="${SECRETS_BACKUP_DIR}/secrets_backup_*_${secret_name}.env"
     
     # Find the latest backup for this secret
     local latest_backup
@@ -333,7 +332,6 @@ show_rotation_status() {
     
     for secret_name in "${!SECRET_ROTATION_CONFIG[@]}"; do
         local max_age_days="${SECRET_ROTATION_CONFIG[$secret_name]}"
-        local backup_pattern="${SECRETS_BACKUP_DIR}/secrets_backup_*_${secret_name}.env"
         
         local latest_backup
         latest_backup=$(find "$SECRETS_BACKUP_DIR" -name "secrets_backup_*_${secret_name}.env" -type f -exec ls -t {} + 2>/dev/null | head -1 || echo "")
@@ -364,7 +362,6 @@ show_rotation_status() {
 # Rollback to previous secret version
 rollback_secret() {
     local secret_name="$1"
-    local backup_pattern="${SECRETS_BACKUP_DIR}/secrets_backup_*_${secret_name}.env"
     
     local latest_backup
     latest_backup=$(find "$SECRETS_BACKUP_DIR" -name "secrets_backup_*_${secret_name}.env" -type f -exec ls -t {} + 2>/dev/null | head -1 || echo "")
