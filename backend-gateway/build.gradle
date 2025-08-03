@@ -7,7 +7,6 @@ ext {
 }
 
 group = 'org.aquastream'
-version = '1.0-SNAPSHOT'
 
 allprojects {
     repositories {

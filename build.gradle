@@ -34,9 +34,23 @@ ext {
     set('glassfishElVersion', '4.0.2')
 }
 
+// Load version from properties file
+def versionProps = new Properties()
+file('version.properties').withInputStream { versionProps.load(it) }
+
+def versionMajor = versionProps['version.major']
+def versionMinor = versionProps['version.minor']
+def versionPatch = versionProps['version.patch']
+def versionSuffix = versionProps['version.suffix']
+
+def buildVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+if (versionSuffix && !versionSuffix.isEmpty()) {
+    buildVersion += "-${versionSuffix}"
+}
+
 allprojects {
     group = 'org.aquastream'
-    version = '1.0-SNAPSHOT'
+    version = buildVersion
 
     repositories {
         mavenCentral()
