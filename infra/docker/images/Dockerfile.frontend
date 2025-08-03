@@ -2,7 +2,7 @@
 ARG NODE_TAG=20.11.1-slim
 ARG NGINX_TAG=1.25.4-alpine
 
-# 1. Используем официальный образ Node.js для сборки фронтенда
+# --- Stage 1: build frontend ----------------------
 FROM node:${NODE_TAG} AS build
 
 WORKDIR /app
@@ -44,7 +44,7 @@ RUN npm install --no-save terser vite typescript @vitejs/plugin-react
 # Собираем фронтенд
 RUN npm run build
 
-# 2. Используем легковесный образ Nginx для раздачи фронтенда с brotli модулем
+# --- Stage 2: runtime -----------------------------
 FROM nginx:${NGINX_TAG} AS runtime
 
 # Устанавливаем brotli-модуль и необходимые пакеты
@@ -74,8 +74,11 @@ RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
     echo 'exec "$@"' >> /docker-entrypoint.sh && \
     chmod +x /docker-entrypoint.sh
 
-# Открываем порт
-EXPOSE 80
+EXPOSE 80 443
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
 
 # Запускаем Nginx с энтрипоинтом для замены переменных окружения
 ENTRYPOINT ["/docker-entrypoint.sh"]

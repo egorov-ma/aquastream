@@ -27,16 +27,16 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Создаем пользователя для безопасности
-RUN groupadd -r gateway && useradd -r -g gateway -s /bin/false gateway
+RUN groupadd -r appuser && useradd -r -g appuser -s /bin/false appuser
 
 # Копируем собранный jar
 COPY --from=build /workspace/backend-gateway/backend-gateway-service/build/libs/backend-gateway-service-*.jar app.jar
 
 # Настройка безопасности
-RUN chown gateway:gateway app.jar
+RUN chown appuser:appuser app.jar
 
 # Переключаемся на непривилегированного пользователя
-USER gateway
+USER appuser
 
 EXPOSE 8080
 

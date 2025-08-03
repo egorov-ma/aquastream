@@ -23,19 +23,32 @@ FROM eclipse-temurin:${ECLIPSE_TEMURIN_JRE_TAG} AS runtime
 
 WORKDIR /app
 
+# Устанавливаем curl для health check
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Создаем пользователя для безопасности
+RUN groupadd -r appuser && useradd -r -g appuser -s /bin/false appuser
+
 # Копируем собранный jar
 COPY --from=build /workspace/backend-crew/backend-crew-service/build/libs/backend-crew-service-*.jar app.jar
 
+# Настройка безопасности
+RUN chown appuser:appuser app.jar
+
+# Переключаемся на непривилегированного пользователя
+USER appuser
+
 EXPOSE 8083
 
-# JVM настройки для небольшой нагрузки
+# Добавляем JVM параметры для безопасности и производительности
 ENTRYPOINT ["java", \
-    "-Xms96m", \
-    "-Xmx160m", \
-    "-XX:+UseG1GC", \
-    "-XX:MaxGCPauseMillis=100", \
     "-XX:+UseContainerSupport", \
-    "-XX:MaxRAMPercentage=80.0", \
+    "-XX:MaxRAMPercentage=75.0", \
+    "-XX:+ExitOnOutOfMemoryError", \
     "-Djava.security.egd=file:/dev/./urandom", \
     "-Dspring.profiles.active=docker", \
     "-jar", "/app/app.jar"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8083/actuator/health || exit 1

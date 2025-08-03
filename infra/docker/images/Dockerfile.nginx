@@ -1,5 +1,8 @@
+# Global ARGs for multi-stage build
 ARG NGINX_TAG=1.25.4-alpine
-FROM nginx:${NGINX_TAG} AS nginx-base
+
+# --- Stage 1: configuration setup ----------------
+FROM nginx:${NGINX_TAG} AS config-setup
 
 # Установка необходимых пакетов
 RUN apk add --no-cache \
@@ -34,6 +37,20 @@ RUN chown -R nginx:nginx /var/log/nginx /etc/nginx/ssl && \
 
 # Проверка синтаксиса конфигурации (upstreams будут проверены при запуске)
 RUN nginx -T 2>/dev/null || echo "Конфигурация будет проверена при запуске"
+
+# Expose ports
+EXPOSE 80 443
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+# --- Stage 2: runtime -----------------------------
+FROM nginx:${NGINX_TAG} AS runtime
+
+# Копируем настроенные файлы из предыдущего этапа
+COPY --from=config-setup /etc/nginx /etc/nginx
+COPY --from=config-setup /var/log/nginx /var/log/nginx
 
 # Expose ports
 EXPOSE 80 443
