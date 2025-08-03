@@ -60,7 +60,7 @@ check_docker_daemon_ready() {
     
     log INFO "Проверка состояния Docker daemon..."
     
-    while [ $attempt -le $max_attempts ]; do
+    while [ "$attempt" -le "$max_attempts" ]; do
         if docker info &>/dev/null; then
             log INFO "Docker daemon готов к работе"
             check_docker_resources
@@ -68,7 +68,7 @@ check_docker_daemon_ready() {
         fi
         
         log WARN "Docker daemon недоступен (попытка $attempt/$max_attempts), ожидание ${delay}s..."
-        sleep $delay
+        sleep "$delay"
         attempt=$((attempt + 1))
         delay=$((delay + 1))  # Увеличиваем задержку
     done
@@ -82,10 +82,10 @@ check_docker_daemon_ready() {
 check_docker_resources() {
     # Проверяем доступную память
     local total_memory
-    if command -v docker system info &>/dev/null; then
+    if docker system info &>/dev/null; then
         total_memory=$(docker system info --format '{{.MemTotal}}' 2>/dev/null || echo "0")
         if [ "$total_memory" -gt 0 ] && [ "$total_memory" -lt 5368709120 ]; then  # 5GB в байтах
-            log WARN "Доступная память в Docker: $(numfmt --to=iec $total_memory). Рекомендуется минимум 5GB"
+            log WARN "Доступная память в Docker: $(numfmt --to=iec "$total_memory"). Рекомендуется минимум 5GB"
         fi
     fi
     
@@ -151,7 +151,7 @@ wait_healthy() {
     
     log INFO "Ожидание готовности контейнеров (до ${max_wait}s)..."
     
-    while [ $elapsed -lt $max_wait ]; do
+    while [ "$elapsed" -lt "$max_wait" ]; do
         # Получаем статус без jq для совместимости
         local status_info
         status_info=$($DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}" 2>/dev/null || true)
@@ -185,7 +185,7 @@ wait_healthy() {
             return 1
         fi
         
-        sleep $check_interval
+        sleep "$check_interval"
         elapsed=$((elapsed + check_interval))
     done
     
@@ -259,7 +259,7 @@ run_restore() {
             # Показываем список доступных backup'ов
             bash "$backup_script" list
             echo
-            read -p "Введите дату backup'а для восстановления (YYYYMMDD_HHMMSS): " backup_date
+            read -r -p "Введите дату backup'а для восстановления (YYYYMMDD_HHMMSS): " backup_date
             if [ -n "$backup_date" ]; then
                 bash "$backup_script" restore "$backup_date"
             else
@@ -278,7 +278,7 @@ run_restore() {
 generate_password() {
     local length=${1:-32}
     if command -v openssl >/dev/null 2>&1; then
-        openssl rand -base64 $((length * 3 / 4)) | tr -d "=+/" | cut -c1-${length}
+        openssl rand -base64 $((length * 3 / 4)) | tr -d "=+/" | cut -c1-"${length}"
     elif command -v python3 >/dev/null 2>&1; then
         python3 -c "import secrets, string; print(''.join(secrets.choice(string.ascii_letters + string.digits + '@#%^&*') for _ in range(${length})))"
     else
@@ -300,10 +300,14 @@ generate_passwords() {
     fi
     
     # Генерируем пароли
-    local postgres_pass=$(generate_password 24)
-    local grafana_pass=$(generate_password 20)
-    local elastic_pass=$(generate_password 28)
-    local kibana_pass=$(generate_password 24)
+    local postgres_pass
+    postgres_pass=$(generate_password 24)
+    local grafana_pass
+    grafana_pass=$(generate_password 20)
+    local elastic_pass
+    elastic_pass=$(generate_password 28)
+    local kibana_pass
+    kibana_pass=$(generate_password 24)
     
     log INFO "Сгенерированы сильные пароли для всех сервисов"
     
@@ -324,10 +328,12 @@ generate_passwords() {
     # Добавляем в .gitignore
     local gitignore_file="$PROJECT_ROOT/.gitignore"
     if [[ -f "$gitignore_file" ]] && ! grep -q "secrets/" "$gitignore_file"; then
-        echo "" >> "$gitignore_file"
-        echo "# Security: Docker secrets and passwords" >> "$gitignore_file"
-        echo "infra/docker/compose/secrets/" >> "$gitignore_file"
-        echo "*.backup.*" >> "$gitignore_file"
+        {
+            echo ""
+            echo "# Security: Docker secrets and passwords"
+            echo "infra/docker/compose/secrets/"
+            echo "*.backup.*"
+        } >> "$gitignore_file"
         log INFO "Добавлено в .gitignore: secrets/ и backup файлы"
     fi
     
@@ -378,7 +384,7 @@ input_password() {
     local password confirm_password
     
     while true; do
-        read -s -p "Введите новый пароль для ${service_name}: " password
+        read -r -s -p "Введите новый пароль для ${service_name}: " password
         echo
         
         if ! check_password_strength "$password"; then
@@ -386,7 +392,7 @@ input_password() {
             continue
         fi
         
-        read -s -p "Подтвердите пароль: " confirm_password
+        read -r -s -p "Подтвердите пароль: " confirm_password
         echo
         
         if [[ "$password" != "$confirm_password" ]]; then
@@ -413,7 +419,7 @@ update_passwords() {
     echo "Выберите метод обновления паролей:"
     echo "1) Автоматическая генерация сильных паролей (рекомендуется)"
     echo "2) Ввод паролей вручную"
-    read -p "Ваш выбор [1-2]: " choice
+    read -r -p "Ваш выбор [1-2]: " choice
     
     case $choice in
         1)
@@ -423,10 +429,14 @@ update_passwords() {
             log INFO "Ввод паролей вручную..."
             cp "$env_file" "${env_file}.backup.$(date +%Y%m%d-%H%M%S)"
             
-            local postgres_pass=$(input_password "PostgreSQL")
-            local grafana_pass=$(input_password "Grafana Admin")
-            local elastic_pass=$(input_password "Elasticsearch")
-            local kibana_pass=$(input_password "Kibana")
+            local postgres_pass
+            postgres_pass=$(input_password "PostgreSQL")
+            local grafana_pass
+            grafana_pass=$(input_password "Grafana Admin")
+            local elastic_pass
+            elastic_pass=$(input_password "Elasticsearch")
+            local kibana_pass
+            kibana_pass=$(input_password "Kibana")
             
             sed -i.tmp \
                 -e "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=${postgres_pass}/" \
@@ -446,7 +456,7 @@ update_passwords() {
     
     echo
     log WARN "⚠️  Для применения новых паролей требуется перезапуск сервисов"
-    read -p "Перезапустить сервисы сейчас? [y/N]: " restart_services
+    read -r -p "Перезапустить сервисы сейчас? [y/N]: " restart_services
     
     if [[ "${restart_services,,}" =~ ^(y|yes)$ ]]; then
         log INFO "Перезапуск сервисов с новыми паролями..."
@@ -489,8 +499,6 @@ check_git_repo() {
 
 # Функция настройки git hooks директории
 setup_hooks_directory() {
-    local git_dir
-    git_dir=$(git rev-parse --git-dir)
     local custom_hooks_dir="$PROJECT_ROOT/.githooks"
     
     log INFO "📁 Настройка git hooks директории..."
@@ -594,10 +602,11 @@ clean_docker() {
             stop_containers
             
             # Удаляем все остановленные контейнеры
-            local stopped_containers=$(docker ps -a -q -f status=exited || true)
+            local stopped_containers
+            stopped_containers=$(docker ps -a -q -f status=exited || true)
             if [ -n "$stopped_containers" ]; then
                 log "[INFO] Удаление остановленных контейнеров..."
-                docker rm $stopped_containers || true
+                echo "$stopped_containers" | xargs -r docker rm || true
             fi
             
             # Удаляем неиспользуемые образы
@@ -614,7 +623,7 @@ clean_docker() {
             ;;
         "deep")
             log "[WARN] Глубокая очистка: ВСЕ Docker ресурсы будут удалены!"
-            read -p "Вы уверены? Это удалит ВСЕ Docker данные (y/N): " -n 1 -r
+            read -r -p "Вы уверены? Это удалит ВСЕ Docker данные (y/N): " -n 1
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 stop_containers
@@ -624,17 +633,19 @@ clean_docker() {
                 docker system prune --all --volumes -f || true
                 
                 # Удаляем все контейнеры принудительно
-                local all_containers=$(docker ps -a -q || true)
+                local all_containers
+                all_containers=$(docker ps -a -q || true)
                 if [ -n "$all_containers" ]; then
                     log "[INFO] Принудительное удаление всех контейнеров..."
-                    docker rm -f $all_containers || true
+                    echo "$all_containers" | xargs -r docker rm -f || true
                 fi
-                
+
                 # Удаляем все образы принудительно
-                local all_images=$(docker images -q || true)
+                local all_images
+                all_images=$(docker images -q || true)
                 if [ -n "$all_images" ]; then
                     log "[INFO] Принудительное удаление всех образов..."
-                    docker rmi -f $all_images || true
+                    echo "$all_images" | xargs -r docker rmi -f || true
                 fi
             else
                 log "[INFO] Глубокая очистка отменена"
@@ -656,6 +667,7 @@ clean_docker() {
 # Функция для сборки проекта (backend, frontend, Docker images)
 build_project() {
     local mode="summary"
+    local backend_log frontend_log docker_log
 
     # Определяем режим вывода логов
     if [[ "${1:-}" =~ ^(--full|-f)$ ]]; then
@@ -673,8 +685,7 @@ build_project() {
         ./gradlew clean build -x test || { log ERROR "Gradle build failed"; exit 1; }
     else
         backend_log=$(mktemp)
-        ./gradlew clean build -x test --console=plain >"$backend_log" 2>&1
-        if [ $? -eq 0 ]; then
+        if ./gradlew clean build -x test --console=plain >"$backend_log" 2>&1; then
             log INFO "Backend build SUCCESS"
         else
             log ERROR "Backend build FAILED. Полный лог: $backend_log"
@@ -688,8 +699,7 @@ build_project() {
         (cd frontend && npm ci && npm run build) || { log ERROR "Frontend build failed"; exit 1; }
     else
         frontend_log=$(mktemp)
-        (cd frontend && npm ci --silent && npm run build --silent) >"$frontend_log" 2>&1
-        if [ $? -eq 0 ]; then
+        if (cd frontend && npm ci --silent && npm run build --silent) >"$frontend_log" 2>&1; then
             log INFO "Frontend build SUCCESS"
         else
             log ERROR "Frontend build FAILED. Полный лог: $frontend_log"
@@ -703,8 +713,7 @@ build_project() {
         $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
     else
         docker_log=$(mktemp)
-        $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1
-        if [ $? -eq 0 ]; then
+        if $DOCKER_COMPOSE_CMD -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1; then
             log INFO "Docker images build SUCCESS"
         else
             log ERROR "Docker images build FAILED. Полный лог: $docker_log"
