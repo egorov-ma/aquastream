@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 # Используйте: ./run.sh <команда> [аргументы]
+# Требуются Docker и Docker Compose (v2 или устаревший v1)
+# Если Docker Compose отсутствует, установите v2: https://docs.docker.com/compose/install/
 
 # Определяем корневую директорию проекта
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -728,6 +730,10 @@ show_help() {
     echo "========================="
     echo "Использование: $0 <команда>"
     echo
+    echo "Требования:"
+    echo "  Docker и Docker Compose (v2 'docker compose' или v1 'docker-compose')"
+    echo "  Если Docker Compose отсутствует, установите v2: https://docs.docker.com/compose/install/"
+    echo
     echo "📋 Ежедневные команды:"
     echo "  start         Запустить проект"
     echo "  stop          Остановить проект" 
@@ -755,6 +761,10 @@ show_help_options() {
     echo "AquaStream Management Tool - Расширенная справка"
     echo "================================================"
     echo "Использование: $0 <команда> [аргументы]"
+    echo
+    echo "Требования:"
+    echo "  Docker и Docker Compose (v2 'docker compose' или v1 'docker-compose')"
+    echo "  Если Docker Compose отсутствует, установите v2: https://docs.docker.com/compose/install/"
     echo
     echo "ОСНОВНЫЕ КОМАНДЫ:"
     echo
