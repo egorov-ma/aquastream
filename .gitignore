@@ -61,7 +61,11 @@ ehthumbs.db
 Desktop.ini
 
 # Environment & config
-.env*
+.env
+.env.local
+.env.development
+.env.test
+.env.production
 .envrc
 *.secret
 *_password.txt
