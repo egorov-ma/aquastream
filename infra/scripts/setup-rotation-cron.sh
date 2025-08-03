@@ -92,7 +92,7 @@ install_cron_jobs() {
         # Create log file with proper permissions
         sudo touch /var/log/aquastream-rotation.log
         sudo chmod 644 /var/log/aquastream-rotation.log
-        sudo chown $(whoami):$(id -gn) /var/log/aquastream-rotation.log 2>/dev/null || true
+        sudo chown "$(whoami):$(id -gn)" /var/log/aquastream-rotation.log 2>/dev/null || true
         
         log_info "Log file created: /var/log/aquastream-rotation.log"
     else
