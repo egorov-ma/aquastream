@@ -27,7 +27,7 @@ export interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
  * Интерфейс для ответа от сервера при обновлении токена
  */
 interface RefreshTokenResponseData {
-  accessToken: string;
+  token: string;
   refreshToken: string;
 }
 
@@ -149,7 +149,7 @@ export class ApiService {
               return Promise.reject(new Error('No refresh token available'));
             }
 
-            const response = await this.instance.post<{ data: { token: string; refreshToken: string } }>(
+            const response = await this.instance.post<{ data: RefreshTokenResponseData }>(
               '/auth/refresh',
               {
                 refreshToken,
