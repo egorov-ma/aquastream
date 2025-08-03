@@ -527,8 +527,6 @@ check_git_repo() {
 
 # Функция настройки git hooks директории
 setup_hooks_directory() {
-    local git_dir
-    # git_dir=$(git rev-parse --git-dir)  # Unused variable
     local custom_hooks_dir="$PROJECT_ROOT/.githooks"
     
     log INFO "📁 Настройка git hooks директории..."

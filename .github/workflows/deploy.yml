@@ -33,11 +33,11 @@ jobs:
 
       - name: Install validation tools
         run: |
-          # yq для YAML валидации
+          # Install yq for YAML validation
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
           
-          # shellcheck для shell скриптов
+          # Install shellcheck for shell scripts
           sudo apt-get update
           sudo apt-get install -y shellcheck
 
