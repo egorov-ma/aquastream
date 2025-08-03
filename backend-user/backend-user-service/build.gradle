@@ -4,9 +4,6 @@ plugins {
     id 'java'
 }
 
-ext {
-    set('springCloudVersion', "2023.0.1")
-}
 
 allprojects {
     group = 'org.aquastream'
@@ -26,12 +23,6 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:${rootProject.springBootVersion}"
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${rootProject.springCloudVersion}"
-        }
-    }
 
     dependencies {
         compileOnly "org.projectlombok:lombok:${rootProject.lombokVersion}"
@@ -46,42 +37,38 @@ subprojects {
 }
 
 dependencies {
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
     implementation "org.springframework.boot:spring-boot-starter-web:${rootProject.springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:${rootProject.springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-security:${rootProject.springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-validation:${rootProject.springBootVersion}"
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+    implementation "io.jsonwebtoken:jjwt-api:${rootProject.jsonWebTokenVersion}"
     implementation project(':common')
     implementation "org.springframework.boot:spring-boot-starter-actuator:${rootProject.springBootVersion}"
     implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
-    implementation "org.springframework.kafka:spring-kafka:${rootProject.springBootVersion}"
+    implementation "org.springframework.kafka:spring-kafka:${rootProject.springKafkaVersion}"
     
     // OpenAPI/Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
-    implementation 'org.springdoc:springdoc-openapi-starter-common:2.3.0'
-    implementation 'io.swagger.core.v3:swagger-annotations:2.2.16'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${rootProject.springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-common:${rootProject.springDocVersion}"
+    implementation "io.swagger.core.v3:swagger-annotations:${rootProject.swaggerAnnotationsVersion}"
     
     implementation "org.liquibase:liquibase-core:${rootProject.liquibaseVersion}"
     
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${rootProject.jsonWebTokenVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${rootProject.jsonWebTokenVersion}"
     runtimeOnly "org.postgresql:postgresql:${rootProject.postgresVersion}"
     
     testImplementation "org.springframework.boot:spring-boot-starter-test:${rootProject.springBootVersion}"
-    testImplementation 'org.springframework.security:spring-security-test:6.2.2'
-    testImplementation 'com.h2database:h2:2.2.224'
-    testImplementation 'org.mockito:mockito-core:5.10.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
+    testImplementation "org.springframework.security:spring-security-test:${rootProject.springSecurityTestVersion}"
+    testImplementation "com.h2database:h2:${rootProject.h2Version}"
+    testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${rootProject.junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${rootProject.junitVersion}"
 }
 
 test {
     useJUnitPlatform()
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-} 
+ 

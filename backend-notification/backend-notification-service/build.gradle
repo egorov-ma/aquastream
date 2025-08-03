@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.3'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
 group = 'org.aquastream'
@@ -20,21 +20,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    implementation "org.springframework.kafka:spring-kafka:${rootProject.springKafkaVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${rootProject.springDocVersion}"
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
 }
 
-ext {
-    set('springCloudVersion', "2023.0.0")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
 
 bootJar {
     mainClass = 'org.aquastream.notification.NotificationApplication'
