@@ -34,6 +34,7 @@ free_port() {
 }
 
 # Функция для освобождения порта 5173 (для тестов)
+# shellcheck disable=SC2317
 free_test_port() {
     echo -e "${YELLOW}Проверка порта 5173...${NC}"
     
@@ -108,10 +109,10 @@ check_storybook_deps() {
     echo -e "${YELLOW}Установка аддонов Storybook...${NC}"
     
     npm install --save-dev \
-        @storybook/addon-links@${sb_version} \
-        @storybook/addon-essentials@${sb_version} \
-        @storybook/addon-onboarding@${sb_version} \
-        @storybook/addon-interactions@${sb_version}
+        "@storybook/addon-links@${sb_version}" \
+        "@storybook/addon-essentials@${sb_version}" \
+        "@storybook/addon-onboarding@${sb_version}" \
+        "@storybook/addon-interactions@${sb_version}"
     
     INSTALL_STATUS=$?
     
