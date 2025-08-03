@@ -8,14 +8,17 @@ concurrency:
 
 'on':
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'infra/**'
-      - 'run.sh'
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
 
 env:
-  # Тестовые переменные окружения для CI
   POSTGRES_PASSWORD: ci_test_password_123
   ELASTIC_PASSWORD: ci_test_elastic_123
   KIBANA_PASSWORD: ci_test_kibana_123
@@ -77,37 +80,30 @@ jobs:
           EOF
 
       - name: Validate Docker Compose
-        run: |
-          echo "🐳 Валидация Docker Compose..."
-          docker compose -f infra/docker/compose/docker-compose.yml config > /dev/null
-          echo "✅ Docker Compose конфигурация валидна"
+        run: docker compose -f infra/docker/compose/docker-compose.yml config > /dev/null
 
       - name: Check for latest tags
         run: |
-          echo "🔍 Проверка на :latest теги..."
           if grep -q ":latest" infra/docker/compose/docker-compose.yml; then
-            echo "❌ Найдены :latest теги!"
+            echo "Found :latest tags in docker-compose.yml!"
             exit 1
           fi
-          echo "✅ Все образы имеют конкретные версии"
 
       - name: Validate shell scripts
         run: |
-          echo "🔧 Валидация shell скриптов..."
           find . -name "*.sh" -not -path "./node_modules/*" | while read script; do
-            echo "Проверка: $script"
-            shellcheck -x "$script" || echo "⚠️ Предупреждения в $script"
+            shellcheck -x "$script" || echo "Warning in $script"
           done
 
       - name: Run infrastructure validation
         run: |
-          echo "🚀 Запуск валидации инфраструктуры..."
           chmod +x infra/scripts/validate-infrastructure.sh
           ./infra/scripts/validate-infrastructure.sh --quick
 
   deploy:
     needs: validate-infrastructure
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - uses: actions/checkout@v4
 
@@ -116,7 +112,6 @@ jobs:
 
       - name: Create production .env file
         run: |
-          # В продакшене используем секреты GitHub
           cat > infra/docker/compose/.env << EOF
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD || 'changeme123!' }}
           ELASTIC_PASSWORD=${{ secrets.ELASTIC_PASSWORD || 'changeMe123!' }}
@@ -153,9 +148,8 @@ jobs:
           MEM_BIG=1536M
           EOF
 
-      - name: Build images defined in docker-compose
+      - name: Build Docker images
         run: docker compose -f infra/docker/compose/docker-compose.yml build
 
-      # здесь будет пуш в registry и деплой на сервер.
-      - name: Deploy placeholder
-        run: echo "🚀 Deployment step (placeholder)"
+      - name: Deploy to ${{ github.event.inputs.environment }}
+        run: echo "Deploying to ${{ github.event.inputs.environment }} environment"

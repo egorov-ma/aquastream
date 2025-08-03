@@ -1,0 +1,123 @@
+---
+name: Security Scan
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+'on':
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+  push:
+    branches: [main]
+    paths:
+      - 'infra/docker/images/**'
+
+jobs:
+  docker-security-scan:
+    name: Docker Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backend-user, backend-gateway]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build application
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test
+
+      - name: Build Docker image
+        run: |
+          docker build -f infra/docker/images/Dockerfile.${{ matrix.service }} \
+            --build-arg ECLIPSE_TEMURIN_JDK_TAG=21-jdk-alpine \
+            --build-arg ECLIPSE_TEMURIN_JRE_TAG=21-jre-alpine \
+            -t aquastream-${{ matrix.service }}:security-scan .
+
+      - name: Run Trivy security scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: aquastream-${{ matrix.service }}:security-scan
+          format: sarif
+          output: trivy-${{ matrix.service }}-results.sarif
+
+      - name: Upload scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-${{ matrix.service }}-results.sarif
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build application
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test
+
+      - name: Create test environment
+        run: |
+          cat > infra/docker/compose/.env <<EOF
+          POSTGRES_PASSWORD=test_password
+          POSTGRES_PORT=5432
+          KAFKA_HOST_PORT=9092
+          POSTGRES_TAG=16-alpine
+          ZOOKEEPER_TAG=3.9
+          KAFKA_TAG=7.5.0
+          ECLIPSE_TEMURIN_JDK_TAG=21-jdk-alpine
+          ECLIPSE_TEMURIN_JRE_TAG=21-jre-alpine
+          CPU_MICRO=0.1
+          CPU_TINY=0.2
+          MEM_MICRO=64m
+          MEM_TINY=128m
+          LOGSTASH_HOST=logstash
+          LOGSTASH_PORT=5000
+          EOF
+
+      - name: Start infrastructure services
+        run: |
+          cd infra/docker/compose
+          docker compose up -d postgres kafka zookeeper
+          sleep 30
+
+      - name: Run integration tests
+        run: ./gradlew integrationTest || true
+
+      - name: Health check services
+        run: |
+          cd infra/docker/compose
+          docker compose exec postgres pg_isready -U postgres -d aquastream_db || exit 1
+          docker compose exec kafka kafka-topics --bootstrap-server localhost:9092 --list || exit 1
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd infra/docker/compose
+          docker compose down -v

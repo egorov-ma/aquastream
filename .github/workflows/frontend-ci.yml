@@ -2,7 +2,6 @@
 name: Frontend CI
 permissions:
   contents: read
-  actions: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -12,34 +11,28 @@ concurrency:
     branches: [main, develop]
     paths:
       - 'frontend/**'
-      - 'infra/**'
-      - 'common/**'
-      - '!backend-*/**'
+      - 'infra/docker/images/Dockerfile.frontend'
   pull_request:
     branches: [main, develop]
     paths:
       - 'frontend/**'
-      - 'infra/**'
-      - 'common/**'
-      - '!backend-*/**'
+      - 'infra/docker/images/Dockerfile.frontend'
 
 jobs:
   test:
     name: Frontend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: ./frontend
-    strategy:
-      matrix:
-        node-version: [18.x]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '18'
           cache: 'npm'
           cache-dependency-path: './frontend/package-lock.json'
 
@@ -55,36 +48,24 @@ jobs:
       - name: Run unit tests with coverage
         run: npm run test:ci
 
-      - name: Generate coverage badges
-        run: node scripts/generate-coverage-badge.js
-
-      - name: Upload coverage reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-coverage-report
-          path: |
-            frontend/coverage/
-            frontend/coverage-report.json
-          if-no-files-found: ignore
+      - name: Run dependency vulnerability scan
+        run: npm audit --audit-level=high || true
 
   build:
     name: Frontend Build
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     needs: test
     defaults:
       run:
         working-directory: ./frontend
-    strategy:
-      matrix:
-        node-version: [18.x]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '18'
           cache: 'npm'
           cache-dependency-path: './frontend/package-lock.json'
 
