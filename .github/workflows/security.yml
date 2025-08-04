@@ -50,7 +50,7 @@ jobs:
         if: matrix.service == 'frontend'
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
 
@@ -94,7 +94,7 @@ jobs:
 
       - name: Upload scan results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-${{ matrix.service }}-results.sarif') != ''
         with:
           sarif_file: trivy-${{ matrix.service }}-results.sarif
 

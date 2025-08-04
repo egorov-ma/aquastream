@@ -24,10 +24,10 @@ FROM eclipse-temurin:${ECLIPSE_TEMURIN_JRE_TAG} AS runtime
 WORKDIR /app
 
 # Устанавливаем curl для health check
-RUN apt-get update && apt-get install -y --no-install-recommends curl=8.5.0-2ubuntu10.6 && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
 # Создаем пользователя для безопасности
-RUN groupadd -r appuser && useradd -r -g appuser -s /bin/false appuser
+RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 # Копируем собранный jar
 COPY --from=build /workspace/backend-user/backend-user-service/build/libs/backend-user-service-*.jar app.jar
