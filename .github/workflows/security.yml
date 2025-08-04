@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [backend-user, backend-gateway, frontend]
+        service: [backend-user, backend-gateway, backend-event, backend-notification, backend-crew, frontend]
     steps:
       - uses: actions/checkout@v4
 
