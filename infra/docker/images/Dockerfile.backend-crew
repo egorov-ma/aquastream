@@ -7,6 +7,9 @@ FROM eclipse-temurin:${ECLIPSE_TEMURIN_JDK_TAG} AS build
 
 WORKDIR /workspace
 
+# Устанавливаем protobuf compiler для gRPC
+RUN apk add --no-cache protobuf=3.21.12-r2
+
 # Копируем Gradle wrapper и настройки
 COPY gradlew settings.gradle build.gradle version.properties /workspace/
 COPY gradle /workspace/gradle
