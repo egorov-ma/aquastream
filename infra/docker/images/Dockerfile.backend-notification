@@ -8,7 +8,7 @@ FROM eclipse-temurin:${ECLIPSE_TEMURIN_JDK_TAG} AS build
 WORKDIR /workspace
 
 # Копируем Gradle wrapper и настройки
-COPY gradlew settings.gradle build.gradle /workspace/
+COPY gradlew settings.gradle build.gradle version.properties /workspace/
 COPY gradle /workspace/gradle
 
 # Копируем только backend-notification модули и common (для более быстрого кеша)
@@ -24,7 +24,7 @@ FROM eclipse-temurin:${ECLIPSE_TEMURIN_JRE_TAG} AS runtime
 WORKDIR /app
 
 # Устанавливаем curl для health check
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl=8.12.1-r1
 
 # Создаем пользователя для безопасности
 RUN addgroup -S appuser && adduser -S appuser -G appuser
