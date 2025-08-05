@@ -212,8 +212,29 @@ Health-checks настроены во всех сервисах, а порядо
 
 ## Документация API
 
-- **REST API:** Используйте Swagger UI для визуализации и тестирования.
-- **gRPC API (Event):** Смотрите [event.proto](backend-event/backend-event-service/src/main/proto/event.proto) и используйте grpcui для визуализации.
+### Единая OpenAPI документация
+
+**API Gateway предоставляет агрегированную документацию для всех микросервисов:**
+
+- **Swagger UI (объединенная документация):** [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
+- **OpenAPI JSON спецификация:** [http://localhost:8080/api/docs](http://localhost:8080/api/docs)
+
+### Документация отдельных сервисов
+
+- **User Service API:** [http://localhost:8080/api/users/api-docs](http://localhost:8080/api/users/api-docs)
+- **Event Service API:** [http://localhost:8080/api/events/api-docs](http://localhost:8080/api/events/api-docs)  
+- **Crew Service API:** [http://localhost:8080/api/crews/api-docs](http://localhost:8080/api/crews/api-docs)
+- **Notification Service API:** [http://localhost:8080/api/notifications/api-docs](http://localhost:8080/api/notifications/api-docs)
+
+### Индивидуальные Swagger UI (альтернативный доступ)
+
+- **User Service:** [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
+- **Crew Service:** [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html)
+- **Notification Service:** [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html)
+
+### gRPC API
+
+- **Event Service (gRPC):** Смотрите [event.proto](backend-event/backend-event-service/src/main/proto/event.proto) и используйте grpcui для визуализации.
 
 ## Структура проекта
 
