@@ -11,5 +11,14 @@ spring:
     driver-class-name: org.postgresql.Driver
   kafka:
     bootstrap-servers: localhost:9092
-  consumer:
-    group-id: notification-group
+    consumer:
+      group-id: notification-group
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

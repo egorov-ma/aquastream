@@ -8,4 +8,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/aquastream_db
     username: postgres
     password: postgres
-    driver-class-name: org.postgresql.Driver 
+    driver-class-name: org.postgresql.Driver
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name} 

@@ -23,9 +23,30 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
   instance:
     prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
     
 # SpringDoc OpenAPI конфигурация для Docker
 springdoc:
   swagger-ui:
     enabled: true
-    disable-swagger-default-url: true 
+    disable-swagger-default-url: true
+
+# Logging configuration for Docker environment
+logging:
+  level:
+    org.aquastream.user: INFO
+    org.springframework.kafka: INFO
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{36}] - %msg%n" 

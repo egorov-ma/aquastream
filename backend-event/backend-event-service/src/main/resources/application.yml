@@ -36,4 +36,13 @@ grpc:
 
 grpcui:
   enabled: true
-  path: /grpcui/  # URL для доступа к gRPC UI 
+  path: /grpcui/  # URL для доступа к gRPC UI
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name} 

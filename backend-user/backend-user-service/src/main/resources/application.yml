@@ -45,6 +45,15 @@ eureka:
     prefer-ip-address: true
 
 # SpringDoc OpenAPI конфигурация
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 springdoc:
   api-docs:
     path: /api-docs
