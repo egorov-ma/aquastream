@@ -48,12 +48,12 @@ curl -X POST http://localhost:8081/api/v1/auth/register \
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/auth/signin` | Login, returns `token` & `refreshToken` |
+| POST | `/api/auth/login` | Login, returns `token` & `refreshToken` |
 | POST | `/api/auth/register` | Registration (also returns tokens) |
 | POST | `/api/auth/refresh` | Refresh access token using `refreshToken` |
 | GET  | `/api/users/me` | Current user profile |
 
-Ответ *Signin/Register*:
+Ответ *Login/Register*:
 
 ```json
 {

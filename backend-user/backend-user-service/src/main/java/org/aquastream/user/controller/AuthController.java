@@ -65,7 +65,7 @@ public class AuthController {
     @Autowired
     RefreshTokenService refreshTokenService;
 
-    @PostMapping("/signin")
+    @PostMapping("/login")
     @Operation(summary = "Аутентификация пользователя", description = "Аутентифицирует пользователя по имени пользователя и паролю и возвращает JWT токен")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешная аутентификация", content = @Content(schema = @Schema(implementation = JwtResponse.class))),

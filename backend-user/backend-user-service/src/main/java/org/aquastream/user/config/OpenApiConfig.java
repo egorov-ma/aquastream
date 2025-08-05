@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
         type = SecuritySchemeType.HTTP,
         scheme = "bearer",
         bearerFormat = "JWT",
-        description = "JWT токен авторизации. Получите токен через /api/auth/signin и используйте его в заголовке Authorization: Bearer {token}"
+        description = "JWT токен авторизации. Получите токен через /api/auth/login и используйте его в заголовке Authorization: Bearer {token}"
 )
 public class OpenApiConfig {
     // Конфигурация через аннотации, дополнительный код не требуется
