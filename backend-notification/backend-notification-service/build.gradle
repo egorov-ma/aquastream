@@ -23,6 +23,10 @@ dependencies {
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${rootProject.springDocVersion}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
+    testImplementation "com.h2database:h2:${rootProject.h2Version}"
+    testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${rootProject.junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${rootProject.junitVersion}"
 }
 
 

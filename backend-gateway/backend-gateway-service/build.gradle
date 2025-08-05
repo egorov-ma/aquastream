@@ -1,5 +1,7 @@
 plugins {
+    id 'java'
     id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
 dependencies {
@@ -16,9 +18,19 @@ dependencies {
     // Для мониторинга и метрик
     implementation 'io.micrometer:micrometer-registry-prometheus'
     
-    
     // OpenAPI для Gateway (WebFlux версия)
     implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:${rootProject.springDocVersion}"
+    
+    // Testing dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${rootProject.junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${rootProject.junitVersion}"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 bootJar {

@@ -1,0 +1,61 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: gateway-service-test
+  profiles:
+    active: test
+    
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      # Disable routes for testing - they should be mocked
+      routes: []
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+# Disable Eureka for testing
+eureka:
+  client:
+    enabled: false
+
+# Actuator endpoints for testing
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Disable OpenAPI docs in tests
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# Logging configuration for tests
+logging:
+  level:
+    org.aquastream.gateway: DEBUG
+    org.springframework.cloud.gateway: WARN
+    org.springframework.web.server: WARN
+    reactor.netty: WARN
+    root: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
