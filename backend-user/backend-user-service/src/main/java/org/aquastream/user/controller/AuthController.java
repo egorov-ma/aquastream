@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
  * <code>org.aquastream.common.dto.ERole</code> and documents the enum's new
  * location for future maintenance.
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "auth", description = "API для аутентификации и авторизации пользователей")
