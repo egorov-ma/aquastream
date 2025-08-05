@@ -37,7 +37,6 @@ jobs:
 
       - name: Build backend modules
         run: |
-          chmod +x gradlew
           ./gradlew build -x test
 
       - name: Upload backend JARs
@@ -165,7 +164,6 @@ jobs:
 
       - name: Build application
         run: |
-          chmod +x gradlew
           ./gradlew build -x test
 
       - name: Prepare test environment
