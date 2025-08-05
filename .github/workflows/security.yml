@@ -20,10 +20,36 @@ concurrency:
       - '.github/workflows/security.yml'
 
 jobs:
+  prepare-backend:
+    name: Prepare Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build backend jars
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test
+
+      - name: Upload backend jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jars
+          path: backend-*/**/build/libs/*.jar
+
   docker-security-scan:
     name: Docker Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    needs: prepare-backend
     strategy:
       fail-fast: false
       matrix:
@@ -38,13 +64,8 @@ jobs:
           key: trivy-db-${{ github.run_number }}
           restore-keys: trivy-db-
 
-      - name: Set up JDK 21
-        if: matrix.service != 'frontend'
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'gradle'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Set up Node.js
         if: matrix.service == 'frontend'
@@ -54,11 +75,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
 
-      - name: Build Java applications
+      - name: Download backend jars
         if: matrix.service != 'frontend'
-        run: |
-          chmod +x gradlew
-          ./gradlew build -x test
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jars
+          path: .
 
       - name: Build frontend application
         if: matrix.service == 'frontend'
@@ -69,17 +91,21 @@ jobs:
 
       - name: Build Docker image (Backend)
         if: matrix.service != 'frontend'
-        run: |
-          docker build -f infra/docker/images/Dockerfile.${{ matrix.service }} \
-            --build-arg ECLIPSE_TEMURIN_JDK_TAG=21-jdk-alpine \
-            --build-arg ECLIPSE_TEMURIN_JRE_TAG=21-jre-alpine \
-            -t aquastream-${{ matrix.service }}:security-scan .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infra/docker/images/Dockerfile.${{ matrix.service }}
+          tags: aquastream-${{ matrix.service }}:security-scan
+          load: true
 
       - name: Build Docker image (Frontend)
         if: matrix.service == 'frontend'
-        run: |
-          docker build -f infra/docker/images/Dockerfile.frontend \
-            -t aquastream-frontend:security-scan .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infra/docker/images/Dockerfile.frontend
+          tags: aquastream-frontend:security-scan
+          load: true
 
       - name: Run Trivy security scan
         uses: aquasecurity/trivy-action@0.28.0
