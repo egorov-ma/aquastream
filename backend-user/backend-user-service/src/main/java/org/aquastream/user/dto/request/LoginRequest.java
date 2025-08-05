@@ -8,7 +8,7 @@ import lombok.Data;
 @Schema(description = "Запрос на аутентификацию пользователя")
 public class LoginRequest {
     @NotBlank
-    @Schema(description = "Логин пользователя", example = "john_doe")
+    @Schema(description = "Имя пользователя (логин)", example = "john_doe")
     private String username;
 
     @NotBlank

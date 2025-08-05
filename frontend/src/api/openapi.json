@@ -508,9 +508,6 @@
           "username": {
             "type": "string"
           },
-          "email": {
-            "type": "string"
-          },
           "displayName": {
             "type": "string"
           },
@@ -529,9 +526,9 @@
       },
       "LoginRequest": {
         "type": "object",
-        "required": ["email", "password"],
+        "required": ["username", "password"],
         "properties": {
-          "email": {
+          "username": {
             "type": "string"
           },
           "password": {
@@ -563,12 +560,9 @@
       },
       "RegisterRequest": {
         "type": "object",
-        "required": ["username", "email", "password"],
+        "required": ["username", "password"],
         "properties": {
           "username": {
-            "type": "string"
-          },
-          "email": {
             "type": "string"
           },
           "password": {

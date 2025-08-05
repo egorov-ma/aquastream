@@ -32,11 +32,18 @@ docker run -p 8081:8081 aquastream-user
 ## Использование API
 Swagger UI: `http://localhost:8081/swagger-ui.html` (через Gateway — `/user/swagger-ui.html`).
 
+Пример входа в систему:
+```bash
+curl -X POST http://localhost:8081/api/auth/login \
+ -H 'Content-Type: application/json' \
+ -d '{"username":"john_doe","password":"password123"}'
+```
+
 Пример регистрации:
 ```bash
-curl -X POST http://localhost:8081/api/v1/auth/register \
+curl -X POST http://localhost:8081/api/auth/register \
  -H 'Content-Type: application/json' \
- -d '{"email":"user@example.com","password":"password"}'
+ -d '{"username":"john_doe","name":"Джон Доу","password":"password123"}'
 ```
 
 ## Тестирование
