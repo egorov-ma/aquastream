@@ -3,4 +3,9 @@ server:
 
 spring:
   application:
-    name: crew-service 
+    name: crew-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver 

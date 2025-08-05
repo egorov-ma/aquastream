@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: event-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
 
 grpc:
   server:

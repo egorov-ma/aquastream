@@ -5,7 +5,7 @@ spring:
   application:
     name: gateway-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/aquastream_gateway
+    url: jdbc:postgresql://localhost:5432/aquastream_db
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
   jpa:
