@@ -4,27 +4,6 @@ plugins {
     id 'java'
 }
 
-
-
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'io.spring.dependency-management'
-
-    java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-
-    dependencies {
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    }
-
-    test {
-        useJUnitPlatform()
-    }
-}
-
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web:${rootProject.springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:${rootProject.springBootVersion}"
@@ -47,13 +26,8 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${rootProject.jsonWebTokenVersion}"
     runtimeOnly "org.postgresql:postgresql:${rootProject.postgresVersion}"
     
-    testImplementation "org.springframework.boot:spring-boot-starter-test:${rootProject.springBootVersion}"
-    testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
-    testImplementation "org.springframework.security:spring-security-test:${rootProject.springSecurityTestVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "com.h2database:h2:${rootProject.h2Version}"
-    testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${rootProject.junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${rootProject.junitVersion}"
 }
 
 test {

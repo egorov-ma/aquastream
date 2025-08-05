@@ -6,14 +6,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@EmbeddedKafka(partitions = 1, topics = {"test-topic"})
+@TestPropertySource(properties = {
+    "eureka.client.enabled=false",
+    "spring.kafka.bootstrap-servers=PLAINTEXT://localhost:19092",
+    "grpc.server.port=-1",
+    "management.endpoints.web.exposure.include=health,info",
+    "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
+})
 class HealthCheckTest {
 
     @Autowired
