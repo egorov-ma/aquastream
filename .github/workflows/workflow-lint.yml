@@ -1,7 +1,7 @@
 ---
 name: Lint Infrastructure
 
-'on':
+on:
   workflow_dispatch:
   push:
     branches: [main, develop]
@@ -25,15 +25,20 @@ jobs:
   actionlint:
     name: Lint GitHub Actions
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: rhysd/actionlint@v1.7.7
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run actionlint
+        uses: rhysd/actionlint@v1.7.7
 
   infrastructure-lint:
     name: Lint Infrastructure Files
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Install linting tools
         run: |
@@ -68,12 +73,12 @@ jobs:
           done
 
       - name: Prepare environment for validation
-        run: |
-          # Создаем .env файл из .env.example с тестовыми паролями для валидации
-          sed 's/POSTGRES_PASSWORD=$/POSTGRES_PASSWORD=test_password_123/' infra/docker/compose/.env.example | \
-          sed 's/GRAFANA_ADMIN_PASSWORD=$/GRAFANA_ADMIN_PASSWORD=test_password_123/' | \
-          sed 's/ELASTIC_PASSWORD=$/ELASTIC_PASSWORD=test_password_123/' | \
-          sed 's/KIBANA_PASSWORD=$/KIBANA_PASSWORD=test_password_123/' > infra/docker/compose/.env
+        env:
+          POSTGRES_PASSWORD: test_password_123
+          GRAFANA_ADMIN_PASSWORD: test_password_123
+          ELASTIC_PASSWORD: test_password_123
+          KIBANA_PASSWORD: test_password_123
+        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
 
       - name: Quick infrastructure validation
         run: |

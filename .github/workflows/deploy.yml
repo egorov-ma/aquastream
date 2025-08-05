@@ -6,7 +6,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-'on':
+on:
   workflow_dispatch:
     inputs:
       environment:
@@ -28,8 +28,10 @@ jobs:
   validate-infrastructure:
     name: Validate Infrastructure
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install validation tools
         run: |
@@ -42,42 +44,7 @@ jobs:
           sudo apt-get install -y shellcheck
 
       - name: Create test .env file
-        run: |
-          cat > infra/docker/compose/.env << EOF
-          POSTGRES_PASSWORD=ci_test_password_123
-          ELASTIC_PASSWORD=ci_test_elastic_123
-          KIBANA_PASSWORD=ci_test_kibana_123
-          GRAFANA_ADMIN_PASSWORD=ci_test_grafana_123
-          NGINX_HTTP_PORT=80
-          NGINX_HTTPS_PORT=443
-          POSTGRES_PORT=5432
-          KAFKA_HOST_PORT=19092
-          NGINX_TAG=1.25-alpine
-          POSTGRES_TAG=15-alpine
-          ELASTIC_TAG=8.9.0
-          LOGSTASH_TAG=8.9.0
-          KIBANA_TAG=8.9.0
-          KAFKA_TAG=7.4.1
-          ZOOKEEPER_TAG=3.8
-          PROM_TAG=v2.45.0
-          GRAFANA_TAG=10.0.3
-          NODE_TAG=18-alpine
-          ALPINE_TAG=3.19.1
-          ECLIPSE_TEMURIN_JDK_TAG=21-jdk
-          ECLIPSE_TEMURIN_JRE_TAG=21-jre
-          LOGSTASH_HOST=logstash
-          LOGSTASH_PORT=5000
-          CPU_MICRO=0.05
-          MEM_MICRO=64M
-          CPU_TINY=0.15
-          MEM_TINY=192M
-          CPU_SMALL=0.3
-          MEM_SMALL=384M
-          CPU_MEDIUM=0.6
-          MEM_MEDIUM=768M
-          CPU_BIG=0.8
-          MEM_BIG=1536M
-          EOF
+        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
 
       - name: Validate Docker Compose
         run: docker compose -f infra/docker/compose/docker-compose.yml config > /dev/null
@@ -92,7 +59,7 @@ jobs:
       - name: Validate shell scripts
         run: |
           find . -name "*.sh" -not -path "./node_modules/*" | while read -r script; do
-            shellcheck -x "$script" || echo "Warning in $script"
+            shellcheck -x "$script"
           done
 
       - name: Run infrastructure validation
@@ -103,50 +70,22 @@ jobs:
   deploy:
     needs: validate-infrastructure
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: ${{ github.event.inputs.environment }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Create production .env file
-        run: |
-          cat > infra/docker/compose/.env << EOF
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD || 'changeme123!' }}
-          ELASTIC_PASSWORD=${{ secrets.ELASTIC_PASSWORD || 'changeMe123!' }}
-          KIBANA_PASSWORD=${{ secrets.KIBANA_PASSWORD || 'changeme123!' }}
-          GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD || 'admin' }}
-          NGINX_HTTP_PORT=80
-          NGINX_HTTPS_PORT=443
-          POSTGRES_PORT=5432
-          KAFKA_HOST_PORT=19092
-          NGINX_TAG=1.25-alpine
-          POSTGRES_TAG=15-alpine
-          ELASTIC_TAG=8.9.0
-          LOGSTASH_TAG=8.9.0
-          KIBANA_TAG=8.9.0
-          KAFKA_TAG=7.4.1
-          ZOOKEEPER_TAG=3.8
-          PROM_TAG=v2.45.0
-          GRAFANA_TAG=10.0.3
-          NODE_TAG=18-alpine
-          ALPINE_TAG=3.19.1
-          ECLIPSE_TEMURIN_JDK_TAG=21-jdk
-          ECLIPSE_TEMURIN_JRE_TAG=21-jre
-          LOGSTASH_HOST=logstash
-          LOGSTASH_PORT=5000
-          CPU_MICRO=0.05
-          MEM_MICRO=64M
-          CPU_TINY=0.15
-          MEM_TINY=192M
-          CPU_SMALL=0.3
-          MEM_SMALL=384M
-          CPU_MEDIUM=0.6
-          MEM_MEDIUM=768M
-          CPU_BIG=0.8
-          MEM_BIG=1536M
-          EOF
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'changeme123!' }}
+          ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD || 'changeMe123!' }}
+          KIBANA_PASSWORD: ${{ secrets.KIBANA_PASSWORD || 'changeme123!' }}
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD || 'admin' }}
+        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
 
       - name: Build Docker images
         run: docker compose -f infra/docker/compose/docker-compose.yml build
