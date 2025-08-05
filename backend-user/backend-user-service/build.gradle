@@ -17,9 +17,6 @@ subprojects {
 
 
     dependencies {
-        compileOnly "org.projectlombok:lombok:${rootProject.lombokVersion}"
-        annotationProcessor "org.projectlombok:lombok:${rootProject.lombokVersion}"
-        
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 

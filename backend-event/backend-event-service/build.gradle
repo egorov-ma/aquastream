@@ -29,8 +29,6 @@ dependencies {
     implementation "jakarta.annotation:jakarta.annotation-api:${rootProject.jakartaAnnotationVersion}"
     implementation "javax.annotation:javax.annotation-api:${rootProject.javaxAnnotationVersion}"
     
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
