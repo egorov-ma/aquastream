@@ -141,8 +141,7 @@ jobs:
       - name: Start infrastructure services
         run: |
           cd infra/docker/compose
-          docker compose up -d postgres kafka zookeeper
-          sleep 30
+          docker compose up -d --wait --wait-timeout 120 postgres kafka zookeeper
 
       - name: Run integration tests
         run: ./gradlew integrationTest || true
