@@ -36,39 +36,32 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Install linting tools
+        shell: bash
         run: |
+          set -o pipefail
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
-          
+
           sudo apt-get update
           sudo apt-get install -y shellcheck
-          
+
           sudo wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
           sudo chmod +x /usr/local/bin/hadolint
 
       - name: Lint YAML files
         run: |
-          find infra -name "*.yml" -o -name "*.yaml" | while read -r yaml_file; do
-            echo "Checking: $yaml_file"
-            yq eval '.' "$yaml_file" > /dev/null
-          done
+          find infra \( -name "*.yml" -o -name "*.yaml" \) -exec yq eval '.' {} + > /dev/null
 
       - name: Lint shell scripts
-        run: |
-          find . -name "*.sh" -not -path "./node_modules/*" | while read -r script; do
-            echo "Checking: $script"
-            shellcheck -x "$script"
-          done
+        run: find . -name "*.sh" -not -path "*/node_modules/*" -exec shellcheck -x {} +
 
       - name: Lint Dockerfiles
-        run: |
-          find infra/docker/images -name "Dockerfile.*" | while read -r dockerfile; do
-            echo "Checking: $dockerfile"
-            hadolint "$dockerfile"
-          done
+        run: find infra/docker/images -name "Dockerfile.*" -exec hadolint {} +
 
       - name: Prepare environment for validation
+        shell: bash
         run: |
+          set -o pipefail
           # Создаем .env файл из .env.example с тестовыми паролями для валидации
           sed 's/POSTGRES_PASSWORD=$/POSTGRES_PASSWORD=test_password_123/' infra/docker/compose/.env.example | \
           sed 's/GRAFANA_ADMIN_PASSWORD=$/GRAFANA_ADMIN_PASSWORD=test_password_123/' | \
@@ -76,7 +69,9 @@ jobs:
           sed 's/KIBANA_PASSWORD=$/KIBANA_PASSWORD=test_password_123/' > infra/docker/compose/.env
 
       - name: Quick infrastructure validation
+        shell: bash
         run: |
+          set -o pipefail
           if [ -f "infra/scripts/validate-infrastructure.sh" ]; then
             chmod +x infra/scripts/validate-infrastructure.sh
             ./infra/scripts/validate-infrastructure.sh --quick
