@@ -44,8 +44,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run tests and build
-        run: ./gradlew clean build
+      - name: Build JARs
+        run: ./gradlew build
 
       - name: Upload backend build artifacts
         uses: actions/upload-artifact@v4

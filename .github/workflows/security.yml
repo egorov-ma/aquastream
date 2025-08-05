@@ -78,10 +78,12 @@ jobs:
           context: .
           file: infra/docker/images/Dockerfile.${{ matrix.service }}
           tags: aquastream-${{ matrix.service }}:security-scan
+          # Use explicit Temurin tags to match Dockerfiles
           build-args: |
             ECLIPSE_TEMURIN_JDK_TAG=21-jdk-alpine
             ECLIPSE_TEMURIN_JRE_TAG=21-jre-alpine
           load: true
+          # Cache Docker layers to speed up builds
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
