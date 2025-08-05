@@ -35,11 +35,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set Trivy DB version
+        run: echo "TRIVY_DB_VERSION=$(date -u +'%Y-%m-%d')" >> "$GITHUB_ENV"
+
       - name: Cache Trivy vulnerability database
         uses: actions/cache@v4
         with:
           path: ~/.cache/trivy
-          key: trivy-db-${{ github.run_number }}
+          key: trivy-db-${{ env.TRIVY_DB_VERSION }}
           restore-keys: trivy-db-
 
       - name: Set up JDK 21
