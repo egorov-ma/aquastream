@@ -1,0 +1,68 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: event-service
+  config:
+    import: classpath:db-common.yml
+  datasource:
+    url: jdbc:postgresql://postgres:5432/aquastream_db
+    username: postgres
+    password: postgres
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: event-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "org.aquastream.event.dto"
+
+grpc:
+  server:
+    port: 9090
+  reflection:
+    enabled: true
+
+grpcui:
+  enabled: true
+  path: /grpcui/
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# SpringDoc OpenAPI конфигурация для Docker
+springdoc:
+  swagger-ui:
+    enabled: true
+    disable-swagger-default-url: true
+
+# Logging configuration for Docker environment
+logging:
+  level:
+    org.aquastream.event: INFO
+    org.springframework.kafka: INFO
+    net.devh.boot.grpc: INFO
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{36}] - %msg%n"
