@@ -31,15 +31,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install validation tools
-        run: |
-          # Install yq for YAML validation
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-          
-          # Install shellcheck for shell scripts
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
+      - name: Lint YAML files
+        uses: mikefarah/yq@v4
+        with:
+          cmd: >-
+            for file in $(find infra -name '*.yml' -o -name '*.yaml'); do
+              yq eval '.' "$file" >/dev/null;
+            done
+
+      - name: Lint shell scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          ignore_paths: frontend/node_modules
 
       - name: Create test .env file
         run: |
@@ -88,12 +91,6 @@ jobs:
             echo "Found :latest tags in docker-compose.yml!"
             exit 1
           fi
-
-      - name: Validate shell scripts
-        run: |
-          find . -name "*.sh" -not -path "./node_modules/*" | while read -r script; do
-            shellcheck -x "$script" || echo "Warning in $script"
-          done
 
       - name: Run infrastructure validation
         run: |
