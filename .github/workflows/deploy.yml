@@ -33,16 +33,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install validation tools
-        shell: bash
-        run: |
-          set -o pipefail
-          # Install yq for YAML validation
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-          # Install shellcheck for shell scripts
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
+      - name: Setup validation tools
+        uses: ./.github/actions/ci-tools
 
       - name: Create test .env file
         run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
@@ -51,9 +43,7 @@ jobs:
         run: docker compose -f infra/docker/compose/docker-compose.yml config > /dev/null
 
       - name: Check for latest tags
-        shell: bash
         run: |
-          set -o pipefail
           if grep -q ":latest" infra/docker/compose/docker-compose.yml; then
             echo "Found :latest tags in docker-compose.yml!"
             exit 1
@@ -63,9 +53,7 @@ jobs:
         run: find . -name "*.sh" -not -path "*/node_modules/*" -exec shellcheck -x {} +
 
       - name: Run infrastructure validation
-        shell: bash
         run: |
-          set -o pipefail
           chmod +x infra/scripts/validate-infrastructure.sh
           ./infra/scripts/validate-infrastructure.sh --quick
 

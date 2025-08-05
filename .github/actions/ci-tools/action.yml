@@ -1,0 +1,5 @@
+name: 'CI Tools'
+description: 'Provide yq, shellcheck, and hadolint'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
