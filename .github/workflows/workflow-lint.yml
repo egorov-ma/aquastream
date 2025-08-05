@@ -34,38 +34,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Install linting tools
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-          
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-          
-          sudo wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
-          sudo chmod +x /usr/local/bin/hadolint
 
       - name: Lint YAML files
-        run: |
-          find infra -name "*.yml" -o -name "*.yaml" | while read -r yaml_file; do
-            echo "Checking: $yaml_file"
-            yq eval '.' "$yaml_file" > /dev/null
-          done
+        uses: mikefarah/yq@v4
+        with:
+          cmd: >-
+            for file in $(find infra -name '*.yml' -o -name '*.yaml'); do
+              echo "Checking: $file";
+              yq eval '.' "$file" >/dev/null;
+            done
 
       - name: Lint shell scripts
-        run: |
-          find . -name "*.sh" -not -path "./node_modules/*" | while read -r script; do
-            echo "Checking: $script"
-            shellcheck -x "$script"
-          done
+        uses: ludeeus/action-shellcheck@master
+        with:
+          ignore_paths: frontend/node_modules
 
       - name: Lint Dockerfiles
-        run: |
-          find infra/docker/images -name "Dockerfile.*" | while read -r dockerfile; do
-            echo "Checking: $dockerfile"
-            hadolint "$dockerfile"
-          done
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: infra/docker/images
+          recursive: true
 
       - name: Prepare environment for validation
         run: |
