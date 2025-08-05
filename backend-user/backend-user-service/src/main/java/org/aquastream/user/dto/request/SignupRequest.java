@@ -10,17 +10,17 @@ import lombok.Data;
 public class SignupRequest {
     @NotBlank
     @Size(min = 3, max = 50)
-    @Schema(description = "Полное имя пользователя", example = "Иван Иванов", required = true, minLength = 3, maxLength = 50)
+    @Schema(description = "Полное имя пользователя", example = "Иван Иванов")
     private String name;
     
     @NotBlank
     @Size(min = 3, max = 20)
-    @Schema(description = "Логин пользователя (уникальный идентификатор для входа)", example = "john_doe", required = true, minLength = 3, maxLength = 20)
+    @Schema(description = "Логин пользователя (уникальный идентификатор для входа)", example = "john_doe")
     private String username;
     
     @NotBlank
     @Size(min = 6, max = 40)
-    @Schema(description = "Пароль пользователя", example = "password123", required = true, minLength = 6, maxLength = 40)
+    @Schema(description = "Пароль пользователя", example = "password123")
     private String password;
     
     @Schema(description = "Имя пользователя в Telegram без символа @", example = "ivan_ivanov")

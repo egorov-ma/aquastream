@@ -1,15 +1,15 @@
 # Global ARGs for multi-stage build
-ARG NGINX_TAG=1.25.4-alpine
+ARG NGINX_TAG=1.25.4-bookworm
 
 # --- Stage 1: configuration setup ----------------
 FROM nginx:${NGINX_TAG} AS config-setup
 
 # Установка необходимых пакетов
-RUN apk add --no-cache \
-    apache2-utils=2.4.62-r1 \
-    openssl=3.1.8-r0 \
-    curl=8.11.1-r0 \
-    && rm -rf /var/cache/apk/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apache2-utils \
+    openssl \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Создание SSL сертификатов
 RUN mkdir -p /etc/nginx/ssl && \

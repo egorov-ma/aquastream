@@ -20,6 +20,19 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     cssCodeSplit: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'router': ['react-router-dom'],
+          'redux': ['@reduxjs/toolkit', 'react-redux'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'form': ['react-hook-form', 'zod'],
+          'utils': ['axios', 'clsx', 'tailwind-merge']
+        }
+      }
+    }
   },
   css: {
     devSourcemap: true,

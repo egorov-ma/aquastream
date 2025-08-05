@@ -136,7 +136,7 @@ public class UserController {
                     content = @Content)
     })
     public ResponseEntity<MessageResponse> updateUserRole(
-            @Parameter(description = "ID пользователя", required = true)
+            @Parameter(description = "ID пользователя")
             @PathVariable UUID id,
             @Valid @RequestBody UserRoleRequest userRoleRequest) {
         MessageResponse response = userService.updateUserRole(id, userRoleRequest);
@@ -165,7 +165,7 @@ public class UserController {
                     content = @Content)
     })
     public ResponseEntity<MessageResponse> activateUser(
-            @Parameter(description = "ID пользователя", required = true)
+            @Parameter(description = "ID пользователя")
             @PathVariable UUID id) {
         MessageResponse response = userService.activateUser(id);
         return ResponseEntity.ok(response);
@@ -193,7 +193,7 @@ public class UserController {
                     content = @Content)
     })
     public ResponseEntity<MessageResponse> deactivateUser(
-            @Parameter(description = "ID пользователя", required = true)
+            @Parameter(description = "ID пользователя")
             @PathVariable UUID id) {
         MessageResponse response = userService.deactivateUser(id);
         return ResponseEntity.ok(response);

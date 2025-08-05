@@ -8,7 +8,9 @@ FROM eclipse-temurin:${ECLIPSE_TEMURIN_JDK_TAG} AS build
 WORKDIR /workspace
 
 # Устанавливаем protobuf compiler для gRPC
-RUN apk add --no-cache protobuf=3.21.12-r2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    protobuf-compiler=3.21.* \
+    && rm -rf /var/lib/apt/lists/*
 
 # Копируем Gradle wrapper и настройки
 COPY gradlew settings.gradle build.gradle version.properties /workspace/
@@ -27,10 +29,12 @@ FROM eclipse-temurin:${ECLIPSE_TEMURIN_JRE_TAG} AS runtime
 WORKDIR /app
 
 # Устанавливаем curl для health check
-RUN apk add --no-cache curl=8.12.1-r1
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Создаем пользователя для безопасности
-RUN addgroup -S appuser && adduser -S appuser -G appuser
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # Копируем собранный jar
 COPY --from=build /workspace/backend-crew/backend-crew-service/build/libs/backend-crew-service-*.jar app.jar

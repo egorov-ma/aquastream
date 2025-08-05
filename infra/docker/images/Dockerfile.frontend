@@ -1,6 +1,6 @@
 # Global ARGs for multi-stage build
 ARG NODE_TAG=20.11.1-slim
-ARG NGINX_TAG=1.25.4-alpine
+ARG NGINX_TAG=1.25.4-bookworm
 
 # --- Stage 1: build frontend ----------------------
 FROM node:${NODE_TAG} AS build
@@ -24,7 +24,7 @@ COPY frontend/tsconfig.json frontend/tsconfig.node.json ./
 COPY frontend/vite.config.ts ./
 COPY frontend/postcss.config.cjs ./
 COPY frontend/tailwind.config.js ./
-COPY frontend/.eslintrc.json frontend/.prettierrc ./
+COPY frontend/eslint.config.js frontend/.prettierrc ./
 
 # Создаем пустой файл .env с переменными окружения для production
 # Используем относительный путь, чтобы запросы шли через сам фронтенд-домен (Nginx)
@@ -49,8 +49,11 @@ RUN npm run build && \
 # --- Stage 2: runtime -----------------------------
 FROM nginx:${NGINX_TAG} AS runtime
 
-# Устанавливаем brotli-модуль и необходимые пакеты
-RUN apk add --no-cache openssl=3.1.8-r0 \
+# Устанавливаем необходимые пакеты
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /etc/nginx/ssl \
     && openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048 \
     && openssl req -x509 -nodes -days 365 -subj "/CN=localhost" -newkey rsa:2048 -keyout /etc/nginx/ssl/key.pem -out /etc/nginx/ssl/cert.pem

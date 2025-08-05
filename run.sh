@@ -113,18 +113,58 @@ stop_containers() {
 
 # Функция для запуска контейнеров
 start_containers() {
+    local verbose_mode="${1:-false}"
+    
     log "[INFO] Полный перезапуск контейнеров..."
     stop_containers
     log "[INFO] Запускаем docker compose..."
 
     local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.yml"
     if [ -f "$compose_file" ]; then
-        # Тянем образы без секции build
-        docker compose -f "$compose_file" pull --quiet --ignore-buildable 2>/dev/null || true
-        # Собираем build-образа
-        docker compose -f "$compose_file" build --quiet
-        # Запускаем контейнеры
-        docker compose -f "$compose_file" up -d
+        if [ "$verbose_mode" = "true" ] || [ "$verbose_mode" = "--verbose" ] || [ "$verbose_mode" = "-v" ]; then
+            log "[INFO] Режим детального вывода активирован"
+            # Тянем образы без секции build
+            docker compose -f "$compose_file" pull --ignore-buildable 2>/dev/null || true
+            # Собираем build-образа
+            docker compose -f "$compose_file" build
+            # Запускаем контейнеры
+            docker compose -f "$compose_file" up -d
+        else
+            log "[INFO] Режим тихого запуска (для детального вывода используйте: ./run.sh start --verbose)"
+            # Создаем временные файлы для логов
+            local pull_log=$(mktemp)
+            local build_log=$(mktemp)
+            local up_log=$(mktemp)
+            
+            # Тянем образы тихо
+            if docker compose -f "$compose_file" pull --quiet --ignore-buildable >"$pull_log" 2>&1; then
+                log "[INFO] ✅ Образы обновлены"
+            else
+                log "[WARN] Некоторые образы не удалось обновить, продолжаем..."
+            fi
+            
+            # Собираем образы тихо
+            log "[INFO] 🔨 Сборка образов..."
+            if docker compose -f "$compose_file" build --quiet >"$build_log" 2>&1; then
+                log "[INFO] ✅ Образы собраны"
+            else
+                log "[ERROR] Ошибка сборки образов. Детали в: $build_log"
+                exit 1
+            fi
+            
+            # Запускаем контейнеры тихо  
+            log "[INFO] 🚀 Запуск контейнеров..."
+            if docker compose -f "$compose_file" up -d >"$up_log" 2>&1; then
+                log "[INFO] ✅ Контейнеры запущены"
+            else
+                log "[ERROR] Ошибка запуска контейнеров. Детали в: $up_log"
+                exit 1
+            fi
+            
+            # Очищаем временные файлы при успешном выполнении
+            rm -f "$pull_log" "$build_log" "$up_log"
+        fi
+        
         wait_healthy 180
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
@@ -800,7 +840,8 @@ show_help_options() {
     echo "    --full, -f          Полный вывод логов сборки"
     echo "    --summary, -s       Краткий вывод (по умолчанию)"
     echo
-    echo "  start                 Запуск контейнеров"
+    echo "  start [опции]         Запуск контейнеров"
+    echo "    --verbose, -v       Детальный вывод логов (по умолчанию: тихий режим)"
     echo "    • Останавливает существующие контейнеры"
     echo "    • Собирает и запускает все сервисы"
     echo "    • Ждет готовности всех health checks"
@@ -905,7 +946,8 @@ check_requirements
 # Обработка команд для работы с контейнерами
 case "$1" in
     "start")
-        start_containers
+        shift  # убираем ключевое слово start
+        start_containers "$@"  # передаём оставшиеся аргументы функции
         ;;
     "stop")
         stop_containers

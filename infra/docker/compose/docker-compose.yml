@@ -1,4 +1,3 @@
-version: "3.9"
 name: aquastream
 
 # ---------------------------- anchors ----------------------------
@@ -20,6 +19,19 @@ x-limit-small:  &limit-small  { cpus: "${CPU_SMALL}",  memory: "${MEM_SMALL}" }
 x-limit-medium: &limit-medium { cpus: "${CPU_MEDIUM}", memory: "${MEM_MEDIUM}" }
 x-limit-big:    &limit-big    { cpus: "${CPU_BIG}",    memory: "${MEM_BIG}" }
 
+# logging configuration to prevent excessive logs
+x-logging-default: &logging-default
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-logging-minimal: &logging-minimal
+  driver: "json-file"
+  options:
+    max-size: "1m"
+    max-file: "2"
+
 # ------------------------ networks & volumes ---------------------
 networks:
   # Внешняя сеть (Nginx + Frontend)
@@ -29,8 +41,6 @@ networks:
       driver: default
       config:
         - subnet: 172.20.0.0/24
-    driver_opts:
-      com.docker.network.bridge.name: aquastream-public
 
   # Сеть для API Gateway и микросервисов
   api-network:
@@ -39,8 +49,6 @@ networks:
       driver: default
       config:
         - subnet: 172.21.0.0/24
-    driver_opts:
-      com.docker.network.bridge.name: aquastream-api
 
   # Сеть для инфраструктурных сервисов
   infra-network:
@@ -49,8 +57,6 @@ networks:
       driver: default
       config:
         - subnet: 172.22.0.0/24
-    driver_opts:
-      com.docker.network.bridge.name: aquastream-infra
 
   # Сеть для мониторинга
   monitoring-network:
@@ -59,8 +65,6 @@ networks:
       driver: default
       config:
         - subnet: 172.23.0.0/24
-    driver_opts:
-      com.docker.network.bridge.name: aquastream-monitoring
 
   # Основная сеть (для обратной совместимости)
   aquastream-network:
@@ -128,6 +132,7 @@ services:
     networks: [ infra-network ]
     user: "0"
     deploy: { resources: { limits: *limit-tiny } }
+    logging: *logging-minimal
     security_opt:
       - no-new-privileges:true
     command: >
@@ -178,6 +183,7 @@ services:
     depends_on:
       elasticsearch: { condition: service_healthy }
     deploy: { resources: { limits: *limit-tiny } }
+    logging: *logging-minimal
     security_opt:
       - no-new-privileges:true
     command: >
@@ -198,12 +204,17 @@ services:
   zookeeper:
     image: bitnami/zookeeper:${ZOOKEEPER_TAG}
     restart: unless-stopped
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     volumes: [ zookeeper_data:/bitnami/zookeeper ]
     networks: [ infra-network ]
     healthcheck:
       test: ["CMD-SHELL","/opt/bitnami/zookeeper/bin/zkServer.sh status >/dev/null 2>&1 || exit 1"]
       <<: *hc-normal
     deploy: { resources: { limits: *limit-small } }
+    logging: *logging-default
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -211,6 +222,7 @@ services:
     cap_add:
       - CHOWN
       - DAC_OVERRIDE
+      - FOWNER
       - SETGID
       - SETUID
     user: "1001:1001"
