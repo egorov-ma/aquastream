@@ -13,44 +13,43 @@ on:
     - cron: '0 3 * * 1'  # Weekly on Monday at 3 AM
 
 jobs:
-  backend-deps:
-    name: Backend Dependency Scan
+  deps:
+    name: ${{ matrix.service }} Dependency Scan
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      matrix:
+        service: [backend, frontend]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
+        if: matrix.service == 'backend'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Run dependency vulnerability scan
-        run: ./gradlew dependencyCheckAnalyze
-
-  frontend-deps:
-    name: Frontend Dependency Scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: ./frontend
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Setup Node.js
+        if: matrix.service == 'frontend'
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: './frontend/package-lock.json'
 
+      - name: Run dependency vulnerability scan
+        if: matrix.service == 'backend'
+        run: ./gradlew dependencyCheckAnalyze
+
       - name: Install dependencies
+        if: matrix.service == 'frontend'
+        working-directory: ./frontend
         run: npm ci
 
       - name: Run npm audit
+        if: matrix.service == 'frontend'
+        working-directory: ./frontend
         run: npm audit --audit-level=high
