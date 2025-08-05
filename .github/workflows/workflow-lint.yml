@@ -39,17 +39,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Install linting tools
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-          
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-          
-          sudo wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
-          sudo chmod +x /usr/local/bin/hadolint
+
+      - name: Setup linting tools
+        uses: ./.github/actions/ci-tools
 
       - name: Lint YAML files
         run: |
