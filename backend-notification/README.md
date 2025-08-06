@@ -21,7 +21,7 @@
 
 ### Docker
 ```bash
-docker build -t aquastream-notification -f infra/docker/images/Dockerfile.backend-notification .
+docker build -t aquastream-notification -f infra/docker/images/Dockerfile.backend --build-arg SERVICE=backend-notification/backend-notification-service .
 docker run -p 8084:8084 aquastream-notification
 ```
 

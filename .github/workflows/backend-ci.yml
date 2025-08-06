@@ -15,7 +15,7 @@ on:
       - 'common/**'
       - 'build.gradle'
       - 'gradle/**'
-      - 'infra/docker/images/Dockerfile.backend-*'
+      - 'infra/docker/images/Dockerfile.backend'
   pull_request:
     branches: [main, develop]
     paths:
@@ -23,7 +23,7 @@ on:
       - 'common/**'
       - 'build.gradle'
       - 'gradle/**'
-      - 'infra/docker/images/Dockerfile.backend-*'
+      - 'infra/docker/images/Dockerfile.backend'
 
 jobs:
   build:
