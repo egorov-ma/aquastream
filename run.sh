@@ -85,11 +85,14 @@ case "$1" in
     run_cmd "$0" stop
     run_cmd "$0" start
     ;;
+  status)
+    run_cmd docker compose -f "$COMPOSE_FILE" ps
+    ;;
   logs)
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|lint|start|stop|restart|logs} [-be|-fe]"
+    echo "Usage: $0 {build|test|lint|start|stop|restart|status|logs} [-be|-fe]"
     exit 1
     ;;
 
