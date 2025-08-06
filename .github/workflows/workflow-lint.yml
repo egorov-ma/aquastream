@@ -40,21 +40,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup linting tools
-        uses: ./.github/actions/ci-tools
-
-      - name: Lint YAML files
-        run: |
-          find infra \( -name "*.yml" -o -name "*.yaml" \) -exec yq eval '.' {} + > /dev/null
-
-      - name: Lint shell scripts
-        run: |
-          run: find . -name "*.sh" -not -path "*/node_modules/*" -exec shellcheck -x {} +
-
-      - name: Lint Dockerfiles
-        run: |
-          run: find infra/docker/images -name "Dockerfile.*" -exec hadolint {} +
-
       - name: Prepare environment for validation
         shell: bash
         env:
@@ -62,15 +47,22 @@ jobs:
           GRAFANA_ADMIN_PASSWORD: test_password_123
           ELASTIC_PASSWORD: test_password_123
           KIBANA_PASSWORD: test_password_123
-        run: |
-          set -o pipefail
-          envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
+        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
 
-      - name: Quick infrastructure validation
-        shell: bash
-        run: |
-          set -o pipefail
-          if [ -f "infra/scripts/validate-infrastructure.sh" ]; then
-            chmod +x infra/scripts/validate-infrastructure.sh
-            ./infra/scripts/validate-infrastructure.sh --quick
-          fi
+      - name: Validate Docker Compose
+        run: docker compose -f infra/docker/compose/docker-compose.yml --env-file infra/docker/compose/.env config --quiet
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@v2
+
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile.*
+          recursive: true
+
+      - name: Validate YAML files
+        uses: mikefarah/yq@v4
+        with:
+          cmd: |
+            find infra \( -name '*.yml' -o -name '*.yaml' \) -exec yq eval '.' {} + > /dev/null
