@@ -41,6 +41,7 @@ cp infra/docker/compose/.env.example infra/docker/compose/.env
 ./run.sh lint -be    # Запуск линтера бэкенда
 ./run.sh lint -fe    # Запуск линтера фронтенда
 ./run.sh start       # Поднимает Docker-инфраструктуру
+./run.sh restart     # Перезапускает Docker-инфраструктуру
 ./run.sh logs        # Показывает логи контейнеров
 ./run.sh stop        # Останавливает и очищает окружение
 ```
@@ -147,6 +148,7 @@ docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
 
 ```bash
 ./run.sh start  # Запуск контейнеров
+./run.sh restart  # Перезапуск контейнеров
 ./run.sh stop   # Остановка и очистка контейнеров
 ./run.sh logs   # Просмотр логов
 ```
