@@ -84,7 +84,7 @@ describe('LoginForm integration', () => {
     });
     
     fireEvent.change(screen.getByLabelText(/пароль/i), {
-      target: { value: 'password123' }
+      target: { value: '<password>' }
     });
     
     fireEvent.click(screen.getByRole('button', { name: /войти/i }));
@@ -92,7 +92,7 @@ describe('LoginForm integration', () => {
     await waitFor(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: '<password>'
       });
     });
   });
@@ -133,7 +133,7 @@ test('user can login successfully', async ({ page }) => {
   
   // Заполняем форму
   await page.getByLabel(/Email/).fill('test@example.com');
-  await page.getByLabel(/Пароль/).fill('password123');
+  await page.getByLabel(/Пароль/).fill('<password>');
   await page.getByRole('button', { name: /Войти/ }).click();
   
   // Проверяем, что после успешного входа происходит редирект

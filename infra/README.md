@@ -64,7 +64,7 @@ infra/
 
 ### 🔐 Авторизация
 - **Мониторинг** (Basic Auth): `admin:monitoring123`
-- **Elasticsearch**: `elastic:changeMe123!`
+- **Elasticsearch**: `elastic:<ELASTIC_PASSWORD>`
 - **Grafana**: `admin:admin`
 
 ### 🛠️ Для разработки (прямой доступ)

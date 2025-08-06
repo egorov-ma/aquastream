@@ -6,10 +6,6 @@ spring:
     name: crew-service
   config:
     import: classpath:db-common.yml
-  datasource:
-    url: jdbc:postgresql://postgres:5432/aquastream_db
-    username: postgres
-    password: postgres
   kafka:
     bootstrap-servers: kafka:9092
 

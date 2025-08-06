@@ -9,12 +9,12 @@ Elasticsearch теперь настроен с включенной безопа
 
 ### Elasticsearch
 - **Пользователь**: `elastic`
-- **Пароль**: `changeMe123!` (настраивается в `.env` как `ELASTIC_PASSWORD` или через переменную окружения при запуске `./run.sh --use-env`)
+- **Пароль**: `<ELASTIC_PASSWORD>` (настраивается в `.env` как `ELASTIC_PASSWORD` или через переменную окружения при запуске `./run.sh --use-env`)
 - **URL**: ~~`https://localhost:9200`~~ → **Доступ через Nginx Reverse Proxy**
 
 ### Kibana
 - **Пользователь**: `kibana_system`
-- **Пароль**: `kibanaUser123!` (настраивается в `.env` как `KIBANA_PASSWORD` или через переменную окружения при запуске `./run.sh --use-env`)
+- **Пароль**: `<KIBANA_PASSWORD>` (настраивается в `.env` как `KIBANA_PASSWORD` или через переменную окружения при запуске `./run.sh --use-env`)
 - **URL**: ~~`https://localhost:5601`~~ → **Доступ через Nginx**: `https://localhost/monitoring/kibana/`
 - **Basic Auth**: admin:monitoring123 (для доступа через Nginx)
 
@@ -30,13 +30,13 @@ Elasticsearch теперь настроен с включенной безопа
 ### Curl команды
 ```bash
 # Проверка здоровья кластера
-curl -k -u elastic:changeMe123! https://localhost:9200/_cluster/health
+curl -k -u elastic:<ELASTIC_PASSWORD> https://localhost:9200/_cluster/health
 
 # Получение информации о кластере
-curl -k -u elastic:changeMe123! https://localhost:9200/
+curl -k -u elastic:<ELASTIC_PASSWORD> https://localhost:9200/
 
 # Просмотр индексов
-curl -k -u elastic:changeMe123! https://localhost:9200/_cat/indices?v
+curl -k -u elastic:<ELASTIC_PASSWORD> https://localhost:9200/_cat/indices?v
 ```
 
 ### С использованием CA сертификата
@@ -45,7 +45,7 @@ curl -k -u elastic:changeMe123! https://localhost:9200/_cat/indices?v
 docker cp aquastream-elasticsearch-setup-1:/usr/share/elasticsearch/config/certs/ca/ca.crt ./ca.crt
 
 # Использовать CA сертификат
-curl --cacert ca.crt -u elastic:changeMe123! https://localhost:9200/_cluster/health
+curl --cacert ca.crt -u elastic:<ELASTIC_PASSWORD> https://localhost:9200/_cluster/health
 ```
 
 ## Конфигурация компонентов

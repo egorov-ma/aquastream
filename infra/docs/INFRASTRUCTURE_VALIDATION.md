@@ -293,10 +293,10 @@ image: nginx:1.25-alpine
 ```bash
 # Используйте сильные пароли (≥12 символов)
 # Плохо
-POSTGRES_PASSWORD=123456
+POSTGRES_PASSWORD=<WEAK_PASSWORD>
 
 # Хорошо
-POSTGRES_PASSWORD=MySecurePassword123!
+POSTGRES_PASSWORD=<STRONG_PASSWORD>
 ```
 
 ### ⚠️ "Shell скрипт не исполняемый"

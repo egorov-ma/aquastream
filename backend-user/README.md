@@ -36,14 +36,14 @@ Swagger UI: `http://localhost:8081/swagger-ui.html` (через Gateway — `/us
 ```bash
 curl -X POST http://localhost:8081/api/auth/login \
  -H 'Content-Type: application/json' \
- -d '{"username":"john_doe","password":"password123"}'
+-d '{"username":"john_doe","password":"<password>"}'
 ```
 
 Пример регистрации:
 ```bash
 curl -X POST http://localhost:8081/api/auth/register \
  -H 'Content-Type: application/json' \
- -d '{"username":"john_doe","name":"Джон Доу","password":"password123"}'
+-d '{"username":"john_doe","name":"Джон Доу","password":"<password>"}'
 ```
 
 ## Тестирование

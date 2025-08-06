@@ -12,6 +12,6 @@ public class LoginRequest {
     private String username;
 
     @NotBlank
-    @Schema(description = "Пароль пользователя", example = "password123")
+    @Schema(description = "Пароль пользователя", example = "<password>")
     private String password;
 } 
