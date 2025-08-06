@@ -47,30 +47,30 @@ public class GrpcMonitoringConfig {
             ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
             
             // Метрики активных соединений
-            Gauge.builder("grpc_active_connections")
+            Gauge.builder("grpc_active_connections", activeConnections, AtomicInteger::get)
                     .description("Number of active gRPC connections")
-                    .register(registry, activeConnections, AtomicInteger::get);
+                    .register(registry);
             
             // Метрики общего количества соединений
-            Gauge.builder("grpc_total_connections")
+            Gauge.builder("grpc_total_connections", totalConnections, AtomicLong::get)
                     .description("Total number of gRPC connections established")
-                    .register(registry, totalConnections, AtomicLong::get);
+                    .register(registry);
             
             // Метрики потоков для gRPC
-            Gauge.builder("grpc_thread_pool_active")
-                    .description("Number of active threads in gRPC thread pool")
-                    .register(registry, threadBean, bean -> {
+            Gauge.builder("grpc_thread_pool_active", threadBean, bean -> {
                         // Приблизительная оценка активных потоков gRPC
                         return (double) bean.getThreadCount();
-                    });
+                    })
+                    .description("Number of active threads in gRPC thread pool")
+                    .register(registry);
             
             // Метрики памяти для gRPC буферов
-            Gauge.builder("grpc_memory_usage_bytes")
-                    .description("Estimated memory usage by gRPC buffers")
-                    .register(registry, Runtime.getRuntime(), runtime -> {
+            Gauge.builder("grpc_memory_usage_bytes", Runtime.getRuntime(), runtime -> {
                         // Приблизительная оценка использования памяти
                         return (double) (runtime.totalMemory() - runtime.freeMemory());
-                    });
+                    })
+                    .description("Estimated memory usage by gRPC buffers")
+                    .register(registry);
             
             logger.info("gRPC system metrics registered");
         };
