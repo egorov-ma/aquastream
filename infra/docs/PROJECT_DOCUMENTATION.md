@@ -65,7 +65,7 @@
   Централизует входящие запросы и рассылает их по соответствующим микросервисам.
   
 - **Технологии:**  
-  Spring Boot, Spring Cloud Gateway, Netflix Eureka Client, Resilience4j для Circuit Breaker, Request Rate Limiter и Retry.
+  Spring Boot, Spring Cloud Gateway, Resilience4j для Circuit Breaker, Request Rate Limiter и Retry.
   
 - **Конфигурация:**  
   - Локальная: `application.yml`
@@ -117,7 +117,7 @@
   Управление экипажами, распределение задач внутри сплава.
   
 - **Технологии:**  
-  Spring Boot, Spring Data JPA, Netflix Eureka Client, Spring Actuator.
+  Spring Boot, Spring Data JPA, Spring Actuator.
   
 - **Конфигурация:**  
   - Docker: `application-docker.yml` с импортом `db-common.yml`

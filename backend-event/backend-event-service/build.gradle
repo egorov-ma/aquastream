@@ -42,7 +42,6 @@ dependencies {
     // gRPC testing
     testImplementation "io.grpc:grpc-testing:${rootProject.grpcTestingVersion}"
 
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${rootProject.springDocVersion}"
     implementation "org.springdoc:springdoc-openapi-starter-common:${rootProject.springDocVersion}"

@@ -14,10 +14,6 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lowerCaseServiceId: true
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -32,32 +28,32 @@ spring:
             allowCredentials: true
       routes:
         - id: user-auth
-          uri: lb://user-service
+          uri: http://user-service:8081
           predicates:
             - Path=/api/auth/**
           filters:
             - StripPrefix=1
         - id: user-api
-          uri: lb://user-service
+          uri: http://user-service:8081
           predicates:
             - Path=/api/users/**
           filters:
             - StripPrefix=1
             - JwtAuthentication
         - id: crew-service
-          uri: lb://crew-service
+          uri: http://crew-service:8083
           predicates:
             - Path=/api/crews/**
           filters:
             - StripPrefix=1
         - id: event-service
-          uri: lb://event-service
+          uri: http://event-service:8082
           predicates:
             - Path=/api/events/**
           filters:
             - StripPrefix=1
         - id: notification-service
-          uri: lb://notification-service
+          uri: http://notification-service:8084
           predicates:
             - Path=/api/notifications/**
           filters:
@@ -97,10 +93,6 @@ spring:
   config:
     activate:
       on-profile: local
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
 server:
   port: 8080
 ---
@@ -108,9 +100,5 @@ spring:
   config:
     activate:
       on-profile: docker
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://eureka-server:8761/eureka/
 server:
   port: 8080
