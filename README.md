@@ -40,6 +40,8 @@ cp infra/docker/compose/.env.example infra/docker/compose/.env
 ./run.sh lint        # Запуск линтеров всего проекта
 ./run.sh lint -be    # Запуск линтера бэкенда
 ./run.sh lint -fe    # Запуск линтера фронтенда
+./run.sh dev -be    # Запуск бэкенда с горячей перезагрузкой
+./run.sh dev -fe    # Запуск фронтенда в режиме разработки
 ./run.sh start       # Поднимает Docker-инфраструктуру
 ./run.sh restart     # Перезапускает Docker-инфраструктуру
 ./run.sh logs        # Показывает логи контейнеров
