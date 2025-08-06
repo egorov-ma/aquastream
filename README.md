@@ -37,6 +37,9 @@ cp infra/docker/compose/.env.example infra/docker/compose/.env
 ./run.sh test        # Запуск тестов всего проекта
 ./run.sh test -be    # Запуск тестов бэкенда
 ./run.sh test -fe    # Запуск тестов фронтенда
+./run.sh lint        # Запуск линтеров всего проекта
+./run.sh lint -be    # Запуск линтера бэкенда
+./run.sh lint -fe    # Запуск линтера фронтенда
 ./run.sh start       # Поднимает Docker-инфраструктуру
 ./run.sh logs        # Показывает логи контейнеров
 ./run.sh stop        # Останавливает и очищает окружение
