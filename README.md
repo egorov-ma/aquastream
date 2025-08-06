@@ -30,27 +30,18 @@
 ### Быстрый старт через скрипт
 
 ```bash
-# Полный перезапуск стека (останавливает контейнеры, очищает тома ZooKeeper, строит и ждёт healthchecks)
-./run.sh start
-
-# Перезапуск без пересборки
-./run.sh restart
-
-# Остановка и очистка
-./run.sh stop
+./run.sh build       # Сборка бэкенда и фронтенда
+./run.sh build -be   # Сборка только бэкенда
+./run.sh build -fe   # Сборка только фронтенда
+./run.sh test        # Запуск тестов всего проекта
+./run.sh test -be    # Запуск тестов бэкенда
+./run.sh test -fe    # Запуск тестов фронтенда
+./run.sh start       # Поднимает Docker-инфраструктуру
+./run.sh logs        # Показывает логи контейнеров
+./run.sh stop        # Останавливает и очищает окружение
 ```
 
-По умолчанию скрипт читает переменные из `infra/docker/compose/.env`. Для запуска в CI/CD можно передать флаг `--use-env`, и значения будут взяты из переменных окружения. Секреты рекомендуется хранить в GitHub Secrets и передавать в окружение при запуске.
-
-Скрипт выполняет:
-1. `docker compose down -v --remove-orphans` – гарантирует, что старые данные ZooKeeper/Kafka не вызовут конфликт `NodeExists`.
-2. Очистку каталога ZooKeeper (`infra/scripts/zk-clean.sh`).
-3. `docker compose pull && build` при необходимости.
-4. `docker compose up -d` и ожидание, пока все контейнеры станут `healthy`.
-
-Health-checks настроены во всех сервисах, а порядок запуска описан в `infra/docker/compose/docker-compose.full.yml` через `depends_on: condition: service_healthy`.
-
-Для запуска проекта существует несколько вариантов, в зависимости от ваших требований и среды разработки. Ниже приведены подробные инструкции для локального запуска и запуска через Docker.
+При первом запуске скрипт создаёт `infra/docker/compose/.env` из `.env.example`.
 
 ### 1. Локальный запуск (без Docker)
 
@@ -66,16 +57,12 @@ Health-checks настроены во всех сервисах, а порядо
    ```
 
 3. **Сборка проекта:**
-   Используйте универсальный скрипт `run.sh` (он перенаправит к внутреннему `infra/scripts/build.sh`):
-   ```bash
-   ./run.sh build
-   ```
-   Он:
-   - Проверит наличие необходимых инструментов (Docker, Docker Compose).
-   - Соберёт backend (`./gradlew clean build -x test`).
-   - Соберёт frontend (`npm ci && npm run build`).
+```bash
+./gradlew clean build -x test
+npm ci && npm run build
+```
 
-4. **Запуск микросервисов:**
+4. **Запуск микросервисов:****
    Запустите каждый микросервис (например, с использованием Spring Boot):
    - **API Gateway (backend-gateway):** `java -jar backend-gateway/build/libs/backend-gateway.jar`
    - **User Service (backend-user):** `java -jar backend-user/build/libs/backend-user.jar`
@@ -149,18 +136,14 @@ Health-checks настроены во всех сервисах, а порядо
      ```
 
 5. **Управление через `run.sh`:**
-   Теперь все действия объединены в единый CLI — `run.sh`.
-   Основные команды:
-   ```bash
-   ./run.sh start      # Запуск контейнеров
-   ./run.sh stop       # Остановка контейнеров
-   ./run.sh restart    # Перезапуск контейнеров
-   ./run.sh logs       # Просмотр логов
-   ./run.sh status     # Проверка состояния контейнеров
-   ./run.sh build      # Полная сборка проекта (backend+frontend)
-   ./run.sh exec <cmd> # Запуск произвольного скрипта из infra/scripts
-   ```
-   `run.sh` автоматически ищет `infra/docker/compose/docker-compose.dev.yml` и использует `docker compose`.
+
+```bash
+./run.sh start  # Запуск контейнеров
+./run.sh stop   # Остановка и очистка контейнеров
+./run.sh logs   # Просмотр логов
+```
+
+`run.sh` использует `docker compose -f infra/docker/compose/docker-compose.dev.yml`.
 
 ### Дополнительные рекомендации
 
