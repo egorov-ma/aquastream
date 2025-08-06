@@ -2,6 +2,8 @@
 
 # AquaStream Secrets Rotation Strategy Implementation
 # Automated rotation of secrets with audit trail and rollback capabilities
+# Secrets are expected to be stored in GitHub Secrets and passed to containers
+# via environment variables or --env-file, never committed to the repository
 
 set -euo pipefail
 
@@ -146,15 +148,28 @@ update_secret_in_env() {
         # Create backup of entire .env file
         cp "$ENV_FILE" "${ENV_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
         
-        # Update the secret
-        if grep -q "^${secret_name}=" "$ENV_FILE"; then
-            sed -i.tmp "s|^${secret_name}=.*|${secret_name}=${new_value}|" "$ENV_FILE"
-            rm -f "${ENV_FILE}.tmp"
-            log_success "Updated $secret_name in $ENV_FILE"
-        else
-            echo "${secret_name}=${new_value}" >> "$ENV_FILE"
+        # Update the secret without using sed
+        local tmp_file="${ENV_FILE}.tmp"
+        local updated=false
+        : > "$tmp_file"
+
+        while IFS= read -r line; do
+            if [[ $line == "${secret_name}="* ]]; then
+                printf '%s=%s\n' "$secret_name" "$new_value" >> "$tmp_file"
+                updated=true
+            else
+                printf '%s\n' "$line" >> "$tmp_file"
+            fi
+        done < "$ENV_FILE"
+
+        if [[ $updated == false ]]; then
+            printf '%s=%s\n' "$secret_name" "$new_value" >> "$tmp_file"
             log_success "Added $secret_name to $ENV_FILE"
+        else
+            log_success "Updated $secret_name in $ENV_FILE"
         fi
+
+        mv "$tmp_file" "$ENV_FILE"
     else
         log_error "Environment file not found: $ENV_FILE"
         return 1
