@@ -23,8 +23,6 @@ dependencies {
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${rootProject.springDocVersion}"
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
-    testImplementation "com.h2database:h2:${rootProject.h2Version}"
 }
 
 

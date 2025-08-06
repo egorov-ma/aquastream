@@ -31,16 +31,10 @@ dependencies {
     
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "com.h2database:h2:${rootProject.h2Version}"
-    testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
     
     // Testcontainers for integration tests
-    testImplementation "org.testcontainers:junit-jupiter:${rootProject.testcontainersVersion}"
-    testImplementation "org.testcontainers:postgresql:${rootProject.testcontainersVersion}"
-    testImplementation "org.testcontainers:kafka:${rootProject.testcontainersVersion}"
     
     // gRPC testing
-    testImplementation "io.grpc:grpc-testing:${rootProject.grpcTestingVersion}"
 
 
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${rootProject.springDocVersion}"
