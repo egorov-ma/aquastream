@@ -37,7 +37,7 @@ jobs:
 
         - uses: dotenvx/dotenv-action@v2
           with:
-            path: infra/docker/compose/.env.ci
+            path: infra/docker/compose/.env.example
           env:
             POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'test' }}
             ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD || 'test' }}
