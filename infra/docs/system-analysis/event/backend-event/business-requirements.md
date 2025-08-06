@@ -2344,7 +2344,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: event_service
-      POSTGRES_PASSWORD: event_password
+      POSTGRES_PASSWORD: <EVENT_DB_PASSWORD>
       POSTGRES_DB: event_db
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -2420,7 +2420,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/event_db
       SPRING_DATASOURCE_USERNAME: event_service
-      SPRING_DATASOURCE_PASSWORD: event_password
+      SPRING_DATASOURCE_PASSWORD: <EVENT_DB_PASSWORD>
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
@@ -2497,7 +2497,7 @@ docker-compose -f docker/docker-compose.yml up -d postgres redis kafka zookeeper
 4. **Подключение к базе данных**:
    - Установите DBeaver (если еще не установлен)
    - Создайте новое соединение PostgreSQL
-   - Укажите параметры: `localhost:5432/event_db`, пользователь: `event_service`, пароль: `event_password`
+   - Укажите параметры: `localhost:5432/event_db`, пользователь: `event_service`, пароль: `<EVENT_DB_PASSWORD>`
 
 5. **Запуск из IDE**:
    - Найдите класс `EventServiceApplication.java` в модуле backend-event-service
@@ -2602,7 +2602,7 @@ docker-compose -f docker/docker-compose.yml exec kafka kafka-console-consumer --
 1. **Подключение к базе данных**:
    - Создайте новое соединение PostgreSQL в DBeaver
    - Используйте хост `localhost`, порт `5432`, база `event_db`
-   - Логин: `event_service`, пароль: `event_password`
+   - Логин: `event_service`, пароль: `<EVENT_DB_PASSWORD>`
 
 2. **Полезные действия**:
    - SQL-скрипты можно сохранять в проекте в папке `scripts`

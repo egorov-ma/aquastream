@@ -78,7 +78,7 @@ scrape_configs:
       - targets: ['elasticsearch:9200']
     basic_auth:
       username: 'elastic'
-      password: 'changeMe123!'
+      password: '${ELASTIC_PASSWORD}'
     scheme: https
     tls_config:
       insecure_skip_verify: true

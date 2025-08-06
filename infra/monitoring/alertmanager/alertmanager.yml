@@ -6,8 +6,8 @@ global:
   smtp_smarthost: 'smtp.gmail.com:587'
   smtp_from: 'alerts@aquastream.company.com'
   smtp_auth_username: 'alerts@aquastream.company.com'
-  smtp_auth_password: 'your-app-password'  # Используйте переменные окружения!
-  smtp_auth_secret: 'your-app-password'
+  smtp_auth_password: '${SMTP_AUTH_PASSWORD}'  # Используйте переменные окружения!
+  smtp_auth_secret: '${SMTP_AUTH_PASSWORD}'
   smtp_require_tls: true
 
   # Slack настройки (глобальные)

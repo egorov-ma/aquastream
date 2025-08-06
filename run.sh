@@ -93,6 +93,31 @@ check_docker_resources() {
     fi
 }
 
+# Проверяем, что все обязательные секреты доступны
+check_required_secrets() {
+    local missing=()
+    local secrets=(POSTGRES_PASSWORD GRAFANA_ADMIN_PASSWORD ELASTIC_PASSWORD KIBANA_PASSWORD)
+
+    if $USE_ENV_FILE; then
+        for secret in "${secrets[@]}"; do
+            if ! grep -q "^${secret}=" "$ENV_FILE" || [[ -z "$(grep "^${secret}=" "$ENV_FILE" | cut -d '=' -f2)" ]]; then
+                missing+=("$secret")
+            fi
+        done
+    else
+        for secret in "${secrets[@]}"; do
+            if [ -z "${!secret:-}" ]; then
+                missing+=("$secret")
+            fi
+        done
+    fi
+
+    if [ ${#missing[@]} -gt 0 ]; then
+        log ERROR "Отсутствуют обязательные секреты: ${missing[*]}"
+        exit 1
+    fi
+}
+
 # Функция для остановки контейнеров
 stop_containers() {
     log "[INFO] Остановка всех контейнеров и очистка ресурсов..."
@@ -926,11 +951,17 @@ else
     log INFO "Используются переменные окружения из текущего окружения"
 fi
 
-# Проверяем наличие необходимых инструментов
+# Сохраняем команду и проверяем инструменты
+CMD="$1"
 check_requirements
 
+# Проверяем наличие обязательных секретов для основных операций
+if [[ "$CMD" =~ ^(start|build|validate|logs|status)$ ]]; then
+    check_required_secrets
+fi
+
 # Обработка команд для работы с контейнерами
-case "$1" in
+case "$CMD" in
     "start")
         shift  # убираем ключевое слово start
         start_containers "$@"  # передаём оставшиеся аргументы функции

@@ -6,10 +6,10 @@
 
 **Все слабые пароли заменены на криптографически стойкие:**
 
-- ❌ `POSTGRES_PASSWORD=postgres` → ✅ `KFFrzGlktp9qKOfns9SOxsCD1Y4hGeKh`
-- ❌ `GRAFANA_ADMIN_PASSWORD=admin` → ✅ `HgAuq//ATCB2d6kLXtyekLJr8dA=`
-- ❌ `ELASTIC_PASSWORD=changeMe123!` → ✅ `8JWQCXJNJ5CuMMeJfXZgIMgivWPgPZNNIYdXyw==`
-- ❌ `KIBANA_PASSWORD=kibanaUser123!` → ✅ `cVp84BasRpgB/1F/jqifMmSZoiwDjAAq`
+- ❌ `POSTGRES_PASSWORD=postgres` → ✅ `<STRONG_PASSWORD>`
+- ❌ `GRAFANA_ADMIN_PASSWORD=admin` → ✅ `<STRONG_PASSWORD>`
+- ❌ `ELASTIC_PASSWORD=changeMe123!` → ✅ `<STRONG_PASSWORD>`
+- ❌ `KIBANA_PASSWORD=kibanaUser123!` → ✅ `<STRONG_PASSWORD>`
 
 ## 🛠️ Инструменты Управления Паролями
 
@@ -71,8 +71,8 @@ docker compose -f docker-compose.secrets.yml up -d
 
 ```bash
 # infra/docker/compose/.env
-POSTGRES_PASSWORD=KFFrzGlktp9qKOfns9SOxsCD1Y4hGeKh
-GRAFANA_ADMIN_PASSWORD=HgAuq//ATCB2d6kLXtyekLJr8dA=
+POSTGRES_PASSWORD=<STRONG_PASSWORD>
+GRAFANA_ADMIN_PASSWORD=<STRONG_PASSWORD>
 ```
 
 **Плюсы:**
