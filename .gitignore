@@ -1,6 +1,7 @@
 # Build artifacts
 .gradle/
 build/
+**/bin/
 out/
 dist/
 coverage/
