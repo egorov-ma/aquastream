@@ -53,8 +53,8 @@ jobs:
 
       - name: Validate Docker Compose
         run: |
-          docker compose -f infra/docker/compose/docker-compose.yml \
-            config --quiet
+          docker compose -f infra/docker/compose/docker-compose.dev.yml config --quiet
+          docker compose -f infra/docker/compose/docker-compose.full.yml config --quiet
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@v2
