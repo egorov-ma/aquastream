@@ -91,6 +91,7 @@ const DifficultyIndicator = ({
             )}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
+            role="presentation"
             data-testid={`difficulty-dot-${index + 1}`}
           />
         ))}

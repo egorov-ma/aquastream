@@ -62,7 +62,20 @@ export default [
       
       // JSX a11y rules
       'jsx-a11y/click-events-have-key-events': 'warn',
-      'jsx-a11y/no-static-element-interactions': 'warn',
+      'jsx-a11y/no-static-element-interactions': [
+        'warn',
+        {
+          handlers: [
+            'onClick',
+            'onMouseDown',
+            'onMouseUp',
+            'onKeyPress',
+            'onKeyDown',
+            'onKeyUp',
+          ],
+          allowExpressionValues: true,
+        },
+      ],
       'jsx-a11y/interactive-supports-focus': 'warn',
     },
     

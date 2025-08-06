@@ -36,7 +36,7 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await authApi.login(loginData);
       return response.data;
-    } catch (error) {
+    } catch {
       return rejectWithValue('Ошибка при входе');
     }
   }
@@ -48,7 +48,7 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await authApi.register(registerData);
       return response.data;
-    } catch (error) {
+    } catch {
       return rejectWithValue('Ошибка при регистрации');
     }
   }
@@ -60,7 +60,7 @@ export const fetchCurrentUser = createAsyncThunk(
     try {
       const response = await authApi.getCurrentUser();
       return response.data;
-    } catch (error) {
+    } catch {
       return rejectWithValue('Ошибка при получении данных пользователя');
     }
   }

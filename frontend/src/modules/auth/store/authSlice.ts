@@ -179,7 +179,7 @@ const authSlice = createSlice({
           const parsedUser = JSON.parse(userString) as User;
           state.user = parsedUser;
           state.isAuthenticated = true;
-        } catch (e) {
+        } catch {
           localStorage.removeItem('user');
         }
       }

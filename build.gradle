@@ -75,6 +75,9 @@ subprojects {
         options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
         options.deprecation = true
     }
+    
+    // Отключаем donation message от OpenAPI Generator
+    System.setProperty('org.openapitools.codegen.suppressDonationMessage', 'true')
 
     dependencyManagement {
         imports {

@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
     try {
       await dispatch(login({ email: data.email, password: data.password })).unwrap();
       navigate('/');
-    } catch (err) {
+    } catch {
       // Ошибка обрабатывается через состояние auth.error
     }
   };

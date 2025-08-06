@@ -37,7 +37,7 @@ const RegisterPage: React.FC = () => {
         })
       ).unwrap();
       // TODO: возможно, редирект на главную или страницу профиля
-    } catch (err) {
+    } catch {
       // Ошибка обрабатывается в состоянии auth.error
     }
   };

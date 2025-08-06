@@ -59,7 +59,7 @@ export const fetchUpcomingEvents = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       return await mockFetchUpcomingEvents();
-    } catch (error) {
+    } catch {
       return rejectWithValue('Ошибка при загрузке предстоящих событий');
     }
   }

@@ -105,7 +105,7 @@ export function sanitizeUrl(url: string, allowedDomains?: string[]): string | nu
     }
 
     return parsedUrl.toString();
-  } catch (e) {
+  } catch {
     return null;
   }
 }

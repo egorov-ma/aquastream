@@ -54,7 +54,7 @@ check_docker_daemon_ready() {
     log INFO "Проверка состояния Docker daemon..."
     
     while [ $attempt -le $max_attempts ]; do
-        if docker info &>/dev/null; then
+        if docker ps &>/dev/null; then
             log INFO "Docker daemon готов к работе"
             check_docker_resources
             return 0
@@ -154,7 +154,7 @@ start_containers() {
             # Тянем образы без секции build
             docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" pull --ignore-buildable 2>/dev/null || true
             # Собираем build-образа
-            docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" build
+            ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" build
             # Запускаем контейнеры
             docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" up -d
         else
@@ -173,7 +173,7 @@ start_containers() {
             
             # Собираем образы тихо
             log "[INFO] 🔨 Сборка образов..."
-              if docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" build --quiet >"$build_log" 2>&1; then
+              if ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" build --quiet >"$build_log" 2>&1; then
                 log "[INFO] ✅ Образы собраны"
             else
                 log "[ERROR] Ошибка сборки образов. Детали в: $build_log"
@@ -759,10 +759,10 @@ build_project() {
     # ========================= Backend =========================
     log INFO "========== Сборка backend (${mode}) =========="
     if [ "$mode" = "full" ]; then
-        ./gradlew clean build -x test || { log ERROR "Gradle build failed"; exit 1; }
+        ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true ./gradlew clean build -x test || { log ERROR "Gradle build failed"; exit 1; }
     else
         backend_log=$(mktemp)
-        if ./gradlew clean build -x test --console=plain >"$backend_log" 2>&1; then
+        if ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true ./gradlew clean build -x test --console=plain >"$backend_log" 2>&1; then
             log INFO "Backend build SUCCESS"
         else
             log ERROR "Backend build FAILED. Полный лог: $backend_log"
@@ -787,10 +787,10 @@ build_project() {
     # ========================= Docker images =========================
     log INFO "========== Docker compose build (${mode}) =========="
     if [ "$mode" = "full" ]; then
-          docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
+          ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
     else
         docker_log=$(mktemp)
-          if docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1; then
+          if ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1; then
             log INFO "Docker images build SUCCESS"
         else
             log ERROR "Docker images build FAILED. Полный лог: $docker_log"

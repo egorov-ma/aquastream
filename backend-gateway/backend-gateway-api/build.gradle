@@ -21,7 +21,11 @@ openApiGenerate {
         interfaceOnly: "true",
         useSpringBoot3: "true",
         documentationProvider: "springdoc",
-        skipDefaultInterface: "true"
+        skipDefaultInterface: "true",
+        hideGenerationTimestamp: "true"
+    ]
+    globalProperties = [
+        skipFormModel: "false"
     ]
 }
 
