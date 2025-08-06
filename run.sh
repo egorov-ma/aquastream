@@ -344,15 +344,31 @@ generate_passwords() {
     # Обновляем .env файл
     log INFO "Обновление .env файла..."
     cp "$env_file" "${env_file}.backup.$(date +%Y%m%d-%H%M%S)"
-    
-    sed -i.tmp \
-        -e "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=${postgres_pass}/" \
-        -e "s/^GRAFANA_ADMIN_PASSWORD=.*/GRAFANA_ADMIN_PASSWORD=${grafana_pass}/" \
-        -e "s/^ELASTIC_PASSWORD=.*/ELASTIC_PASSWORD=${elastic_pass}/" \
-        -e "s/^KIBANA_PASSWORD=.*/KIBANA_PASSWORD=${kibana_pass}/" \
-        "$env_file"
-    
-    rm -f "${env_file}.tmp"
+
+    local tmp_file="${env_file}.tmp"
+    : > "$tmp_file"
+
+    while IFS= read -r line; do
+        case "$line" in
+            POSTGRES_PASSWORD=*)
+                printf 'POSTGRES_PASSWORD=%s\n' "$postgres_pass" >> "$tmp_file"
+                ;;
+            GRAFANA_ADMIN_PASSWORD=*)
+                printf 'GRAFANA_ADMIN_PASSWORD=%s\n' "$grafana_pass" >> "$tmp_file"
+                ;;
+            ELASTIC_PASSWORD=*)
+                printf 'ELASTIC_PASSWORD=%s\n' "$elastic_pass" >> "$tmp_file"
+                ;;
+            KIBANA_PASSWORD=*)
+                printf 'KIBANA_PASSWORD=%s\n' "$kibana_pass" >> "$tmp_file"
+                ;;
+            *)
+                printf '%s\n' "$line" >> "$tmp_file"
+                ;;
+        esac
+    done < "$env_file"
+
+    mv "$tmp_file" "$env_file"
     log INFO "Файл .env обновлен с новыми паролями"
     
     # Добавляем в .gitignore
@@ -375,6 +391,7 @@ generate_passwords() {
     echo "  Kibana:     ${kibana_pass}"
     echo
     log WARN "⚠️  ВАЖНО: Сохраните эти пароли в безопасном месте!"
+    log INFO "Рекомендуется хранить значения в GitHub Secrets и передавать их контейнерам через --env-file или env:"
     log WARN "⚠️  После смены паролей потребуется пересоздание контейнеров"
 }
 
@@ -468,14 +485,30 @@ update_passwords() {
             local kibana_pass
             kibana_pass=$(input_password "Kibana")
             
-            sed -i.tmp \
-                -e "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=${postgres_pass}/" \
-                -e "s/^GRAFANA_ADMIN_PASSWORD=.*/GRAFANA_ADMIN_PASSWORD=${grafana_pass}/" \
-                -e "s/^ELASTIC_PASSWORD=.*/ELASTIC_PASSWORD=${elastic_pass}/" \
-                -e "s/^KIBANA_PASSWORD=.*/KIBANA_PASSWORD=${kibana_pass}/" \
-                "$env_file"
-            
-            rm -f "${env_file}.tmp"
+            local tmp_file="${env_file}.tmp"
+            : > "$tmp_file"
+
+            while IFS= read -r line; do
+                case "$line" in
+                    POSTGRES_PASSWORD=*)
+                        printf 'POSTGRES_PASSWORD=%s\n' "$postgres_pass" >> "$tmp_file"
+                        ;;
+                    GRAFANA_ADMIN_PASSWORD=*)
+                        printf 'GRAFANA_ADMIN_PASSWORD=%s\n' "$grafana_pass" >> "$tmp_file"
+                        ;;
+                    ELASTIC_PASSWORD=*)
+                        printf 'ELASTIC_PASSWORD=%s\n' "$elastic_pass" >> "$tmp_file"
+                        ;;
+                    KIBANA_PASSWORD=*)
+                        printf 'KIBANA_PASSWORD=%s\n' "$kibana_pass" >> "$tmp_file"
+                        ;;
+                    *)
+                        printf '%s\n' "$line" >> "$tmp_file"
+                        ;;
+                esac
+            done < "$env_file"
+
+            mv "$tmp_file" "$env_file"
             log INFO "Пароли обновлены в .env файле"
             ;;
         *)
@@ -483,8 +516,9 @@ update_passwords() {
             exit 1
             ;;
     esac
-    
+
     echo
+    log INFO "Рекомендуется хранить секреты в GitHub Secrets и передавать их контейнерам через --env-file или env:"
     log WARN "⚠️  Для применения новых паролей требуется перезапуск сервисов"
     read -r -p "Перезапустить сервисы сейчас? [y/N]: " restart_services
     
