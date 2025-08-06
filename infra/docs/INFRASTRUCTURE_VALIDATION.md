@@ -259,7 +259,7 @@ git commit --no-verify -m "Emergency fix"
 В коде можно добавить комментарии для исключений:
 
 ```yaml
-# docker-compose.yml
+# docker-compose.full.yml
 services:
   legacy-service:
     image: oldapp:latest  # TODO: pin version - legacy system
@@ -271,7 +271,7 @@ services:
 
 ```bash
 # Проверьте синтаксис
-docker compose -f infra/docker/compose/docker-compose.yml config
+docker compose -f infra/docker/compose/docker-compose.full.yml config
 
 # Исправьте ошибки YAML синтаксиса
 # Проверьте отступы, кавычки, двоеточия

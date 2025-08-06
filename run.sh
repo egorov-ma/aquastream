@@ -121,10 +121,10 @@ check_required_secrets() {
 # Функция для остановки контейнеров
 stop_containers() {
     log "[INFO] Остановка всех контейнеров и очистка ресурсов..."
-    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down -v --remove-orphans
+    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" ]; then
+        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" down -v --remove-orphans
     else
-        log "[ERROR] Файл docker-compose.yml не найден!"
+        log "[ERROR] Файл docker-compose.dev.yml не найден!"
         exit 1
     fi
     # Очистка данных ZooKeeper (если volume существует)
@@ -147,7 +147,7 @@ start_containers() {
     stop_containers
     log "[INFO] Запускаем docker compose..."
 
-    local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.yml"
+    local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml"
     if [ -f "$compose_file" ]; then
         if [ "$verbose_mode" = "true" ] || [ "$verbose_mode" = "--verbose" ] || [ "$verbose_mode" = "-v" ]; then
             log "[INFO] Режим детального вывода активирован"
@@ -195,7 +195,7 @@ start_containers() {
         
         wait_healthy 180
     else
-        log "[ERROR] Файл docker-compose.yml не найден!"
+        log "[ERROR] Файл docker-compose.dev.yml не найден!"
         exit 1
     fi
 }
@@ -212,7 +212,7 @@ wait_healthy() {
     while [ $elapsed -lt "$max_wait" ]; do
         # Получаем статус без jq для совместимости
         local status_info
-    status_info=$(docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}" 2>/dev/null || true)
+    status_info=$(docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}" 2>/dev/null || true)
         
         # Подсчитываем контейнеры
         local total_containers running_containers healthy_containers
@@ -787,10 +787,10 @@ build_project() {
     # ========================= Docker images =========================
     log INFO "========== Docker compose build (${mode}) =========="
     if [ "$mode" = "full" ]; then
-          ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
+          ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" build || { log ERROR "Docker build failed"; exit 1; }
     else
         docker_log=$(mktemp)
-          if ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1; then
+          if ORG_OPENAPITOOLS_CODEGEN_SUPPRESSDONATIONMESSAGE=true docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" build --quiet >"$docker_log" 2>&1; then
             log INFO "Docker images build SUCCESS"
         else
             log ERROR "Docker images build FAILED. Полный лог: $docker_log"
@@ -802,10 +802,10 @@ build_project() {
 # Функция для просмотра логов
 view_logs() {
     log "[INFO] Просмотр логов..."
-    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
+    if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" ]; then
+        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" logs -f
     else
-        log "[ERROR] Файл docker-compose.yml не найден!"
+        log "[ERROR] Файл docker-compose.dev.yml не найден!"
         exit 1
     fi
 }
@@ -984,13 +984,13 @@ case "$CMD" in
     "logs")
         shift
         if [ -n "$1" ]; then
-            docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f "$1"
+            docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" logs -f "$1"
         else
             view_logs
         fi
         ;;
     "status")
-        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
+        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml" ps
         ;;
     "security")
         shift  # убираем ключевое слово security

@@ -2291,7 +2291,7 @@ backend-event/                         # Корневой проект
 │
 ├── docker/                            # Docker конфигурации
 │   ├── Dockerfile                     # Основной Dockerfile
-│   └── docker-compose.yml             # Композиция для разработки
+│   └── docker-compose.dev.yml             # Композиция для разработки
 │
 ├── .github/                           # GitHub Actions конфигурации  
 │   └── workflows/                     # CI/CD workflows
@@ -2322,17 +2322,17 @@ cd backend-event
 
 ### 🐳 Запуск с использованием Docker
 
-Для локальной разработки предоставляется `docker-compose.yml`, который поднимает все необходимые зависимости:
+Для локальной разработки предоставляется `docker-compose.dev.yml`, который поднимает все необходимые зависимости:
 
 ```bash
 # Запуск только зависимостей (Postgres, Redis, Kafka, Zookeeper)
-docker-compose -f docker/docker-compose.yml up -d postgres redis kafka zookeeper
+docker-compose -f docker/docker-compose.dev.yml up -d postgres redis kafka zookeeper
 
 # Запуск всего стека, включая сам сервис
-docker-compose -f docker/docker-compose.yml up -d
+docker-compose -f docker/docker-compose.dev.yml up -d
 ```
 
-#### docker-compose.yml для локальной разработки:
+#### docker-compose.dev.yml для локальной разработки:
 
 ```yaml
 version: '3.8'
@@ -2467,7 +2467,7 @@ ENTRYPOINT ["java", "--enable-preview", "-XX:+UseZGC", "-jar", "app.jar"]
 
 ```bash
 # Запуск только зависимостей
-docker-compose -f docker/docker-compose.yml up -d postgres redis kafka zookeeper
+docker-compose -f docker/docker-compose.dev.yml up -d postgres redis kafka zookeeper
 
 # Локальный запуск сервисного модуля в режиме разработки
 ./gradlew :backend-event-service:bootRun --args='--spring.profiles.active=dev'
@@ -2581,20 +2581,20 @@ Body:
 
 ```bash
 # Просмотр логов сервиса в Docker
-docker-compose -f docker/docker-compose.yml logs -f backend-event
+docker-compose -f docker/docker-compose.dev.yml logs -f backend-event
 
 # Просмотр логов зависимостей
-docker-compose -f docker/docker-compose.yml logs -f postgres kafka
+docker-compose -f docker/docker-compose.dev.yml logs -f postgres kafka
 ```
 
 #### Мониторинг Kafka
 
 ```bash
 # Просмотр списка топиков
-docker-compose -f docker/docker-compose.yml exec kafka kafka-topics --bootstrap-server localhost:9092 --list
+docker-compose -f docker/docker-compose.dev.yml exec kafka kafka-topics --bootstrap-server localhost:9092 --list
 
 # Просмотр сообщений в топике
-docker-compose -f docker/docker-compose.yml exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic event_updates --from-beginning
+docker-compose -f docker/docker-compose.dev.yml exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic event_updates --from-beginning
 ```
 
 #### Работа с базой данных через DBeaver
@@ -2628,7 +2628,7 @@ curl http://localhost:8080/actuator/metrics
 
 1. **Ошибка подключения к PostgreSQL**:
    - Проверьте, что контейнер запущен: `docker ps | grep postgres`
-   - Проверьте логи: `docker-compose -f docker/docker-compose.yml logs postgres`
+   - Проверьте логи: `docker-compose -f docker/docker-compose.dev.yml logs postgres`
    - Убедитесь, что указаны правильные учетные данные в конфигурации
 
 2. **Kafka не создает топики автоматически**:
@@ -3403,7 +3403,7 @@ docker run -it --rm -p 8888:8080 -v $PWD/wiremock:/home/wiremock wiremock/wiremo
 
 ##### Настройка в Docker Compose
 
-WireMock уже включен в конфигурацию `docker-compose.yml` для локальной разработки:
+WireMock уже включен в конфигурацию `docker-compose.dev.yml` для локальной разработки:
 
 ```yaml
 wiremock:

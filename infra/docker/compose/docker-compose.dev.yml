@@ -1,22 +1,145 @@
-# Development overrides for datasource configuration
-x-spring-datasource: &spring-datasource
-  SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-  SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-  SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+name: aquastream
 
 services:
+  postgres:
+    image: postgres:${POSTGRES_TAG:-16}
+    environment:
+      POSTGRES_DB: aquastream_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aquastream
+
+  zookeeper:
+    image: bitnami/zookeeper:${ZOOKEEPER_TAG:-3.8}
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/bitnami/zookeeper
+    networks:
+      - aquastream
+
+  kafka:
+    image: confluentinc/cp-kafka:${KAFKA_TAG:-7.5.1}
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    depends_on:
+      - zookeeper
+    ports:
+      - "${KAFKA_PORT:-9092}:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - aquastream
+
   user-service:
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.backend-user
     environment:
-      <<: *spring-datasource
-  crew-service:
-    environment:
-      <<: *spring-datasource
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - "8081:8081"
+    networks:
+      - aquastream
+
   event-service:
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.backend-event
     environment:
-      <<: *spring-datasource
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - "8082:8082"
+      - "9090:9090"
+    networks:
+      - aquastream
+
+  crew-service:
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.backend-crew
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - "8083:8083"
+    networks:
+      - aquastream
+
   notification-service:
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.backend-notification
     environment:
-      <<: *spring-datasource
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - "8084:8084"
+    networks:
+      - aquastream
+
   api-gateway:
-    environment:
-      <<: *spring-datasource
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.backend-gateway
+    depends_on:
+      - user-service
+      - crew-service
+      - event-service
+      - notification-service
+    ports:
+      - "8080:8080"
+    networks:
+      - aquastream
+
+  frontend:
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.frontend
+    depends_on:
+      - api-gateway
+    ports:
+      - "3000:80"
+    networks:
+      - aquastream
+
+networks:
+  aquastream:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  zookeeper_data:
+  kafka_data:

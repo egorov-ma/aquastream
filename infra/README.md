@@ -4,6 +4,10 @@
 
 Этот каталог содержит инфраструктурную конфигурацию платформы AquaStream, включая Docker, мониторинг и конфигурации развертывания с усиленной безопасностью.
 
+В `docker/compose` находятся два файла:
+- `docker-compose.dev.yml` — минимальный набор сервисов для разработки;
+- `docker-compose.full.yml` — полный стек с мониторингом и прочей инфраструктурой.
+
 ## Архитектура
 
 AquaStream использует многоуровневую архитектуру с Nginx reverse proxy в качестве единой точки входа:
@@ -18,7 +22,8 @@ Internet → Nginx (HTTPS) → Internal Docker Network → Microservices
 infra/
 ├── docker/
 │   ├── compose/
-│   │   ├── docker-compose.yml      # Основная конфигурация сервисов
+│   │   ├── docker-compose.dev.yml  # Лёгкая конфигурация для разработки
+│   │   ├── docker-compose.full.yml # Полный стек со всеми сервисами
 │   │   └── .env                    # Переменные окружения
 │   └── images/
 │       ├── Dockerfile.nginx        # Reverse proxy
