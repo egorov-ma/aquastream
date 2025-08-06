@@ -19,8 +19,6 @@ spring:
   config:
     activate:
       on-profile: local
-  datasource:
-    url: jdbc:postgresql://localhost:5432/aquastream_db
   kafka:
     bootstrap-servers: localhost:9092
 server:
@@ -30,8 +28,6 @@ spring:
   config:
     activate:
       on-profile: docker
-  datasource:
-    url: jdbc:postgresql://postgres:5432/aquastream_db
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
 server:
