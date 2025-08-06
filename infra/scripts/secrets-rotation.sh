@@ -294,7 +294,7 @@ rotate_all_secrets() {
 verify_services() {
     log_info "Verifying service connectivity after rotation..."
     
-    local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.yml"
+    local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.dev.yml"
     
     # Check if services are running
     local running_services

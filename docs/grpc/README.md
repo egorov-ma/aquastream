@@ -43,7 +43,7 @@ AquaStream использует gRPC для высокопроизводител
 
 ```bash
 # Билд и запуск всех сервисов
-docker-compose -f infra/docker/compose/docker-compose.yml up --build
+docker-compose -f infra/docker/compose/docker-compose.dev.yml up --build
 
 # Проверить gRPC endpoints
 grpcurl -plaintext localhost:9090 list

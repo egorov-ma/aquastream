@@ -48,7 +48,7 @@
 3. `docker compose pull && build` при необходимости.
 4. `docker compose up -d` и ожидание, пока все контейнеры станут `healthy`.
 
-Health-checks настроены во всех сервисах, а порядок запуска описан в `infra/docker/compose/docker-compose.yml` через `depends_on: condition: service_healthy`.
+Health-checks настроены во всех сервисах, а порядок запуска описан в `infra/docker/compose/docker-compose.full.yml` через `depends_on: condition: service_healthy`.
 
 Для запуска проекта существует несколько вариантов, в зависимости от ваших требований и среды разработки. Ниже приведены подробные инструкции для локального запуска и запуска через Docker.
 
@@ -102,20 +102,24 @@ Health-checks настроены во всех сервисах, а порядо
 
 ### 2. Запуск через Docker
 
+В каталоге `infra/docker/compose` доступны два файла:
+- `docker-compose.dev.yml` — лёгкая конфигурация для разработки.
+- `docker-compose.full.yml` — полный стек со всеми инфраструктурными компонентами.
+
 1. **Установка Docker и Docker Compose:**
    Убедитесь, что на вашем компьютере установлены Docker и Docker Compose.
 
 2. **Сборка Docker образов:**
    Выполните команду сборки образов, используя Docker Compose:
    ```bash
-   docker-compose -f infra/docker/compose/docker-compose.yml build
+   docker-compose -f infra/docker/compose/docker-compose.dev.yml build
    ```
    В Dockerfile-ах, расположенных в директории `infra/docker/images`, описан процесс сборки для каждого микросервиса.
 
 3. **Запуск контейнеров (чистый запуск):**
    Перед запуском очистите ранее запущенные и осиротевшие контейнеры, затем запустите все контейнеры в фоновом режиме:
    ```bash
-   docker-compose -f infra/docker/compose/docker-compose.yml down --remove-orphans && docker-compose -f infra/docker/compose/docker-compose.yml up -d
+   docker-compose -f infra/docker/compose/docker-compose.dev.yml down --remove-orphans && docker-compose -f infra/docker/compose/docker-compose.dev.yml up -d
    ```
    
    Все контейнеры должны иметь статус "Up". Если какой-то контейнер находится в другом состоянии или отсутствует, проверьте логи командой `docker-compose logs <имя_контейнера>`.
@@ -134,8 +138,6 @@ Health-checks настроены во всех сервисах, а порядо
    aquastream-postgres           docker-entrypoint.sh postgres    Up      0.0.0.0:5432->5432/tcp
    aquastream-zookeeper          /etc/confluent/docker/run        Up      2181/tcp, 2888/tcp, 3888/tcp
    aquastream-kafka              /etc/confluent/docker/run        Up      0.0.0.0:9092->9092/tcp
-   aquastream-prometheus         /bin/prometheus --config.f ...   Up      0.0.0.0:9091->9090/tcp
-   aquastream-grafana            /run.sh                          Up      0.0.0.0:3001->3000/tcp
    ```
 
 4. **Доступ к сервисам:**
@@ -158,7 +160,7 @@ Health-checks настроены во всех сервисах, а порядо
    ./run.sh build      # Полная сборка проекта (backend+frontend)
    ./run.sh exec <cmd> # Запуск произвольного скрипта из infra/scripts
    ```
-   `run.sh` автоматически ищет `infra/docker/compose/docker-compose.yml` и использует `docker compose`.
+   `run.sh` автоматически ищет `infra/docker/compose/docker-compose.dev.yml` и использует `docker compose`.
 
 ### Дополнительные рекомендации
 

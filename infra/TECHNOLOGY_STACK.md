@@ -327,6 +327,6 @@
 - [Справочник скриптов](./docs/SCRIPTS_REFERENCE.md)
 
 ### Конфигурационные файлы
-- [Docker Compose](./docker/compose/docker-compose.yml)
+- [Docker Compose](./docker/compose/docker-compose.full.yml)
 - [Nginx конфигурация](./monitoring/nginx/nginx.conf)
 - [Prometheus конфигурация](./monitoring/prometheus/prometheus.yml)

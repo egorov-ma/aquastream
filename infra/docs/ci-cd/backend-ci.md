@@ -9,7 +9,7 @@ name: Backend CI
 Основные job-ы:
 1. **test** – unit-тесты с кэшированием Gradle и выгрузкой отчётов.
 2. **build** – сборка JAR-файлов после тестов, публикация артефактов.
-3. **compose-validate** – валидация `docker-compose.yml`.
+3. **compose-validate** – валидация `docker-compose.full.yml`.
 
 Workflow настроен с минимальными правами (`contents: read`, `actions: write`) и
 использует `concurrency` для отмены повторяющихся запусков.
@@ -23,4 +23,4 @@ Workflow настроен с минимальными правами (`contents:
 ./run.sh stop    # stop & cleanup
 ```
 
-Service was renamed from `planning-service` to `event-service` inside `docker-compose.yml`.
+Service was renamed from `planning-service` to `event-service` inside `docker-compose.full.yml`.

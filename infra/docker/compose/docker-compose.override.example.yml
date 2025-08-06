@@ -1,22 +1,19 @@
-# Минимальный пример `docker-compose.override.yml` для локальной разработки.
-# Скопируйте (или переименуйте) этот файл в `docker-compose.override.yml` и
-# измените только то, что действительно требуется в вашей среде.
+# Пример `docker-compose.override.yml` для локальной разработки.
+# Используйте вместе с `docker-compose.dev.yml` и переопределяйте только необходимые параметры.
 
 services:
   api-gateway:
     ports:
       - "8888:8080"     # Меняем внешний порт с 8080 на 8888
-    environment:
-      - SPRING_PROFILES_ACTIVE=local,dev
 
   frontend:
     ports:
-      - "3001:80"       # Хотим держать фронт на 3001
+      - "3001:80"       # Запускаем фронтенд на 3001
 
   user-service:
     environment:
       - SPRING_PROFILES_ACTIVE=local,dev
       - LOGGING_LEVEL_ROOT=DEBUG
 
-# Для Postgres/MQ/прочего можно переопределить порты так же, при необходимости.
-# Остальные сервисы будут использовать значения из основного compose файла. 
+# Аналогичным образом можно переопределять порты для Postgres, Kafka и других сервисов.
+
