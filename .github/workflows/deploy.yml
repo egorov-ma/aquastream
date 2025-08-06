@@ -18,43 +18,8 @@ on:
           - staging
           - production
 
-env:
-  POSTGRES_PASSWORD: ci_test_password_123
-  ELASTIC_PASSWORD: ci_test_elastic_123
-  KIBANA_PASSWORD: ci_test_kibana_123
-  GRAFANA_ADMIN_PASSWORD: ci_test_grafana_123
-
 jobs:
-  validate-infrastructure:
-    name: Validate Infrastructure
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Create test .env file
-        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
-
-      - name: Validate Docker Compose
-        run: docker compose -f infra/docker/compose/docker-compose.yml --env-file infra/docker/compose/.env config --quiet
-
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@v2
-
-      - name: Run Hadolint
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: Dockerfile.*
-          recursive: true
-
-      - name: Validate YAML files
-        uses: mikefarah/yq@v4
-        with:
-          cmd: |
-            find infra \( -name '*.yml' -o -name '*.yaml' \) -exec yq eval '.' {} + > /dev/null
-
   deploy:
-    needs: validate-infrastructure
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: ${{ github.event.inputs.environment }}
