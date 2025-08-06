@@ -6,7 +6,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on:
+'on':
   workflow_dispatch:
 
 jobs:
@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      POSTGRES_PASSWORD: test_password
-      GRAFANA_ADMIN_PASSWORD: test_password
-      ELASTIC_PASSWORD: test_password
-      KIBANA_PASSWORD: test_password
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'test' }}
+      GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD || 'test' }}
+      ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD || 'test' }}
+      KIBANA_PASSWORD: ${{ secrets.KIBANA_PASSWORD || 'test' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
