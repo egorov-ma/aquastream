@@ -51,7 +51,6 @@ frontend/
 ├── package.json            # Зависимости и скрипты npm
 ├── playwright.config.ts    # Конфигурация Playwright
 ├── postcss.config.js       # Конфигурация PostCSS
-├── run_frontend.sh         # Основной скрипт управления проектом
 ├── tailwind.config.js      # Конфигурация Tailwind CSS
 ├── tsconfig.json           # Конфигурация TypeScript
 ├── vite.config.ts          # Основная конфигурация Vite
@@ -167,22 +166,22 @@ npm run test:e2e
 
 1. Установка зависимостей:
 ```bash
-./run_frontend.sh install
+npm install
 ```
 
 2. Запуск в режиме разработки:
 ```bash
-./run_frontend.sh dev
+npm run dev
 ```
 
 3. Сборка для продакшена:
 ```bash
-./run_frontend.sh build
+npm run build
 ```
 
 4. Запуск в Docker-контейнере:
 ```bash
-./run_frontend.sh docker
+npm run docker:rebuild
 ```
 
 ## Деплой
