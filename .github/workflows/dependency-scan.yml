@@ -40,6 +40,20 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './frontend/package-lock.json'
 
+      - name: Get Dependency Check version
+        if: matrix.service == 'backend'
+        id: dc-version
+        run: |
+          version=$(grep -oP "org\\.owasp\\.dependencycheck' version '\\K[0-9.]+" build.gradle)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Dependency Check data
+        if: matrix.service == 'backend'
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/dependency-check-data
+          key: dependency-check-${{ steps.dc-version.outputs.version }}
+
       - name: Run dependency vulnerability scan
         if: matrix.service == 'backend'
         run: ./gradlew dependencyCheckAnalyze
