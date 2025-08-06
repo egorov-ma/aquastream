@@ -82,8 +82,15 @@ Health-checks настроены во всех сервисах, а порядо
    - **Planning Service (backend-event):** `java -jar backend-event/build/libs/backend-event.jar`
    - **Crew Service (backend-crew):** `java -jar backend-crew/build/libs/backend-crew.jar`
    - **Notification Service (backend-notification):** `java -jar backend-notification/build/libs/backend-notification.jar`
-   
+
    Перед запуском убедитесь, что заданы необходимые переменные окружения (например, настройки базы данных, SSL-параметры и прочее).
+
+   Профиль конфигурации выбирается через переменную `SPRING_PROFILES_ACTIVE`:
+
+   ```bash
+   SPRING_PROFILES_ACTIVE=local  java -jar backend-user/build/libs/backend-user.jar
+   SPRING_PROFILES_ACTIVE=docker java -jar backend-user/build/libs/backend-user.jar
+   ```
 
 5. **Проверка работы сервисов:**
    - **API Gateway:** [http://localhost:8080](http://localhost:8080) и [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)

@@ -1,22 +1,11 @@
-server:
-  port: 8083
-
 spring:
+  config:
+    import: classpath:db-common.yml
   application:
     name: crew-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/aquastream_db
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
 eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
-
 management:
   endpoints:
     web:
@@ -25,18 +14,40 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-
-# AquaStream specific logging configuration  
 aquastream:
   logging:
     structured:
-      enabled: false  # JSON logging disabled in dev
+      enabled: false
     level:
       root: DEBUG
-      
-# Standard logging configuration
 logging:
   level:
     org.aquastream.crew: DEBUG
     org.springframework.web: INFO
-    root: DEBUG 
+    root: DEBUG
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream_db
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8083
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/aquastream_db
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+server:
+  port: 8083
