@@ -18,7 +18,7 @@ API Gateway на базе Spring Cloud Gateway.
 
 ### Docker
 ```bash
-docker build -t aquastream-gateway -f infra/docker/images/Dockerfile.backend-gateway .
+docker build -t aquastream-gateway -f infra/docker/images/Dockerfile.backend --build-arg SERVICE=backend-gateway/backend-gateway-service .
 docker run -p 8080:8080 aquastream-gateway
 ```
 

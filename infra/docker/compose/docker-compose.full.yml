@@ -506,8 +506,9 @@ services:
   user-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-user
+      dockerfile: infra/docker/images/Dockerfile.backend
       args:
+        SERVICE: backend-user/backend-user-service
         ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
         ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-user:${ECLIPSE_TEMURIN_JRE_TAG}
@@ -539,8 +540,9 @@ services:
   crew-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-crew
+      dockerfile: infra/docker/images/Dockerfile.backend
       args:
+        SERVICE: backend-crew/backend-crew-service
         ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
         ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-crew:${ECLIPSE_TEMURIN_JRE_TAG}
@@ -572,8 +574,9 @@ services:
   event-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-event
+      dockerfile: infra/docker/images/Dockerfile.backend
       args:
+        SERVICE: backend-event/backend-event-service
         ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
         ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-event:${ECLIPSE_TEMURIN_JRE_TAG}
@@ -605,8 +608,9 @@ services:
   notification-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-notification
+      dockerfile: infra/docker/images/Dockerfile.backend
       args:
+        SERVICE: backend-notification/backend-notification-service
         ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
         ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-notification:${ECLIPSE_TEMURIN_JRE_TAG}
@@ -639,8 +643,9 @@ services:
   api-gateway:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-gateway
+      dockerfile: infra/docker/images/Dockerfile.backend
       args:
+        SERVICE: backend-gateway/backend-gateway-service
         ECLIPSE_TEMURIN_JDK_TAG: ${ECLIPSE_TEMURIN_JDK_TAG}
         ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-api:${ECLIPSE_TEMURIN_JRE_TAG}

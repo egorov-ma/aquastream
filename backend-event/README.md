@@ -18,7 +18,7 @@ gRPC сервер слушает `localhost:9090`, Spring Actuator – `http://l
 
 ### Docker
 ```bash
-docker build -t aquastream-event -f infra/docker/images/Dockerfile.backend-event .
+docker build -t aquastream-event -f infra/docker/images/Dockerfile.backend --build-arg SERVICE=backend-event/backend-event-service .
 docker run -p 8082:8082 -p 9090:9090 aquastream-event
 ```
 

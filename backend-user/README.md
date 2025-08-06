@@ -18,7 +18,7 @@
 
 ### Docker
 ```bash
-docker build -t aquastream-user -f infra/docker/images/Dockerfile.backend-user .
+docker build -t aquastream-user -f infra/docker/images/Dockerfile.backend --build-arg SERVICE=backend-user/backend-user-service .
 docker run -p 8081:8081 aquastream-user
 ```
 

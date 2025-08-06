@@ -18,7 +18,7 @@
 
 ### Docker
 ```bash
-docker build -t aquastream-crew -f infra/docker/images/Dockerfile.backend-crew .
+docker build -t aquastream-crew -f infra/docker/images/Dockerfile.backend --build-arg SERVICE=backend-crew/backend-crew-service .
 docker run -p 8083:8083 aquastream-crew
 ```
 

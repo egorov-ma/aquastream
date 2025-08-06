@@ -44,7 +44,9 @@ services:
   user-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-user
+      dockerfile: infra/docker/images/Dockerfile.backend
+      args:
+        SERVICE: backend-user/backend-user-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -61,7 +63,9 @@ services:
   event-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-event
+      dockerfile: infra/docker/images/Dockerfile.backend
+      args:
+        SERVICE: backend-event/backend-event-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -79,7 +83,9 @@ services:
   crew-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-crew
+      dockerfile: infra/docker/images/Dockerfile.backend
+      args:
+        SERVICE: backend-crew/backend-crew-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -96,7 +102,9 @@ services:
   notification-service:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-notification
+      dockerfile: infra/docker/images/Dockerfile.backend
+      args:
+        SERVICE: backend-notification/backend-notification-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -113,7 +121,9 @@ services:
   api-gateway:
     build:
       context: ../../..
-      dockerfile: infra/docker/images/Dockerfile.backend-gateway
+      dockerfile: infra/docker/images/Dockerfile.backend
+      args:
+        SERVICE: backend-gateway/backend-gateway-service
     depends_on:
       - user-service
       - crew-service

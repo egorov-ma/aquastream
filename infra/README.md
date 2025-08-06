@@ -27,7 +27,7 @@ infra/
 │   │   └── .env                    # Переменные окружения
 │   └── images/
 │       ├── Dockerfile.nginx        # Reverse proxy
-│       ├── Dockerfile.backend-*    # Микросервисы
+│       ├── Dockerfile.backend      # Общий Dockerfile для микросервисов
 │       └── Dockerfile.frontend     # Веб-интерфейс
 ├── monitoring/
 │   ├── nginx/                      # Конфигурация Nginx
