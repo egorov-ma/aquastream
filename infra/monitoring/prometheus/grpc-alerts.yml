@@ -1,0 +1,180 @@
+# Prometheus alerting rules for AquaStream gRPC services
+
+groups:
+  - name: grpc_performance
+    rules:
+      # High gRPC Error Rate
+      - alert: GrpcHighErrorRate
+        expr: |
+          (
+            rate(grpc_server_errors_total{application=~".*-service"}[5m]) /
+            rate(grpc_server_completed_total{application=~".*-service"}[5m])
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+        annotations:
+          summary: "High gRPC error rate detected"
+          description: |
+            gRPC service {{ $labels.service }}.{{ $labels.method }} has error rate of {{ $value | humanizePercentage }}
+            which is above 5% threshold for more than 2 minutes.
+
+      # Critical gRPC Error Rate  
+      - alert: GrpcCriticalErrorRate
+        expr: |
+          (
+            rate(grpc_server_errors_total{application=~".*-service"}[5m]) /
+            rate(grpc_server_completed_total{application=~".*-service"}[5m])
+          ) > 0.20
+        for: 1m
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+        annotations:
+          summary: "Critical gRPC error rate detected"
+          description: |
+            gRPC service {{ $labels.service }}.{{ $labels.method }} has error rate of {{ $value | humanizePercentage }}
+            which is above 20% threshold for more than 1 minute. Immediate attention required.
+
+  - name: grpc_latency
+    rules:
+      # High gRPC Response Time
+      - alert: GrpcHighLatency
+        expr: |
+          histogram_quantile(0.95, 
+            rate(grpc_server_duration_seconds_bucket{application=~".*-service"}[5m])
+          ) > 1.0
+        for: 3m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+        annotations:
+          summary: "High gRPC response time detected"
+          description: |
+            gRPC service {{ $labels.service }}.{{ $labels.method }} 95th percentile response time 
+            is {{ $value | humanizeDuration }} which is above 1s threshold for more than 3 minutes.
+
+      # Critical gRPC Response Time
+      - alert: GrpcCriticalLatency
+        expr: |
+          histogram_quantile(0.95, 
+            rate(grpc_server_duration_seconds_bucket{application=~".*-service"}[5m])
+          ) > 5.0
+        for: 1m
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+        annotations:
+          summary: "Critical gRPC response time detected"
+          description: |
+            gRPC service {{ $labels.service }}.{{ $labels.method }} 95th percentile response time 
+            is {{ $value | humanizeDuration }} which is above 5s threshold. Service may be down.
+
+  - name: grpc_availability
+    rules:
+      # gRPC Service Down
+      - alert: GrpcServiceDown
+        expr: |
+          up{job=~"aquastream.*grpc.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "{{ $labels.service_name }}"
+        annotations:
+          summary: "gRPC service is down"
+          description: |
+            gRPC service {{ $labels.service_name }} at {{ $labels.instance }} has been down for more than 1 minute.
+
+      # No gRPC Requests
+      - alert: GrpcNoRequests
+        expr: |
+          rate(grpc_server_started_total{application=~".*-service"}[10m]) == 0
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+        annotations:
+          summary: "No gRPC requests received"
+          description: |
+            gRPC service {{ $labels.service }}.{{ $labels.method }} has received no requests 
+            for more than 5 minutes. Check if clients are connecting properly.
+
+  - name: grpc_resources
+    rules:
+      # High Memory Usage
+      - alert: GrpcHighMemoryUsage
+        expr: |
+          grpc_memory_usage_bytes{application=~".*-service"} > 1073741824  # 1GB
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.application }}"
+        annotations:
+          summary: "High memory usage for gRPC service"
+          description: |
+            gRPC service {{ $labels.application }} is using {{ $value | humanizeBytes }} of memory
+            which is above 1GB threshold for more than 5 minutes.
+
+      # Too Many Active Connections
+      - alert: GrpcTooManyConnections
+        expr: |
+          grpc_active_connections{application=~".*-service"} > 1000
+        for: 2m
+        labels:
+          severity: warning
+          service: "{{ $labels.application }}"
+        annotations:
+          summary: "Too many active gRPC connections"
+          description: |
+            gRPC service {{ $labels.application }} has {{ $value }} active connections
+            which is above 1000 threshold for more than 2 minutes.
+
+      # Connection Leak Detection
+      - alert: GrpcConnectionLeak
+        expr: |
+          increase(grpc_total_connections{application=~".*-service"}[1h]) > 
+          increase(grpc_total_connections{application=~".*-service"}[1h] offset 1h) * 2
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.application }}"
+        annotations:
+          summary: "Possible gRPC connection leak detected"
+          description: |
+            gRPC service {{ $labels.application }} connection growth rate has doubled 
+            in the last hour, indicating possible connection leak.
+
+  - name: grpc_business_logic
+    rules:
+      # High gRPC Validation Errors
+      - alert: GrpcHighValidationErrors
+        expr: |
+          rate(grpc_server_errors_total{application=~".*-service", error="INVALID_ARGUMENT"}[5m]) > 10
+        for: 3m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+        annotations:
+          summary: "High validation error rate in gRPC service"
+          description: |
+            gRPC service {{ $labels.service }}.{{ $labels.method }} has validation error rate 
+            of {{ $value }} errors/second for more than 3 minutes. Check client input validation.
+
+      # High gRPC Cancellation Rate
+      - alert: GrpcHighCancellationRate
+        expr: |
+          (
+            rate(grpc_server_cancelled_total{application=~".*-service"}[5m]) /
+            rate(grpc_server_started_total{application=~".*-service"}[5m])
+          ) > 0.10
+        for: 3m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+        annotations:
+          summary: "High gRPC request cancellation rate"
+          description: |
+            gRPC service {{ $labels.service }}.{{ $labels.method }} has cancellation rate 
+            of {{ $value | humanizePercentage }} which is above 10% threshold. 
+            Check client timeout configurations.

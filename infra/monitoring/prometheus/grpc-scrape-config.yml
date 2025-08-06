@@ -1,0 +1,110 @@
+# Prometheus scrape configuration for AquaStream gRPC services
+# Add this to your main prometheus.yml configuration file
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # AquaStream Event Service gRPC Metrics
+  - job_name: 'aquastream-event-service-grpc'
+    metrics_path: /actuator/prometheus
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['event-service:8082']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - target_label: service
+        replacement: 'event-service'
+      - target_label: protocol
+        replacement: 'grpc'
+    metric_relabel_configs:
+      # Relabel gRPC specific metrics
+      - source_labels: [__name__]
+        regex: 'grpc_server_.*'
+        target_label: __name__
+      - source_labels: [__name__]
+        regex: 'grpc_active_connections'
+        target_label: __name__
+      - source_labels: [__name__]
+        regex: 'grpc_total_connections'
+        target_label: __name__
+      - source_labels: [__name__]
+        regex: 'grpc_memory_usage_bytes'
+        target_label: __name__
+      - source_labels: [__name__]
+        regex: 'grpc_thread_pool_active'
+        target_label: __name__
+
+  # AquaStream Crew Service gRPC Metrics
+  - job_name: 'aquastream-crew-service-grpc'
+    metrics_path: /actuator/prometheus
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['crew-service:8083']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - target_label: service
+        replacement: 'crew-service'
+      - target_label: protocol
+        replacement: 'grpc'
+    metric_relabel_configs:
+      # Relabel gRPC specific metrics
+      - source_labels: [__name__]
+        regex: 'grpc_server_.*'
+        target_label: __name__
+      - source_labels: [__name__]
+        regex: 'grpc_active_connections'
+        target_label: __name__
+      - source_labels: [__name__]
+        regex: 'grpc_total_connections'
+        target_label: __name__
+
+  # Docker development environment
+  - job_name: 'aquastream-services-dev'
+    metrics_path: /actuator/prometheus
+    scrape_interval: 15s
+    static_configs:
+      - targets: 
+        - 'localhost:8082'  # event-service
+        - 'localhost:8083'  # crew-service
+        - 'localhost:8084'  # notification-service
+        - 'localhost:8085'  # user-service
+        - 'localhost:8080'  # gateway-service
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: 'localhost:808([0-9])'
+        target_label: service
+        replacement: 'aquastream-service-${1}'
+      - source_labels: [__address__]
+        regex: 'localhost:8082'
+        target_label: service_name
+        replacement: 'event-service'
+      - source_labels: [__address__]
+        regex: 'localhost:8083'
+        target_label: service_name
+        replacement: 'crew-service'
+      - source_labels: [__address__]
+        regex: 'localhost:8084'
+        target_label: service_name
+        replacement: 'notification-service'
+      - source_labels: [__address__]
+        regex: 'localhost:8085'
+        target_label: service_name
+        replacement: 'user-service'
+      - source_labels: [__address__]
+        regex: 'localhost:8080'
+        target_label: service_name
+        replacement: 'gateway-service'
+
+# Alerting rules for gRPC services
+rule_files:
+  - "grpc-alerts.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093

@@ -49,10 +49,33 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,prometheus
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when_authorized
+      show-components: always
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
   metrics:
     tags:
       application: ${spring.application.name}
+      service: event-service
+      version: 1.0.0
+    export:
+      prometheus:
+        enabled: true
+        step: 10s
+        descriptions: true
+    distribution:
+      percentiles-histogram:
+        grpc.server.duration.seconds: true
+        http.server.requests: true
+      slo:
+        grpc.server.duration.seconds: 50ms,100ms,200ms,500ms,1s,2s,5s
+        http.server.requests: 50ms,100ms,200ms,500ms,1s,2s,5s
 
 # Logging configuration
 logging:
@@ -67,4 +90,8 @@ aquastream:
     structured:
       enabled: false  # JSON logging disabled in dev
     level:
-      root: DEBUG 
+      root: DEBUG
+  monitoring:
+    grpc:
+      enabled: true  # Enable gRPC monitoring
+      detailed-metrics: true  # Enable detailed per-method metrics
