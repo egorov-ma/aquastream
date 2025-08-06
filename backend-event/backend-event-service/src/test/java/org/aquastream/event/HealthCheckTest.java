@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     "spring.datasource.password=",
     "spring.jpa.hibernate.ddl-auto=create-drop",
     "spring.liquibase.enabled=false",
-    "eureka.client.enabled=false",
     "spring.kafka.bootstrap-servers=PLAINTEXT://localhost:19092",
     "grpc.server.port=-1",
     "management.endpoints.web.exposure.include=health,info"

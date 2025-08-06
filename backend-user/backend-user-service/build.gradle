@@ -12,7 +12,6 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:${rootProject.jsonWebTokenVersion}"
     implementation project(':common')
     implementation "org.springframework.boot:spring-boot-starter-actuator:${rootProject.springBootVersion}"
-    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
     implementation "org.springframework.kafka:spring-kafka:${rootProject.springKafkaVersion}"
     
     // OpenAPI/Swagger

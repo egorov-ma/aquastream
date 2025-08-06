@@ -22,10 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     "spring.datasource.password=",
     "spring.jpa.hibernate.ddl-auto=create-drop",
     "spring.liquibase.enabled=false",
-    "eureka.client.enabled=false",
     "spring.kafka.bootstrap-servers=PLAINTEXT://localhost:19092",
-    "app.jwtSecret=testSecretKey",
-    "app.jwtExpirationMs=86400000",
+    "jwt.secret=testSecretKey",
+    "jwt.expiration-ms=86400000",
+    "spring.kafka.topics.user-registration=user-registration",
     "springdoc.api-docs.enabled=false",
     "springdoc.swagger-ui.enabled=false"
 })

@@ -46,7 +46,6 @@
   - Spring Boot Starter Validation
 - **Spring Cloud**: `2023.0.1`
   - Spring Cloud Gateway
-  - Spring Cloud Netflix Eureka
 - **Spring Kafka**: `3.0.14`
 
 ### Библиотеки разработки

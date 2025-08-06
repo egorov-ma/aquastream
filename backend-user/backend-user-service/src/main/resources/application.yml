@@ -26,9 +26,6 @@ spring:
 jwt:
   secret: 9oSu9ugYxpECIJvtQJ3Q0FPT9jEC5hK3X5Pf7MYgfjSUcum3W9
   expiration-ms: 86400000 # 24 часа
-eureka:
-  instance:
-    prefer-ip-address: true
 management:
   endpoints:
     web:
@@ -56,10 +53,6 @@ spring:
       on-profile: local
   kafka:
     bootstrap-servers: localhost:9092
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
 server:
   port: 8081
 ---
@@ -69,9 +62,5 @@ spring:
       on-profile: docker
   kafka:
     bootstrap-servers: kafka:9092
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
 server:
   port: 8081
