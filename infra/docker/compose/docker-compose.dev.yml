@@ -1,0 +1,22 @@
+# Development overrides for datasource configuration
+x-spring-datasource: &spring-datasource
+  SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+  SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+  SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+
+services:
+  user-service:
+    environment:
+      <<: *spring-datasource
+  crew-service:
+    environment:
+      <<: *spring-datasource
+  event-service:
+    environment:
+      <<: *spring-datasource
+  notification-service:
+    environment:
+      <<: *spring-datasource
+  api-gateway:
+    environment:
+      <<: *spring-datasource

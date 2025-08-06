@@ -97,8 +97,6 @@ spring:
   config:
     activate:
       on-profile: local
-  datasource:
-    url: jdbc:postgresql://localhost:5432/aquastream_db
 eureka:
   client:
     serviceUrl:
@@ -110,8 +108,6 @@ spring:
   config:
     activate:
       on-profile: docker
-  datasource:
-    url: jdbc:postgresql://postgres:5432/aquastream_db
 eureka:
   client:
     serviceUrl:
