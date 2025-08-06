@@ -34,8 +34,9 @@ jobs:
         run: |
           ./gradlew build -x test
 
-      - name: Prepare test environment
-        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
+      - uses: dotenvx/dotenv-action@v2
+        with:
+          path: infra/docker/compose/.env.ci
 
       - name: Start infrastructure services
         run: |

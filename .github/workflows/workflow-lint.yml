@@ -41,15 +41,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Docker Compose
+      - uses: dotenvx/dotenv-action@v2
+        with:
+          path: infra/docker/compose/.env.ci
         env:
           POSTGRES_PASSWORD: test_password_123
           GRAFANA_ADMIN_PASSWORD: test_password_123
           ELASTIC_PASSWORD: test_password_123
           KIBANA_PASSWORD: test_password_123
+
+      - name: Validate Docker Compose
         run: |
           docker compose -f infra/docker/compose/docker-compose.yml \
-            --env-file <(printf "POSTGRES_PASSWORD=%s\nGRAFANA_ADMIN_PASSWORD=%s\nELASTIC_PASSWORD=%s\nKIBANA_PASSWORD=%s\n" "$POSTGRES_PASSWORD" "$GRAFANA_ADMIN_PASSWORD" "$ELASTIC_PASSWORD" "$KIBANA_PASSWORD"; tail -n +5 infra/docker/compose/.env.ci) \
             config --quiet
 
       - name: Run ShellCheck
