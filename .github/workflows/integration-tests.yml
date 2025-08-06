@@ -1,0 +1,65 @@
+---
+name: Integration Tests
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      POSTGRES_PASSWORD: test_password
+      GRAFANA_ADMIN_PASSWORD: test_password
+      ELASTIC_PASSWORD: test_password
+      KIBANA_PASSWORD: test_password
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build application
+        run: |
+          ./gradlew build -x test
+
+      - name: Prepare test environment
+        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
+
+      - name: Start infrastructure services
+        run: |
+          cd infra/docker/compose
+          docker compose up -d --wait --wait-timeout 120 \
+            postgres kafka zookeeper
+
+      - name: Run integration tests
+        run: ./gradlew integrationTest
+
+      - name: Health check services
+        run: |
+          cd infra/docker/compose
+          docker compose exec postgres pg_isready -U postgres \
+            -d aquastream_db || exit 1
+          docker compose exec kafka kafka-topics \
+            --bootstrap-server localhost:9092 --list || exit 1
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd infra/docker/compose
+          docker compose down -v
