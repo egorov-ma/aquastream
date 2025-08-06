@@ -35,22 +35,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Create production .env file
+      - name: Build Docker images
         env:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'changeme123!' }}
           ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD || 'changeMe123!' }}
           KIBANA_PASSWORD: ${{ secrets.KIBANA_PASSWORD || 'changeme123!' }}
           GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD || 'admin' }}
-        run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
-
-      - name: Build Docker images
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: infra/docker/compose/docker-compose.yml
-          load: true
-          cache-from: type=gha,scope=deploy
-          cache-to: type=gha,mode=max,scope=deploy
+        run: |
+          docker compose -f infra/docker/compose/docker-compose.yml \
+            --env-file <(printf "POSTGRES_PASSWORD=%s\nELASTIC_PASSWORD=%s\nKIBANA_PASSWORD=%s\nGRAFANA_ADMIN_PASSWORD=%s\n" "$POSTGRES_PASSWORD" "$ELASTIC_PASSWORD" "$KIBANA_PASSWORD" "$GRAFANA_ADMIN_PASSWORD"; tail -n +5 infra/docker/compose/.env.ci) \
+            build
 
       - name: Deploy to ${{ github.event.inputs.environment }}
         run: echo "Deploying to ${{ github.event.inputs.environment }} environment"
