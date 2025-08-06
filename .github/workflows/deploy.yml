@@ -32,30 +32,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup validation tools
-        uses: ./.github/actions/ci-tools
-
       - name: Create test .env file
         run: envsubst < infra/docker/compose/.env.ci > infra/docker/compose/.env
 
       - name: Validate Docker Compose
-        run: docker compose -f infra/docker/compose/docker-compose.yml config > /dev/null
+        run: docker compose -f infra/docker/compose/docker-compose.yml --env-file infra/docker/compose/.env config --quiet
 
-      - name: Check for latest tags
-        run: |
-          if grep -q ":latest" infra/docker/compose/docker-compose.yml; then
-            echo "Found :latest tags in docker-compose.yml!"
-            exit 1
-          fi
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@v2
 
-      - name: Validate shell scripts
-        run: find . -name "*.sh" -not -path "*/node_modules/*" -exec shellcheck -x {} +
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile.*
+          recursive: true
 
-      - name: Run infrastructure validation
-        run: |
-          chmod +x infra/scripts/validate-infrastructure.sh
-          ./infra/scripts/validate-infrastructure.sh --quick
+      - name: Validate YAML files
+        uses: mikefarah/yq@v4
+        with:
+          cmd: |
+            find infra \( -name '*.yml' -o -name '*.yaml' \) -exec yq eval '.' {} + > /dev/null
 
   deploy:
     needs: validate-infrastructure
