@@ -5,15 +5,16 @@
 Elasticsearch теперь настроен с включенной безопасностью xpack.security и TLS шифрованием для всех соединений.
 
 ## Учетные данные
+> Секреты рекомендуется хранить в GitHub Secrets и передавать их в окружение при запуске `run.sh --use-env`.
 
 ### Elasticsearch
 - **Пользователь**: `elastic`
-- **Пароль**: `changeMe123!` (настраивается в `.env` как `ELASTIC_PASSWORD`)
+- **Пароль**: `changeMe123!` (настраивается в `.env` как `ELASTIC_PASSWORD` или через переменную окружения при запуске `./run.sh --use-env`)
 - **URL**: ~~`https://localhost:9200`~~ → **Доступ через Nginx Reverse Proxy**
 
 ### Kibana
-- **Пользователь**: `kibana_system` 
-- **Пароль**: `kibanaUser123!` (настраивается в `.env` как `KIBANA_PASSWORD`)
+- **Пользователь**: `kibana_system`
+- **Пароль**: `kibanaUser123!` (настраивается в `.env` как `KIBANA_PASSWORD` или через переменную окружения при запуске `./run.sh --use-env`)
 - **URL**: ~~`https://localhost:5601`~~ → **Доступ через Nginx**: `https://localhost/monitoring/kibana/`
 - **Basic Auth**: admin:monitoring123 (для доступа через Nginx)
 
@@ -79,7 +80,7 @@ docker compose logs logstash
 
 1. **Elasticsearch не запускается**
    - Проверьте, что сертификаты созданы: `docker compose logs elasticsearch-setup`
-   - Убедитесь в правильности паролей в `.env`
+   - Убедитесь в правильности паролей в `.env` или переменных окружения
 
 2. **Kibana не подключается**
    - Проверьте, что пользователь kibana_system настроен: `docker compose logs elasticsearch-init`

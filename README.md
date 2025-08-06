@@ -40,6 +40,8 @@
 ./run.sh stop
 ```
 
+По умолчанию скрипт читает переменные из `infra/docker/compose/.env`. Для запуска в CI/CD можно передать флаг `--use-env`, и значения будут взяты из переменных окружения. Секреты рекомендуется хранить в GitHub Secrets и передавать в окружение при запуске.
+
 Скрипт выполняет:
 1. `docker compose down -v --remove-orphans` – гарантирует, что старые данные ZooKeeper/Kafka не вызовут конфликт `NodeExists`.
 2. Очистку каталога ZooKeeper (`infra/scripts/zk-clean.sh`).

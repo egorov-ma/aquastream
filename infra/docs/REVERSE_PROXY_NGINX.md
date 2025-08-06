@@ -203,7 +203,7 @@ docker exec aquastream-nginx-1 cat /var/log/nginx/error.log | grep "limiting req
 ### Основные файлы
 - `infra/monitoring/nginx/nginx.conf` - основная конфигурация
 - `infra/docker/images/Dockerfile.nginx` - образ контейнера
-- `infra/docker/compose/.env` - переменные окружения
+ - `infra/docker/compose/.env` - переменные окружения (или используйте переменные окружения с `run.sh --use-env`, храните секреты в GitHub Secrets)
 
 ### Переменные окружения
 ```bash
