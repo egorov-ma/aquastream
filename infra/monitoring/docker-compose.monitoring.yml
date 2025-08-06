@@ -1,5 +1,5 @@
 # Docker Compose configuration for AquaStream monitoring stack
-# Run with: docker-compose -f docker-compose.monitoring.yml up -d
+# Run with: docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
 
 version: '3.8'
 

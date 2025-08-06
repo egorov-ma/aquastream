@@ -4,9 +4,15 @@
 
 Этот каталог содержит инфраструктурную конфигурацию платформы AquaStream, включая Docker, мониторинг и конфигурации развертывания с усиленной безопасностью.
 
-В `docker/compose` находятся два файла:
+В `docker/compose` находятся ключевые файлы:
 - `docker-compose.dev.yml` — минимальный набор сервисов для разработки;
-- `docker-compose.full.yml` — полный стек с мониторингом и прочей инфраструктурой.
+- `docker-compose.secrets.yml` — production-шаблон, используется только в CI/CD.
+
+Мониторинг запускается отдельным стеком при необходимости:
+
+```bash
+docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
+```
 
 ## Архитектура
 
@@ -22,14 +28,15 @@ Internet → Nginx (HTTPS) → Internal Docker Network → Microservices
 infra/
 ├── docker/
 │   ├── compose/
-│   │   ├── docker-compose.dev.yml  # Лёгкая конфигурация для разработки
-│   │   ├── docker-compose.full.yml # Полный стек со всеми сервисами
+│   │   ├── docker-compose.dev.yml      # Лёгкая конфигурация для разработки
+│   │   ├── docker-compose.secrets.yml  # Шаблон production-конфигурации (CI/CD)
 │   │   └── .env                    # Переменные окружения
 │   └── images/
 │       ├── Dockerfile.nginx        # Reverse proxy
 │       ├── Dockerfile.backend      # Общий Dockerfile для микросервисов
 │       └── Dockerfile.frontend     # Веб-интерфейс
 ├── monitoring/
+│   ├── docker-compose.monitoring.yml # Опциональный стек мониторинга
 │   ├── nginx/                      # Конфигурация Nginx
 │   ├── grafana/                    # Дашборды мониторинга
 │   ├── prometheus/                 # Сбор метрик
