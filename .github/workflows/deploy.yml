@@ -19,7 +19,12 @@ on:
           - production
 
 jobs:
+  lint:
+    uses: ./.github/workflows/workflow-lint.yml
+    secrets: inherit
+
   deploy:
+    needs: lint
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: ${{ github.event.inputs.environment }}
