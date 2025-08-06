@@ -32,7 +32,7 @@ jobs:
 
       - uses: dotenvx/dotenv-action@v2
         with:
-          path: infra/docker/compose/.env.ci
+          path: infra/docker/compose/.env.example
 
       - name: Start infrastructure services
         run: |

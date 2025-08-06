@@ -30,6 +30,7 @@
 ### Быстрый старт через скрипт
 
 ```bash
+cp infra/docker/compose/.env.example infra/docker/compose/.env
 ./run.sh build       # Сборка бэкенда и фронтенда
 ./run.sh build -be   # Сборка только бэкенда
 ./run.sh build -fe   # Сборка только фронтенда
@@ -40,8 +41,6 @@
 ./run.sh logs        # Показывает логи контейнеров
 ./run.sh stop        # Останавливает и очищает окружение
 ```
-
-При первом запуске скрипт создаёт `infra/docker/compose/.env` из `.env.example`.
 
 ### 1. Локальный запуск (без Docker)
 
