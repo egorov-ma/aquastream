@@ -15,9 +15,7 @@ This monitoring stack provides:
 ### 1. Start Monitoring Stack
 
 ```bash
-# From the monitoring directory
-cd infra/monitoring
-docker-compose -f docker-compose.monitoring.yml up -d
+docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
 ```
 
 ### 2. Access Services
@@ -30,7 +28,7 @@ docker-compose -f docker-compose.monitoring.yml up -d
 
 ```bash
 # Start all services with monitoring enabled
-docker-compose up -d
+docker compose -f infra/docker/compose/docker-compose.dev.yml up -d
 ```
 
 ## 📊 Available Dashboards

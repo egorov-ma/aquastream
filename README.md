@@ -91,9 +91,15 @@ npm ci && npm run build
 
 ### 2. Запуск через Docker
 
-В каталоге `infra/docker/compose` доступны два файла:
-- `docker-compose.dev.yml` — лёгкая конфигурация для разработки.
-- `docker-compose.full.yml` — полный стек со всеми инфраструктурными компонентами.
+В каталоге `infra/docker/compose` доступны основные файлы:
+- `docker-compose.dev.yml` — основная конфигурация для разработки.
+- `docker-compose.secrets.yml` — production-шаблон, используется только в CI/CD.
+
+Мониторинг можно поднять отдельным стеком при необходимости:
+
+```bash
+docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
+```
 
 1. **Установка Docker и Docker Compose:**
    Убедитесь, что на вашем компьютере установлены Docker и Docker Compose.
