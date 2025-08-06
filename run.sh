@@ -71,6 +71,20 @@ case "$1" in
         ;;
     esac
     ;;
+  dev)
+      case "$2" in
+        -be)
+          run_cmd ./gradlew bootRun
+          ;;
+        -fe)
+          run_cmd npm --prefix frontend start
+          ;;
+        *)
+          echo "Usage: $0 dev [-be|-fe]"
+          exit 1
+          ;;
+      esac
+      ;;
   start)
     if [ ! -f "$ENV_FILE" ]; then
       cp "$ENV_EXAMPLE" "$ENV_FILE"
@@ -92,7 +106,7 @@ case "$1" in
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|lint|start|stop|restart|status|logs} [-be|-fe]"
+    echo "Usage: $0 {build|test|lint|dev|start|stop|restart|status|logs} [-be|-fe]"
     exit 1
     ;;
 

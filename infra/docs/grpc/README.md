@@ -22,7 +22,7 @@ AquaStream использует gRPC для высокопроизводител
 
 | Сервис | HTTP Port | gRPC Port | Status | Documentation |
 |--------|-----------|-----------|--------|---------------|
-| **Event Service** | 8082 | 9090 | ✅ Active | [EVENT_SERVICE_API.md](./EVENT_SERVICE_API.md) |
+| **Event Service** | 8082 | 9090 | ✅ Active | [EVENT_SERVICE_API.md](EVENT_SERVICE_API.md) |
 | **User Service** | 8081 | 9091 | 🚧 Planned | Coming soon |
 | **Crew Service** | 8083 | 9092 | 🚧 Planned | Coming soon |
 | **Notification Service** | 8084 | 9093 | 🚧 Planned | Coming soon |
