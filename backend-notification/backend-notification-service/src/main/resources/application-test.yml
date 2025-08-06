@@ -4,8 +4,6 @@ server:
 spring:
   application:
     name: notification-service-test
-  profiles:
-    active: test
   
   # In-memory H2 database for testing
   datasource:

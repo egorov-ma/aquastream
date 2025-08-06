@@ -9,8 +9,8 @@ import io.grpc.Status;
 import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor;
 import org.springframework.stereotype.Component;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import java.util.Set;
 
 @Component
@@ -27,12 +27,7 @@ public class ValidationInterceptor implements ServerInterceptor {
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
             ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
 
-        return new ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(call) {
-            @Override
-            public void sendMessage(RespT message) {
-                super.sendMessage(message);
-            }
-        }.startCall(new ValidationListener<>(next.startCall(call, headers), validator), headers);
+        return new ValidationListener<>(next.startCall(call, headers), validator);
     }
 
     private static class ValidationListener<ReqT> extends ServerCall.Listener<ReqT> {

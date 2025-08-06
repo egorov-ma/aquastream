@@ -55,7 +55,6 @@ management:
       application: ${spring.application.name}
 
 # Logging configuration
-aqua
 logging:
   level:
     org.aquastream.event: DEBUG

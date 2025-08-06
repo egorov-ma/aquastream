@@ -16,9 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -114,7 +114,7 @@ public class EventGrpcGateway {
         
         @NotBlank(message = "Имя события обязательно")
         @Size(min = 1, max = 255, message = "Имя события должно содержать от 1 до 255 символов")
-        @Schema(description = "Название события", example = "Конференция разработчиков", required = true)
+        @Schema(description = "Название события", example = "Конференция разработчиков", requiredMode = Schema.RequiredMode.REQUIRED)
         private String name;
         
         @Size(max = 1000, message = "Описание не должно превышать 1000 символов")
