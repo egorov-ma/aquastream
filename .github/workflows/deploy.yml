@@ -47,8 +47,10 @@ jobs:
 
         - name: Build Docker images
           run: |
-            docker compose -f infra/docker/compose/docker-compose.yml \
-              build
+            docker buildx bake -f infra/docker/compose/docker-compose.yml \
+              --set *.cache-from=type=gha \
+              --set *.cache-to=type=gha,mode=max \
+              --load
 
         - name: Deploy to ${{ github.event.inputs.environment }}
           run: >
