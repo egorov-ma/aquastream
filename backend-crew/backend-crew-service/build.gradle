@@ -15,10 +15,13 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation "org.springframework.kafka:spring-kafka:${rootProject.springKafkaVersion}"
     implementation project(':common')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    runtimeOnly 'org.postgresql:postgresql'
     
     implementation "io.grpc:grpc-netty-shaded:${rootProject.grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${rootProject.grpcVersion}"
@@ -33,9 +36,14 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "org.springframework.kafka:spring-kafka-test:${rootProject.springKafkaVersion}"
     testImplementation "com.h2database:h2:${rootProject.h2Version}"
-    testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${rootProject.junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${rootProject.junitVersion}"
+    
+    // Testcontainers for integration tests
+    testImplementation "org.testcontainers:junit-jupiter:${rootProject.testcontainersVersion}"
+    testImplementation "org.testcontainers:postgresql:${rootProject.testcontainersVersion}"
+    testImplementation "org.testcontainers:kafka:${rootProject.testcontainersVersion}"
+    
+    // gRPC testing
+    testImplementation "io.grpc:grpc-testing:${rootProject.grpcTestingVersion}"
 
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 

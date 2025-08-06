@@ -578,11 +578,15 @@ services:
         ECLIPSE_TEMURIN_JRE_TAG: ${ECLIPSE_TEMURIN_JRE_TAG}
     image: aquastream-event:${ECLIPSE_TEMURIN_JRE_TAG}
     restart: unless-stopped
-    expose: ['8082']
+    expose: ['8082', '9090']  # HTTP + gRPC ports
     environment:
       <<: *log-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
+      postgres:  { condition: service_healthy }
       kafka:     { condition: service_healthy }
       logstash:  { condition: service_healthy }
     networks: [ api-network ]

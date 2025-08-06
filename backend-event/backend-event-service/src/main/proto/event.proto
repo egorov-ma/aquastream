@@ -2,19 +2,41 @@ syntax = "proto3";
 
 package org.aquastream.event;
 
+import "google/api/annotations.proto";
+
 option java_multiple_files = true;
 option java_package = "org.aquastream.event.grpc";
 
+// Event Management Service
+// Provides operations for creating and managing events in the AquaStream system.
 service EventService {
-    rpc CreateEvent (EventRequest) returns (EventResponse);
+    // Creates a new event
+    // 
+    // Creates a new event with the specified name and description.
+    // Returns the created event ID and status.
+    rpc CreateEvent (EventRequest) returns (EventResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/events"
+            body: "*"
+        };
+    }
 }
 
+// Request message for creating an event
 message EventRequest {
+    // The name of the event (required, 1-255 characters)
+    // Must contain only alphanumeric characters, punctuation, and spaces
     string name = 1;
+    
+    // Optional description of the event (max 1000 characters)
     string description = 2;
 }
 
+// Response message for event creation
 message EventResponse {
+    // Unique identifier of the created event
     int64 id = 1;
+    
+    // Current status of the event (e.g., "CREATED", "ACTIVE", "CANCELLED")
     string status = 2;
 } 

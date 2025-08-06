@@ -32,6 +32,10 @@ ext {
     set('jakartaValidationVersion', '3.0.2')
     set('hibernateValidatorVersion', '8.0.2.Final')
     set('glassfishElVersion', '4.0.2')
+    set('testcontainersVersion', '1.19.7')
+    set('grpcTestingVersion', '1.64.0')
+    set('googleCommonProtosVersion', '2.29.0')
+    set('grpcGatewayVersion', '1.64.0')
 }
 
 // Load version from properties file

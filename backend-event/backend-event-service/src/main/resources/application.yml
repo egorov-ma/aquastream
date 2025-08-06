@@ -52,4 +52,20 @@ management:
         include: health,metrics,prometheus
   metrics:
     tags:
-      application: ${spring.application.name} 
+      application: ${spring.application.name}
+
+# Logging configuration
+aqua
+logging:
+  level:
+    org.aquastream.event: DEBUG
+    net.devh.boot.grpc: DEBUG
+    root: DEBUG
+
+# AquaStream specific logging configuration
+aquastream:
+  logging:
+    structured:
+      enabled: false  # JSON logging disabled in dev
+    level:
+      root: DEBUG 

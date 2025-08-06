@@ -38,10 +38,18 @@ springdoc:
     enabled: true
     disable-swagger-default-url: true
 
-# Logging configuration for Docker environment
+# AquaStream specific logging configuration for Docker
+aquastream:
+  logging:
+    structured:
+      enabled: true  # JSON logging enabled in Docker
+    level:
+      root: INFO
+
+# Standard Spring Boot logging (fallback)
 logging:
   level:
     org.aquastream.crew: INFO
+    org.springframework.web.servlet.DispatcherServlet: WARN
+    org.springframework.boot.actuator.endpoint.web: WARN
     root: INFO
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{36}] - %msg%n"
