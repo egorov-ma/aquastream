@@ -1,10 +1,13 @@
 #!/bin/bash
 set -euo pipefail
-# Используйте: ./run.sh <команда> [аргументы]
+# Используйте: ./run.sh [--use-env] <команда> [аргументы]
 
 # Определяем корневую директорию проекта
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_DIR="${PROJECT_ROOT}/infra/scripts"
+ENV_FILE="${PROJECT_ROOT}/infra/docker/compose/.env"
+COMPOSE_ENV_ARGS=()
+USE_ENV_FILE=true
 
 # Цвета
 NC="\033[0m"; GREEN="\033[0;32m"; YELLOW="\033[0;33m"; RED="\033[0;31m"
@@ -94,7 +97,7 @@ check_docker_resources() {
 stop_containers() {
     log "[INFO] Остановка всех контейнеров и очистка ресурсов..."
     if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down -v --remove-orphans
+        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" down -v --remove-orphans
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
         exit 1
@@ -124,11 +127,11 @@ start_containers() {
         if [ "$verbose_mode" = "true" ] || [ "$verbose_mode" = "--verbose" ] || [ "$verbose_mode" = "-v" ]; then
             log "[INFO] Режим детального вывода активирован"
             # Тянем образы без секции build
-            docker compose -f "$compose_file" pull --ignore-buildable 2>/dev/null || true
+            docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" pull --ignore-buildable 2>/dev/null || true
             # Собираем build-образа
-            docker compose -f "$compose_file" build
+            docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" build
             # Запускаем контейнеры
-            docker compose -f "$compose_file" up -d
+            docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" up -d
         else
             log "[INFO] Режим тихого запуска (для детального вывода используйте: ./run.sh start --verbose)"
             # Создаем временные файлы для логов
@@ -137,7 +140,7 @@ start_containers() {
             local up_log=$(mktemp)
             
             # Тянем образы тихо
-            if docker compose -f "$compose_file" pull --quiet --ignore-buildable >"$pull_log" 2>&1; then
+              if docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" pull --quiet --ignore-buildable >"$pull_log" 2>&1; then
                 log "[INFO] ✅ Образы обновлены"
             else
                 log "[WARN] Некоторые образы не удалось обновить, продолжаем..."
@@ -145,7 +148,7 @@ start_containers() {
             
             # Собираем образы тихо
             log "[INFO] 🔨 Сборка образов..."
-            if docker compose -f "$compose_file" build --quiet >"$build_log" 2>&1; then
+              if docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" build --quiet >"$build_log" 2>&1; then
                 log "[INFO] ✅ Образы собраны"
             else
                 log "[ERROR] Ошибка сборки образов. Детали в: $build_log"
@@ -154,7 +157,7 @@ start_containers() {
             
             # Запускаем контейнеры тихо  
             log "[INFO] 🚀 Запуск контейнеров..."
-            if docker compose -f "$compose_file" up -d >"$up_log" 2>&1; then
+              if docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$compose_file" up -d >"$up_log" 2>&1; then
                 log "[INFO] ✅ Контейнеры запущены"
             else
                 log "[ERROR] Ошибка запуска контейнеров. Детали в: $up_log"
@@ -184,7 +187,7 @@ wait_healthy() {
     while [ $elapsed -lt "$max_wait" ]; do
         # Получаем статус без jq для совместимости
         local status_info
-        status_info=$(docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}" 2>/dev/null || true)
+    status_info=$(docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}" 2>/dev/null || true)
         
         # Подсчитываем контейнеры
         local total_containers running_containers healthy_containers
@@ -273,10 +276,14 @@ generate_passwords() {
     log INFO "========== Генерация сильных паролей для AquaStream =========="
     
     local env_file="$PROJECT_ROOT/infra/docker/compose/.env"
-    if [[ ! -f "$env_file" ]]; then
-        log ERROR "Файл .env не найден: $env_file"
-        log INFO "Скопируйте .env.example в .env и настройте переменные"
-        exit 1
+    if $USE_ENV_FILE; then
+        if [[ ! -f "$env_file" ]]; then
+            log ERROR "Файл .env не найден: $env_file"
+            log INFO "Скопируйте .env.example в .env и настройте переменные"
+            exit 1
+        fi
+    else
+        log INFO "--use-env активирован: пропускаем работу с файлом .env"
     fi
     
     # Генерируем пароли
@@ -290,36 +297,43 @@ generate_passwords() {
     kibana_pass=$(generate_password 24)
     
     log INFO "Сгенерированы сильные пароли для всех сервисов"
-    
-    # Обновляем .env файл
-    log INFO "Обновление .env файла..."
-    cp "$env_file" "${env_file}.backup.$(date +%Y%m%d-%H%M%S)"
 
-    local tmp_file="${env_file}.tmp"
-    : > "$tmp_file"
+    if $USE_ENV_FILE; then
+        # Обновляем .env файл
+        log INFO "Обновление .env файла..."
+        cp "$env_file" "${env_file}.backup.$(date +%Y%m%d-%H%M%S)"
 
-    while IFS= read -r line; do
-        case "$line" in
-            POSTGRES_PASSWORD=*)
-                printf 'POSTGRES_PASSWORD=%s\n' "$postgres_pass" >> "$tmp_file"
-                ;;
-            GRAFANA_ADMIN_PASSWORD=*)
-                printf 'GRAFANA_ADMIN_PASSWORD=%s\n' "$grafana_pass" >> "$tmp_file"
-                ;;
-            ELASTIC_PASSWORD=*)
-                printf 'ELASTIC_PASSWORD=%s\n' "$elastic_pass" >> "$tmp_file"
-                ;;
-            KIBANA_PASSWORD=*)
-                printf 'KIBANA_PASSWORD=%s\n' "$kibana_pass" >> "$tmp_file"
-                ;;
-            *)
-                printf '%s\n' "$line" >> "$tmp_file"
-                ;;
-        esac
-    done < "$env_file"
+        local tmp_file="${env_file}.tmp"
+        : > "$tmp_file"
 
-    mv "$tmp_file" "$env_file"
-    log INFO "Файл .env обновлен с новыми паролями"
+        while IFS= read -r line; do
+            case "$line" in
+                POSTGRES_PASSWORD=*)
+                    printf 'POSTGRES_PASSWORD=%s\n' "$postgres_pass" >> "$tmp_file"
+                    ;;
+                GRAFANA_ADMIN_PASSWORD=*)
+                    printf 'GRAFANA_ADMIN_PASSWORD=%s\n' "$grafana_pass" >> "$tmp_file"
+                    ;;
+                ELASTIC_PASSWORD=*)
+                    printf 'ELASTIC_PASSWORD=%s\n' "$elastic_pass" >> "$tmp_file"
+                    ;;
+                KIBANA_PASSWORD=*)
+                    printf 'KIBANA_PASSWORD=%s\n' "$kibana_pass" >> "$tmp_file"
+                    ;;
+                *)
+                    printf '%s\n' "$line" >> "$tmp_file"
+                    ;;
+            esac
+        done < "$env_file"
+
+        mv "$tmp_file" "$env_file"
+        log INFO "Файл .env обновлен с новыми паролями"
+    else
+        export POSTGRES_PASSWORD="$postgres_pass"
+        export GRAFANA_ADMIN_PASSWORD="$grafana_pass"
+        export ELASTIC_PASSWORD="$elastic_pass"
+        export KIBANA_PASSWORD="$kibana_pass"
+    fi
     
     # Добавляем в .gitignore
     local gitignore_file="$PROJECT_ROOT/.gitignore"
@@ -341,7 +355,7 @@ generate_passwords() {
     echo "  Kibana:     ${kibana_pass}"
     echo
     log WARN "⚠️  ВАЖНО: Сохраните эти пароли в безопасном месте!"
-    log INFO "Рекомендуется хранить значения в GitHub Secrets и передавать их контейнерам через --env-file или env:"
+    log INFO "Рекомендуется хранить значения в GitHub Secrets и передавать их контейнерам через --use-env или --env-file"
     log WARN "⚠️  После смены паролей потребуется пересоздание контейнеров"
 }
 
@@ -407,6 +421,10 @@ update_passwords() {
     log INFO "========== Обновление паролей AquaStream =========="
     
     local env_file="$PROJECT_ROOT/infra/docker/compose/.env"
+    if ! $USE_ENV_FILE; then
+        log INFO "--use-env активирован: используем переменные окружения POSTGRES_PASSWORD, GRAFANA_ADMIN_PASSWORD, ELASTIC_PASSWORD и KIBANA_PASSWORD"
+        return 0
+    fi
     if [[ ! -f "$env_file" ]]; then
         log ERROR "Файл .env не найден: $env_file"
         exit 1
@@ -468,7 +486,7 @@ update_passwords() {
     esac
 
     echo
-    log INFO "Рекомендуется хранить секреты в GitHub Secrets и передавать их контейнерам через --env-file или env:"
+    log INFO "Рекомендуется хранить секреты в GitHub Secrets и передавать их контейнерам через --use-env или --env-file"
     log WARN "⚠️  Для применения новых паролей требуется перезапуск сервисов"
     read -r -p "Перезапустить сервисы сейчас? [y/N]: " restart_services
     
@@ -744,10 +762,10 @@ build_project() {
     # ========================= Docker images =========================
     log INFO "========== Docker compose build (${mode}) =========="
     if [ "$mode" = "full" ]; then
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
+          docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build || { log ERROR "Docker build failed"; exit 1; }
     else
         docker_log=$(mktemp)
-        if docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1; then
+          if docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" build --quiet >"$docker_log" 2>&1; then
             log INFO "Docker images build SUCCESS"
         else
             log ERROR "Docker images build FAILED. Полный лог: $docker_log"
@@ -760,7 +778,7 @@ build_project() {
 view_logs() {
     log "[INFO] Просмотр логов..."
     if [ -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ]; then
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
+        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f
     else
         log "[ERROR] Файл docker-compose.yml не найден!"
         exit 1
@@ -771,7 +789,10 @@ view_logs() {
 show_help() {
     echo "AquaStream Management Tool"
     echo "========================="
-    echo "Использование: $0 <команда>"
+    echo "Использование: $0 [--use-env] <команда>"
+    echo ""
+    echo "Глобальные опции:"
+    echo "  --use-env       использовать переменные окружения вместо файла infra/docker/compose/.env"
     echo
     echo "📋 Ежедневные команды:"
     echo "  start         Запустить проект"
@@ -798,6 +819,9 @@ show_help_options() {
     echo "AquaStream Management Tool - Расширенная справка"
     echo "================================================"
     echo "Использование: $0 <команда> [аргументы]"
+    echo
+    echo "ГЛОБАЛЬНЫЕ ОПЦИИ:"
+    echo "  --use-env             использовать переменные окружения вместо infra/docker/compose/.env"
     echo
     echo "ОСНОВНЫЕ КОМАНДЫ:"
     echo
@@ -872,6 +896,12 @@ show_help_options() {
 # Переходим в корневую директорию проекта
 cd "$PROJECT_ROOT" || { echo "Ошибка: не могу перейти в директорию ${PROJECT_ROOT}"; exit 1; }
 
+# Глобальный флаг для использования переменных окружения
+if [[ "${1:-}" == "--use-env" ]]; then
+    USE_ENV_FILE=false
+    shift
+fi
+
 # Если нет аргументов или указан флаг help, показываем справку
 if [ $# -eq 0 ]; then
     show_help
@@ -882,6 +912,18 @@ if [ "$1" = "help" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     show_help
 elif [ "$1" = "help-advanced" ] || [ "$1" = "options" ]; then
     show_help_options
+fi
+
+# Настраиваем источник переменных окружения
+if $USE_ENV_FILE; then
+    if [[ ! -f "$ENV_FILE" ]]; then
+        log ERROR "Файл .env не найден: $ENV_FILE"
+        log INFO "Скопируйте .env.example в .env и настройте переменные"
+        exit 1
+    fi
+    COMPOSE_ENV_ARGS=(--env-file "$ENV_FILE")
+else
+    log INFO "Используются переменные окружения из текущего окружения"
 fi
 
 # Проверяем наличие необходимых инструментов
@@ -911,13 +953,13 @@ case "$1" in
     "logs")
         shift
         if [ -n "$1" ]; then
-            docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f "$1"
+            docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" logs -f "$1"
         else
             view_logs
         fi
         ;;
     "status")
-        docker compose -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
+        docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$PROJECT_ROOT/infra/docker/compose/docker-compose.yml" ps
         ;;
     "security")
         shift  # убираем ключевое слово security
