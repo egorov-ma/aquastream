@@ -1,16 +1,9 @@
-server:
-  port: 8082
-
 spring:
+  config:
+    import: classpath:db-common.yml
   application:
     name: event-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/aquastream_db
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
   kafka:
-    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -27,24 +20,17 @@ spring:
       enable-auto-commit: false
       properties:
         spring.json.trusted.packages: "*"
-
 grpc:
   server:
     port: 9090
   reflection:
     enabled: true
-
 grpcui:
   enabled: true
-  path: /grpcui/  # URL для доступа к gRPC UI
-
+  path: /grpcui/
 eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
-
 management:
   endpoints:
     web:
@@ -76,22 +62,48 @@ management:
       slo:
         grpc.server.duration.seconds: 50ms,100ms,200ms,500ms,1s,2s,5s
         http.server.requests: 50ms,100ms,200ms,500ms,1s,2s,5s
-
-# Logging configuration
 logging:
   level:
     org.aquastream.event: DEBUG
     net.devh.boot.grpc: DEBUG
     root: DEBUG
-
-# AquaStream specific logging configuration
 aquastream:
   logging:
     structured:
-      enabled: false  # JSON logging disabled in dev
+      enabled: false
     level:
       root: DEBUG
   monitoring:
     grpc:
-      enabled: true  # Enable gRPC monitoring
-      detailed-metrics: true  # Enable detailed per-method metrics
+      enabled: true
+      detailed-metrics: true
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream_db
+  kafka:
+    bootstrap-servers: localhost:9092
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8082
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/aquastream_db
+  kafka:
+    bootstrap-servers: kafka:9092
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+server:
+  port: 8082

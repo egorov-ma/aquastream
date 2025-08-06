@@ -1,19 +1,11 @@
-server:
-  port: 8084
-
 spring:
+  config:
+    import: classpath:db-common.yml
   application:
     name: notification-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/aquastream_db
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
   kafka:
-    bootstrap-servers: localhost:9092
     consumer:
       group-id: notification-group
-
 management:
   endpoints:
     web:
@@ -22,3 +14,25 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream_db
+  kafka:
+    bootstrap-servers: localhost:9092
+server:
+  port: 8084
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/aquastream_db
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+server:
+  port: 8084
