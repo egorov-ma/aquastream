@@ -72,9 +72,15 @@ needs_rotation() {
         return 0
     fi
     
-    # Extract timestamp from backup filename
+    # Extract timestamp from backup filename without external tools
     local backup_timestamp
-    backup_timestamp=$(basename "$latest_backup" | sed 's/secrets_backup_\([0-9]\{8\}_[0-9]\{6\}\)_.*/\1/')
+    local filename
+    filename=$(basename "$latest_backup")
+    filename=${filename#secrets_backup_}
+    local date_part=${filename%%_*}
+    local remainder=${filename#*_}
+    local time_part=${remainder%%_*}
+    backup_timestamp="${date_part}_${time_part}"
     
     # Convert to seconds since epoch
     local backup_date
@@ -148,7 +154,7 @@ update_secret_in_env() {
         # Create backup of entire .env file
         cp "$ENV_FILE" "${ENV_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
         
-        # Update the secret without using sed
+        # Update the secret without external stream editors
         local tmp_file="${ENV_FILE}.tmp"
         local updated=false
         : > "$tmp_file"
@@ -355,7 +361,13 @@ show_rotation_status() {
             echo "  $secret_name: Never rotated (max age: $max_age_days days)"
         else
             local backup_timestamp
-            backup_timestamp=$(basename "$latest_backup" | sed 's/secrets_backup_\([0-9]\{8\}_[0-9]\{6\}\)_.*/\1/')
+            local filename
+            filename=$(basename "$latest_backup")
+            filename=${filename#secrets_backup_}
+            local date_part=${filename%%_*}
+            local remainder=${filename#*_}
+            local time_part=${remainder%%_*}
+            backup_timestamp="${date_part}_${time_part}"
             
             local backup_date
             backup_date=$(date -d "${backup_timestamp:0:8} ${backup_timestamp:9:2}:${backup_timestamp:11:2}:${backup_timestamp:13:2}" +%s 2>/dev/null || echo "0")
