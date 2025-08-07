@@ -62,7 +62,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,gateway
+        include: health,info
 springdoc:
   api-docs:
     path: /api/docs
