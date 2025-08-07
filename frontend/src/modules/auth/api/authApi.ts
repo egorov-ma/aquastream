@@ -14,7 +14,8 @@ import {
   updateProfileToApi,
   changePasswordToApi,
 } from '@/api/adapters/authAdapter';
-import type { LoginRequest, RegisterRequest, LoginResponse, UserDto } from '@/api/generated/models';
+import type { UserDto } from '@/api/generated/models';
+import { AuthService } from '@/api/generated/services/AuthService';
 
 /**
  * API для работы с аутентификацией
@@ -26,10 +27,9 @@ export const authApi = {
    */
   login: (loginData: LoginData) => {
     logger.debug('Logging in user', { username: loginData.username });
-    return apiService.post<LoginResponse, LoginRequest>(
-      '/auth/signin',
-      loginDataToApi(loginData)
-    );
+    return AuthService.login({
+      requestBody: loginDataToApi(loginData),
+    });
   },
 
   /**
@@ -38,10 +38,9 @@ export const authApi = {
    */
   register: (registerData: RegisterData) => {
     logger.debug('Registering new user', { username: registerData.username });
-    return apiService.post<LoginResponse, RegisterRequest>(
-      '/auth/register',
-      registerDataToApi(registerData)
-    );
+    return AuthService.register({
+      requestBody: registerDataToApi(registerData),
+    });
   },
 
   /**

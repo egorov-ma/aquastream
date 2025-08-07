@@ -1,11 +1,10 @@
-import { setupServer } from 'msw/node';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { authApi } from '../api/authApi';
 
 import { apiService } from '@/services';
-import { API_URL } from '@/shared/config/constants';
-import { server } from '@/test/setup';
+import { AuthService } from '@/api/generated/services/AuthService';
+import type { LoginResponse } from '@/api/generated/models';
 
 // Мокируем apiService для тестов
 vi.mock('@/services', () => ({
@@ -19,6 +18,13 @@ vi.mock('@/services', () => ({
     error: vi.fn(),
     info: vi.fn(),
     warn: vi.fn(),
+  },
+}));
+
+vi.mock('@/api/generated/services/AuthService', () => ({
+  AuthService: {
+    login: vi.fn(),
+    register: vi.fn(),
   },
 }));
 
@@ -45,17 +51,19 @@ describe('authApi', () => {
       message: 'Login successful',
     };
 
-    it('should call apiService.post with correct parameters', async () => {
-      // Мокируем apiService.post для возврата ожидаемого ответа
-      vi.mocked(apiService.post).mockResolvedValueOnce({ data: mockResponse });
+    it('should call AuthService.login with correct parameters', async () => {
+      vi.mocked(AuthService.login).mockResolvedValueOnce(
+        mockResponse as LoginResponse
+      );
 
       await authApi.login(loginData);
 
-      // Проверяем, что apiService.post вызван с правильными параметрами
-      expect(apiService.post).toHaveBeenCalledWith('/auth/signin', {
-        email: loginData.username,
-        password: loginData.password,
-        rememberMe: undefined,
+      expect(AuthService.login).toHaveBeenCalledWith({
+        requestBody: {
+          email: loginData.username,
+          password: loginData.password,
+          rememberMe: undefined,
+        },
       });
     });
   });
@@ -84,18 +92,20 @@ describe('authApi', () => {
       message: 'Registration successful',
     };
 
-    it('should call apiService.post with correct parameters', async () => {
-      // Мокируем apiService.post для возврата ожидаемого ответа
-      vi.mocked(apiService.post).mockResolvedValueOnce({ data: mockResponse });
+    it('should call AuthService.register with correct parameters', async () => {
+      vi.mocked(AuthService.register).mockResolvedValueOnce(
+        mockResponse as LoginResponse
+      );
 
       await authApi.register(registerData);
 
-      // Проверяем, что apiService.post вызван с правильными параметрами
-      expect(apiService.post).toHaveBeenCalledWith('/auth/register', {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-        displayName: 'Test User',
+      expect(AuthService.register).toHaveBeenCalledWith({
+        requestBody: {
+          username: 'test@example.com',
+          email: 'test@example.com',
+          password: 'password123',
+          displayName: 'Test User',
+        },
       });
     });
   });
