@@ -1,5 +1,4 @@
-import React from 'react';
-
+import type React from 'react';
 /**
  * Доступные методы загрузки изображений
  */
@@ -38,16 +37,10 @@ export interface LazyImageProps {
   src: string;
   /** Альтернативный текст */
   alt: string;
-  /** Ширина изображения */
-  width?: number | string;
-  /** Высота изображения */
-  height?: number | string;
   /** Цвет placeholder'а до загрузки изображения */
   placeholderColor?: string;
   /** CSS-класс */
   className?: string;
-  /** Инлайн-стили */
-  style?: React.CSSProperties;
   /** Загружать изображение с низким разрешением */
   lowQualityPreview?: boolean;
   /** URL изображения с низким разрешением */
@@ -66,8 +59,6 @@ export interface LazyImageProps {
   shadow?: ShadowSize;
   /** Тип анимации появления */
   fadeAnimation?: FadeInAnimation;
-  /** Длительность анимации в мс */
-  animationDuration?: number;
   /** Эффект при наведении */
   hoverEffect?: HoverEffect;
   /** Показывать прелоадер */

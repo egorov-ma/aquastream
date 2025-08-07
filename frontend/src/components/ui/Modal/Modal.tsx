@@ -107,7 +107,7 @@ export const Modal: React.FC<ModalProps> = ({
     <div
       ref={backdropRef}
       onClick={handleBackdropClick}
-      className="modal-backdrop"
+      className="fixed inset-0 flex items-center justify-center bg-black/50"
       role="presentation"
       data-testid="modal-backdrop"
     >

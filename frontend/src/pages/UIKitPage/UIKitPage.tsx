@@ -414,8 +414,7 @@ const LazyImageSection = () => {
           <LazyImage
             src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
             alt="Горы и река"
-            width="100%"
-            height="200px"
+            className="w-full h-[200px]"
             rounded="md"
             shadow="md"
             fadeAnimation="fade"
@@ -427,8 +426,7 @@ const LazyImageSection = () => {
           <LazyImage
             src="https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
             alt="Звездное небо"
-            width="100%"
-            height="200px"
+            className="w-full h-[200px]"
             rounded="lg"
             shadow="lg"
             fadeAnimation="blur"
@@ -441,8 +439,7 @@ const LazyImageSection = () => {
           <LazyImage
             src="https://images.unsplash.com/photo-1588392382834-a891154bca4d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
             alt="Горный пейзаж"
-            width="100%"
-            height="200px"
+            className="w-full h-[200px]"
             rounded="xl"
             shadow="sm"
             fadeAnimation="zoom"

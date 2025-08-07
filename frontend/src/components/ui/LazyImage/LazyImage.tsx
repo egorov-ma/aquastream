@@ -33,9 +33,9 @@ const objectFitClasses: Record<ObjectFitMode, string> = {
 const fadeAnimationClasses: Record<FadeInAnimation, string> = {
   none: '',
   fade: 'transition-opacity duration-500 ease-in-out',
-  zoom: 'transition-transform duration-500 ease-in-out scale-95 opacity-0 loaded:scale-100 loaded:opacity-100',
-  blur: 'transition-all duration-500 ease-in-out filter blur-sm opacity-0 loaded:blur-0 loaded:opacity-100',
-  'slide-up': 'transition-all duration-500 ease-in-out transform translate-y-4 opacity-0 loaded:translate-y-0 loaded:opacity-100',
+  zoom: 'transition-transform duration-500 ease-in-out scale-95 opacity-0',
+  blur: 'transition-all duration-500 ease-in-out filter blur-sm opacity-0',
+  'slide-up': 'transition-all duration-500 ease-in-out transform translate-y-4 opacity-0',
 };
 
 // Эффекты при наведении
@@ -53,11 +53,8 @@ const hoverEffectClasses: Record<HoverEffect, string> = {
 export const LazyImage: React.FC<LazyImageProps> = ({
   src,
   alt,
-  width,
-  height,
   placeholderColor = 'bg-secondary-200 dark:bg-secondary-700',
   className = '',
-  style = {},
   lowQualityPreview = false,
   previewSrc,
   onLoad,
@@ -67,7 +64,6 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   rounded = 'md',
   shadow = 'none',
   fadeAnimation = 'fade',
-  animationDuration = 500,
   hoverEffect = 'none',
   showPreloader = true,
   fallbackSrc,
@@ -143,24 +139,15 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     setIsError(false);
   }, [src, loading]);
 
-  // Вычисляем инлайн-стили для контейнера
-  const containerStyles: React.CSSProperties = {
-    width: width,
-    height: height,
-    ...style,
-  };
-
   // Определяем классы для контейнера
   const containerClasses = cn(
-    'lazy-image-container relative inline-block overflow-hidden align-top',
+    'relative inline-block overflow-hidden align-top',
     placeholderColor,
     roundedClasses[rounded],
     shadowClasses[shadow],
     hoverEffect === 'lift' && hoverEffectClasses[hoverEffect],
     className,
     {
-      'lazy-image-loaded': isLoaded,
-      'lazy-image-error': isError,
       'cursor-pointer': onClick,
     }
   );
@@ -171,7 +158,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     objectFitClasses[objectFit],
     fadeAnimationClasses[fadeAnimation],
     (hoverEffect === 'zoom' || hoverEffect === 'brightness' || hoverEffect === 'scale') && hoverEffectClasses[hoverEffect],
-    isLoaded ? 'opacity-100 loaded' : 'opacity-0'
+    isLoaded ? 'opacity-100 scale-100 blur-0 translate-y-0' : 'opacity-0'
   );
 
   // Классы для прелоадера
@@ -201,7 +188,6 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   return (
     <div
       className={containerClasses}
-      style={containerStyles}
       data-testid="lazy-image-container"
       onClick={onClick}
       onKeyDown={handleKeyPress}
@@ -249,7 +235,6 @@ export const LazyImage: React.FC<LazyImageProps> = ({
         onError={handleImageError}
         loading={loading === 'lazy' ? 'lazy' : undefined}
         data-testid="lazy-image-img"
-        style={{ transitionDuration: `${animationDuration}ms` }}
       />
     </div>
   );
