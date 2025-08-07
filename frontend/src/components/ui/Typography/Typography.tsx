@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@utils/cn';
 import React from 'react';
 
 // Типы для типографики
@@ -104,7 +104,7 @@ export const Typography: React.FC<TypographyProps> = ({
   };
 
   // Объединение всех классов
-  const classes = clsx(
+  const classes = cn(
     variantClasses[variant],
     colorClasses[color],
     alignClasses[align === 'inherit' ? 'inherit' : align],

@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@utils/cn';
 import React, { useId } from 'react';
 
 import { Typography } from '../Typography';
@@ -80,7 +80,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   };
 
   // Составляем классы для чекбокса
-  const checkboxClasses = clsx(
+  const checkboxClasses = cn(
     'appearance-none',
     'rounded',
     'border',
@@ -101,13 +101,13 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   );
 
   // Классы для контейнера чекбокса и метки
-  const containerClasses = clsx('flex items-center', {
+  const containerClasses = cn('flex items-center', {
     'cursor-pointer': !disabled,
     'cursor-not-allowed opacity-60': disabled,
   });
 
   // Классы для видимого индикатора чекбокса (галочка)
-  const indicatorClasses = clsx('absolute inset-0 flex items-center justify-center', {
+  const indicatorClasses = cn('absolute inset-0 flex items-center justify-center', {
     'text-primary-100': checked && !disabled,
     'text-secondary-400 dark:text-secondary-500': checked && disabled,
   });
