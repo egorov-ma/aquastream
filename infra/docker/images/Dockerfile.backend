@@ -7,17 +7,12 @@ ARG SERVICE
 FROM eclipse-temurin:${ECLIPSE_TEMURIN_JDK_TAG} AS build
 WORKDIR /workspace
 
-# Copy Gradle wrapper and settings
-COPY gradlew settings.gradle build.gradle version.properties /workspace/
-COPY gradle /workspace/gradle
-
-# Copy common module and selected service
-COPY common /workspace/common
-COPY $SERVICE /workspace/$SERVICE
+# Copy entire repository
+COPY . /workspace
 
 # Build jar for selected service
-RUN bash -c "./gradlew :${SERVICE//\//:}:bootJar --no-daemon --build-cache \
-    && cp \$(find $SERVICE/build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-plain.jar' | head -n1) app.jar"
+RUN ./gradlew :${SERVICE//\//:}:bootJar --no-daemon --build-cache \
+    && cp "$(find "${SERVICE}/build/libs" -maxdepth 1 -type f -name '*.jar' ! -name '*-plain.jar' | head -n1)" app.jar
 
 # --- Stage 2: runtime -----------------------------
 FROM eclipse-temurin:${ECLIPSE_TEMURIN_JRE_TAG} AS runtime
