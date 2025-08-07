@@ -1,3 +1,4 @@
+// Заглушка модуля API. DTO и gRPC интерфейсы будут добавлены позже.
 plugins {
     id 'java'
     id 'io.spring.dependency-management'
