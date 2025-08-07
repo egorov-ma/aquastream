@@ -30,5 +30,4 @@ export { PageLoader } from './PageLoader';
 export { LazyImage } from './LazyImage';
 export type { LazyImageProps, LoadingMethod, ObjectFitMode, FadeInAnimation, RoundedSize, ShadowSize, HoverEffect } from './LazyImage';
 
-export { Form, FormField, FormError } from './Form';
-export type { FormProps, FormFieldProps, FormErrorProps } from './Form';
+export { Form, FormField, FormItem, FormMessage } from './form';

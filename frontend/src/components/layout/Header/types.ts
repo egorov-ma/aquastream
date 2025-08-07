@@ -56,7 +56,6 @@ export interface HeaderNavigationProps {
 }
 
 /**
- */
  * Полные свойства компонента Header
  */
 export type HeaderProps = HeaderBaseProps & HeaderAuthProps & HeaderNavigationProps;
