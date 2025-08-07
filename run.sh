@@ -14,20 +14,11 @@ run_cmd() {
   "$@"
 }
 
-build_containers() {
+ensure_env() {
   if [ ! -f "$ENV_FILE" ]; then
     cp "$ENV_EXAMPLE" "$ENV_FILE"
     echo "Created $ENV_FILE from example."
   fi
-  for dir in backend-*/backend-*-service; do
-    svc=$(basename "$dir" | sed 's/backend-//; s/-service$//')
-    image="aquastream-${svc}-service"
-    if [ "$svc" = "gateway" ]; then
-      image="aquastream-api-gateway"
-    fi
-    run_cmd docker build -f infra/docker/images/Dockerfile.backend --build-arg SERVICE="$dir" -t "$image" .
-  done
-  run_cmd docker build -f infra/docker/images/Dockerfile.frontend -t aquastream-frontend .
 }
 
 case "$1" in
@@ -40,17 +31,13 @@ case "$1" in
         run_cmd npm --prefix frontend ci
         run_cmd npm --prefix frontend run build
         ;;
-      -docker)
-        build_containers
-        ;;
       "")
         run_cmd ./gradlew build
         run_cmd npm --prefix frontend ci
         run_cmd npm --prefix frontend run build
-        build_containers
         ;;
       *)
-        echo "Usage: $0 build [-be|-fe|-docker]"
+        echo "Usage: $0 build [-be|-fe]"
         exit 1
         ;;
     esac
@@ -58,13 +45,15 @@ case "$1" in
   test)
     case "$2" in
       -be)
-        run_cmd ./gradlew test
+        run_cmd ./gradlew check
         ;;
       -fe)
+        run_cmd npm --prefix frontend run lint
         run_cmd npm --prefix frontend test
         ;;
       "")
-        run_cmd ./gradlew test
+        run_cmd ./gradlew check
+        run_cmd npm --prefix frontend run lint
         run_cmd npm --prefix frontend test
         ;;
       *)
@@ -73,75 +62,26 @@ case "$1" in
         ;;
     esac
     ;;
-  lint)
-    case "$2" in
-      -be)
-        run_cmd ./gradlew check
-        ;;
-      -fe)
-        run_cmd npm --prefix frontend run lint
-        ;;
-      "")
-        run_cmd ./gradlew check
-        run_cmd npm --prefix frontend run lint
-        ;;
-      *)
-        echo "Usage: $0 lint [-be|-fe]"
-        exit 1
-        ;;
-    esac
-    ;;
-  check)
-    case "$2" in
-      -be)
-        run_cmd ./gradlew check
-        ;;
-      -fe)
-        run_cmd npm --prefix frontend run lint
-        run_cmd npm --prefix frontend test
-        ;;
-      "")
-        run_cmd ./gradlew check
-        run_cmd npm --prefix frontend run lint
-        run_cmd npm --prefix frontend test
-        ;;
-      *)
-        echo "Usage: $0 check [-be|-fe]"
-        exit 1
-        ;;
-    esac
-    ;;
   dev)
-      case "$2" in
-        -be)
-          run_cmd ./gradlew bootRun
-          ;;
-        -fe)
-          run_cmd npm --prefix frontend start
-          ;;
-        *)
-          echo "Usage: $0 dev [-be|-fe]"
-          exit 1
-          ;;
-      esac
-      ;;
+    case "$2" in
+      -be)
+        run_cmd ./gradlew bootRun
+        ;;
+      -fe)
+        run_cmd npm --prefix frontend start
+        ;;
+      *)
+        echo "Usage: $0 dev [-be|-fe]"
+        exit 1
+        ;;
+    esac
+    ;;
   start)
-    if [ ! -f "$ENV_FILE" ]; then
-      cp "$ENV_EXAMPLE" "$ENV_FILE"
-      echo "Created $ENV_FILE from example."
-    fi
-    if [ "$2" = "--no-build" ]; then
-      run_cmd docker compose -f "$COMPOSE_FILE" up -d
-    else
-      run_cmd docker compose -f "$COMPOSE_FILE" up -d --build
-    fi
+    ensure_env
+    run_cmd docker compose -f "$COMPOSE_FILE" up -d
     ;;
   stop)
     run_cmd docker compose -f "$COMPOSE_FILE" down -v
-    ;;
-  restart)
-    run_cmd "$0" stop
-    run_cmd "$0" start
     ;;
   status)
     run_cmd docker compose -f "$COMPOSE_FILE" ps
@@ -150,8 +90,7 @@ case "$1" in
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|lint|check|dev|start|stop|restart|status|logs} [-be|-fe|-docker|--no-build]"
+    echo "Usage: $0 {build|test|dev|start|stop|status|logs} [-be|-fe]"
     exit 1
     ;;
-
-esac
+ esac
