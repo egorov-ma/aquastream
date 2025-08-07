@@ -24,8 +24,8 @@ export const Footer: React.FC<FooterProps> = React.memo(({
   copyrightText,
 }) => {
   return (
-    <footer 
-      className={`bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto py-8 md:py-12 ${className}`} 
+    <footer
+      className={`border-t mt-auto py-8 md:py-12 ${className}`}
       data-testid="footer"
     >
       <div className="container max-w-full md:max-w-screen-md mx-auto px-4">

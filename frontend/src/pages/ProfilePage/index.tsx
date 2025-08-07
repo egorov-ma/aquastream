@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Typography } from '@/components/ui';
+import { Typography, Card, CardContent } from '@/components/ui';
 
 const ProfilePage: React.FC = () => {
   return (
@@ -8,9 +8,11 @@ const ProfilePage: React.FC = () => {
       <Typography variant="h4" className="mb-6">
         Профиль пользователя
       </Typography>
-      <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-md p-6">
-        <Typography variant="body-1">Страница профиля пользователя (заглушка)</Typography>
-      </div>
+      <Card>
+        <CardContent>
+          <Typography variant="body-1">Страница профиля пользователя (заглушка)</Typography>
+        </CardContent>
+      </Card>
     </div>
   );
 };
