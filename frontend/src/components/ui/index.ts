@@ -13,6 +13,8 @@ export type { CardProps, CardHeaderProps, CardTitleProps, CardContentProps, Card
 export { Input } from './Input';
 export type { InputProps, InputSize, InputVariant, InputColor } from './Input';
 
+export { Label } from './Label';
+
 export { Typography } from './Typography';
 export type { TypographyProps, TypographyVariant, TypographyColor, TypographyAlign } from './Typography';
 

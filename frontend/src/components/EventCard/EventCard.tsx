@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { Button } from '../../components/ui/Button/Button';
-import { cn } from '../../utils/cn';
+import { Button, Card } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 
 // Импорт компонентов
@@ -40,16 +40,9 @@ const EventCard: React.FC<EventCardProps> = React.memo(({
   }, [onClick]);
 
   return (
-    <div 
-      className={cn(
-        "rounded-lg border border-gray-200 bg-white p-10 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800",
-        className
-      )}
-      data-testid={`event-card-${id}`}
-    >
+    <Card className={cn('p-10', className)} data-testid={`event-card-${id}`}>
       <div className="flex flex-col h-full gap-4">
-        {/* Заголовок - цвет изменен на 800, ограничение строк */}
-        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 line-clamp-2" data-testid="event-title">
+        <h3 className="text-2xl font-bold line-clamp-2" data-testid="event-title">
           {title}
         </h3>
 
@@ -68,9 +61,8 @@ const EventCard: React.FC<EventCardProps> = React.memo(({
           max={maxParticipants}
         />
 
-        {/* Индикатор сложности - цвет текста изменен на 700 */}
         <div className="flex items-center gap-2" data-testid="difficulty-section">
-          <span className="text-sm text-gray-700 dark:text-gray-300">Сложность:</span>
+          <span className="text-sm">Сложность:</span>
           <DifficultyIndicator level={difficulty} size="sm" showLabel={false} />
         </div>
 
@@ -82,7 +74,7 @@ const EventCard: React.FC<EventCardProps> = React.memo(({
         )}
 
         {/* Кнопка действия - радиус изменен на md */}
-        <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-auto pt-4 border-t">
           {path ? (
             <Link to={path} onClick={handleClick} className="w-full" data-testid="event-link-button">
               <Button
@@ -107,7 +99,7 @@ const EventCard: React.FC<EventCardProps> = React.memo(({
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 });
 
