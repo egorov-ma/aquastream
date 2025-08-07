@@ -47,12 +47,7 @@ services:
       dockerfile: infra/docker/images/Dockerfile.backend
       args:
         SERVICE: backend-user/backend-user-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+    env_file: .env
     depends_on:
       - postgres
       - kafka
@@ -67,11 +62,7 @@ services:
       dockerfile: infra/docker/images/Dockerfile.backend
       args:
         SERVICE: backend-event/backend-event-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    env_file: .env
     depends_on:
       - postgres
       - kafka
@@ -87,11 +78,7 @@ services:
       dockerfile: infra/docker/images/Dockerfile.backend
       args:
         SERVICE: backend-crew/backend-crew-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    env_file: .env
     depends_on:
       - postgres
       - kafka
@@ -106,11 +93,7 @@ services:
       dockerfile: infra/docker/images/Dockerfile.backend
       args:
         SERVICE: backend-notification/backend-notification-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    env_file: .env
     depends_on:
       - postgres
       - kafka
