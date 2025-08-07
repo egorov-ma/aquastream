@@ -27,31 +27,26 @@
 
 ## Запуск проекта
 
-### Быстрый старт через скрипт
+### Быстрый старт
 
 ```bash
 cp infra/docker/compose/.env.example infra/docker/compose/.env
-./run.sh build       # Сборка бэкенда, фронтенда и Docker образов
+
+./run.sh build       # Сборка бэкенда и фронтенда
 ./run.sh build -be   # Сборка только бэкенда
 ./run.sh build -fe   # Сборка только фронтенда
-./run.sh build -docker # Сборка только Docker образов
-./run.sh test        # Запуск тестов всего проекта
-./run.sh test -be    # Запуск тестов бэкенда
-./run.sh test -fe    # Запуск тестов фронтенда
-./run.sh lint        # Запуск линтеров всего проекта
-./run.sh lint -be    # Запуск линтера бэкенда
-./run.sh lint -fe    # Запуск линтера фронтенда
-./run.sh check       # Запуск линтеров и тестов всего проекта
-./run.sh check -be   # Запуск линтеров и тестов бэкенда
-./run.sh check -fe   # Запуск линтеров и тестов фронтенда
-./run.sh dev -be    # Запуск бэкенда с горячей перезагрузкой
-./run.sh dev -fe    # Запуск фронтенда в режиме разработки
-./run.sh start              # Поднимает Docker-инфраструктуру с пересборкой контейнеров
-./run.sh start --no-build   # Быстрый запуск без пересборки контейнеров
-./run.sh restart     # Перезапускает Docker-инфраструктуру
+
+./run.sh test        # Запуск линтеров и тестов всего проекта
+./run.sh test -be    # Запуск линтеров и тестов бэкенда
+./run.sh test -fe    # Запуск линтеров и тестов фронтенда
+
+./run.sh dev -be     # Запуск бэкенда с горячей перезагрузкой
+./run.sh dev -fe     # Запуск фронтенда в режиме разработки
+
+./run.sh start       # Быстрый запуск без пересборки контейнеров
+./run.sh stop        # Останавливает и очищает окружение
 ./run.sh status      # Показывает статус контейнеров
 ./run.sh logs        # Показывает логи контейнеров
-./run.sh stop        # Останавливает и очищает окружение
 ```
 
 ### 1. Локальный запуск (без Docker)
@@ -67,10 +62,16 @@ cp infra/docker/compose/.env.example infra/docker/compose/.env
    cd <название_проекта>
    ```
 
-3. **Сборка проекта:**
+3. **Сборка и тесты проекта:**
 ```bash
-./gradlew clean build -x test
-npm ci && npm run build
+# Backend
+./gradlew build
+./gradlew test
+
+# Frontend
+npm --prefix frontend ci
+npm --prefix frontend run build
+npm --prefix frontend test
 ```
 
 4. **Запуск микросервисов:****
@@ -114,23 +115,17 @@ docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
    Убедитесь, что на вашем компьютере установлены Docker и Docker Compose.
 
 2. **Сборка Docker образов:**
-    Выполните команду сборки образов, используя Docker Compose или скрипт:
     ```bash
     docker compose -f infra/docker/compose/docker-compose.dev.yml build
-    # или
-    ./run.sh build -docker
-    # или
-    ./run.sh build
     ```
    В Dockerfile-ах, расположенных в директории `infra/docker/images`, описан процесс сборки для каждого микросервиса.
 
-3. **Запуск контейнеров (чистый запуск):**
-   Перед запуском очистите ранее запущенные и осиротевшие контейнеры, затем запустите все контейнеры в фоновом режиме:
+3. **Запуск контейнеров:**
    ```bash
-   docker-compose -f infra/docker/compose/docker-compose.dev.yml down --remove-orphans && docker-compose -f infra/docker/compose/docker-compose.dev.yml up -d
+   ./run.sh start
    ```
    
-   Все контейнеры должны иметь статус "Up". Если какой-то контейнер находится в другом состоянии или отсутствует, проверьте логи командой `docker-compose logs <имя_контейнера>`.
+   Все контейнеры должны иметь статус "Up". Если какой-то контейнер находится в другом состоянии или отсутствует, проверьте логи командой `docker compose logs <имя_контейнера>`.
 
 4. **Проверка запущенных контейнеров:**
    Пример успешного вывода команды:
@@ -159,9 +154,9 @@ docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
 5. **Управление через `run.sh`:**
 
 ```bash
-./run.sh start  # Запуск контейнеров
-./run.sh restart  # Перезапуск контейнеров
+./run.sh start  # Быстрый запуск без пересборки контейнеров
 ./run.sh stop   # Остановка и очистка контейнеров
+./run.sh status # Статус контейнеров
 ./run.sh logs   # Просмотр логов
 ```
 
