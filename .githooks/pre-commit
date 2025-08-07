@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Pre-commit хук для валидации инфраструктуры AquaStream
 # Автоматически проверяет изменения в инфраструктурных файлах
+# Синтаксис Docker Compose проверяется через infra/scripts/validate-infrastructure.sh
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 # Collect staged file names once for reuse across checks
@@ -43,12 +44,7 @@ check_critical_files() {
 
             local compose_file="$PROJECT_ROOT/infra/docker/compose/$compose"
             if [ -f "$compose_file" ]; then
-                # Проверка синтаксиса Docker Compose
-                if ! docker compose -f "$compose_file" config >/dev/null 2>&1; then
-                    log ERROR "❌ Ошибка в $compose синтаксисе!"
-                    log ERROR "Запустите: docker compose -f $compose_file config"
-                    exit_code=1
-                fi
+                # Синтаксис Docker Compose проверяется в infra/scripts/validate-infrastructure.sh
 
                 # Проверка на :latest теги
                 if grep -q ":latest" "$compose_file"; then
