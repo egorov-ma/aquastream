@@ -23,36 +23,36 @@ jobs:
     uses: ./.github/workflows/workflow-lint.yml
     secrets: inherit
 
-    deploy:
-      needs: lint
-      runs-on: ubuntu-latest
-      timeout-minutes: 20
-      environment: ${{ github.event.inputs.environment }}
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+  deploy:
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-        - uses: dotenvx/dotenv-action@v2
-          with:
-            path: infra/docker/compose/.env.example
-          env:
-            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'test' }}
-            ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD || 'test' }}
-            KIBANA_PASSWORD: ${{ secrets.KIBANA_PASSWORD || 'test' }}
-            GRAFANA_ADMIN_PASSWORD: >-
-              ${{ secrets.GRAFANA_ADMIN_PASSWORD || 'test' }}
+      - uses: dotenvx/dotenv-action@v2
+        with:
+          path: infra/docker/compose/.env.example
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'test' }}
+          ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD || 'test' }}
+          KIBANA_PASSWORD: ${{ secrets.KIBANA_PASSWORD || 'test' }}
+          GRAFANA_ADMIN_PASSWORD: >-
+            ${{ secrets.GRAFANA_ADMIN_PASSWORD || 'test' }}
 
-        - name: Build Docker images
-          run: |
-            docker buildx bake -f infra/docker/compose/docker-compose.full.yml \
-              --set *.cache-from=type=gha \
-              --set *.cache-to=type=gha,mode=max \
-              --load
+      - name: Build Docker images
+        run: |
+          docker buildx bake -f infra/docker/compose/docker-compose.full.yml \
+            --set *.cache-from=type=gha \
+            --set *.cache-to=type=gha,mode=max \
+            --load
 
-        - name: Deploy to ${{ github.event.inputs.environment }}
-          run: >
-            echo "Deploying to ${{ github.event.inputs.environment }}
-            environment"
+      - name: Deploy to ${{ github.event.inputs.environment }}
+        run: >
+          echo "Deploying to ${{ github.event.inputs.environment }}
+          environment"
