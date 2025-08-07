@@ -42,6 +42,7 @@ cp infra/docker/compose/.env.example infra/docker/compose/.env
 ./run.sh lint -fe    # Запуск линтера фронтенда
 ./run.sh dev -be    # Запуск бэкенда с горячей перезагрузкой
 ./run.sh dev -fe    # Запуск фронтенда в режиме разработки
+./run.sh build-containers # Сборка Docker образов
 ./run.sh start       # Поднимает Docker-инфраструктуру
 ./run.sh restart     # Перезапускает Docker-инфраструктуру
 ./run.sh status      # Показывает статус контейнеров
@@ -109,10 +110,12 @@ docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
    Убедитесь, что на вашем компьютере установлены Docker и Docker Compose.
 
 2. **Сборка Docker образов:**
-   Выполните команду сборки образов, используя Docker Compose:
-   ```bash
-   docker-compose -f infra/docker/compose/docker-compose.dev.yml build
-   ```
+    Выполните команду сборки образов, используя Docker Compose или скрипт:
+    ```bash
+    docker compose -f infra/docker/compose/docker-compose.dev.yml build
+    # или
+    ./run.sh build-containers
+    ```
    В Dockerfile-ах, расположенных в директории `infra/docker/images`, описан процесс сборки для каждого микросервиса.
 
 3. **Запуск контейнеров (чистый запуск):**

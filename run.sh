@@ -85,6 +85,13 @@ case "$1" in
           ;;
       esac
       ;;
+  build-containers)
+    if [ ! -f "$ENV_FILE" ]; then
+      cp "$ENV_EXAMPLE" "$ENV_FILE"
+      echo "Created $ENV_FILE from example."
+    fi
+    run_cmd docker compose -f "$COMPOSE_FILE" build
+    ;;
   start)
     if [ ! -f "$ENV_FILE" ]; then
       cp "$ENV_EXAMPLE" "$ENV_FILE"
@@ -106,7 +113,7 @@ case "$1" in
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|lint|dev|start|stop|restart|status|logs} [-be|-fe]"
+    echo "Usage: $0 {build|test|lint|dev|build-containers|start|stop|restart|status|logs} [-be|-fe]"
     exit 1
     ;;
 
