@@ -25,6 +25,27 @@
 - PostgreSQL, Docker/Docker Compose, Kubernetes
 - React, Node.js 20+
 
+## Development environment
+
+- Java 21
+- Node 20
+- Docker
+- yq (для pre-commit)
+
+Для установки git-хуков выполните:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Типовой цикл разработки:
+
+```bash
+./run.sh up
+./gradlew test
+docker compose down
+```
+
 ## Запуск проекта
 
 ### Быстрый старт
