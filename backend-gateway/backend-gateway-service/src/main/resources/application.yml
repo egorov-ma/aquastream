@@ -1,17 +1,6 @@
 spring:
-  config:
-    import: classpath:db-common.yml
   application:
     name: gateway-service
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
   cloud:
     gateway:
       globalcors:
