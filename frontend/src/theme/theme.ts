@@ -47,7 +47,7 @@ export const applyTheme = (theme: Theme): void => {
 /**
  * Инициализация темы при загрузке приложения
  */
-export const initializeTheme = (): void => {
+export const initializeTheme = (): (() => void) | void => {
   const storedTheme = getStoredTheme();
   applyTheme(storedTheme);
 
@@ -60,6 +60,11 @@ export const initializeTheme = (): void => {
     };
 
     mediaQuery.addEventListener('change', handleChange);
+
+    // Возвращаем функцию очистки, которая удаляет обработчик
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
   }
 };
 

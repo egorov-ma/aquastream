@@ -5,6 +5,7 @@ import Layout from '@/components/layout/Layout';
 import { PageLoader } from '@/components/ui';
 import { useAppSelector } from '@/hooks/redux';
 import { selectUserState } from '@/store/slices/userSlice';
+import { initializeTheme } from '@/theme';
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -17,6 +18,14 @@ const App = () => {
     if (savedTheme === 'dark') {
       setDarkMode(true);
     }
+  }, []);
+
+  // Инициализация темы и удаление обработчиков при размонтировании
+  useEffect(() => {
+    const cleanup = initializeTheme();
+    return () => {
+      cleanup && cleanup();
+    };
   }, []);
 
   const toggleTheme = () => {
