@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({
         opacityDuration: 0.15,
       }}
     >
-      <div className="flex items-center justify-between w-auto max-w-screen-xl mx-auto rounded-[15px] shadow-md px-5 py-3 transition-colors bg-[#1E2841] rounded-xl">
+        <div className="flex items-center justify-between w-auto max-w-screen-xl mx-auto shadow-md px-5 py-3 transition-colors bg-[#1E2841] rounded-2xl">
         {/* Логотип */}
         <div className="flex-shrink-0 mr-6">
           <Logo onClick={closeMenu} />
