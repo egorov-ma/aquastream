@@ -11,21 +11,16 @@ repositories {
 dependencies {
     // Spring Framework (required for logging components)
     api 'org.springframework:spring-context'
-    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-autoconfigure'
+    api 'org.springframework:spring-web'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api'
     
     // gRPC dependencies (optional - only for services that use gRPC)
-    compileOnly "io.grpc:grpc-netty-shaded:${rootProject.grpcVersion}"
-    compileOnly "io.grpc:grpc-protobuf:${rootProject.grpcVersion}"
-    compileOnly "io.grpc:grpc-stub:${rootProject.grpcVersion}"
     compileOnly "io.grpc:grpc-api:${rootProject.grpcVersion}"
     compileOnly "net.devh:grpc-server-spring-boot-starter:${rootProject.grpcSpringBootStarterVersion}"
     
     // Jakarta Validation API для аннотаций валидации
     implementation "jakarta.validation:jakarta.validation-api:${rootProject.jakartaValidationVersion}"
-    // Hibernate Validator - реализация Jakarta Bean Validation
-    implementation "org.hibernate.validator:hibernate-validator:${rootProject.hibernateValidatorVersion}"
-    // Зависимость для EL (Expression Language), необходимая для Hibernate Validator
-    implementation "org.glassfish:jakarta.el:${rootProject.glassfishElVersion}"
     
     // Lombok для упрощения кода
     implementation "org.projectlombok:lombok:${rootProject.lombokVersion}"
@@ -33,7 +28,6 @@ dependencies {
     
     // Micrometer для метрик и мониторинга
     api 'org.springframework.boot:spring-boot-starter-actuator'
-    api 'io.micrometer:micrometer-registry-prometheus'
     api 'io.micrometer:micrometer-core'
     
     testImplementation platform("org.junit:junit-bom:${rootProject.junitVersion}")
