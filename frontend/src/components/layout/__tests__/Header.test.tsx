@@ -9,7 +9,6 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import Header from '../Header/Header';
 
 import { renderWithProviders } from '@/test/utils';
-import { lightTheme, darkTheme } from '@/theme';
 
 // Создаем mockTranslate перед использованием
 const mockTranslate = vi.fn((key) => {
@@ -55,17 +54,16 @@ describe('Header Component', () => {
     expect(themeToggleButton).toBeInTheDocument();
   });
 
-  it('applies correct theme classes based on theme prop', () => {
-    // Сначала проверяем темную тему
+  it('renders correct theme icon based on theme prop', () => {
+    // Проверяем темную тему
     const { unmount } = renderWithProviders(
       <MemoryRouter>
         <Header navItems={mockNavItems} theme="dark" />
       </MemoryRouter>
     );
 
-    // Проверяем, что шапка имеет правильные классы для темной темы
-    const darkHeaderInner = screen.getByTestId('header-scroll').querySelector('div');
-    expect(darkHeaderInner).toHaveClass(darkTheme.header);
+    const lightIcon = screen.getAllByTestId('light-icon')[0];
+    expect(lightIcon).toBeInTheDocument();
 
     // Размонтируем компонент и очищаем DOM
     unmount();
@@ -78,8 +76,8 @@ describe('Header Component', () => {
       </MemoryRouter>
     );
 
-    const lightHeaderInner = screen.getByTestId('header-scroll').querySelector('div');
-    expect(lightHeaderInner).toHaveClass(lightTheme.header);
+    const darkIcon = screen.getAllByTestId('dark-icon')[0];
+    expect(darkIcon).toBeInTheDocument();
   });
 
   it('calls onThemeToggle when theme button is clicked', async () => {

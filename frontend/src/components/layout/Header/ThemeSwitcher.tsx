@@ -1,7 +1,6 @@
 import { Sun, Moon } from 'lucide-react';
 import React from 'react';
 
-import { lightTheme, darkTheme } from '@/theme';
 
 /**
  * Свойства компонента переключателя темы
@@ -35,9 +34,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = React.memo(({
     <button
       type="button"
       aria-label="Переключить тему"
-      className={`p-2 rounded-full transition-colors ${
-        theme === 'dark' ? darkTheme.themeToggle : lightTheme.themeToggle
-      } ${className || ''}`}
+      className={`p-2 rounded-full transition-colors text-gray-300 hover:text-primary hover:bg-secondary/60 ${className || ''}`}
       onClick={onToggle}
       title={themeTitle}
       data-testid="theme-switcher"

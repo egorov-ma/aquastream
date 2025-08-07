@@ -94,7 +94,6 @@ const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(({
           key={item.id || item.path}
           item={item}
           mode={mode}
-          theme={theme}
           displayName={getItemDisplayName(item)}
           renderIcon={renderIcon}
           onClick={handleNavigationClick}
@@ -105,7 +104,6 @@ const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(({
       <NavigationItem
         item={profileItem}
         mode={mode}
-        theme={theme}
         displayName={getItemDisplayName(profileItem)}
         renderIcon={mode === 'text' ? undefined : () => <UserCircle className="w-5 h-5" />}
         onClick={handleNavigationClick}

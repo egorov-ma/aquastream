@@ -9,6 +9,7 @@ export default {
     extend: {
       colors: {
         primary: {
+          DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
           50: '#fef3f2',
           100: '#fde7e4',
           200: '#fdd2cc',
@@ -22,6 +23,7 @@ export default {
           950: '#42110c',
         },
         secondary: {
+          DEFAULT: 'rgb(var(--secondary) / <alpha-value>)',
           50: '#f5f7fa',
           100: '#ebeef3',
           200: '#d8dce5',
@@ -35,6 +37,7 @@ export default {
           950: '#1f2332',
         },
         accent: {
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
           50: '#fbf9f1',
           100: '#f6f1de',
           200: '#eee4bd',
@@ -99,8 +102,8 @@ export default {
           900: '#1e3a8a',
           950: '#172554',
         },
-        border: 'rgb(var(--border))',
-        muted: 'rgb(var(--muted))',
+        border: 'rgb(var(--border) / <alpha-value>)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
       },
       borderRadius: {
         'DEFAULT': '0.5rem',
