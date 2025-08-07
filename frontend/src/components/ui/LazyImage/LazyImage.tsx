@@ -1,4 +1,4 @@
-import { cn } from '@utils/cn';
+import { cn } from '@/lib/utils';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import { LazyImageProps, ObjectFitMode, FadeInAnimation, RoundedSize, ShadowSize, HoverEffect } from './types';
