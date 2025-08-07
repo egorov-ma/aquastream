@@ -36,16 +36,6 @@ export interface HeaderBaseProps {
 }
 
 /**
- * Свойства, связанные с темой
- */
-export interface HeaderThemeProps {
-  /** Функция переключения темы */
-  onThemeToggle?: () => void;
-  /** Текущая тема */
-  theme?: 'light' | 'dark';
-}
-
-/**
  * Свойства аутентификации
  */
 export interface HeaderAuthProps {
@@ -66,9 +56,7 @@ export interface HeaderNavigationProps {
 }
 
 /**
+ */
  * Полные свойства компонента Header
  */
-export type HeaderProps = HeaderBaseProps & 
-  HeaderThemeProps & 
-  HeaderAuthProps & 
-  HeaderNavigationProps;
+export type HeaderProps = HeaderBaseProps & HeaderAuthProps & HeaderNavigationProps;

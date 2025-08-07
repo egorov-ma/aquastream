@@ -9,25 +9,20 @@ import { MainLayout } from './MainLayout/MainLayout';
 
 interface LayoutProps {
   children: ReactNode;
-  toggleTheme: () => void;
   /** Эффект появления шапки */
   headerAppearEffect?: 'none' | 'fade-in' | 'slide-up' | 'slide-down';
   /** Статус авторизации пользователя */
   isAuthenticated?: boolean;
-  /** Текущая тема */
-  theme?: 'light' | 'dark';
 }
 
 const Layout: React.FC<LayoutProps> = ({
   children,
-  toggleTheme,
   headerAppearEffect: _headerAppearEffect = 'none',
   isAuthenticated = false,
-  theme = 'light',
 }) => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header onThemeToggle={toggleTheme} isAuthenticated={isAuthenticated} theme={theme} />
+      <Header isAuthenticated={isAuthenticated} />
       <MainLayout>{children}</MainLayout>
       <Footer />
     </div>
