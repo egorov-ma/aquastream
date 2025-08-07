@@ -74,7 +74,6 @@
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-istanbul": "^3.0.9",
     "@vitest/coverage-v8": "^3.0.9",
-    "autoprefixer": "^10.4.16",
     "babel-loader": "^10.0.0",
     "esbuild": "^0.25.1",
     "eslint": "^9.0.0",
@@ -91,15 +90,14 @@
     "lint-staged": "^15.2.2",
     "msw": "^2.7.3",
     "openapi-typescript-codegen": "^0.29.0",
-    "postcss": "^8.4.31",
-    "postcss-loader": "^8.1.1",
     "prettier": "^3.2.5",
-    "tailwindcss": "^3.3.5",
+    "tailwindcss": "^4.0.0",
     "terser": "^5.29.2",
     "typescript": "^5.6.3",
     "vite": "^6.2.4",
     "vite-plugin-svgr": "^4.3.0",
-    "vitest": "^3.0.9"
+    "vitest": "^3.0.9",
+    "@tailwindcss/vite": "^4.0.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
