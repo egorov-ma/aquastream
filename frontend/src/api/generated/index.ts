@@ -18,4 +18,3 @@ export { UpdateEventRequest } from './models/UpdateEventRequest';
 export { UserDto } from './models/UserDto';
 
 export { AuthService } from './services/AuthService';
-export { EventsService } from './services/EventsService';
