@@ -16,6 +16,7 @@ const registerSchema = z
       .string()
       .min(3, 'Логин должен содержать минимум 3 символа')
       .regex(/^[a-zA-Z0-9_.-]+$/, 'Логин может содержать только буквы, цифры и знаки _.-'),
+    email: z.string().email('Введите корректный email'),
     password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
     confirmPassword: z.string(),
   })
@@ -41,6 +42,7 @@ const RegisterPage: React.FC = () => {
       await dispatch(
         registerThunk({
           username: data.username,
+          email: data.email,
           password: data.password,
           name: data.name,
           displayName: data.name,
@@ -95,6 +97,20 @@ const RegisterPage: React.FC = () => {
                 {...field}
                 error={fieldState.error?.message}
                 helperText="Будет использоваться для входа в систему"
+                fullWidth
+              />
+            )}
+          />
+          {/* Поле email */}
+          <FormField
+            name="email"
+            render={({ field, fieldState }) => (
+              <Input
+                label="Email"
+                placeholder="Введите ваш email"
+                type="email"
+                {...field}
+                error={fieldState.error?.message}
                 fullWidth
               />
             )}

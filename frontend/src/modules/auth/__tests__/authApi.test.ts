@@ -62,7 +62,8 @@ describe('authApi', () => {
 
   describe('register', () => {
     const registerData = {
-      username: 'test@example.com',
+      username: 'testuser',
+      email: 'test@example.com',
       password: 'password123',
       displayName: 'Test User',
     };
@@ -91,7 +92,7 @@ describe('authApi', () => {
 
       // Проверяем, что apiService.post вызван с правильными параметрами
       expect(apiService.post).toHaveBeenCalledWith('/auth/register', {
-        username: 'test@example.com',
+        username: 'testuser',
         email: 'test@example.com',
         password: 'password123',
         displayName: 'Test User',

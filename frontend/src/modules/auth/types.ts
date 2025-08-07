@@ -11,6 +11,7 @@ export enum UserRole {
 export interface User {
   id: string | number;
   username: string;
+  email?: string;
   name?: string;
   displayName?: string;
   avatar?: string;
@@ -32,6 +33,7 @@ export interface LoginData {
 // Данные для регистрации
 export interface RegisterData {
   username: string;
+  email: string;
   password: string;
   displayName?: string;
   name?: string;

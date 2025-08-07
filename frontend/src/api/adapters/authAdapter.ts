@@ -59,7 +59,7 @@ export function loginDataToApi(data: LoginData): LoginRequest {
 export function registerDataToApi(data: RegisterData): RegisterRequest {
   return {
     username: data.username,
-    email: data.username,
+    email: data.email,
     password: data.password,
     displayName: data.displayName,
   };
