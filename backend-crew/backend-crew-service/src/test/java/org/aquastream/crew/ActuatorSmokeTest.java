@@ -3,16 +3,9 @@ package org.aquastream.crew;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import net.devh.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration;
-import net.devh.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
-import net.devh.boot.grpc.server.autoconfigure.GrpcServerMetricAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,20 +14,21 @@ import java.net.http.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ActuatorSmokeTest.TestApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties =
+        "spring.autoconfigure.exclude=" +
+                "net.devh.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration," +
+                "org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration," +
+                "net.devh.boot.grpc.server.autoconfigure.GrpcServerMetricAutoConfiguration," +
+                "net.devh.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration")
 class ActuatorSmokeTest {
 
     @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = {
-            GrpcServerFactoryAutoConfiguration.class,
-            ManagementWebSecurityAutoConfiguration.class,
-            GrpcServerMetricAutoConfiguration.class,
-            GrpcServerAutoConfiguration.class,
-            SecurityAutoConfiguration.class,
-            DataSourceAutoConfiguration.class,
-            HibernateJpaAutoConfiguration.class,
-            KafkaAutoConfiguration.class
-    })
+    @EnableAutoConfiguration
     static class TestApplication {}
 
     @LocalServerPort
