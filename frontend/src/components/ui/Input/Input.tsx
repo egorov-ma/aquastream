@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@utils/cn';
 import { forwardRef, InputHTMLAttributes, ReactNode, useCallback, useId } from 'react';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
@@ -92,7 +92,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       }
     }, [onChange, onClear]);
 
-    const wrapperClasses = clsx('flex flex-col', fullWidth ? 'w-full' : '', wrapperClassName);
+    const wrapperClasses = cn('flex flex-col', fullWidth ? 'w-full' : '', wrapperClassName);
 
     const baseInputClasses =
       'bg-secondary-50 dark:bg-secondary-900 border rounded-md focus:outline-none transition-colors';
@@ -118,7 +118,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       right: (rightIcon || showClearButton) ? 'pr-9' : '',
     };
 
-    const inputClasses = clsx(
+    const inputClasses = cn(
       baseInputClasses,
       sizeClasses[size],
       error ? stateClasses.error : stateClasses.normal,

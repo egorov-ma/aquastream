@@ -43,7 +43,7 @@ Storybook будет доступен по адресу http://localhost:6006
 Кнопка с различными вариантами стилей, размеров и возможностью добавления иконок.
 
 ```tsx
-<Button variant="primary" size="medium" onClick={handleClick}>
+<Button variant="primary" size="md" onClick={handleClick}>
   Нажми меня
 </Button>
 ```

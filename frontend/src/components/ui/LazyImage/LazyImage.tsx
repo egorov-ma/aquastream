@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@utils/cn';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import { LazyImageProps, ObjectFitMode, FadeInAnimation, RoundedSize, ShadowSize, HoverEffect } from './types';
@@ -151,7 +151,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   };
 
   // Определяем классы для контейнера
-  const containerClasses = clsx(
+  const containerClasses = cn(
     'lazy-image-container relative inline-block overflow-hidden align-top',
     placeholderColor,
     roundedClasses[rounded],
@@ -166,7 +166,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   );
 
   // Определяем классы для изображения
-  const imageClasses = clsx(
+  const imageClasses = cn(
     'block w-full h-full',
     objectFitClasses[objectFit],
     fadeAnimationClasses[fadeAnimation],
@@ -175,13 +175,13 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   );
 
   // Классы для прелоадера
-  const preloaderClasses = clsx(
+  const preloaderClasses = cn(
     'absolute inset-0 flex items-center justify-center transition-opacity duration-300',
     isLoaded || isError ? 'opacity-0 pointer-events-none' : 'opacity-100'
   );
 
   // Классы для информации о состоянии ошибки
-  const errorClasses = clsx(
+  const errorClasses = cn(
     'absolute inset-0 flex flex-col items-center justify-center bg-secondary-100 dark:bg-secondary-800 transition-opacity duration-300',
     isError && !fallbackSrc ? 'opacity-100' : 'opacity-0 pointer-events-none'
   );

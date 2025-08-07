@@ -40,27 +40,27 @@ const ButtonSection = () => {
         <div className="space-y-2">
           <Typography variant="subtitle-1">Primary</Typography>
           <div className="flex flex-wrap gap-2">
-            <Button variant="primary" size="small">Маленькая</Button>
+            <Button variant="primary" size="sm">Маленькая</Button>
             <Button variant="primary">Средняя</Button>
-            <Button variant="primary" size="large">Большая</Button>
+            <Button variant="primary" size="lg">Большая</Button>
           </div>
         </div>
         
         <div className="space-y-2">
           <Typography variant="subtitle-1">Secondary</Typography>
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" size="small">Маленькая</Button>
+            <Button variant="secondary" size="sm">Маленькая</Button>
             <Button variant="secondary">Средняя</Button>
-            <Button variant="secondary" size="large">Большая</Button>
+            <Button variant="secondary" size="lg">Большая</Button>
           </div>
         </div>
         
         <div className="space-y-2">
           <Typography variant="subtitle-1">Outline</Typography>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="small">Маленькая</Button>
+            <Button variant="outline" size="sm">Маленькая</Button>
             <Button variant="outline">Средняя</Button>
-            <Button variant="outline" size="large">Большая</Button>
+            <Button variant="outline" size="lg">Большая</Button>
           </div>
         </div>
       </div>
@@ -157,7 +157,7 @@ const CardSection = () => {
             </Typography>
           </CardContent>
           <CardFooter>
-            <Button variant="primary" size="small">Действие</Button>
+            <Button variant="primary" size="sm">Действие</Button>
           </CardFooter>
         </Card>
         
@@ -175,7 +175,7 @@ const CardSection = () => {
             </Typography>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" size="small">Действие</Button>
+            <Button variant="outline" size="sm">Действие</Button>
           </CardFooter>
         </Card>
         
@@ -193,7 +193,7 @@ const CardSection = () => {
             </Typography>
           </CardContent>
           <CardFooter>
-            <Button variant="secondary" size="small">Действие</Button>
+            <Button variant="secondary" size="sm">Действие</Button>
           </CardFooter>
         </Card>
         
@@ -211,7 +211,7 @@ const CardSection = () => {
             </Typography>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" size="small">Действие</Button>
+            <Button variant="outline" size="sm">Действие</Button>
           </CardFooter>
         </Card>
         
@@ -229,7 +229,7 @@ const CardSection = () => {
             </Typography>
           </CardContent>
           <CardFooter>
-            <Button variant="primary" size="small">Действие</Button>
+            <Button variant="primary" size="sm">Действие</Button>
           </CardFooter>
         </Card>
         

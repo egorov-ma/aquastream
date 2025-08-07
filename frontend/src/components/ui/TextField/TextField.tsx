@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@utils/cn';
 import React, { forwardRef, useState, useId } from 'react';
 
 // Типы для размеров и вариантов текстового поля
@@ -96,16 +96,16 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
     // Стили для разных вариантов отображения
     const variantClasses = {
-      outlined: clsx(
+      outlined: cn(
         'bg-transparent border rounded-md',
         error ? 'border-error-300 dark:border-error-600' : 'border-secondary-300 dark:border-secondary-600'
       ),
       filled: 'border-0 bg-secondary-100 dark:bg-secondary-800 rounded-md',
-      underlined: clsx(
+      underlined: cn(
         'border-0 border-b bg-transparent rounded-none px-0',
         error ? 'border-error-300 dark:border-error-600' : 'border-secondary-300 dark:border-secondary-600'
       ),
-      floating: clsx(
+      floating: cn(
         'bg-transparent border rounded-md pt-5',
         error ? 'border-error-300 dark:border-error-600' : 'border-secondary-300 dark:border-secondary-600'
       ),
@@ -127,7 +127,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     };
 
     // Базовые стили для инпута
-    const inputClasses = clsx(
+    const inputClasses = cn(
       'w-full transition-colors duration-200 outline-none focus:ring-2 focus:ring-offset-0',
       'placeholder-secondary-400 dark:placeholder-secondary-500 text-secondary-950 dark:text-secondary-50',
       'disabled:opacity-50 disabled:cursor-not-allowed',
@@ -149,13 +149,13 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     );
 
     // Контейнер для компонента
-    const containerClasses = clsx(
+    const containerClasses = cn(
       fullWidth ? 'w-full' : 'inline-block',
       appearEffectClasses[appearEffect]
     );
 
     // Классы для лейбла
-    const labelClasses = clsx(
+    const labelClasses = cn(
       'block text-sm font-medium mb-1',
       isFocused ? {
           'text-primary-600 dark:text-primary-400': activeColor === 'primary',
@@ -170,11 +170,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     );
 
     // Классы для плавающего лейбла
-    const floatingLabelClasses = clsx(
+    const floatingLabelClasses = cn(
       'absolute text-sm transition-all duration-200',
       'left-2.5 bg-secondary-50 dark:bg-secondary-900 px-1 pointer-events-none',
       isFocused || hasValue
-        ? clsx(
+        ? cn(
             '-translate-y-3 scale-75 origin-left',
             {
                 'text-primary-600 dark:text-primary-400': activeColor === 'primary',
@@ -204,7 +204,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         <div className="relative">
           {startIcon && (
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <span className={clsx('text-secondary-500 dark:text-secondary-400', isFocused && {
+              <span className={cn('text-secondary-500 dark:text-secondary-400', isFocused && {
                   'text-primary-600 dark:text-primary-400': activeColor === 'primary',
                   'text-secondary-800 dark:text-secondary-400': activeColor === 'secondary',
                   'text-accent-600 dark:text-accent-400': activeColor === 'accent',
@@ -242,7 +242,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
           {endIcon && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <span className={clsx('text-secondary-500 dark:text-secondary-400', isFocused && {
+              <span className={cn('text-secondary-500 dark:text-secondary-400', isFocused && {
                   'text-primary-600 dark:text-primary-400': activeColor === 'primary',
                   'text-secondary-800 dark:text-secondary-400': activeColor === 'secondary',
                   'text-accent-600 dark:text-accent-400': activeColor === 'accent',
@@ -260,7 +260,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         {displayHelperText && (
           <p
             id={`${elementId}-error`}
-            className={clsx(
+            className={cn(
               'text-xs mt-1',
               error ? 'text-error-600 dark:text-error-500' : 'text-secondary-600 dark:text-secondary-400'
             )}
