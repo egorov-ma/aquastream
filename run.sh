@@ -31,13 +31,19 @@ case "$1" in
         run_cmd npm --prefix frontend ci
         run_cmd npm --prefix frontend run build
         ;;
+      -docker)
+        ensure_env
+        run_cmd docker compose -f "$COMPOSE_FILE" build
+        ;;
       "")
         run_cmd ./gradlew build
         run_cmd npm --prefix frontend ci
         run_cmd npm --prefix frontend run build
+        ensure_env
+        run_cmd docker compose -f "$COMPOSE_FILE" build
         ;;
       *)
-        echo "Usage: $0 build [-be|-fe]"
+        echo "Usage: $0 build [-be|-fe|-docker]"
         exit 1
         ;;
     esac
@@ -46,6 +52,7 @@ case "$1" in
     case "$2" in
       -be)
         run_cmd ./gradlew check
+        run_cmd ./gradlew test
         ;;
       -fe)
         run_cmd npm --prefix frontend run lint
@@ -53,6 +60,7 @@ case "$1" in
         ;;
       "")
         run_cmd ./gradlew check
+        run_cmd ./gradlew test
         run_cmd npm --prefix frontend run lint
         run_cmd npm --prefix frontend test
         ;;
@@ -90,7 +98,7 @@ case "$1" in
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|dev|start|stop|status|logs} [-be|-fe]"
+    echo "Usage: $0 {build|test|dev|start|stop|status|logs} [-be|-fe|-docker]"
     exit 1
     ;;
  esac
