@@ -67,7 +67,7 @@ export const Default: Story = {
     children: renderCardContent(
       'Стандартная карточка',
       <Typography>Это содержимое стандартной карточки.</Typography>,
-      <Button variant="primary" size="small">Действие</Button>
+      <Button variant="primary" size="sm">Действие</Button>
     ),
   },
 };
@@ -108,7 +108,7 @@ export const Primary: Story = {
     children: renderCardContent(
       'Основная карточка',
       <Typography>Карточка основного цвета.</Typography>,
-      <Button variant="ghost" size="small" className="text-white hover:bg-white/20 dark:hover:bg-white/20">Действие</Button>
+      <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 dark:hover:bg-white/20">Действие</Button>
     ),
   },
 };

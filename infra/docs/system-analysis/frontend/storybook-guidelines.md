@@ -124,7 +124,7 @@ export const Secondary: Story = {
 // Размеры
 export const Small: Story = {
   args: {
-    size: 'small',
+    size: 'sm',
     children: 'Маленькая кнопка',
   },
 };
