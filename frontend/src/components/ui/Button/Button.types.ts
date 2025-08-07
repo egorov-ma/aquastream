@@ -9,13 +9,7 @@ export type ButtonVariant =
   | 'accent'
   | 'ghost';
 
-export type ButtonSize =
-  | 'small'
-  | 'medium'
-  | 'large'
-  | 'sm' // alias
-  | 'md'
-  | 'lg';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**

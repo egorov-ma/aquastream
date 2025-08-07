@@ -93,21 +93,21 @@ export const Ghost: Story = {
 // Размеры кнопок
 export const Small: Story = {
   args: {
-    size: 'small',
+    size: 'sm',
     children: 'Маленькая кнопка',
   },
 };
 
 export const Medium: Story = {
   args: {
-    size: 'medium',
+    size: 'md',
     children: 'Средняя кнопка',
   },
 };
 
 export const Large: Story = {
   args: {
-    size: 'large',
+    size: 'lg',
     children: 'Большая кнопка',
   },
 };
