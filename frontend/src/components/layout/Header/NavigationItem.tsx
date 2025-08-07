@@ -3,8 +3,6 @@ import { NavLink } from 'react-router-dom';
 
 import { NavItem } from './types';
 
-import { lightTheme, darkTheme } from '@/theme';
-
 /**
  * Свойства компонента навигационного пункта
  */
@@ -17,10 +15,6 @@ interface NavigationItemProps {
    * Режим отображения
    */
   mode?: 'text' | 'icon' | 'both';
-  /**
-   * Текущая тема
-   */
-  theme: 'light' | 'dark';
   /**
    * Отображаемое имя пункта
    */
@@ -42,10 +36,9 @@ interface NavigationItemProps {
 /**
  * Компонент для отображения навигационного пункта меню
  */
-const NavigationItem: React.FC<NavigationItemProps> = React.memo(({
+const NavigationItem: React.FC<NavigationItemProps> = React.memo(({ 
   item,
   mode = 'text',
-  theme,
   displayName,
   renderIcon,
   className,
@@ -71,18 +64,14 @@ const NavigationItem: React.FC<NavigationItemProps> = React.memo(({
 
   // CSS классы для пункта меню в зависимости от текущей темы и активности
   const getLinkClasses = ({ isActive }: { isActive: boolean }) => `
-    ${mode === 'icon' ? 'p-2' : 'px-3 py-2'} 
-    rounded-md 
-    ${mode === 'text' ? 'text-sm font-medium' : ''} 
+    ${mode === 'icon' ? 'p-2' : 'px-3 py-2'}
+    rounded-md
+    ${mode === 'text' ? 'text-sm font-medium' : ''}
     transition-colors
     ${
-      theme === 'dark'
-        ? isActive
-          ? darkTheme.activeNavItem
-          : darkTheme.navItem
-        : isActive
-          ? lightTheme.activeNavItem
-          : lightTheme.navItem
+      isActive
+        ? 'text-primary bg-secondary/30 font-medium'
+        : 'text-gray-300 hover:text-primary hover:bg-secondary/60'
     }
     ${className || ''}
   `;

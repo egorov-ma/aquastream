@@ -7,7 +7,6 @@ import Logo from './Logo';
 import NavigationMenu from './NavigationMenu';
 import { NavItem, HeaderProps } from './types';
 
-import { lightTheme, darkTheme } from '@/theme';
 
 /**
  * Компонент Header - шапка сайта с навигацией и логотипом
@@ -80,9 +79,7 @@ const Header: React.FC<HeaderProps> = ({
         opacityDuration: 0.15,
       }}
     >
-      <div className={`flex items-center justify-between w-auto max-w-screen-xl mx-auto rounded-[15px] shadow-md px-5 py-3 transition-colors ${
-        theme === 'dark' ? darkTheme.header : lightTheme.header
-      }`}>
+      <div className="flex items-center justify-between w-auto max-w-screen-xl mx-auto rounded-[15px] shadow-md px-5 py-3 transition-colors bg-[#1E2841] rounded-xl">
         {/* Логотип */}
         <div className="flex-shrink-0 mr-6">
           <Logo onClick={closeMenu} />
