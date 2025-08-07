@@ -31,9 +31,10 @@
 
 ```bash
 cp infra/docker/compose/.env.example infra/docker/compose/.env
-./run.sh build       # Сборка бэкенда и фронтенда
+./run.sh build       # Сборка бэкенда, фронтенда и Docker образов
 ./run.sh build -be   # Сборка только бэкенда
 ./run.sh build -fe   # Сборка только фронтенда
+./run.sh build -docker # Сборка только Docker образов
 ./run.sh test        # Запуск тестов всего проекта
 ./run.sh test -be    # Запуск тестов бэкенда
 ./run.sh test -fe    # Запуск тестов фронтенда
@@ -45,7 +46,6 @@ cp infra/docker/compose/.env.example infra/docker/compose/.env
 ./run.sh check -fe   # Запуск линтеров и тестов фронтенда
 ./run.sh dev -be    # Запуск бэкенда с горячей перезагрузкой
 ./run.sh dev -fe    # Запуск фронтенда в режиме разработки
-./run.sh build-containers # Сборка Docker образов
 ./run.sh start       # Поднимает Docker-инфраструктуру
 ./run.sh restart     # Перезапускает Docker-инфраструктуру
 ./run.sh status      # Показывает статус контейнеров
@@ -117,7 +117,9 @@ docker compose -f infra/monitoring/docker-compose.monitoring.yml up -d
     ```bash
     docker compose -f infra/docker/compose/docker-compose.dev.yml build
     # или
-    ./run.sh build-containers
+    ./run.sh build -docker
+    # или
+    ./run.sh build
     ```
    В Dockerfile-ах, расположенных в директории `infra/docker/images`, описан процесс сборки для каждого микросервиса.
 
