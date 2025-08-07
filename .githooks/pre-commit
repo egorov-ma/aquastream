@@ -5,7 +5,7 @@ set -euo pipefail
 # Автоматически проверяет изменения в инфраструктурных файлах
 
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
-HOOK_DIR="$(dirname "$0")"
+# Collect staged file names once for reuse across checks
 CHANGED_FILES="$(git diff --cached --name-only)"
 
 # Цвета для вывода
@@ -175,10 +175,7 @@ main() {
     fi
 
     # Запускаем полную валидацию только для серьезных изменений
-    local major_files_changed
-    major_files_changed=$(echo "$CHANGED_FILES" | grep -E "(docker-compose\.dev\.yml|docker-compose\.full\.yml|Dockerfile)" || true)
-
-    if [ -n "$major_files_changed" ]; then
+    if echo "$CHANGED_FILES" | grep -q -E "(docker-compose\.dev\.yml|docker-compose\.full\.yml|Dockerfile)"; then
         if ! run_full_validation; then
             exit_code=1
         fi
