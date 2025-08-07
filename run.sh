@@ -71,6 +71,26 @@ case "$1" in
         ;;
     esac
     ;;
+  check)
+    case "$2" in
+      -be)
+        run_cmd ./gradlew check
+        ;;
+      -fe)
+        run_cmd npm --prefix frontend run lint
+        run_cmd npm --prefix frontend test
+        ;;
+      "")
+        run_cmd ./gradlew check
+        run_cmd npm --prefix frontend run lint
+        run_cmd npm --prefix frontend test
+        ;;
+      *)
+        echo "Usage: $0 check [-be|-fe]"
+        exit 1
+        ;;
+    esac
+    ;;
   dev)
       case "$2" in
         -be)
@@ -113,7 +133,7 @@ case "$1" in
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|lint|dev|build-containers|start|stop|restart|status|logs} [-be|-fe]"
+    echo "Usage: $0 {build|test|lint|check|dev|build-containers|start|stop|restart|status|logs} [-be|-fe]"
     exit 1
     ;;
 
