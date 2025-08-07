@@ -14,6 +14,22 @@ run_cmd() {
   "$@"
 }
 
+build_containers() {
+  if [ ! -f "$ENV_FILE" ]; then
+    cp "$ENV_EXAMPLE" "$ENV_FILE"
+    echo "Created $ENV_FILE from example."
+  fi
+  for dir in backend-*/backend-*-service; do
+    svc=$(basename "$dir" | sed 's/backend-//; s/-service$//')
+    image="aquastream-${svc}-service"
+    if [ "$svc" = "gateway" ]; then
+      image="aquastream-api-gateway"
+    fi
+    run_cmd docker build -f infra/docker/images/Dockerfile.backend --build-arg SERVICE="$dir" -t "$image" .
+  done
+  run_cmd docker build -f infra/docker/images/Dockerfile.frontend -t aquastream-frontend .
+}
+
 case "$1" in
   build)
     case "$2" in
@@ -24,13 +40,17 @@ case "$1" in
         run_cmd npm --prefix frontend ci
         run_cmd npm --prefix frontend run build
         ;;
+      -docker)
+        build_containers
+        ;;
       "")
         run_cmd ./gradlew build
         run_cmd npm --prefix frontend ci
         run_cmd npm --prefix frontend run build
+        build_containers
         ;;
       *)
-        echo "Usage: $0 build [-be|-fe]"
+        echo "Usage: $0 build [-be|-fe|-docker]"
         exit 1
         ;;
     esac
@@ -105,13 +125,6 @@ case "$1" in
           ;;
       esac
       ;;
-  build-containers)
-    if [ ! -f "$ENV_FILE" ]; then
-      cp "$ENV_EXAMPLE" "$ENV_FILE"
-      echo "Created $ENV_FILE from example."
-    fi
-    run_cmd docker compose -f "$COMPOSE_FILE" build
-    ;;
   start)
     if [ ! -f "$ENV_FILE" ]; then
       cp "$ENV_EXAMPLE" "$ENV_FILE"
@@ -133,7 +146,7 @@ case "$1" in
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|lint|check|dev|build-containers|start|stop|restart|status|logs} [-be|-fe]"
+    echo "Usage: $0 {build|test|lint|check|dev|start|stop|restart|status|logs} [-be|-fe|-docker]"
     exit 1
     ;;
 
