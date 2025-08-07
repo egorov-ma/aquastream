@@ -11,6 +11,8 @@ import {
 } from '../types';
 
 import { ApiError } from '@/shared/types/api';
+import { loginResponseToAuth, apiToUser } from '@/api/adapters/authAdapter';
+import type { LoginResponse, UserDto } from '@/api/generated/models';
 
 // Начальное состояние
 const initialState: AuthState = {
@@ -27,25 +29,8 @@ export const login = createAsyncThunk(
   'auth/login',
   async (loginData: LoginData, { rejectWithValue }) => {
     try {
-      const response = await authApi.login(loginData);
-      const jwtRes = response.data.data as {
-        token: string;
-        id: string;
-        username: string;
-        name: string;
-        role: string;
-        refreshToken: string;
-      };
-      const accessToken = jwtRes.token;
-      const refreshToken = jwtRes.refreshToken || '';
-      const user: User = {
-        id: jwtRes.id,
-        username: jwtRes.username,
-        displayName: jwtRes.name,
-        role: jwtRes.role,
-        createdAt: '',
-        updatedAt: '',
-      } as unknown as User;
+      const response: LoginResponse = await authApi.login(loginData);
+      const { user, accessToken, refreshToken } = loginResponseToAuth(response);
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);
@@ -65,25 +50,8 @@ export const register = createAsyncThunk(
   'auth/register',
   async (registerData: RegisterData, { rejectWithValue }) => {
     try {
-      const response = await authApi.register(registerData);
-      const jwtRes = response.data.data as {
-        token: string;
-        id: string;
-        username: string;
-        name: string;
-        role: string;
-        refreshToken: string;
-      };
-      const accessToken = jwtRes.token;
-      const refreshToken = jwtRes.refreshToken || '';
-      const user: User = {
-        id: jwtRes.id,
-        username: jwtRes.username,
-        displayName: jwtRes.name,
-        role: jwtRes.role,
-        createdAt: '',
-        updatedAt: '',
-      } as unknown as User;
+      const response: LoginResponse = await authApi.register(registerData);
+      const { user, accessToken, refreshToken } = loginResponseToAuth(response);
 
       // Сохраняем токены в localStorage
       localStorage.setItem('accessToken', accessToken);
@@ -129,7 +97,7 @@ export const updateProfile = createAsyncThunk(
   ) => {
     try {
       const response = await authApi.updateProfile(userId, profileData);
-      const updatedUser = response.data.data;
+      const updatedUser: User = apiToUser(response.data as UserDto);
 
       // Обновляем данные пользователя в localStorage
       localStorage.setItem('user', JSON.stringify(updatedUser));

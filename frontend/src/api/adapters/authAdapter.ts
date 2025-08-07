@@ -2,7 +2,7 @@
  * Адаптер для преобразования между интерфейсами аутентификации и сгенерированными моделями API
  */
 
-import { UserDto, LoginRequest, RegisterRequest } from '../generated/models';
+import { UserDto, LoginRequest, RegisterRequest, LoginResponse } from '../generated/models';
 
 import {
   User,
@@ -10,6 +10,7 @@ import {
   RegisterData,
   UpdateProfileData,
   ChangePasswordData,
+  AuthResponse,
 } from '@/modules/auth/types';
 
 /**
@@ -28,11 +29,25 @@ export function apiToUser(apiUser: UserDto): User {
 }
 
 /**
+ * Преобразует LoginResponse из API в AuthResponse для фронтенда
+ */
+export function loginResponseToAuth(response: LoginResponse): AuthResponse {
+  const data = response.data || {};
+  const user = data.user ? apiToUser(data.user) : ({} as User);
+
+  return {
+    user,
+    accessToken: data.accessToken || '',
+    refreshToken: data.refreshToken || '',
+  };
+}
+
+/**
  * Преобразует LoginData для фронтенда в LoginRequest для API
  */
 export function loginDataToApi(data: LoginData): LoginRequest {
   return {
-    email: data.email,
+    email: data.username,
     password: data.password,
     rememberMe: data.rememberMe,
   };
@@ -43,8 +58,8 @@ export function loginDataToApi(data: LoginData): LoginRequest {
  */
 export function registerDataToApi(data: RegisterData): RegisterRequest {
   return {
-    username: data.username ?? data.email,
-    email: data.email,
+    username: data.username,
+    email: data.username,
     password: data.password,
     displayName: data.displayName,
   };

@@ -45,9 +45,12 @@ describe('authSlice', () => {
   // Моковые данные пользователя
   const mockUser: User = {
     id: '1',
+    username: 'testuser',
     email: 'test@example.com',
-    name: 'Test User',
+    displayName: 'Test User',
     role: 'USER',
+    createdAt: '',
+    updatedAt: '',
   };
 
   describe('reducer', () => {
@@ -163,7 +166,7 @@ describe('authSlice', () => {
     it('should handle updateProfile.fulfilled', () => {
       const updatedUser = {
         ...mockUser,
-        name: 'Updated Name',
+        displayName: 'Updated Name',
       };
 
       const loggedInState = {
