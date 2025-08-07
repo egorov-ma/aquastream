@@ -31,7 +31,6 @@ include 'backend-crew:backend-crew-db'
 include 'backend-crew:backend-crew-service'
 
 // Other modules
-include 'frontend'
 include 'common'
 include 'infra'
 
