@@ -86,7 +86,7 @@ const EventCard: React.FC<EventCardProps> = React.memo(({
           {path ? (
             <Link to={path} onClick={handleClick} className="w-full" data-testid="event-link-button">
               <Button
-                variant="primary"
+                variant="default"
                 size="md"
                 className="w-full rounded-md"
                 data-testid="event-button"
@@ -96,7 +96,7 @@ const EventCard: React.FC<EventCardProps> = React.memo(({
             </Link>
           ) : (
             <Button
-              variant="primary"
+              variant="default"
               size="md"
               className="w-full rounded-md"
               onClick={handleClick}

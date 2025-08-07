@@ -10,7 +10,7 @@ import { TypographyAlign, TypographyColor, TypographyVariant } from '@/component
 export type Size = 'sm' | 'md' | 'lg';
 
 // Основные типы вариантов
-export type Variant = 'primary' | 'secondary' | 'outlined' | 'outline' | 'text' | 'filled' | 'gradient';
+export type Variant = 'default' | 'secondary' | 'destructive' | 'outline' | 'text' | 'filled' | 'gradient';
 
 // Основные типы цветов
 export type Color =

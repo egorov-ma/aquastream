@@ -40,9 +40,9 @@ const ButtonSection = () => {
         <div className="space-y-2">
           <Typography variant="subtitle-1">Primary</Typography>
           <div className="flex flex-wrap gap-2">
-            <Button variant="primary" size="sm">Маленькая</Button>
-            <Button variant="primary">Средняя</Button>
-            <Button variant="primary" size="lg">Большая</Button>
+            <Button variant="default" size="sm">Маленькая</Button>
+            <Button variant="default">Средняя</Button>
+            <Button variant="default" size="lg">Большая</Button>
           </div>
         </div>
         
@@ -69,22 +69,22 @@ const ButtonSection = () => {
         <div className="space-y-2">
           <Typography variant="subtitle-1">Danger</Typography>
           <div className="flex flex-wrap gap-2">
-            <Button variant="danger">Опасное действие</Button>
-            <Button variant="danger" disabled>Недоступно</Button>
+            <Button variant="destructive">Опасное действие</Button>
+            <Button variant="destructive" disabled>Недоступно</Button>
           </div>
         </div>
         
         <div className="space-y-2">
           <Typography variant="subtitle-1">Loading</Typography>
           <div className="flex flex-wrap gap-2">
-            <Button variant="primary" loading>Загрузка...</Button>
+            <Button variant="default" loading>Загрузка...</Button>
             <Button variant="secondary" loading>Загрузка...</Button>
           </div>
         </div>
         
         <div className="space-y-2">
           <Typography variant="subtitle-1">Full Width</Typography>
-          <Button variant="primary" fullWidth>Во всю ширину</Button>
+          <Button variant="default" fullWidth>Во всю ширину</Button>
         </div>
       </div>
     </Section>
@@ -157,7 +157,7 @@ const CardSection = () => {
             </Typography>
           </CardContent>
           <CardFooter>
-            <Button variant="primary" size="sm">Действие</Button>
+            <Button variant="default" size="sm">Действие</Button>
           </CardFooter>
         </Card>
         
@@ -229,7 +229,7 @@ const CardSection = () => {
             </Typography>
           </CardContent>
           <CardFooter>
-            <Button variant="primary" size="sm">Действие</Button>
+            <Button variant="default" size="sm">Действие</Button>
           </CardFooter>
         </Card>
         
@@ -370,7 +370,7 @@ const ModalSection = () => {
     <Section title="Модальные окна">
       <div className="space-y-4">
         <Button 
-          variant="primary" 
+          variant="default" 
           onClick={() => setIsOpen(true)}
         >
           Открыть модальное окно
@@ -395,7 +395,7 @@ const ModalSection = () => {
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               Отмена
             </Button>
-            <Button variant="primary" onClick={() => setIsOpen(false)}>
+            <Button variant="default" onClick={() => setIsOpen(false)}>
               Подтвердить
             </Button>
           </div>

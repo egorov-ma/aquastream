@@ -226,7 +226,7 @@ const RegisterFormExample = () => {
           )}
         </div>
 
-        <Button variant="primary" type="submit" fullWidth className="mt-6">
+        <Button variant="default" type="submit" fullWidth className="mt-6">
           Зарегистрироваться
         </Button>
 

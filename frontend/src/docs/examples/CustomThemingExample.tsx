@@ -39,14 +39,14 @@ const CustomThemingExample = () => {
 
           <div className="flex items-center space-x-2">
             <Button
-              variant={darkMode ? 'primary' : 'outlined'}
+              variant={darkMode ? 'default' : 'outline'}
               onClick={() => setDarkMode(true)}
               className="flex-1"
             >
               Темная тема
             </Button>
             <Button
-              variant={!darkMode ? 'primary' : 'outlined'}
+              variant={!darkMode ? 'default' : 'outline'}
               onClick={() => setDarkMode(false)}
               className="flex-1"
             >
@@ -80,7 +80,7 @@ const CustomThemingExample = () => {
           />
 
           <Button
-            variant="primary"
+            variant="default"
             className={customButtonClass}
             onClick={() => setModalOpen(true)}
           >
@@ -88,13 +88,13 @@ const CustomThemingExample = () => {
           </Button>
 
           <div className="flex space-x-2 mt-4">
-            <Button variant="primary" size="sm" className={customButtonClass}>
+            <Button variant="default" size="sm" className={customButtonClass}>
               Маленькая кнопка
             </Button>
-            <Button variant="primary" className={customButtonClass}>
+            <Button variant="default" className={customButtonClass}>
               Средняя
             </Button>
-            <Button variant="primary" size="lg" className={customButtonClass}>
+            <Button variant="default" size="lg" className={customButtonClass}>
               Большая кнопка
             </Button>
           </div>
@@ -119,7 +119,7 @@ const customButtonClass = 'custom-button-color hover:bg-opacity-90 text-white';
 
 // Использование в компонентах
 <div className={\`p-8 \${darkModeClass}\`}>
-  <Button variant="primary" className={customButtonClass}>
+  <Button variant="default" className={customButtonClass}>
     Кастомная кнопка
   </Button>
 </div>`}
@@ -135,14 +135,14 @@ const customButtonClass = 'custom-button-color hover:bg-opacity-90 text-white';
         actions={
           <>
             <Button
-              variant="outlined"
+              variant="outline"
               onClick={() => setModalOpen(false)}
               className={darkMode ? 'text-white border-white' : ''}
             >
               Отмена
             </Button>
             <Button
-              variant="primary"
+              variant="default"
               onClick={() => setModalOpen(false)}
               className={customButtonClass}
             >
