@@ -10,7 +10,7 @@ export enum UserRole {
 // Интерфейс пользователя
 export interface User {
   id: string | number;
-  email: string;
+  username: string;
   name?: string;
   displayName?: string;
   avatar?: string;
@@ -23,8 +23,7 @@ export interface User {
 
 // Данные для входа
 export interface LoginData {
-  email: string;
-  username?: string;
+  username: string;
   password: string;
   rememberMe?: boolean;
   [key: string]: unknown;
@@ -32,8 +31,7 @@ export interface LoginData {
 
 // Данные для регистрации
 export interface RegisterData {
-  email: string;
-  username?: string;
+  username: string;
   password: string;
   displayName?: string;
   name?: string;

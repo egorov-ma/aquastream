@@ -40,7 +40,7 @@ export const login = createAsyncThunk(
       const refreshToken = jwtRes.refreshToken || '';
       const user: User = {
         id: jwtRes.id,
-        email: jwtRes.username,
+        username: jwtRes.username,
         displayName: jwtRes.name,
         role: jwtRes.role,
         createdAt: '',
@@ -78,7 +78,7 @@ export const register = createAsyncThunk(
       const refreshToken = jwtRes.refreshToken || '';
       const user: User = {
         id: jwtRes.id,
-        email: jwtRes.username,
+        username: jwtRes.username,
         displayName: jwtRes.name,
         role: jwtRes.role,
         createdAt: '',
