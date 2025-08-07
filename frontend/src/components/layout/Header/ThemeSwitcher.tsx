@@ -1,19 +1,12 @@
 import { Sun, Moon } from 'lucide-react';
 import React from 'react';
 
+import { useTheme } from '@/providers/ThemeProvider';
 
 /**
  * Свойства компонента переключателя темы
  */
 interface ThemeSwitcherProps {
-  /**
-   * Текущая тема
-   */
-  theme: 'light' | 'dark';
-  /**
-   * Обработчик переключения темы
-   */
-  onToggle?: () => void;
   /**
    * Дополнительные CSS-классы
    */
@@ -23,19 +16,16 @@ interface ThemeSwitcherProps {
 /**
  * Компонент для переключения между светлой и темной темами
  */
-const ThemeSwitcher: React.FC<ThemeSwitcherProps> = React.memo(({
-  theme,
-  onToggle,
-  className,
-}) => {
+const ThemeSwitcher: React.FC<ThemeSwitcherProps> = React.memo(({ className }) => {
+  const { theme, toggleTheme } = useTheme();
   const themeTitle = theme === 'dark' ? 'Светлая тема' : 'Темная тема';
-  
+
   return (
     <button
       type="button"
       aria-label="Переключить тему"
       className={`p-2 rounded-full transition-colors text-gray-300 hover:text-primary hover:bg-secondary/60 ${className || ''}`}
-      onClick={onToggle}
+      onClick={toggleTheme}
       title={themeTitle}
       data-testid="theme-switcher"
     >
@@ -50,4 +40,4 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = React.memo(({
 
 ThemeSwitcher.displayName = 'ThemeSwitcher';
 
-export default ThemeSwitcher; 
+export default ThemeSwitcher;

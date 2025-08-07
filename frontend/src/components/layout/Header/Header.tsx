@@ -1,6 +1,6 @@
 import { Calendar, Users, HelpCircle } from 'lucide-react';
 import React, { useCallback, useContext } from 'react';
-
+import { Calendar, Users, HelpCircle } from 'lucide-react';
 
 import HeaderScroll, { MenuContext } from './HeaderScroll';
 import Logo from './Logo';
@@ -12,8 +12,6 @@ import { NavItem, HeaderProps } from './types';
  * Компонент Header - шапка сайта с навигацией и логотипом
  */
 const Header: React.FC<HeaderProps> = ({
-  onThemeToggle,
-  theme = 'light',
   isAuthenticated = false,
   items,
   navItems,
@@ -87,24 +85,20 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Десктопное меню */}
         <div className="hidden md:block">
-          <NavigationMenu
+      <NavigationMenu
             items={menuItems}
-            theme={theme}
             isAuthenticated={isAuthenticated}
             mode="text"
-            onThemeToggle={onThemeToggle}
             renderIcon={renderIcon}
           />
         </div>
 
         {/* Мобильное меню (иконки) */}
         <div className="md:hidden">
-          <NavigationMenu
+      <NavigationMenu
             items={menuItems}
-            theme={theme}
             isAuthenticated={isAuthenticated}
             mode="icon"
-            onThemeToggle={onThemeToggle}
             renderIcon={renderIcon}
           />
         </div>

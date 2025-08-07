@@ -18,10 +18,6 @@ interface NavigationMenuProps {
    */
   items: NavItem[];
   /**
-   * Текущая тема
-   */
-  theme: 'light' | 'dark';
-  /**
    * Статус авторизации пользователя
    */
   isAuthenticated: boolean;
@@ -29,10 +25,6 @@ interface NavigationMenuProps {
    * Режим отображения (текст, иконки или оба)
    */
   mode?: 'text' | 'icon' | 'both';
-  /**
-   * Обработчик переключения темы
-   */
-  onThemeToggle?: () => void;
   /**
    * Функция для рендеринга иконок
    */
@@ -48,10 +40,8 @@ interface NavigationMenuProps {
  */
 const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(({
   items,
-  theme,
   isAuthenticated,
   mode = 'text',
-  onThemeToggle,
   renderIcon,
   className,
 }) => {
@@ -110,7 +100,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(({
       />
 
       {/* Переключатель темы */}
-      <ThemeSwitcher theme={theme} onToggle={onThemeToggle} />
+      <ThemeSwitcher />
     </nav>
   );
 });

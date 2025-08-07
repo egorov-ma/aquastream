@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import App from './App';
 import './main.css';
 import store from './store';
+import { ThemeProvider } from '@/providers/ThemeProvider';
 
 import { PageLoader } from '@/components/ui';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
@@ -43,7 +44,9 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <HelmetProvider>
-        <App />
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
       </HelmetProvider>
     ),
     children: [

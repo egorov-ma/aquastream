@@ -7,6 +7,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 
 
 import Header from '../Header/Header';
+import { ThemeProvider } from '@/providers/ThemeProvider';
 
 import { renderWithProviders } from '@/test/utils';
 
@@ -33,12 +34,15 @@ describe('Header Component', () => {
   // Очищаем DOM после каждого теста
   afterEach(() => {
     cleanup();
+    localStorage.clear();
   });
 
   it('renders with navigation items and theme toggle button', () => {
     renderWithProviders(
       <MemoryRouter>
-        <Header navItems={mockNavItems} theme="light" />
+        <ThemeProvider>
+          <Header navItems={mockNavItems} />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -58,7 +62,9 @@ describe('Header Component', () => {
     // Проверяем темную тему
     const { unmount } = renderWithProviders(
       <MemoryRouter>
-        <Header navItems={mockNavItems} theme="dark" />
+        <ThemeProvider defaultTheme="dark">
+          <Header navItems={mockNavItems} />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -68,11 +74,14 @@ describe('Header Component', () => {
     // Размонтируем компонент и очищаем DOM
     unmount();
     cleanup();
+    localStorage.clear();
 
     // Проверяем светлую тему
     renderWithProviders(
       <MemoryRouter>
-        <Header navItems={mockNavItems} theme="light" />
+        <ThemeProvider>
+          <Header navItems={mockNavItems} />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -80,29 +89,28 @@ describe('Header Component', () => {
     expect(darkIcon).toBeInTheDocument();
   });
 
-  it('calls onThemeToggle when theme button is clicked', async () => {
-    const handleThemeToggle = vi.fn();
-
+  it('toggles theme when theme button is clicked', async () => {
     renderWithProviders(
       <MemoryRouter>
-        <Header navItems={mockNavItems} theme="light" onThemeToggle={handleThemeToggle} />
+        <ThemeProvider>
+          <Header navItems={mockNavItems} />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
-    // Находим кнопку смены темы
     const themeToggleButton = screen.getAllByTestId('theme-switcher')[0];
-
-    // Используем userEvent.click для имитации клика
     await userEvent.click(themeToggleButton);
 
-    // Проверяем, что обработчик был вызван
-    expect(handleThemeToggle).toHaveBeenCalledTimes(1);
+    const lightIcon = screen.getAllByTestId('light-icon')[0];
+    expect(lightIcon).toBeInTheDocument();
   });
 
   it('renders correct navigation links with href attributes', () => {
     renderWithProviders(
       <MemoryRouter>
-        <Header navItems={mockNavItems} theme="light" />
+        <ThemeProvider>
+          <Header navItems={mockNavItems} />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
