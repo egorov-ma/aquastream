@@ -130,7 +130,11 @@ case "$1" in
       cp "$ENV_EXAMPLE" "$ENV_FILE"
       echo "Created $ENV_FILE from example."
     fi
-    run_cmd docker compose -f "$COMPOSE_FILE" up -d
+    if [ "$2" = "--no-build" ]; then
+      run_cmd docker compose -f "$COMPOSE_FILE" up -d
+    else
+      run_cmd docker compose -f "$COMPOSE_FILE" up -d --build
+    fi
     ;;
   stop)
     run_cmd docker compose -f "$COMPOSE_FILE" down -v
@@ -146,7 +150,7 @@ case "$1" in
     run_cmd docker compose -f "$COMPOSE_FILE" logs -f
     ;;
   *)
-    echo "Usage: $0 {build|test|lint|check|dev|start|stop|restart|status|logs} [-be|-fe|-docker]"
+    echo "Usage: $0 {build|test|lint|check|dev|start|stop|restart|status|logs} [-be|-fe|-docker|--no-build]"
     exit 1
     ;;
 

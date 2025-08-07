@@ -46,7 +46,8 @@ cp infra/docker/compose/.env.example infra/docker/compose/.env
 ./run.sh check -fe   # Запуск линтеров и тестов фронтенда
 ./run.sh dev -be    # Запуск бэкенда с горячей перезагрузкой
 ./run.sh dev -fe    # Запуск фронтенда в режиме разработки
-./run.sh start       # Поднимает Docker-инфраструктуру
+./run.sh start              # Поднимает Docker-инфраструктуру с пересборкой контейнеров
+./run.sh start --no-build   # Быстрый запуск без пересборки контейнеров
 ./run.sh restart     # Перезапускает Docker-инфраструктуру
 ./run.sh status      # Показывает статус контейнеров
 ./run.sh logs        # Показывает логи контейнеров
