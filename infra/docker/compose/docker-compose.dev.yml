@@ -18,6 +18,7 @@ services:
     image: bitnami/zookeeper:${ZOOKEEPER_TAG:-3.8}
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOO_SERVER_ID: "1"
     ports:
       - "2181:2181"
     volumes:
