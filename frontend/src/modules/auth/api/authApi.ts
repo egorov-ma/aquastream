@@ -4,11 +4,17 @@ import {
   UpdateProfileData,
   ChangePasswordData,
   User,
-  AuthResponse,
 } from '../types';
 
 import { apiService, logger } from '@/services';
 import { ApiResponse } from '@/shared/types/api';
+import {
+  loginDataToApi,
+  registerDataToApi,
+  updateProfileToApi,
+  changePasswordToApi,
+} from '@/api/adapters/authAdapter';
+import type { LoginRequest, RegisterRequest, LoginResponse, UserDto } from '@/api/generated/models';
 
 /**
  * API для работы с аутентификацией
@@ -19,12 +25,11 @@ export const authApi = {
    * @param loginData Данные для входа
    */
   login: (loginData: LoginData) => {
-    logger.debug('Logging in user', { email: loginData.email });
-    const payload = {
-      username: loginData.email,
-      password: loginData.password,
-    };
-    return apiService.post<ApiResponse<AuthResponse>, typeof payload>('/auth/signin', payload);
+    logger.debug('Logging in user', { username: loginData.username });
+    return apiService.post<LoginResponse, LoginRequest>(
+      '/auth/signin',
+      loginDataToApi(loginData)
+    );
   },
 
   /**
@@ -32,14 +37,11 @@ export const authApi = {
    * @param registerData Данные для регистрации
    */
   register: (registerData: RegisterData) => {
-    logger.debug('Registering new user', { email: registerData.email });
-    const payload = {
-      name:
-        registerData.displayName || `${registerData.firstName || ''} ${registerData.lastName || ''}`.trim() || registerData.email,
-      username: registerData.email,
-      password: registerData.password,
-    };
-    return apiService.post<ApiResponse<AuthResponse>, typeof payload>('/auth/register', payload);
+    logger.debug('Registering new user', { username: registerData.username });
+    return apiService.post<LoginResponse, RegisterRequest>(
+      '/auth/register',
+      registerDataToApi(registerData)
+    );
   },
 
   /**
@@ -57,9 +59,9 @@ export const authApi = {
    */
   updateProfile: (userId: string, profileData: UpdateProfileData) => {
     logger.debug('Updating user profile', { userId, ...profileData });
-    return apiService.put<ApiResponse<User>, UpdateProfileData>(
+    return apiService.put<ApiResponse<UserDto>, ReturnType<typeof updateProfileToApi>>(
       `/users/${userId}/profile`,
-      profileData
+      updateProfileToApi(profileData)
     );
   },
 
@@ -70,10 +72,10 @@ export const authApi = {
    */
   changePassword: (userId: string, passwordData: ChangePasswordData) => {
     logger.debug('Changing user password', { userId });
-    return apiService.put<ApiResponse<{ success: boolean }>, ChangePasswordData>(
-      `/users/${userId}/password`,
-      passwordData
-    );
+    return apiService.put<
+      ApiResponse<{ success: boolean }>,
+      ReturnType<typeof changePasswordToApi>
+    >(`/users/${userId}/password`, changePasswordToApi(passwordData));
   },
 
   /**

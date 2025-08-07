@@ -28,7 +28,7 @@ describe('authApi', () => {
   });
 
   describe('login', () => {
-    const loginData = { email: 'test@example.com', password: 'password123' };
+    const loginData = { username: 'test@example.com', password: 'password123' };
     const mockUser = {
       id: '1',
       email: 'test@example.com',
@@ -53,15 +53,16 @@ describe('authApi', () => {
 
       // Проверяем, что apiService.post вызван с правильными параметрами
       expect(apiService.post).toHaveBeenCalledWith('/auth/signin', {
-        username: loginData.email,
+        email: loginData.username,
         password: loginData.password,
+        rememberMe: undefined,
       });
     });
   });
 
   describe('register', () => {
     const registerData = {
-      email: 'test@example.com',
+      username: 'test@example.com',
       password: 'password123',
       displayName: 'Test User',
     };
@@ -90,9 +91,10 @@ describe('authApi', () => {
 
       // Проверяем, что apiService.post вызван с правильными параметрами
       expect(apiService.post).toHaveBeenCalledWith('/auth/register', {
-        name: 'Test User',
         username: 'test@example.com',
+        email: 'test@example.com',
         password: 'password123',
+        displayName: 'Test User',
       });
     });
   });
@@ -116,7 +118,7 @@ describe('authApi', () => {
 
   describe('updateProfile', () => {
     const userId = '1';
-    const profileData = { name: 'Updated Name', email: 'updated@example.com' };
+    const profileData = { displayName: 'Updated Name', avatar: 'avatar.png' };
 
     const mockResponse = {
       data: {
