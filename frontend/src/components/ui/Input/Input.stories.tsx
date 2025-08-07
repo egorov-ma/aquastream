@@ -18,6 +18,16 @@ const meta = {
       control: 'text',
       description: 'Placeholder поля ввода',
     },
+    variant: {
+      control: { type: 'select' },
+      options: ['outlined', 'filled', 'underlined', 'floating'],
+      description: 'Вариант отображения',
+    },
+    color: {
+      control: { type: 'select' },
+      options: ['primary', 'secondary', 'accent', 'error', 'warning', 'success', 'info'],
+      description: 'Цвет акцента',
+    },
     size: {
       control: { type: 'select' },
       options: ['sm', 'md', 'lg'],
@@ -64,6 +74,8 @@ const meta = {
   args: {
     label: 'Поле ввода',
     placeholder: 'Введите текст...',
+    variant: 'outlined',
+    color: 'primary',
     size: 'md',
     fullWidth: false,
     disabled: false,
@@ -145,4 +157,27 @@ export const FullWidth: Story = {
     label: 'Поле на всю ширину',
     fullWidth: true,
   },
-}; 
+};
+
+export const Filled: Story = {
+  args: {
+    label: 'Заполненное поле',
+    variant: 'filled',
+  },
+};
+
+export const Underlined: Story = {
+  args: {
+    label: 'Подчеркнутое поле',
+    variant: 'underlined',
+    placeholder: 'Только подчеркивание',
+  },
+};
+
+export const FloatingLabel: Story = {
+  args: {
+    label: 'Плавающая метка',
+    variant: 'floating',
+    placeholder: ' ',
+  },
+};

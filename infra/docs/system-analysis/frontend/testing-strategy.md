@@ -27,23 +27,23 @@
 #### Пример модульного теста:
 
 ```tsx
-// TextField.test.tsx
+// Input.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TextField } from './TextField';
+import { Input } from './Input';
 
-describe('TextField component', () => {
+describe('Input component', () => {
   test('renders with default props', () => {
-    render(<TextField />);
+    render(<Input />);
     const inputElement = screen.getByRole('textbox');
     expect(inputElement).toBeInTheDocument();
   });
 
   test('applies correct variant styles', () => {
-    const { rerender } = render(<TextField variant="outlined" />);
+    const { rerender } = render(<Input variant="outlined" />);
     let input = screen.getByRole('textbox');
     expect(input.closest('div')).toHaveClass('border-2');
 
-    rerender(<TextField variant="filled" />);
+    rerender(<Input variant="filled" />);
     input = screen.getByRole('textbox');
     expect(input.closest('div')).toHaveClass('bg-gray-100');
   });
@@ -156,9 +156,9 @@ frontend/
 │   │   │   ├── Button/
 │   │   │   │   ├── Button.tsx
 │   │   │   │   └── Button.test.tsx
-│   │   │   ├── TextField/
-│   │   │   │   ├── TextField.tsx
-│   │   │   │   └── TextField.test.tsx
+│   │   │   ├── Input/
+│   │   │   │   ├── Input.tsx
+│   │   │   │   └── Input.test.tsx
 │   │   │   ├── LoginForm/
 │   │   │   │   ├── LoginForm.tsx
 │   │   │   │   └── LoginForm.test.tsx

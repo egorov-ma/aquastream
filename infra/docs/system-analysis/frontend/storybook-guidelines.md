@@ -147,7 +147,7 @@ const InteractiveDemo = () => {
   const [value, setValue] = useState('');
   
   return (
-    <TextField
+    <Input
       label="Интерактивное поле"
       value={value}
       onChange={(e) => setValue(e.target.value)}
