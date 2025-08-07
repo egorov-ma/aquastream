@@ -24,13 +24,13 @@ spring:
     topics:
       user-registration: user-registration
 jwt:
-  secret: 9oSu9ugYxpECIJvtQJ3Q0FPT9jEC5hK3X5Pf7MYgfjSUcum3W9
+  secret: ${JWT_SECRET}
   expiration-ms: 86400000 # 24 часа
 management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,prometheus
+        include: health,info,metrics,prometheus
   metrics:
     tags:
       application: ${spring.application.name}
