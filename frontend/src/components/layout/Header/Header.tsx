@@ -1,6 +1,5 @@
 import { Calendar, Users, HelpCircle } from 'lucide-react';
 import React, { useCallback, useContext } from 'react';
-import { Calendar, Users, HelpCircle } from 'lucide-react';
 
 import HeaderScroll, { MenuContext } from './HeaderScroll';
 import Logo from './Logo';
