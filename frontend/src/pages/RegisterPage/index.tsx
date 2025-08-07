@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Typography, Input, Button, Form, FormField, FormError } from '@/components/ui';
+import { Typography, TextField, Button, Form, FormField, FormError } from '@/components/ui';
 import { register as registerThunk } from '@/modules/auth/store/authSlice';
 import { useAppDispatch } from '@/store/hooks';
 import { useAppSelector } from '@/store/hooks';
@@ -78,7 +78,7 @@ const RegisterPage: React.FC = () => {
           <FormField
             name="name"
             render={({ field, fieldState }) => (
-              <Input
+              <TextField
                 label="Имя пользователя"
                 placeholder="Введите ваше имя"
                 {...field}
@@ -91,7 +91,7 @@ const RegisterPage: React.FC = () => {
           <FormField
             name="username"
             render={({ field, fieldState }) => (
-              <Input
+              <TextField
                 label="Логин"
                 placeholder="Введите логин для входа в систему"
                 {...field}
@@ -105,7 +105,7 @@ const RegisterPage: React.FC = () => {
           <FormField
             name="email"
             render={({ field, fieldState }) => (
-              <Input
+              <TextField
                 label="Email"
                 placeholder="Введите ваш email"
                 type="email"
@@ -119,7 +119,7 @@ const RegisterPage: React.FC = () => {
           <FormField
             name="password"
             render={({ field, fieldState }) => (
-              <Input
+              <TextField
                 type={showPassword ? 'text' : 'password'}
                 label="Пароль"
                 placeholder="Введите пароль"
@@ -155,7 +155,7 @@ const RegisterPage: React.FC = () => {
           <FormField
             name="confirmPassword"
             render={({ field, fieldState }) => (
-              <Input
+              <TextField
                 type={showConfirmPassword ? 'text' : 'password'}
                 label="Повторите пароль"
                 placeholder="Повторите пароль"

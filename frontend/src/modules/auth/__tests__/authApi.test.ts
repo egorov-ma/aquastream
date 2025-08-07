@@ -101,7 +101,7 @@ describe('authApi', () => {
 
       expect(AuthService.register).toHaveBeenCalledWith({
         requestBody: {
-          username: 'test@example.com',
+          username: 'testuser',
           email: 'test@example.com',
           password: 'password123',
           displayName: 'Test User',

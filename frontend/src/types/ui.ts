@@ -1,5 +1,4 @@
 import { ButtonSize, ButtonVariant } from '@/components/ui/Button';
-import { InputColor, InputSize, InputVariant } from '@/components/ui/Input';
 import { TypographyAlign, TypographyColor, TypographyVariant } from '@/components/ui/Typography';
 
 /**
@@ -37,13 +36,4 @@ export type AppearEffect = 'none' | 'fade' | 'slide' | 'scale';
 export type HoverEffect = 'none' | 'lift' | 'pulse' | 'glow';
 
 // Реэкспорт типов компонентов
-export type {
-  ButtonVariant,
-  ButtonSize,
-  InputColor,
-  InputSize,
-  InputVariant,
-  TypographyAlign,
-  TypographyColor,
-  TypographyVariant,
-};
+export type { ButtonVariant, ButtonSize, TypographyAlign, TypographyColor, TypographyVariant };

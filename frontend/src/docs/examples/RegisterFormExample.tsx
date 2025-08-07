@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Button, Checkbox, Input, Typography } from '../../components/ui';
+import { Button, Checkbox, TextField, Typography } from '../../components/ui';
 
 const RegisterFormExample = () => {
   const [formData, setFormData] = useState({
@@ -147,60 +147,55 @@ const RegisterFormExample = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
+          <TextField
             label="Имя"
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            variant="outlined"
             fullWidth
             error={errors.firstName}
             required
           />
 
-          <Input
+          <TextField
             label="Фамилия"
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            variant="outlined"
             fullWidth
             error={errors.lastName}
             required
           />
         </div>
 
-        <Input
+        <TextField
           label="Email"
           name="email"
           type="email"
           value={formData.email}
           onChange={handleChange}
-          variant="outlined"
           fullWidth
           error={errors.email}
           required
         />
 
-        <Input
+        <TextField
           label="Пароль"
           name="password"
           type="password"
           value={formData.password}
           onChange={handleChange}
-          variant="outlined"
           fullWidth
           error={errors.password}
           required
         />
 
-        <Input
+        <TextField
           label="Подтвердите пароль"
           name="confirmPassword"
           type="password"
           value={formData.confirmPassword}
           onChange={handleChange}
-          variant="outlined"
           fullWidth
           error={errors.confirmPassword}
           required

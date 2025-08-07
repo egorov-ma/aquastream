@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Typography, Input, Button, Form, FormField, FormError } from '@/components/ui';
+import { Typography, TextField, Button, Form, FormField, FormError } from '@/components/ui';
 import { login } from '@/modules/auth/store/authSlice';
 import { useAppDispatch } from '@/store/hooks';
 import { useAppSelector } from '@/store/hooks';
@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
           <FormField
             name="username"
             render={({ field, fieldState }) => (
-              <Input
+              <TextField
                 label="Имя пользователя"
                 placeholder="Введите ваше имя пользователя"
                 {...field}
@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
           <FormField
             name="password"
             render={({ field, fieldState }) => (
-              <Input
+              <TextField
                 type={showPassword ? 'text' : 'password'}
                 label="Пароль"
                 placeholder="Введите ваш пароль"
