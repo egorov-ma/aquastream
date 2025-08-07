@@ -6,7 +6,7 @@ import { ButtonProps, ButtonSize } from './Button.types';
 // Добавляем компонент спиннера для состояния loading
 const Spinner: React.FC<{ sizeClass: string }> = ({ sizeClass }) => (
   <svg
-    className={`animate-spin -ml-1 mr-3 ${sizeClass} text-currentColor`}
+    className={`animate-spin -ml-1 mr-3 ${sizeClass} text-current`}
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
