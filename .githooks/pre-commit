@@ -27,41 +27,44 @@ has_infrastructure_changes() {
     local changed_files
     changed_files=$(git diff --cached --name-only)
     
-    echo "$changed_files" | grep -E "(docker-compose\.yml|Dockerfile|\.env|nginx\.conf|prometheus\.yml|logstash\.conf|\.sh)$" >/dev/null
+    echo "$changed_files" | grep -E "(docker-compose\.dev\.yml|docker-compose\.full\.yml|Dockerfile|\.env|nginx\.conf|prometheus\.yml|logstash\.conf|\.sh)$" >/dev/null
 }
 
 # Проверяем конкретные файлы на критичные ошибки
 check_critical_files() {
     local exit_code=0
     
-    # Проверяем docker-compose.yml если он изменился
-    if git diff --cached --name-only | grep -q "docker-compose.yml"; then
-        log INFO "Проверка docker-compose.yml..."
-        
-        local compose_file="$PROJECT_ROOT/infra/docker/compose/docker-compose.yml"
-        if [ -f "$compose_file" ]; then
-            # Проверка синтаксиса Docker Compose
-            if ! docker compose -f "$compose_file" config >/dev/null 2>&1; then
-                log ERROR "❌ Ошибка в docker-compose.yml синтаксисе!"
-                log ERROR "Запустите: docker compose -f $compose_file config"
-                exit_code=1
-            fi
-            
-            # Проверка на :latest теги
-            if grep -q ":latest" "$compose_file"; then
-                log ERROR "❌ Найдены :latest теги в docker-compose.yml!"
-                log ERROR "Используйте конкретные версии образов."
-                exit_code=1
-            fi
-            
-            # Проверка на hardcoded пароли
-            if grep -E "(password|secret|key).*=" "$compose_file" | grep -v "\\$\\{" >/dev/null; then
-                log ERROR "❌ Найдены hardcoded пароли в docker-compose.yml!"
-                log ERROR "Используйте переменные окружения."
-                exit_code=1
+    # Проверяем docker-compose.dev.yml и docker-compose.full.yml если они изменились
+    local compose_files=("docker-compose.dev.yml" "docker-compose.full.yml")
+    for compose in "${compose_files[@]}"; do
+        if git diff --cached --name-only | grep -q "$compose"; then
+            log INFO "Проверка $compose..."
+
+            local compose_file="$PROJECT_ROOT/infra/docker/compose/$compose"
+            if [ -f "$compose_file" ]; then
+                # Проверка синтаксиса Docker Compose
+                if ! docker compose -f "$compose_file" config >/dev/null 2>&1; then
+                    log ERROR "❌ Ошибка в $compose синтаксисе!"
+                    log ERROR "Запустите: docker compose -f $compose_file config"
+                    exit_code=1
+                fi
+
+                # Проверка на :latest теги
+                if grep -q ":latest" "$compose_file"; then
+                    log ERROR "❌ Найдены :latest теги в $compose!"
+                    log ERROR "Используйте конкретные версии образов."
+                    exit_code=1
+                fi
+
+                # Проверка на hardcoded пароли
+                if grep -E "(password|secret|key).*=" "$compose_file" | grep -v "\\$\\{" >/dev/null; then
+                    log ERROR "❌ Найдены hardcoded пароли в $compose!"
+                    log ERROR "Используйте переменные окружения."
+                    exit_code=1
+                fi
             fi
         fi
-    fi
+    done
     
     # Проверяем .env файлы
     if git diff --cached --name-only | grep -q "\.env"; then
@@ -171,7 +174,7 @@ main() {
     
     # Запускаем полную валидацию только для серьезных изменений
     local major_files_changed
-    major_files_changed=$(git diff --cached --name-only | grep -E "(docker-compose\.yml|Dockerfile)" || true)
+    major_files_changed=$(git diff --cached --name-only | grep -E "(docker-compose\.dev\.yml|docker-compose\.full\.yml|Dockerfile)" || true)
     
     if [ -n "$major_files_changed" ]; then
         if ! run_full_validation; then
