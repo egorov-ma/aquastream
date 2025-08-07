@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import React, { useState, useEffect, useRef, useCallback, useMemo, createContext } from 'react';
+import { cn } from '@utils/cn';
 import { useLocation } from 'react-router-dom';
 
 /**
@@ -76,10 +77,6 @@ interface HeaderScrollProps {
    */
   headerRef?: React.RefObject<HTMLDivElement>;
   /**
-   * Стиль для заголовка
-   */
-  style?: React.CSSProperties;
-  /**
    * Дополнительные CSS-классы
    */
   className?: string;
@@ -93,7 +90,6 @@ const HeaderScroll: React.FC<HeaderScrollProps> = React.memo(({
   scrollSettings: customScrollSettings,
   animationSettings: customAnimationSettings,
   headerRef: externalHeaderRef,
-  style,
   className,
 }) => {
   // Состояние видимости заголовка
@@ -244,10 +240,13 @@ const HeaderScroll: React.FC<HeaderScrollProps> = React.memo(({
     <MenuContext.Provider value={{ isMenuOpen, setMenuOpen }}>
       <motion.header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 ${className || ''}`}
+        className={cn(
+          'fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 h-[85px]',
+          className
+        )}
         initial={{ y: 0, opacity: 1 }}
-        animate={{ 
-          y: isVisible ? 0 : '-100%', 
+        animate={{
+          y: isVisible ? 0 : '-100%',
           opacity: isVisible ? 1 : 0.5,
         }}
         transition={{ 
@@ -260,10 +259,6 @@ const HeaderScroll: React.FC<HeaderScrollProps> = React.memo(({
           opacity: { 
             duration: animationSettings.opacityDuration
           }
-        }}
-        style={{
-          height: 'var(--header-height, 85px)',
-          ...style,
         }}
         data-testid="header-scroll"
       >

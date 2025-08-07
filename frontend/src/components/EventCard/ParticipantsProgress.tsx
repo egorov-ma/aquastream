@@ -1,4 +1,5 @@
 import { cn } from '../../utils/cn';
+import { motion } from 'framer-motion';
 
 /**
  * Свойства индикатора прогресса участников
@@ -47,9 +48,11 @@ const ParticipantsProgress = ({
         <span data-testid="participants-percentage">{percentage}%</span>
       </div>
       <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-        <div
-          className={cn("h-full transition-all duration-300", progressColor)} // Используем фиксированный цвет
-          style={{ width: `${percentage}%` }}
+        <motion.div
+          className={cn('h-full', progressColor)}
+          initial={{ width: 0 }}
+          animate={{ width: `${percentage}%` }}
+          transition={{ duration: 0.3 }}
           data-testid="progress-bar"
         />
       </div>

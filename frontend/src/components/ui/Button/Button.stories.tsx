@@ -141,11 +141,11 @@ export const WithIcons: Story = {
     variant: 'primary',
     children: (
       <>
-        <span role="img" aria-label="rocket" style={{ marginRight: '8px' }}>
+        <span role="img" aria-label="rocket" className="mr-2">
           🚀
         </span>
         Кнопка с иконками
-        <span role="img" aria-label="thumbs up" style={{ marginLeft: '8px' }}>
+        <span role="img" aria-label="thumbs up" className="ml-2">
           👍
         </span>
       </>
