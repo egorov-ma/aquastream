@@ -377,13 +377,13 @@ function Button({
 }
 ```
 
-### TextField
+### Input
 
 ```jsx
 /**
  * Доступное текстовое поле с поддержкой сообщений об ошибках
  */
-function TextField({
+function Input({
   id,
   label,
   value,

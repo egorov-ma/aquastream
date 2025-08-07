@@ -1,55 +1,50 @@
-import { cn } from '@utils/cn';
-import { forwardRef, InputHTMLAttributes, ReactNode, useCallback, useId } from 'react';
+import clsx from 'clsx';
+import React, { forwardRef, useCallback, useId, useState } from 'react';
 
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  /**
-   * Лейбл поля ввода
-   */
+export type InputSize = 'sm' | 'md' | 'lg';
+export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'floating';
+export type InputColor =
+  | 'primary'
+  | 'secondary'
+  | 'accent'
+  | 'error'
+  | 'warning'
+  | 'success'
+  | 'info';
+
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+  /** Лейбл поля ввода */
   label?: string;
-  /**
-   * Сообщение об ошибке
-   */
+  /** Сообщение об ошибке */
   error?: string;
-  /**
-   * Подсказка под полем ввода
-   */
+  /** Подсказка под полем ввода */
   helperText?: string;
-  /**
-   * Размер поля ввода
-   */
-  size?: 'sm' | 'md' | 'lg';
-  /**
-   * Иконка слева от поля ввода
-   */
-  leftIcon?: ReactNode;
-  /**
-   * Иконка справа от поля ввода
-   */
-  rightIcon?: ReactNode;
-  /**
-   * Флаг, полностью растягивающий поле ввода
-   */
+  /** Вариант отображения */
+  variant?: InputVariant;
+  /** Цвет акцента */
+  color?: InputColor;
+  /** Размер поля ввода */
+  size?: InputSize;
+  /** Растягивать на всю ширину */
   fullWidth?: boolean;
-  /**
-   * Дополнительный класс для обертки
-   */
+  /** Иконка слева */
+  leftIcon?: React.ReactNode;
+  /** Иконка справа */
+  rightIcon?: React.ReactNode;
+  /** Дополнительный класс для обёртки */
   wrapperClassName?: string;
-  /**
-   * Дополнительный класс для поля ввода
-   */
+  /** Дополнительный класс для input */
   inputClassName?: string;
-  /**
-   * Флаг, отображающий кнопку очистки
-   */
+  /** Отображать кнопку очистки */
   clearable?: boolean;
-  /**
-   * Функция, вызываемая при очистке поля
-   */
+  /** Обработчик очистки */
   onClear?: () => void;
+  /** Эффект появления */
+  appearEffect?: 'none' | 'fade' | 'slide' | 'scale';
 }
 
 /**
- * Поле ввода - основной компонент для ввода текста
+ * Унифицированный компонент поля ввода
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -57,31 +52,49 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       label,
       error,
       helperText,
+      variant = 'outlined',
+      color = 'primary',
       size = 'md',
+      fullWidth = false,
       leftIcon,
       rightIcon,
-      fullWidth = false,
       wrapperClassName,
       inputClassName,
-      disabled,
-      id,
-      value,
-      onChange,
       clearable = false,
       onClear,
+      id,
+      disabled,
+      value,
+      onChange,
+      appearEffect = 'none',
       ...props
     },
     ref
   ) => {
     const reactId = useId();
-    const uniqueId = id || reactId;
-    
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      if (onChange) onChange(e);
-    }, [onChange]);
-    
+    const elementId = id || reactId;
+
+    const [isFocused, setIsFocused] = useState(false);
+    const [hasValue, setHasValue] = useState(Boolean(value || props.defaultValue));
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true);
+      props.onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+      setHasValue(Boolean(e.target.value));
+      props.onBlur?.(e);
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setHasValue(Boolean(e.target.value));
+      onChange?.(e);
+    };
+
     const handleClear = useCallback(() => {
-      if (onClear) onClear();
+      onClear?.();
 
       if (onChange) {
         const pseudoEvent = {
@@ -90,91 +103,160 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         } as React.ChangeEvent<HTMLInputElement>;
         onChange(pseudoEvent);
       }
+      setHasValue(false);
     }, [onChange, onClear]);
 
-    const wrapperClasses = cn('flex flex-col', fullWidth ? 'w-full' : '', wrapperClassName);
+    const hasError = Boolean(error);
+    const activeColor = hasError ? 'error' : color;
 
-    const baseInputClasses =
-      'bg-secondary-50 dark:bg-secondary-900 border rounded-md focus:outline-none transition-colors';
-
-    const sizeClasses = {
-      sm: 'text-xs py-1 px-2',
-      md: 'text-sm py-2 px-3',
-      lg: 'text-base py-3 px-4',
+    const variantClasses: Record<InputVariant, string> = {
+      outlined: clsx(
+        'bg-transparent border rounded-md',
+        hasError ? 'border-error-300 dark:border-error-600' : 'border-secondary-300 dark:border-secondary-600'
+      ),
+      filled: 'border-0 bg-secondary-100 dark:bg-secondary-800 rounded-md',
+      underlined: clsx(
+        'border-0 border-b bg-transparent rounded-none px-0',
+        hasError ? 'border-error-300 dark:border-error-600' : 'border-secondary-300 dark:border-secondary-600'
+      ),
+      floating: clsx(
+        'bg-transparent border rounded-md pt-5',
+        hasError ? 'border-error-300 dark:border-error-600' : 'border-secondary-300 dark:border-secondary-600'
+      ),
     };
 
-    const stateClasses = {
-      normal:
-        'border-secondary-300 dark:border-secondary-700 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400',
-      error:
-        'border-error-500 dark:border-error-400 focus:ring-1 focus:ring-error-500 focus:border-error-500 dark:focus:ring-error-400 dark:focus:border-error-400',
-      disabled: 'bg-secondary-100 dark:bg-secondary-800 text-secondary-500 dark:text-secondary-400 cursor-not-allowed',
+    const sizeClasses: Record<InputSize, string> = {
+      sm: 'py-1 px-2 text-sm',
+      md: 'py-2 px-3 text-base',
+      lg: 'py-3 px-4 text-lg',
+    };
+
+    const appearEffectClasses = {
+      none: '',
+      fade: 'animate-fade-in',
+      slide: 'animate-slide-up',
+      scale: 'animate-scale',
     };
 
     const showClearButton = clearable && value && !disabled;
-    
-    const iconClasses = {
-      left: leftIcon ? 'pl-9' : '',
-      right: (rightIcon || showClearButton) ? 'pr-9' : '',
-    };
 
-    const inputClasses = cn(
-      baseInputClasses,
+    const inputClasses = clsx(
+      'w-full transition-colors duration-200 outline-none focus:ring-2 focus:ring-offset-0',
+      'placeholder-secondary-400 dark:placeholder-secondary-500 text-secondary-950 dark:text-secondary-50',
+      'disabled:opacity-50 disabled:cursor-not-allowed',
+      variantClasses[variant],
       sizeClasses[size],
-      error ? stateClasses.error : stateClasses.normal,
-      disabled ? stateClasses.disabled : '',
-      iconClasses.left,
-      iconClasses.right,
-      'w-full',
+      {
+        'focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400':
+          !hasError && color === 'primary',
+        'focus:border-secondary-700 focus:ring-secondary-700 dark:focus:border-secondary-600 dark:focus:ring-secondary-600':
+          !hasError && color === 'secondary',
+        'focus:border-accent-500 focus:ring-accent-500 dark:focus:border-accent-400 dark:focus:ring-accent-400':
+          !hasError && color === 'accent',
+        'focus:border-success-500 focus:ring-success-500 dark:focus:border-success-400 dark:focus:ring-success-400':
+          !hasError && color === 'success',
+        'focus:border-warning-500 focus:ring-warning-500 dark:focus:border-warning-400 dark:focus:ring-warning-400':
+          !hasError && color === 'warning',
+        'focus:border-info-500 focus:ring-info-500 dark:focus:border-info-400 dark:focus:ring-info-400':
+          !hasError && color === 'info',
+        'focus:border-error-500 focus:ring-error-500 dark:focus:border-error-400 dark:focus:ring-error-400': hasError,
+      },
+      variant === 'floating' ? 'placeholder-transparent' : '',
+      leftIcon ? 'pl-10' : '',
+      (rightIcon || showClearButton) ? 'pr-10' : '',
       inputClassName
     );
 
+    const containerClasses = clsx(
+      'flex flex-col',
+      fullWidth ? 'w-full' : 'inline-block',
+      appearEffectClasses[appearEffect],
+      wrapperClassName
+    );
+
+    const labelClasses = clsx(
+      'block text-sm font-medium mb-1',
+      isFocused
+        ? {
+            'text-primary-600 dark:text-primary-400': activeColor === 'primary',
+            'text-secondary-800 dark:text-secondary-400': activeColor === 'secondary',
+            'text-accent-600 dark:text-accent-400': activeColor === 'accent',
+            'text-success-600 dark:text-success-400': activeColor === 'success',
+            'text-warning-600 dark:text-warning-400': activeColor === 'warning',
+            'text-info-600 dark:text-info-400': activeColor === 'info',
+            'text-error-600 dark:text-error-400': activeColor === 'error',
+          }
+        : 'text-secondary-800 dark:text-secondary-300',
+      disabled && 'opacity-50'
+    );
+
+    const floatingLabelClasses = clsx(
+      'absolute text-sm transition-all duration-200',
+      'left-2.5 bg-secondary-50 dark:bg-secondary-900 px-1 pointer-events-none',
+      isFocused || hasValue
+        ? clsx('-translate-y-3 scale-75 origin-left', {
+            'text-primary-600 dark:text-primary-400': activeColor === 'primary',
+            'text-secondary-800 dark:text-secondary-400': activeColor === 'secondary',
+            'text-accent-600 dark:text-accent-400': activeColor === 'accent',
+            'text-success-600 dark:text-success-400': activeColor === 'success',
+            'text-warning-600 dark:text-warning-400': activeColor === 'warning',
+            'text-info-600 dark:text-info-400': activeColor === 'info',
+            'text-error-600 dark:text-error-400': activeColor === 'error',
+          })
+        : 'text-secondary-500 dark:text-secondary-400 translate-y-2.5'
+    );
+
+    const displayHelperText = error ? error : helperText;
+
     return (
-      <div className={wrapperClasses}>
-        {label && (
-          <label
-            htmlFor={uniqueId}
-            className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-1"
-            data-testid={`${uniqueId}-label`}
-          >
+      <div className={containerClasses}>
+        {label && variant !== 'floating' && (
+          <label htmlFor={elementId} className={labelClasses} data-testid={`${elementId}-label`}>
             {label}
           </label>
         )}
 
         <div className="relative">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-secondary-500">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 text-secondary-500">
               {leftIcon}
             </div>
           )}
 
           <input
             ref={ref}
-            id={uniqueId}
+            id={elementId}
             className={inputClasses}
             disabled={disabled}
-            data-testid={uniqueId}
             value={value}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             onChange={handleChange}
             {...props}
           />
+
+          {variant === 'floating' && label && (
+            <label htmlFor={elementId} className={floatingLabelClasses} data-testid={`${elementId}-floating-label`}>
+              {label}
+            </label>
+          )}
 
           {showClearButton && (
             <button
               type="button"
               onClick={handleClear}
               className="absolute inset-y-0 right-0 flex items-center pr-3 text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300 transition-colors"
-              data-testid={`${uniqueId}-clear-button`}
+              data-testid={`${elementId}-clear-button`}
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
                 strokeLinejoin="round"
               >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -184,20 +266,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
 
           {rightIcon && !showClearButton && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-secondary-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-secondary-500">
               {rightIcon}
             </div>
           )}
         </div>
 
-        {(error || helperText) && (
-          <div className="mt-1">
-            {error ? (
-              <p className="text-xs text-error-600 dark:text-error-500" data-testid={`${uniqueId}-error-text`}>{error}</p>
-            ) : helperText ? (
-              <p className="text-xs text-secondary-500 dark:text-secondary-400" data-testid={`${uniqueId}-helper-text`}>{helperText}</p>
-            ) : null}
-          </div>
+        {displayHelperText && (
+          <p
+            className={clsx(
+              'text-xs mt-1',
+              error ? 'text-error-600 dark:text-error-500' : 'text-secondary-600 dark:text-secondary-400'
+            )}
+            data-testid={`${elementId}-helper-text`}
+          >
+            {displayHelperText}
+          </p>
         )}
       </div>
     );

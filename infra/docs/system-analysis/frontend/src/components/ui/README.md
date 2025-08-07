@@ -7,7 +7,7 @@
 Компоненты доступны внутри проекта и могут быть импортированы следующим образом:
 
 ```tsx
-import { Button, TextField, Typography } from '@/components/ui';
+import { Button, Input, Typography } from '@/components/ui';
 ```
 
 ## Документация компонентов
@@ -48,16 +48,16 @@ Storybook будет доступен по адресу http://localhost:6006
 </Button>
 ```
 
-### TextField
+### Input
 
 Поле ввода текста с различными вариантами стилей, состояниями ошибок и подсказками.
 
 ```tsx
-<TextField 
-  label="Email" 
-  placeholder="Введите email" 
-  value={email} 
-  onChange={handleEmailChange} 
+<Input
+  label="Email"
+  placeholder="Введите email"
+  value={email}
+  onChange={handleEmailChange}
   variant="outlined"
 />
 ```

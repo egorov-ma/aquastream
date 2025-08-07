@@ -55,24 +55,23 @@ src/components/ui/
 - `endIcon` - иконка в конце кнопки
 - `children` - содержимое кнопки
 
-#### TextField
+#### Input
 
 Поле ввода текста с различными вариантами стилей.
 
 **Пропсы:**
-- `variant` - вариант стиля поля: `standard`, `outlined`, `filled`, `floating`
-- `size` - размер поля: `small`, `medium`, `large`
+- `variant` - вариант стиля поля: `outlined`, `filled`, `underlined`, `floating`
+- `size` - размер поля: `sm`, `md`, `lg`
 - `label` - метка поля
 - `placeholder` - подсказка внутри поля
 - `value` - значение поля
 - `onChange` - функция обратного вызова при изменении значения
-- `error` - флаг ошибки
-- `errorText` - текст ошибки
+- `error` - сообщение об ошибке
 - `helperText` - вспомогательный текст
 - `fullWidth` - растягивает поле на всю ширину контейнера
 - `disabled` - отключает поле
-- `startIcon` - иконка в начале поля
-- `endIcon` - иконка в конце поля
+- `leftIcon` - иконка слева
+- `rightIcon` - иконка справа
 - `type` - тип поля: `text`, `password`, `email`, и т.д.
 - `required` - указывает, что поле обязательно
 
@@ -120,13 +119,13 @@ src/components/ui/
 ### Импорт компонентов
 
 ```tsx
-import { Button, TextField, Typography } from '@/components/ui';
+import { Button, Input, Typography } from '@/components/ui';
 ```
 
 ### Пример использования
 
 ```tsx
-import { Button, TextField, Typography } from '@/components/ui';
+import { Button, Input, Typography } from '@/components/ui';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -143,7 +142,7 @@ const LoginForm = () => {
         Вход в систему
       </Typography>
       
-      <TextField
+      <Input
         label="Email"
         type="email"
         value={email}
@@ -153,7 +152,7 @@ const LoginForm = () => {
         required
       />
       
-      <TextField
+      <Input
         label="Пароль"
         type="password"
         value={password}

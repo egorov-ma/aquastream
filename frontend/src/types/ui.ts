@@ -1,5 +1,5 @@
 import { ButtonSize, ButtonVariant } from '@/components/ui/Button';
-import { TextFieldColor, TextFieldSize, TextFieldVariant } from '@/components/ui/TextField';
+import { InputColor, InputSize, InputVariant } from '@/components/ui/Input';
 import { TypographyAlign, TypographyColor, TypographyVariant } from '@/components/ui/Typography';
 
 /**
@@ -40,9 +40,9 @@ export type HoverEffect = 'none' | 'lift' | 'pulse' | 'glow';
 export type {
   ButtonVariant,
   ButtonSize,
-  TextFieldColor,
-  TextFieldSize,
-  TextFieldVariant,
+  InputColor,
+  InputSize,
+  InputVariant,
   TypographyAlign,
   TypographyColor,
   TypographyVariant,

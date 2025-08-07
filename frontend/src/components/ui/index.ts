@@ -11,13 +11,10 @@ export { Card, CardHeader, CardTitle, CardContent, CardFooter } from './Card';
 export type { CardProps, CardHeaderProps, CardTitleProps, CardContentProps, CardFooterProps } from './Card';
 
 export { Input } from './Input';
-export type { InputProps } from './Input';
+export type { InputProps, InputSize, InputVariant, InputColor } from './Input';
 
 export { Typography } from './Typography';
 export type { TypographyProps, TypographyVariant, TypographyColor, TypographyAlign } from './Typography';
-
-export { TextField } from './TextField';
-export type { TextFieldProps, TextFieldSize, TextFieldVariant, TextFieldColor } from './TextField';
 
 export { Checkbox } from './Checkbox';
 export type { CheckboxProps } from './Checkbox';

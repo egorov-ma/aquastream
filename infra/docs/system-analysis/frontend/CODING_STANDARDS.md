@@ -26,7 +26,7 @@
 ## Именование
 
 1. **Компоненты**:
-   - PascalCase для имен компонентов: `Button`, `TextField`
+   - PascalCase для имен компонентов: `Button`, `Input`
    - Если компонент состоит из нескольких слов, соединяйте их: `UserProfile`
 
 2. **Переменные и функции**:
@@ -54,7 +54,7 @@
    import { useSelector, useDispatch } from 'react-redux';
    
    // 2. UI-компоненты
-   import { Button, TextField } from '@/components/ui';
+   import { Button, Input } from '@/components/ui';
    
    // 3. Утилиты, хуки и сервисы
    import { formatDate } from '@/utils';
@@ -121,7 +121,7 @@
      optional?: boolean;
    }
    
-   const TextField: React.FC<Props> = ({ label, value, onChange, optional = false }) => {
+   const Input: React.FC<Props> = ({ label, value, onChange, optional = false }) => {
      // ...
    };
    ```

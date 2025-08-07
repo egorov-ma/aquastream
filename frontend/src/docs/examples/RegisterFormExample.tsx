@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Button, Checkbox, TextField, Typography } from '../../components/ui';
+import { Button, Checkbox, Input, Typography } from '../../components/ui';
 
 const RegisterFormExample = () => {
   const [formData, setFormData] = useState({
@@ -147,32 +147,30 @@ const RegisterFormExample = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <TextField
+          <Input
             label="Имя"
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
             variant="outlined"
             fullWidth
-            error={!!errors.firstName}
-            helperText={errors.firstName}
+            error={errors.firstName}
             required
           />
 
-          <TextField
+          <Input
             label="Фамилия"
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
             variant="outlined"
             fullWidth
-            error={!!errors.lastName}
-            helperText={errors.lastName}
+            error={errors.lastName}
             required
           />
         </div>
 
-        <TextField
+        <Input
           label="Email"
           name="email"
           type="email"
@@ -180,12 +178,11 @@ const RegisterFormExample = () => {
           onChange={handleChange}
           variant="outlined"
           fullWidth
-          error={!!errors.email}
-          helperText={errors.email}
+          error={errors.email}
           required
         />
 
-        <TextField
+        <Input
           label="Пароль"
           name="password"
           type="password"
@@ -193,12 +190,11 @@ const RegisterFormExample = () => {
           onChange={handleChange}
           variant="outlined"
           fullWidth
-          error={!!errors.password}
-          helperText={errors.password}
+          error={errors.password}
           required
         />
 
-        <TextField
+        <Input
           label="Подтвердите пароль"
           name="confirmPassword"
           type="password"
@@ -206,8 +202,7 @@ const RegisterFormExample = () => {
           onChange={handleChange}
           variant="outlined"
           fullWidth
-          error={!!errors.confirmPassword}
-          helperText={errors.confirmPassword}
+          error={errors.confirmPassword}
           required
         />
 

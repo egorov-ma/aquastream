@@ -96,7 +96,7 @@ UI компоненты следуют принципам Atomic Design и ра�
 ```
 components/ui/
 ├── Button/              # Кнопки
-├── TextField/           # Поля ввода
+├── Input/               # Поля ввода
 ├── Modal/               # Модальные окна
 └── ...
 ```
