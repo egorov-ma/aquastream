@@ -39,11 +39,10 @@ export default defineConfig({
       '@shared': resolve(__dirname, '../../src/shared'),
       '@types': resolve(__dirname, '../../src/types'),
       '@theme': resolve(__dirname, '../../src/theme'),
-      '@styles': resolve(__dirname, '../../src/styles'),
       '@routes': resolve(__dirname, '../../src/routes'),
       '@lib': resolve(__dirname, '../../src/lib'),
       '@test': resolve(__dirname, '../../test'),
       '@layouts': resolve(__dirname, '../../src/layouts'),
     },
   },
-}); 
+});
