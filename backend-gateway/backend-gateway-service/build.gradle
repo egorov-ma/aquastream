@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     implementation project(':backend-gateway:backend-gateway-api')
-    implementation project(':backend-gateway:backend-gateway-db')
     implementation project(':common')
     
     // Gateway работает с WebFlux, не с Web MVC
