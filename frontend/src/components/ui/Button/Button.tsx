@@ -1,9 +1,40 @@
-import { cn } from '@/lib/utils';
 import React from 'react';
+import { cva } from 'class-variance-authority';
+
+import { cn } from '@/lib/utils';
 
 import { ButtonProps, ButtonSize } from './Button.types';
 
-// Добавляем компонент спиннера для состояния loading
+/**
+ * Variants for the button component following shadcn conventions.
+ */
+export const buttonVariants = cva(
+  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ring-offset-background',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        link: 'underline-offset-4 hover:underline text-primary',
+      },
+      size: {
+        sm: 'h-9 rounded-md px-3',
+        md: 'h-10 px-4 py-2',
+        lg: 'h-11 rounded-md px-8',
+        icon: 'h-10 w-10',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'md',
+    },
+  }
+);
+
+// Spinner for loading state
 const Spinner: React.FC<{ sizeClass: string }> = ({ sizeClass }) => (
   <svg
     className={`animate-spin -ml-1 mr-3 ${sizeClass} text-current`}
@@ -28,76 +59,53 @@ const Spinner: React.FC<{ sizeClass: string }> = ({ sizeClass }) => (
 );
 
 /**
- * Кнопка - базовый UI компонент для взаимодействия пользователя
+ * Основной компонент кнопки.
  */
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  className,
-  variant = 'primary',
-  size = 'md',
-  fullWidth = false,
-  disabled = false,
-  loading = false,
-  type = 'button',
-  onClick,
-  ...props
-}) => {
-  const baseClasses =
-    'inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-secondary-900';
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant = 'default',
+      size = 'md',
+      fullWidth = false,
+      loading = false,
+      disabled = false,
+      type = 'button',
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const isDisabled = disabled || loading;
 
-  const variantClasses: Record<string, string> = {
-    primary:
-      'bg-primary-600 text-secondary-50 hover:bg-primary-700 focus:ring-primary-500 active:bg-primary-800 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-primary-400 dark:active:bg-primary-700',
-    secondary:
-      'bg-secondary-700 text-secondary-50 hover:bg-secondary-800 focus:ring-secondary-600 active:bg-secondary-900 dark:bg-secondary-600 dark:hover:bg-secondary-700 dark:focus:ring-secondary-500 dark:active:bg-secondary-800',
-    outline:
-      'bg-transparent border border-primary-600 text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:border-primary-400 dark:hover:bg-primary-900/20 focus:ring-primary-500 active:bg-primary-100 dark:active:bg-primary-900/30',
-    danger:
-      'bg-error-600 text-secondary-50 hover:bg-error-700 focus:ring-error-500 active:bg-error-800 dark:focus:ring-error-400',
-    accent:
-      'bg-accent-400 text-secondary-950 hover:bg-accent-500 focus:ring-accent-300 active:bg-accent-600 dark:focus:ring-accent-200',
-    ghost:
-      'bg-transparent text-secondary-700 hover:bg-secondary-100 focus:ring-secondary-500 active:bg-secondary-200 dark:text-secondary-300 dark:hover:bg-secondary-700 dark:focus:ring-secondary-400 dark:active:bg-secondary-600',
-  };
+    const spinnerSizeClasses: Record<ButtonSize, string> = {
+      sm: 'h-4 w-4',
+      md: 'h-5 w-5',
+      lg: 'h-6 w-6',
+      icon: 'h-5 w-5',
+    };
 
-  const sizeClasses: Record<ButtonSize, string> = {
-    sm: 'text-sm px-3 py-1.5',
-    md: 'text-base px-4 py-2',
-    lg: 'text-lg px-6 py-3',
-  };
+    return (
+      <button
+        ref={ref}
+        type={type}
+        className={cn(
+          buttonVariants({ variant, size }),
+          fullWidth && 'w-full',
+          className
+        )}
+        disabled={isDisabled}
+        data-testid={`button-${variant}`}
+        {...props}
+      >
+        {loading && <Spinner sizeClass={spinnerSizeClasses[size]} />}
+        {children}
+      </button>
+    );
+  }
+);
 
-  const spinnerSizeClasses: Record<ButtonSize, string> = {
-    sm: 'h-4 w-4',
-    md: 'h-5 w-5',
-    lg: 'h-6 w-6',
-  };
+Button.displayName = 'Button';
 
-  const widthClass = fullWidth ? 'w-full' : '';
-  const isDisabled = disabled || loading;
-  const disabledClass = isDisabled ? 'opacity-50 cursor-not-allowed' : '';
+export default Button;
 
-  const normalizedSize = size;
-
-  const buttonClasses = cn(
-    baseClasses,
-    variantClasses[variant === 'outlined' ? 'outline' : variant],
-    sizeClasses[size],
-    widthClass,
-    disabledClass,
-    className
-  );
-
-  return (
-    <button
-      type={type}
-      className={buttonClasses}
-      disabled={isDisabled}
-      onClick={onClick}
-      data-testid={`button-${variant}`}
-      {...props}
-    >
-      {loading && <Spinner sizeClass={spinnerSizeClasses[normalizedSize]} />}
-      {children}
-    </button>
-  );
-};

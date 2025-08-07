@@ -69,7 +69,7 @@ export const Basic: Story = {
         <Button variant="outline" onClick={noop}>
           Отмена
         </Button>
-        <Button variant="primary" onClick={noop}>
+        <Button variant="default" onClick={noop}>
           ОК
         </Button>
       </>
@@ -101,7 +101,7 @@ export const WithDetailedContent: Story = {
       </div>
     ),
     actions: (
-      <Button variant="primary" onClick={noop}>
+      <Button variant="default" onClick={noop}>
         Понятно
       </Button>
     ),
@@ -117,7 +117,7 @@ export const SmallSize: Story = {
     maxWidth: 'sm',
     children: 'Это маленькое модальное окно.',
     actions: (
-      <Button variant="primary" onClick={noop}>
+      <Button variant="default" onClick={noop}>
         ОК
       </Button>
     ),
@@ -136,7 +136,7 @@ export const MediumSize: Story = {
     maxWidth: 'md',
     children: 'Это модальное окно среднего размера.',
     actions: (
-      <Button variant="primary" onClick={noop}>
+      <Button variant="default" onClick={noop}>
         ОК
       </Button>
     ),
@@ -155,7 +155,7 @@ export const LargeSize: Story = {
     maxWidth: 'lg',
     children: 'Это большое модальное окно.',
     actions: (
-      <Button variant="primary" onClick={noop}>
+      <Button variant="default" onClick={noop}>
         ОК
       </Button>
     ),
@@ -174,7 +174,7 @@ export const ExtraLargeSize: Story = {
     maxWidth: 'xl',
     children: 'Это очень большое модальное окно.',
     actions: (
-      <Button variant="primary" onClick={noop}>
+      <Button variant="default" onClick={noop}>
         ОК
       </Button>
     ),
@@ -193,7 +193,7 @@ export const FullWidth: Story = {
     maxWidth: 'full',
     children: 'Это модальное окно на всю ширину экрана.',
     actions: (
-      <Button variant="primary" onClick={noop}>
+      <Button variant="default" onClick={noop}>
         ОК
       </Button>
     ),
@@ -210,7 +210,7 @@ const ModalDemo = () => {
 
   return (
     <div>
-      <Button variant="primary" onClick={() => setOpen(true)}>
+      <Button variant="default" onClick={() => setOpen(true)}>
         Открыть модальное окно
       </Button>
       <Modal
@@ -222,7 +222,7 @@ const ModalDemo = () => {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Отмена
             </Button>
-            <Button variant="primary" onClick={() => setOpen(false)}>
+            <Button variant="default" onClick={() => setOpen(false)}>
               ОК
             </Button>
           </>

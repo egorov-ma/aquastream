@@ -12,12 +12,12 @@ const meta = {
   argTypes: {
     variant: {
       control: { type: 'select' },
-      options: ['primary', 'secondary', 'outline', 'danger', 'accent', 'ghost'],
+      options: ['default', 'secondary', 'destructive', 'outline', 'ghost', 'link'],
       description: 'Вариант стиля кнопки',
     },
     size: {
       control: { type: 'select' },
-      options: ['sm', 'md', 'lg'],
+      options: ['sm', 'md', 'lg', 'icon'],
       description: 'Размер кнопки',
     },
     fullWidth: {
@@ -47,9 +47,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Основные варианты кнопок
-export const Primary: Story = {
+export const Default: Story = {
   args: {
-    variant: 'primary',
+    variant: 'default',
     children: 'Кнопка',
   },
 };
@@ -61,7 +61,7 @@ export const Secondary: Story = {
   },
 };
 
-export const Outlined: Story = {
+export const Outline: Story = {
   args: {
     variant: 'outline',
     children: 'Кнопка',
@@ -69,17 +69,17 @@ export const Outlined: Story = {
 };
 
 // Добавляем истории для новых вариантов
-export const Danger: Story = {
+export const Destructive: Story = {
   args: {
-    variant: 'danger',
+    variant: 'destructive',
     children: 'Опасная кнопка',
   },
 };
 
-export const Accent: Story = {
+export const Link: Story = {
   args: {
-    variant: 'accent',
-    children: 'Акцентная кнопка',
+    variant: 'link',
+    children: 'Ссылка',
   },
 };
 
@@ -138,7 +138,7 @@ export const Loading: Story = {
 // Пример с иконками (в Storybook будут отображены строки вместо иконок)
 export const WithIcons: Story = {
   args: {
-    variant: 'primary',
+    variant: 'default',
     children: (
       <>
         <span role="img" aria-label="rocket" className="mr-2">

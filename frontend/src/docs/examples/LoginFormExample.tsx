@@ -98,7 +98,7 @@ const LoginFormExample = () => {
           </Typography>
         </div>
 
-        <Button variant="primary" type="submit" fullWidth>
+        <Button variant="default" type="submit" fullWidth>
           Войти
         </Button>
 

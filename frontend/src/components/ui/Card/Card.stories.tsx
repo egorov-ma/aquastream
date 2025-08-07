@@ -64,11 +64,11 @@ const renderCardContent = (title: string, content: React.ReactNode, actions?: Re
 
 export const Default: Story = {
   args: {
-    children: renderCardContent(
-      'Стандартная карточка',
-      <Typography>Это содержимое стандартной карточки.</Typography>,
-      <Button variant="primary" size="sm">Действие</Button>
-    ),
+      children: renderCardContent(
+        'Стандартная карточка',
+        <Typography>Это содержимое стандартной карточки.</Typography>,
+        <Button variant="default" size="sm">Действие</Button>
+      ),
   },
 };
 
