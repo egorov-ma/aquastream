@@ -1,47 +1,8 @@
 import clsx from 'clsx';
 import React, { forwardRef, useCallback, useId, useState } from 'react';
 
-export type InputSize = 'sm' | 'md' | 'lg';
-export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'floating';
-export type InputColor =
-  | 'primary'
-  | 'secondary'
-  | 'accent'
-  | 'error'
-  | 'warning'
-  | 'success'
-  | 'info';
-
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  /** Лейбл поля ввода */
-  label?: string;
-  /** Сообщение об ошибке */
-  error?: string;
-  /** Подсказка под полем ввода */
-  helperText?: string;
-  /** Вариант отображения */
-  variant?: InputVariant;
-  /** Цвет акцента */
-  color?: InputColor;
-  /** Размер поля ввода */
-  size?: InputSize;
-  /** Растягивать на всю ширину */
-  fullWidth?: boolean;
-  /** Иконка слева */
-  leftIcon?: React.ReactNode;
-  /** Иконка справа */
-  rightIcon?: React.ReactNode;
-  /** Дополнительный класс для обёртки */
-  wrapperClassName?: string;
-  /** Дополнительный класс для input */
-  inputClassName?: string;
-  /** Отображать кнопку очистки */
-  clearable?: boolean;
-  /** Обработчик очистки */
-  onClear?: () => void;
-  /** Эффект появления */
-  appearEffect?: 'none' | 'fade' | 'slide' | 'scale';
-}
+import type { InputProps, InputVariant, InputSize, InputColor } from './Input.types';
+import { inputColorStyles } from './Input.config';
 
 /**
  * Унифицированный компонент поля ввода
@@ -107,7 +68,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     }, [onChange, onClear]);
 
     const hasError = Boolean(error);
-    const activeColor = hasError ? 'error' : color;
+    const activeColor: InputColor = hasError ? 'error' : color;
 
     const variantClasses: Record<InputVariant, string> = {
       outlined: clsx(
@@ -146,21 +107,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       'disabled:opacity-50 disabled:cursor-not-allowed',
       variantClasses[variant],
       sizeClasses[size],
-      {
-        'focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400':
-          !hasError && color === 'primary',
-        'focus:border-secondary-700 focus:ring-secondary-700 dark:focus:border-secondary-600 dark:focus:ring-secondary-600':
-          !hasError && color === 'secondary',
-        'focus:border-accent-500 focus:ring-accent-500 dark:focus:border-accent-400 dark:focus:ring-accent-400':
-          !hasError && color === 'accent',
-        'focus:border-success-500 focus:ring-success-500 dark:focus:border-success-400 dark:focus:ring-success-400':
-          !hasError && color === 'success',
-        'focus:border-warning-500 focus:ring-warning-500 dark:focus:border-warning-400 dark:focus:ring-warning-400':
-          !hasError && color === 'warning',
-        'focus:border-info-500 focus:ring-info-500 dark:focus:border-info-400 dark:focus:ring-info-400':
-          !hasError && color === 'info',
-        'focus:border-error-500 focus:ring-error-500 dark:focus:border-error-400 dark:focus:ring-error-400': hasError,
-      },
+      inputColorStyles[activeColor].focus,
       variant === 'floating' ? 'placeholder-transparent' : '',
       leftIcon ? 'pl-10' : '',
       (rightIcon || showClearButton) ? 'pr-10' : '',
@@ -176,17 +123,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const labelClasses = clsx(
       'block text-sm font-medium mb-1',
-      isFocused
-        ? {
-            'text-primary-600 dark:text-primary-400': activeColor === 'primary',
-            'text-secondary-800 dark:text-secondary-400': activeColor === 'secondary',
-            'text-accent-600 dark:text-accent-400': activeColor === 'accent',
-            'text-success-600 dark:text-success-400': activeColor === 'success',
-            'text-warning-600 dark:text-warning-400': activeColor === 'warning',
-            'text-info-600 dark:text-info-400': activeColor === 'info',
-            'text-error-600 dark:text-error-400': activeColor === 'error',
-          }
-        : 'text-secondary-800 dark:text-secondary-300',
+      isFocused ? inputColorStyles[activeColor].text : 'text-secondary-800 dark:text-secondary-300',
       disabled && 'opacity-50'
     );
 
@@ -194,15 +131,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       'absolute text-sm transition-all duration-200',
       'left-2.5 bg-secondary-50 dark:bg-secondary-900 px-1 pointer-events-none',
       isFocused || hasValue
-        ? clsx('-translate-y-3 scale-75 origin-left', {
-            'text-primary-600 dark:text-primary-400': activeColor === 'primary',
-            'text-secondary-800 dark:text-secondary-400': activeColor === 'secondary',
-            'text-accent-600 dark:text-accent-400': activeColor === 'accent',
-            'text-success-600 dark:text-success-400': activeColor === 'success',
-            'text-warning-600 dark:text-warning-400': activeColor === 'warning',
-            'text-info-600 dark:text-info-400': activeColor === 'info',
-            'text-error-600 dark:text-error-400': activeColor === 'error',
-          })
+        ? clsx('-translate-y-3 scale-75 origin-left', inputColorStyles[activeColor].text)
         : 'text-secondary-500 dark:text-secondary-400 translate-y-2.5'
     );
 

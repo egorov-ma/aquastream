@@ -8,6 +8,8 @@
 
 Полная документация переехала в [infra/docs/frontend](../infra/docs/frontend/README.md). Ниже сохранена краткая справка.
 
+Сведения о структуре темизации и плагинах Tailwind доступны в [docs/theming.md](docs/theming.md).
+
 ## Структура проекта
 
 ```

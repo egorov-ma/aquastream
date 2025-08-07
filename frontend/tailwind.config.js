@@ -102,8 +102,6 @@ export default {
           900: '#1e3a8a',
           950: '#172554',
         },
-        border: 'rgb(var(--border) / <alpha-value>)',
-        muted: 'rgb(var(--muted) / <alpha-value>)',
       },
       borderRadius: {
         'DEFAULT': '0.5rem',
@@ -235,34 +233,8 @@ export default {
           transform: 'scale(1)',
           filter: 'blur(0)',
         },
-        '.flex-center': {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        '.absolute-center': {
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        },
-        '.transition-base': {
-          transition: 'all 0.3s ease',
-        },
-        '.shadow-hover': {
-          transition: 'box-shadow 0.3s ease',
-          '&:hover': {
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-          },
-        },
-        '.shadow-hover-primary': {
-          transition: 'box-shadow 0.3s ease',
-          '&:hover': {
-            boxShadow: '0 0 15px 2px rgba(234, 79, 59, 0.15)',
-          },
-        },
       };
       addUtilities(newUtilities);
     },
   ],
-} 
+}

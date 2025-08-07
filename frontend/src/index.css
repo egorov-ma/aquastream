@@ -13,9 +13,6 @@
     --header-height: 85px;
     --header-top-padding: 24px;
     --content-top-padding: calc(var(--header-height) + var(--header-top-padding) + 20px);
-    /* Добавляем переменные для цветов из tailwind.config.js для border и muted */
-    --border: 216, 220, 229; /* secondary.200 */
-    --muted: 114, 129, 157; /* secondary.500 */
     /* Основные цветовые токены */
     --primary: 234, 79, 59; /* primary.500 */
     --secondary: 54, 62, 83; /* secondary.800 */
@@ -30,8 +27,6 @@
     /* RGB для secondary.950 (#1f2332) - немного светлее для градиента */
     --background-end-rgb: 31, 35, 50;
     /* Переменные для темной темы */
-    --border: 77, 88, 114; /* secondary.700 */
-    --muted: 144, 156, 181; /* secondary.400 */
     --primary: 247, 121, 108; /* primary.400 */
     --secondary: 54, 62, 83; /* secondary.800 */
     --accent: 218, 188, 118; /* accent.400 */
