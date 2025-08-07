@@ -46,8 +46,9 @@ class ActuatorSmokeTest {
     @Test
     void actuatorInfo() throws Exception {
         HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/actuator/info")).build();
-        HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body()).isNotBlank();
     }
 
     @Test
