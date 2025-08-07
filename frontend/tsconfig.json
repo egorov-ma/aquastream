@@ -35,7 +35,6 @@
       "@shared/*": ["./src/shared/*"],
       "@types/*": ["./src/types/*"],
       "@theme/*": ["./src/theme/*"],
-      "@styles/*": ["./src/styles/*"],
       "@routes/*": ["./src/routes/*"],
       "@lib/*": ["./src/lib/*"],
       "@test/*": ["./test/*"]
