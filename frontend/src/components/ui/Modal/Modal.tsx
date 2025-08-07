@@ -1,4 +1,4 @@
-import { cn } from '@utils/cn';
+import { cn } from '@/lib/utils';
 import React, { ReactNode, useEffect, useRef } from 'react';
 
 export interface ModalProps {

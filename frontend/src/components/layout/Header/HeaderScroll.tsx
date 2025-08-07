@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import React, { useState, useEffect, useRef, useCallback, useMemo, createContext } from 'react';
-import { cn } from '@utils/cn';
+import { cn } from '@/lib/utils';
 import { useLocation } from 'react-router-dom';
 
 /**
