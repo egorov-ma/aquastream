@@ -7,9 +7,9 @@ import {
   filtersToApiParams,
   updateEventToApi,
 } from '@/api/adapters/eventsAdapter';
-import { EventsService } from '@/api/generated/services/EventsService';
 import { apiService, logger } from '@/services';
 import { ApiResponse } from '@/shared/types/api';
+import { EventDto } from '@/api/generated/models/EventDto';
 
 /**
  * API для работы с событиями
@@ -26,17 +26,13 @@ export const eventsApi = {
 
     try {
       const params = filtersToApiParams(filters);
-      const response = await EventsService.getEvents(params);
+      const response = await apiService.get<ApiResponse<EventDto[]>>('/events', {
+        params,
+      });
 
-      const events = apiToEvents(response.data || []);
+      const events = apiToEvents(response.data.data || []);
 
-      return {
-        status: 200,
-        data: {
-          data: events,
-          message: 'Events retrieved successfully',
-        },
-      };
+      return { ...response, data: { ...response.data, data: events } };
     } catch (error) {
       logger.error('Error getting events', error);
       throw error;
@@ -52,21 +48,12 @@ export const eventsApi = {
     logger.debug('Getting featured events', { limit });
 
     try {
-      // Предполагаем, что featured события - это те, которые имеют определенное свойство
-      // или извлекаются через специальные параметры фильтрации
-      const response = await EventsService.getEvents({});
+      const response = await apiService.get<ApiResponse<EventDto[]>>('/events');
 
-      const events = apiToEvents(response.data || []);
-      // Выбираем только первые limit элементов в качестве featured
+      const events = apiToEvents(response.data.data || []);
       const featuredEvents = events.slice(0, limit);
 
-      return {
-        status: 200,
-        data: {
-          data: featuredEvents,
-          message: 'Featured events retrieved successfully',
-        },
-      };
+      return { ...response, data: { ...response.data, data: featuredEvents } };
     } catch (error) {
       logger.error('Error getting featured events', error);
       throw error;
@@ -82,16 +69,10 @@ export const eventsApi = {
     logger.debug('Getting event by ID', { id });
 
     try {
-      const response = await EventsService.getEventById({ id });
-      const event = apiToEvent(response);
+      const response = await apiService.get<ApiResponse<EventDto>>(`/events/${id}`);
+      const event = apiToEvent(response.data.data as EventDto);
 
-      return {
-        status: 200,
-        data: {
-          data: event,
-          message: 'Event retrieved successfully',
-        },
-      };
+      return { ...response, data: { ...response.data, data: event } };
     } catch (error) {
       logger.error('Error getting event by ID', error);
       throw error;
@@ -108,16 +89,10 @@ export const eventsApi = {
 
     try {
       const apiEventData = createEventToApi(eventData);
-      const response = await EventsService.createEvent({ requestBody: apiEventData });
-      const event = apiToEvent(response);
+      const response = await apiService.post<ApiResponse<EventDto>>('/events', apiEventData);
+      const event = apiToEvent(response.data.data as EventDto);
 
-      return {
-        status: 201,
-        data: {
-          data: event,
-          message: 'Event created successfully',
-        },
-      };
+      return { ...response, data: { ...response.data, data: event } };
     } catch (error) {
       logger.error('Error creating event', error);
       throw error;
@@ -135,19 +110,10 @@ export const eventsApi = {
 
     try {
       const apiEventData = updateEventToApi(eventData);
-      const response = await EventsService.updateEvent({
-        id,
-        requestBody: apiEventData,
-      });
-      const event = apiToEvent(response);
+      const response = await apiService.put<ApiResponse<EventDto>>(`/events/${id}`, apiEventData);
+      const event = apiToEvent(response.data.data as EventDto);
 
-      return {
-        status: 200,
-        data: {
-          data: event,
-          message: 'Event updated successfully',
-        },
-      };
+      return { ...response, data: { ...response.data, data: event } };
     } catch (error) {
       logger.error('Error updating event', error);
       throw error;
@@ -163,14 +129,8 @@ export const eventsApi = {
     logger.debug('Deleting event', { id });
 
     try {
-      await EventsService.deleteEvent({ id });
-
-      return {
-        status: 204,
-        data: {
-          message: 'Event deleted successfully',
-        },
-      };
+      const response = await apiService.delete<ApiResponse<void>>(`/events/${id}`);
+      return response;
     } catch (error) {
       logger.error('Error deleting event', error);
       throw error;
@@ -182,9 +142,11 @@ export const eventsApi = {
    * @param id - идентификатор события
    * @returns Promise с ответом от API
    */
-  publishEvent: (id: string) => {
+  publishEvent: async (id: string) => {
     logger.debug('Publishing event', { id });
-    return apiService.put<ApiResponse<Event>>(`/events/${id}/publish`);
+    const response = await apiService.put<ApiResponse<EventDto>>(`/events/${id}/publish`);
+    const event = apiToEvent(response.data.data as EventDto);
+    return { ...response, data: event };
   },
 
   /**
@@ -192,9 +154,11 @@ export const eventsApi = {
    * @param id - идентификатор события
    * @returns Promise с ответом от API
    */
-  cancelEvent: (id: string) => {
+  cancelEvent: async (id: string) => {
     logger.debug('Canceling event', { id });
-    return apiService.put<ApiResponse<Event>>(`/events/${id}/cancel`);
+    const response = await apiService.put<ApiResponse<EventDto>>(`/events/${id}/cancel`);
+    const event = apiToEvent(response.data.data as EventDto);
+    return { ...response, data: event };
   },
 
   /**
@@ -202,9 +166,11 @@ export const eventsApi = {
    * @param eventId - идентификатор события
    * @returns Promise с ответом от API
    */
-  registerForEvent: (eventId: string) => {
+  registerForEvent: async (eventId: string) => {
     logger.debug('Registering for event', { eventId });
-    return apiService.post<ApiResponse<Event>>(`/events/${eventId}/register`);
+    const response = await apiService.post<ApiResponse<EventDto>>(`/events/${eventId}/register`);
+    const event = apiToEvent(response.data.data as EventDto);
+    return { ...response, data: event };
   },
 
   /**
@@ -212,9 +178,11 @@ export const eventsApi = {
    * @param eventId - идентификатор события
    * @returns Promise с ответом от API
    */
-  cancelRegistration: (eventId: string) => {
+  cancelRegistration: async (eventId: string) => {
     logger.debug('Canceling registration', { eventId });
-    return apiService.delete<ApiResponse<Event>>(`/events/${eventId}/register`);
+    const response = await apiService.delete<ApiResponse<EventDto>>(`/events/${eventId}/register`);
+    const event = apiToEvent(response.data.data as EventDto);
+    return { ...response, data: event };
   },
 
   /**
