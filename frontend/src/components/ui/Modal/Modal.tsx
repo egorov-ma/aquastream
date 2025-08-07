@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@utils/cn';
 import React, { ReactNode, useEffect, useRef } from 'react';
 
 export interface ModalProps {
@@ -94,7 +94,7 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   // Формируем классы для модального окна
-  const modalClasses = clsx(
+  const modalClasses = cn(
     'bg-secondary-50 dark:bg-secondary-900 rounded-lg shadow-xl',
     'overflow-hidden',
     'transition-all duration-300',

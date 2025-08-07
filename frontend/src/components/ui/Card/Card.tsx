@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@utils/cn';
 import React, { ReactNode } from 'react';
 
 export interface CardProps {
@@ -130,7 +130,7 @@ export const Card: React.FC<CardProps> = ({
   const isInteractive = !!onClick;
 
   // Составляем финальные классы
-  const cardClasses = clsx(
+  const cardClasses = cn(
     baseClasses,
     variantClasses[variant],
     finalHoverEffect !== 'none' && hoverEffectClasses[finalHoverEffect],
@@ -164,7 +164,7 @@ export const Card: React.FC<CardProps> = ({
  * Компонент CardHeader - заголовок карточки
  */
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className = '' }) => {
-  const classes = clsx('flex items-center mb-4', className);
+  const classes = cn('flex items-center mb-4', className);
   return <div className={classes} data-testid="card-header">{children}</div>;
 };
 
@@ -172,7 +172,7 @@ export const CardHeader: React.FC<CardHeaderProps> = ({ children, className = ''
  * Компонент CardTitle - название карточки
  */
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className = '' }) => {
-  const classes = clsx('text-lg font-semibold text-secondary-950 dark:text-secondary-50', className);
+  const classes = cn('text-lg font-semibold text-secondary-950 dark:text-secondary-50', className);
   return <div className={classes} data-testid="card-title">{children}</div>;
 };
 
@@ -180,7 +180,7 @@ export const CardTitle: React.FC<CardTitleProps> = ({ children, className = '' }
  * Компонент CardContent - тело карточки
  */
 export const CardContent: React.FC<CardContentProps> = ({ children, className = '' }) => {
-  const classes = clsx('', className);
+  const classes = cn('', className);
   return <div className={classes} data-testid="card-content">{children}</div>;
 };
 
@@ -188,7 +188,7 @@ export const CardContent: React.FC<CardContentProps> = ({ children, className = 
  * Компонент CardFooter - футер карточки
  */
 export const CardFooter: React.FC<CardFooterProps> = ({ children, className = '' }) => {
-  const classes = clsx(
+  const classes = cn(
     'flex items-center justify-end mt-4 pt-4 border-t border-secondary-200 dark:border-secondary-700',
     className
   );
