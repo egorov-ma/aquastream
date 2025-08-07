@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Button, Modal, Input, Typography } from '../../components/ui';
+import { Button, Modal, TextField, Typography } from '../../components/ui';
 
 /**
  * Пример демонстрирует, как можно использовать Tailwind для создания
@@ -71,10 +71,9 @@ const CustomThemingExample = () => {
         <div className="space-y-4">
           <Typography variant="h6">Предварительный просмотр</Typography>
 
-          <Input
+          <TextField
             label="Текстовое поле"
             placeholder="Введите текст"
-            variant="outlined"
             fullWidth
             className={darkMode ? 'dark-input' : ''}
           />

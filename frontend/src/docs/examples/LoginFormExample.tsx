@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Button, Checkbox, Input, Typography } from '../../components/ui';
+import { Button, Checkbox, TextField, Typography } from '../../components/ui';
 
 const LoginFormExample = () => {
   const [email, setEmail] = useState('');
@@ -63,24 +63,22 @@ const LoginFormExample = () => {
       </Typography>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Input
+        <TextField
           label="Email"
           type="email"
           value={email}
           onChange={handleEmailChange}
-          variant="outlined"
           fullWidth
           placeholder="example@email.com"
           error={emailError}
           required
         />
 
-        <Input
+        <TextField
           label="Пароль"
           type="password"
           value={password}
           onChange={handlePasswordChange}
-          variant="outlined"
           fullWidth
           error={passwordError}
           required

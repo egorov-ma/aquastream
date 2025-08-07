@@ -5,11 +5,11 @@ import {
   Button, 
   Card, 
   CardContent, 
-  CardFooter, 
-  CardHeader, 
+  CardFooter,
+  CardHeader,
   CardTitle,
   Checkbox,
-  Input,
+  TextField,
   LazyImage,
   Modal,
   Typography
@@ -264,7 +264,7 @@ const InputSection = () => {
     <Section title="Поля ввода">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <Input
+          <TextField
             label="Стандартное поле ввода"
             placeholder="Введите текст"
             helperText="Вспомогательный текст для поля ввода"
@@ -273,29 +273,29 @@ const InputSection = () => {
             clearable
             onClear={() => setValue('')}
           />
-          
-          <Input
+
+          <TextField
             label="Поле с ошибкой"
             error="Это сообщение об ошибке"
             placeholder="Неправильные данные"
           />
-          
-          <Input
+
+          <TextField
             label="Отключенное поле"
             placeholder="Недоступно для редактирования"
             disabled
           />
         </div>
-        
+
         <div className="space-y-4">
-          <Input
+          <TextField
             label="Поле с иконкой слева"
             placeholder="Поиск..."
             leftIcon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>}
             clearable
           />
-          
-          <Input
+
+          <TextField
             label="Поле для пароля"
             type="password"
             placeholder="Введите пароль"
@@ -305,8 +305,8 @@ const InputSection = () => {
             clearable
             onClear={() => setPasswordValue('')}
           />
-          
-          <Input
+
+          <TextField
             label="Маленькое поле"
             placeholder="Маленький размер"
             size="sm"
