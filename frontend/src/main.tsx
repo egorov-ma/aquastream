@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 
 import App from './App';
+import './styles/theme.css';
 import './index.css';
 import store from './store';
 import { ThemeProvider } from '@/providers/ThemeProvider';
