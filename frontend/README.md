@@ -39,6 +39,29 @@ pnpm lint
 pnpm typecheck
 ```
 
+## Запуск в Docker
+Из корня репозитория:
+
+5) Dev-профиль (моки включены, порт 3100)
+
+```bash
+docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile dev up --build
+# открыть http://localhost:3100
+```
+
+6) Prod-профиль (standalone, порт 3000)
+
+```bash
+docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile prod up --build
+# открыть http://localhost:3000
+```
+
+Остановка:
+
+```bash
+docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile dev down
+```
+
 ## Conventional Commits
 - Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
 - Формат: `<type>(<scope>): <subject>` — пример: `feat(T02): добавить CI workflow`.
