@@ -1,0 +1,56 @@
+# T02 — CI и стандарты качества кода
+
+**Контекст:** таска опирается на документ бизнес‑архитектуры `/frontend/docs/AquaStream_Business_Spec_v1.1.md`.  
+Прочитать разделы: §13–18, §20.  
+Работа ведётся в монорепозитории; фронтенд‑модуль: `/frontend`. Инфраструктура — `/infra`. CI — `/.github/workflows`.
+
+## Цель / Результат
+Настроить GitHub Actions (lint/typecheck/build) и стандарты кода (ESLint 9 flat + Prettier 3, Conventional Commits).
+
+## Область работ
+**Входит в объём:**
+- Workflow `frontend-ci.yml`.
+- Конфиги ESLint flat + Prettier.
+- Документация Conventional Commits в README.
+
+**Не входит:**
+- Публикация Docker, e2e — в последующих задачах.
+
+## Предусловия
+- Установлены Node.js 22 LTS и pnpm.
+- Доступ к репозиторию с модулями `/frontend`, `/infra`, `/.github`.
+- Возможность запускать Docker локально.
+- Создана ветка `feature/t02`.
+
+## Шаги выполнения
+1. Создать `/.github/workflows/frontend-ci.yml` (Node 22, кэш pnpm).
+2. Добавить `eslint.config.js`, `.prettierrc` и npm‑скрипты `lint`, `typecheck`, `build`.
+3. Описать Conventional Commits в `/frontend/README.md`.
+4. Открыть PR и убедиться, что workflow отрабатывает.
+
+## Артефакты
+- CI на PR с шагами install → lint → typecheck → build.
+- Раздел со стандартами кода в README.
+
+## Бизнес‑приёмка (пользовательская)
+- PR блокируется при провале lint/typecheck/build.
+- На рабочем PR все шаги зелёные.
+
+## Definition of Done (техническая готовность)
+- CI зелёный на тестовом PR.
+- Локально lint/typecheck без ошибок.
+
+## Ссылки
+- Бизнес‑документ: `/frontend/docs/AquaStream_Business_Spec_v1.1.md`
+- Next.js ISR: https://nextjs.org/docs/app/guides/incremental-static-regeneration
+- revalidateTag: https://nextjs.org/docs/app/api-reference/functions/revalidateTag
+- Acceptance Criteria: https://www.atlassian.com/ru/agile/project-management/user-stories
+- Definition of Done: https://www.scrum.org/resources/what-definition-done
+- MSW quick start: https://mswjs.io/docs/quick-start/
+
+## Инструкции для агента (ChatGPT Agent)
+Ты — агент, выполняющий работу в монорепозитории AquaStream. Следуй шагам выше **точно**.  
+- Держись принципа **MVP**, без оверинженеринга.  
+- Используй **pnpm** для всех установок.  
+- Коммиты — в стиле Conventional Commits (напр., `feat(T02): краткое описание`).  
+- Открой PR и сослаться на: `/frontend/docs/AquaStream_Business_Spec_v1.1.md` и `/frontend/docs/tasks/T02.md`.
