@@ -1,0 +1,32 @@
+name: aquastream-frontend
+
+services:
+  frontend-dev:
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.frontend.next
+    command: sh -c "pnpm install && pnpm dev"
+    working_dir: /app
+    environment:
+      - NEXT_PUBLIC_APP_ENV=dev
+      - NEXT_PUBLIC_USE_MOCKS=true
+      - NEXT_PUBLIC_API_BASE_URL=http://api-gateway:8080
+      - PORT=3100
+    ports:
+      - "3100:3100"
+    volumes:
+      - ../../..:/app
+    profiles: ["dev"]
+
+  frontend:
+    build:
+      context: ../../..
+      dockerfile: infra/docker/images/Dockerfile.frontend.next
+    environment:
+      - NEXT_PUBLIC_APP_ENV=prod
+      - NEXT_PUBLIC_USE_MOCKS=false
+    ports:
+      - "3000:3000"
+    profiles: ["prod"]
+
+
