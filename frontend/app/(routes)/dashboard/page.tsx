@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
+
 export default function DashboardPage() {
   return (
     <section data-test-id="page-dashboard">

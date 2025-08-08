@@ -30,6 +30,7 @@
 
 ## Артефакты
 - CI на PR с шагами install → lint → typecheck → build.
+- У CI есть возможность ручного запуска.
 - Раздел со стандартами кода в README.
 
 ## Бизнес‑приёмка (пользовательская)
@@ -47,10 +48,3 @@
 - Acceptance Criteria: https://www.atlassian.com/ru/agile/project-management/user-stories
 - Definition of Done: https://www.scrum.org/resources/what-definition-done
 - MSW quick start: https://mswjs.io/docs/quick-start/
-
-## Инструкции для агента (ChatGPT Agent)
-Ты — агент, выполняющий работу в монорепозитории AquaStream. Следуй шагам выше **точно**.  
-- Держись принципа **MVP**, без оверинженеринга.  
-- Используй **pnpm** для всех установок.  
-- Коммиты — в стиле Conventional Commits (напр., `feat(T02): краткое описание`).  
-- Открой PR и сослаться на: `/frontend/docs/AquaStream_Business_Spec_v1.1.md` и `/frontend/docs/tasks/T02.md`.
