@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { MswProvider } from "@/components/msw-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground`}
       >
+        <MswProvider />
         <ThemeProvider>
           <Header />
           <main className="mx-auto flex-1 max-w-6xl px-4 py-6">{children}</main>
