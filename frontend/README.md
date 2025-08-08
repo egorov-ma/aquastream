@@ -36,4 +36,9 @@ pnpm start  # http://localhost:3000
 
 ```bash
 pnpm lint
+pnpm typecheck
 ```
+
+## Conventional Commits
+- Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+- Формат: `<type>(<scope>): <subject>` — пример: `feat(T02): добавить CI workflow`.
