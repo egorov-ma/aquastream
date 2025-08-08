@@ -20,7 +20,6 @@
 - Установлены Node.js 22 LTS и pnpm.
 - Доступ к репозиторию с модулями `/frontend`, `/infra`, `/.github`.
 - Возможность запускать Docker локально.
-- Создана ветка `feature/t04`.
 
 ## Шаги выполнения
 1. Добавить примитивы: button,input,dialog,card,table,tabs,navigation-menu,dropdown-menu,badge,avatar,accordion,alert,alert-dialog,sheet,calendar,popover,tooltip,menubar,pagination,separator,progress,scroll-area,carousel,resizable.

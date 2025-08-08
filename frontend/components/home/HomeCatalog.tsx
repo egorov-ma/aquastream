@@ -1,0 +1,106 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { OrganizerGrid } from "@/components/organizers/OrganizerGrid";
+import { Button } from "@/components/ui/button";
+
+type ApiResponse = { items: { id: string; slug: string; name: string }[]; total: number };
+
+export function HomeCatalog() {
+  const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<ApiResponse>({ items: [], total: 0 });
+
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil((data?.total ?? 0) / pageSize)),
+    [data?.total]
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    const url = new URL("/organizers", base);
+    url.searchParams.set("q", q);
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("pageSize", String(pageSize));
+    fetch(url.toString(), { signal: controller.signal })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return (await r.json()) as ApiResponse;
+      })
+      .then(setData)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, [q, page]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "/") {
+        e.preventDefault();
+        const el = document.querySelector<HTMLInputElement>(
+          "input[data-test-id='search-input']"
+        );
+        el?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const canPrev = page > 1;
+  const canNext = page < totalPages;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold">Каталог организаторов</h1>
+        <div className="w-full max-w-sm">
+          <Input
+            placeholder="Поиск по имени... (нажмите /)"
+            value={q}
+            onChange={(e) => {
+              setPage(1);
+              setQ(e.target.value);
+            }}
+            data-test-id="search-input"
+          />
+        </div>
+      </div>
+
+      {loading && <p data-test-id="state-loading">Загрузка…</p>}
+      {error && !loading && (
+        <p className="text-destructive" data-test-id="state-error">
+          Ошибка: {error}
+        </p>
+      )}
+      {!loading && !error && data.items.length === 0 && (
+        <p data-test-id="state-empty">Ничего не найдено</p>
+      )}
+
+      {!loading && !error && data.items.length > 0 && (
+        <OrganizerGrid items={data.items} />
+      )}
+
+      <div className="flex items-center justify-center gap-2" aria-label="Пагинация каталога">
+        <Button variant="outline" disabled={!canPrev} onClick={() => setPage((p) => p - 1)}>
+          Назад
+        </Button>
+        <span className="text-sm text-muted-foreground">
+          Стр. {page} из {totalPages}
+        </span>
+        <Button disabled={!canNext} onClick={() => setPage((p) => p + 1)}>
+          Далее
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+

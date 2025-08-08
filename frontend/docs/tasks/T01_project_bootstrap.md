@@ -24,7 +24,6 @@
 - Установлены Node.js 22 LTS и pnpm.
 - Доступ к репозиторию с модулями `/frontend`, `/infra`, `/.github`.
 - Возможность запускать Docker локально.
-- Создана ветка `feature/t01`.
 
 ## Шаги выполнения
 1. `pnpm dlx create-next-app@latest frontend --ts --app --eslint --no-tailwind --use-pnpm`.

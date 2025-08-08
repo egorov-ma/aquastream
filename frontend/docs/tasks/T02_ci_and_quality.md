@@ -20,7 +20,6 @@
 - Установлены Node.js 22 LTS и pnpm.
 - Доступ к репозиторию с модулями `/frontend`, `/infra`, `/.github`.
 - Возможность запускать Docker локально.
-- Создана ветка `feature/t02`.
 
 ## Шаги выполнения
 1. Создать `/.github/workflows/frontend-ci.yml` (Node 22, кэш pnpm).

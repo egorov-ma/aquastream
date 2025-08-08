@@ -5,15 +5,30 @@ const withBase = (path: string) => `${apiBase}${path}`;
 
 export const handlers = [
   // GET /organizers
-  http.get(withBase("/organizers"), async () => {
+  http.get(withBase("/organizers"), async ({ request }) => {
     await delay(300);
-    return HttpResponse.json({
-      items: [
-        { id: "org-1", slug: "riverclub", name: "River Club" },
-        { id: "org-2", slug: "aquadream", name: "Aqua Dream" },
-      ],
-      total: 2,
-    });
+    const url = new URL(request.url);
+    const q = (url.searchParams.get("q") || "").toLowerCase();
+    const page = Number(url.searchParams.get("page") || "1");
+    const pageSize = Number(url.searchParams.get("pageSize") || "8");
+    const all = [
+      { id: "org-1", slug: "riverclub", name: "River Club" },
+      { id: "org-2", slug: "aquadream", name: "Aqua Dream" },
+      { id: "org-3", slug: "kayak-pro", name: "Kayak Pro" },
+      { id: "org-4", slug: "sup-life", name: "SUP Life" },
+      { id: "org-5", slug: "blue-wave", name: "Blue Wave" },
+      { id: "org-6", slug: "neo-splav", name: "Neo Splav" },
+      { id: "org-7", slug: "lake-club", name: "Lake Club" },
+      { id: "org-8", slug: "sea-riders", name: "Sea Riders" },
+      { id: "org-9", slug: "aqua-racing", name: "Aqua Racing" },
+    ];
+    const filtered = q
+      ? all.filter((o) => o.name.toLowerCase().includes(q) || o.slug.includes(q))
+      : all;
+    const total = filtered.length;
+    const start = (page - 1) * pageSize;
+    const items = filtered.slice(start, start + pageSize);
+    return HttpResponse.json({ items, total });
   }),
 
   // GET /organizers/:slug

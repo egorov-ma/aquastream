@@ -43,9 +43,3 @@
 - Acceptance Criteria: https://www.atlassian.com/ru/agile/project-management/user-stories
 - Definition of Done: https://www.scrum.org/resources/what-definition-done
 - MSW quick start: https://mswjs.io/docs/quick-start/
-
-## Инструкции для агента (ChatGPT Agent)
-Ты — агент, выполняющий работу в монорепозитории AquaStream. Следуй шагам выше **точно**.  
-- Держись принципа **MVP**, без оверинженеринга.  
-- Используй **pnpm** для всех установок.  
-- Коммиты — в стиле Conventional Commits (напр., `feat(T05): краткое описание`).
