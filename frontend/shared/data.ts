@@ -27,21 +27,43 @@ export type EventDto = {
 
 export const getOrganizerCached = unstable_cache(
   async (slug: string): Promise<OrganizerDto> => {
-    const res = await fetch(withBase(`/organizers/${slug}`), {
-      next: { revalidate: 60, tags: [CACHE_TAGS.organizerBySlug(slug)] },
-    });
-    return res.json();
+    try {
+      const res = await fetch(withBase(`/organizers/${slug}`), {
+        next: { revalidate: 60, tags: [CACHE_TAGS.organizerBySlug(slug)] },
+      });
+      return res.json();
+    } catch (err: any) {
+      if (err?.name === "AbortError") {
+        // Возвращаем минимальный объект, чтобы не ломать RSC при быстрой перекомпиляции в dev
+        const fallback: OrganizerDto = {
+          id: `org-${slug}`,
+          slug,
+          name: slug,
+          description: undefined,
+          brandColor: undefined,
+        };
+        return fallback;
+      }
+      throw err;
+    }
   },
   ["organizer"],
 );
 
 export const getOrganizerEventsCached = unstable_cache(
   async (slug: string): Promise<EventDto[]> => {
-    const res = await fetch(withBase(`/organizers/${slug}/events`), {
-      next: { revalidate: 60, tags: [CACHE_TAGS.eventsByOrganizer(slug)] },
-    });
-    const json = (await res.json()) as { items: EventDto[] };
-    return json.items;
+    try {
+      const res = await fetch(withBase(`/organizers/${slug}/events`), {
+        next: { revalidate: 60, tags: [CACHE_TAGS.eventsByOrganizer(slug)] },
+      });
+      const json = (await res.json()) as { items: EventDto[] };
+      return json.items;
+    } catch (err: any) {
+      if (err?.name === "AbortError") {
+        return [];
+      }
+      throw err;
+    }
   },
   ["organizer-events"],
 );
