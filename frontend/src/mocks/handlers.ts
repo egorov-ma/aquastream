@@ -4,6 +4,55 @@ const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
 const withBase = (path: string) => `${apiBase}${path}`;
 
 export const handlers = [
+  // Profile GET/PUT
+  http.get(withBase("/profile"), async () => {
+    await delay(150);
+    return HttpResponse.json({
+      phone: "+7 (900) 000-00-00",
+      telegram: "",
+      extra: "",
+      verified: false,
+    });
+  }),
+  http.get("*/profile", async () => {
+    await delay(150);
+    return HttpResponse.json({
+      phone: "+7 (900) 000-00-00",
+      telegram: "",
+      extra: "",
+      verified: false,
+    });
+  }),
+  http.put(withBase("/profile"), async ({ request }) => {
+    await delay(200);
+    const body = (await request.json()) as Partial<{
+      phone: string;
+      telegram: string;
+      extra: string;
+      verified: boolean;
+    }>; 
+    return HttpResponse.json({
+      phone: body?.phone ?? "+7 (900) 000-00-00",
+      telegram: body?.telegram ?? "",
+      extra: body?.extra ?? "",
+      verified: Boolean(body?.verified ?? false),
+    });
+  }),
+  http.put("*/profile", async ({ request }) => {
+    await delay(200);
+    const body = (await request.json()) as Partial<{
+      phone: string;
+      telegram: string;
+      extra: string;
+      verified: boolean;
+    }>; 
+    return HttpResponse.json({
+      phone: body?.phone ?? "+7 (900) 000-00-00",
+      telegram: body?.telegram ?? "",
+      extra: body?.extra ?? "",
+      verified: Boolean(body?.verified ?? false),
+    });
+  }),
   // GET /organizers
   http.get(withBase("/organizers"), async ({ request }) => {
     await delay(300);
