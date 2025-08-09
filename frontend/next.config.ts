@@ -2,9 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  experimental: {
-    serverComponentsExternalPackages: ["msw"],
-  },
+  serverExternalPackages: ["msw"],
   webpack: (config) => {
     if (process.env.NEXT_PUBLIC_USE_MOCKS === "true") {
       config.entry = async () => {
