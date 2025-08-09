@@ -40,6 +40,7 @@ export const handlers = [
       slug,
       name: slug === "riverclub" ? "River Club" : "Aqua Dream",
       description: "Организатор водных мероприятий",
+      brandColor: slug === "riverclub" ? "#0ea5e9" : "#22c55e",
     });
   }),
 
