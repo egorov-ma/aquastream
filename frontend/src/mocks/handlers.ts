@@ -170,6 +170,25 @@ export const handlers = [
     });
   }),
 
+  // Organizer dashboard events
+  http.get(withBase("/organizer/events"), async () => {
+    await delay(200);
+    return HttpResponse.json({
+      items: [
+        { id: "e1", title: "SUP Sunset", date: new Date().toISOString(), price: 1800, capacity: 20 },
+        { id: "e2", title: "Kayak Weekend", date: new Date(Date.now() + 86400000).toISOString(), price: 2500, capacity: 12 },
+      ],
+    });
+  }),
+  http.get("*/organizer/events", async () => {
+    await delay(200);
+    return HttpResponse.json({
+      items: [
+        { id: "e1", title: "SUP Sunset", date: new Date().toISOString(), price: 1800, capacity: 20 },
+        { id: "e2", title: "Kayak Weekend", date: new Date(Date.now() + 86400000).toISOString(), price: 2500, capacity: 12 },
+      ],
+    });
+  }),
   // GET /events/:id
   http.get(withBase("/events/:id"), async ({ params }) => {
     await delay(200);
