@@ -1,8 +1,10 @@
+import { RecoveryFlow } from "@/components/auth/RecoveryFlow";
+
 export default function RecoveryPage() {
   return (
-    <section data-test-id="page-auth-recovery">
+    <section data-test-id="page-auth-recovery" className="grid gap-4">
       <h1 className="text-xl font-semibold">Восстановление доступа</h1>
-      <p className="mt-2 text-muted-foreground">Выбор способа восстановления (заглушка)</p>
+      <RecoveryFlow />
     </section>
   );
 }
