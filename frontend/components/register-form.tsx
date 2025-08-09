@@ -13,6 +13,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const schema = z.object({
+  name: z
+    .string()
+    .min(2, "Минимум 2 символа")
+    .regex(/^[А-Яа-яЁё\s-]+$/, "Только кириллица, пробел и дефис"),
   username: z.string().min(3, "Минимум 3 символа"),
   password: z.string().min(6, "Минимум 6 символов"),
 });
@@ -46,6 +50,13 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-3">
+                <Label htmlFor="name">Имя</Label>
+                <Input id="name" autoComplete="name" {...register("name")} />
+                {errors.name && (
+                  <p className="text-sm text-destructive">{errors.name.message}</p>
+                )}
+              </div>
               <div className="grid gap-3">
                 <Label htmlFor="username">Имя пользователя</Label>
                 <Input id="username" autoComplete="username" {...register("username")} />
