@@ -1,4 +1,6 @@
 export const revalidate = 60;
+import { EventList } from "@/components/org/EventList";
+
 export default async function OrganizerEventsPage({
   params,
 }: {
@@ -6,9 +8,8 @@ export default async function OrganizerEventsPage({
 }) {
   const { orgSlug } = await params;
   return (
-    <section data-test-id="page-org-events">
-      <h1 className="text-xl font-semibold">События: {orgSlug}</h1>
-      <p className="mt-2 text-muted-foreground">Список и фильтры (заглушка)</p>
+    <section data-test-id="page-org-events" className="space-y-3">
+      <EventList slug={orgSlug} />
     </section>
   );
 }

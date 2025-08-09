@@ -1,14 +1,15 @@
 export const revalidate = 60;
+import { FaqList } from "@/components/org/FaqList";
+
 export default async function OrganizerFaqPage({
   params,
 }: {
   params: Promise<{ orgSlug: string }>;
 }) {
-  const { orgSlug } = await params;
+  await params;
   return (
     <section data-test-id="page-org-faq">
-      <h1 className="text-xl font-semibold">FAQ: {orgSlug}</h1>
-      <p className="mt-2 text-muted-foreground">Вопросы и ответы (заглушка)</p>
+      <FaqList />
     </section>
   );
 }

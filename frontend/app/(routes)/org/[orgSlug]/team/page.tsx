@@ -1,4 +1,6 @@
 export const revalidate = 60;
+import { TeamList } from "@/components/org/TeamList";
+
 export default async function OrganizerTeamPage({
   params,
 }: {
@@ -7,8 +9,7 @@ export default async function OrganizerTeamPage({
   const { orgSlug } = await params;
   return (
     <section data-test-id="page-org-team">
-      <h1 className="text-xl font-semibold">Команда: {orgSlug}</h1>
-      <p className="mt-2 text-muted-foreground">Список команды (заглушка)</p>
+      <TeamList slug={orgSlug} />
     </section>
   );
 }
