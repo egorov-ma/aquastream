@@ -65,12 +65,12 @@ export function EventFilters({ value, onChange, onReset }: {
 }) {
   const [local, setLocal] = useState<EventFiltersState>(value);
 
-  useEffect(() => setLocal(value), [value.q, value.minPrice, value.maxPrice, value.minCap, value.maxCap, value.from, value.to]);
+  useEffect(() => setLocal(value), [value]);
 
   useEffect(() => {
     const id = setTimeout(() => onChange(local), 300);
     return () => clearTimeout(id);
-  }, [local]);
+  }, [local, onChange]);
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" data-test-id="event-filters">

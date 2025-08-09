@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type Member = { id: string; name: string; role: string };
 
-export function TeamList({ slug }: { slug: string }) {
+export function TeamList({}: { slug: string }) {
   // Заглушка списка команды (моки позже)
   const members: Member[] = [
     { id: "m1", name: "Анна Петрова", role: "Организатор" },
