@@ -5,17 +5,21 @@ services:
     build:
       context: ../../..
       dockerfile: infra/docker/images/Dockerfile.frontend.next
-    command: sh -c "pnpm install && pnpm dev"
-    working_dir: /app
+    command: sh -c "npm i -g pnpm@10.14.0 && pnpm install --frozen-lockfile && pnpm dev -p 3100 --hostname 0.0.0.0"
+    working_dir: /app/frontend
     environment:
       - NEXT_PUBLIC_APP_ENV=dev
       - NEXT_PUBLIC_USE_MOCKS=true
       - NEXT_PUBLIC_API_BASE_URL=http://api-gateway:8080
       - PORT=3100
+      - NODE_ENV=development
+      - CI=1
     ports:
       - "3100:3100"
     volumes:
       - ../../..:/app
+    tty: true
+    stdin_open: true
     profiles: ["dev"]
 
   frontend:
@@ -27,6 +31,11 @@ services:
       - NEXT_PUBLIC_USE_MOCKS=false
     ports:
       - "3000:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     profiles: ["prod"]
 
 

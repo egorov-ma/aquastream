@@ -21,15 +21,24 @@ export function HomeCatalog() {
   );
 
   useEffect(() => {
+    // Ждём готовности MSW при включённых моках, чтобы первый запрос не ушёл в сеть
+    const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
+    if (useMocks && !window.__mswReady) {
+      const onReady = () => fetchPage();
+      window.addEventListener("msw-ready", onReady, { once: true });
+      return () => window.removeEventListener("msw-ready", onReady);
+    }
+    fetchPage();
+    function fetchPage() {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-    const url = new URL("/organizers", base);
-    url.searchParams.set("q", q);
-    url.searchParams.set("page", String(page));
-    url.searchParams.set("pageSize", String(pageSize));
-    fetch(url.toString(), { signal: controller.signal })
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const params = new URLSearchParams({ q, page: String(page), pageSize: String(pageSize) });
+    const endpoint = base
+      ? `${base.replace(/\/$/, "")}/organizers?${params.toString()}`
+      : `/organizers?${params.toString()}`;
+    fetch(endpoint, { signal: controller.signal })
       .then(async (r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return (await r.json()) as ApiResponse;
@@ -37,7 +46,8 @@ export function HomeCatalog() {
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-    return () => controller.abort();
+      return () => controller.abort();
+    }
   }, [q, page]);
 
   useEffect(() => {
