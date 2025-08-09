@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,6 +27,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    watch,
+    setValue,
   } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { role: "user" } });
 
   const onSubmit: Parameters<typeof handleSubmit>[0] = async (values) => {
@@ -82,11 +84,19 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 </Button>
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="role">Роль (dev)</Label>
-                <Select id="role" {...register("role")}>
-                  <option value="user">Пользователь</option>
-                  <option value="organizer">Организатор</option>
-                  <option value="admin">Администратор</option>
+                <Label>Роль (dev)</Label>
+                <Select value={watch("role")} onValueChange={(v) => setValue("role", v as FormValues["role"])}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Выберите роль" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Роль</SelectLabel>
+                      <SelectItem value="user">Пользователь</SelectItem>
+                      <SelectItem value="organizer">Организатор</SelectItem>
+                      <SelectItem value="admin">Администратор</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
