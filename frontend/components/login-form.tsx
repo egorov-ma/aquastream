@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ import { useRouter } from "next/navigation";
 const schema = z.object({
   username: z.string().min(3, "Минимум 3 символа"),
   password: z.string().min(6, "Минимум 6 символов"),
+  role: z.enum(["user", "organizer", "admin"]),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -25,15 +27,21 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { role: "user" } });
 
-  const onSubmit = async (values: FormValues) => {
-    const res = await fetch("/api/auth/login", {
+  const onSubmit: Parameters<typeof handleSubmit>[0] = async (values) => {
+      const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
-    if (res.ok) router.push("/dashboard");
+      if (res.ok) {
+        if (values.role === "organizer" || values.role === "admin") {
+          router.push("/org/dashboard");
+        } else {
+          router.push("/dashboard");
+        }
+      }
   };
 
   return (
@@ -72,6 +80,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                   Войти
                 </Button>
+              </div>
+              <div className="grid gap-3">
+                <Label htmlFor="role">Роль (dev)</Label>
+                <Select id="role" {...register("role")}>
+                  <option value="user">Пользователь</option>
+                  <option value="organizer">Организатор</option>
+                  <option value="admin">Администратор</option>
+                </Select>
               </div>
             </div>
             <div className="mt-4 text-center text-sm">
