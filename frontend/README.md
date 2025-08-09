@@ -23,12 +23,14 @@ pnpm install
 pnpm dev
 # опционально использовать порт 3100
 # PORT=3100 pnpm dev
+# NEXT_PUBLIC_USE_MOCKS=true PORT=3101 pnpm dev (или другой свободный порт), опционально NEXT_PUBLIC_API_BASE_URL=http://localhost:3101
 ```
 
 3) Продакшен‑сборка и запуск
 
 ```bash
 pnpm build
+pnpm exec tsc --noEmit 
 pnpm start  # http://localhost:3000
 ```
 
