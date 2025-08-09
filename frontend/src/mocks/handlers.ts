@@ -189,6 +189,24 @@ export const handlers = [
       ],
     });
   }),
+
+  // Bookings
+  http.post(withBase("/bookings"), async ({ request }) => {
+    const { eventId } = (await request.json()) as { eventId: string };
+    return HttpResponse.json({ id: "bk_mock_1", eventId, status: "pending" });
+  }),
+  http.post("*/bookings", async ({ request }) => {
+    const { eventId } = (await request.json()) as { eventId: string };
+    return HttpResponse.json({ id: "bk_mock_1", eventId, status: "pending" });
+  }),
+  http.get(withBase("/bookings/:id"), async ({ params }) => {
+    const { id } = params as { id: string };
+    return HttpResponse.json({ id, event: { id: "ev-101", title: "Заплыв по утренней Неве" }, amount: 2000, status: "pending" });
+  }),
+  http.get("*/bookings/:id", async ({ params }) => {
+    const { id } = params as { id: string };
+    return HttpResponse.json({ id, event: { id: "ev-101", title: "Заплыв по утренней Неве" }, amount: 2000, status: "pending" });
+  }),
   // GET /events/:id
   http.get(withBase("/events/:id"), async ({ params }) => {
     await delay(200);
