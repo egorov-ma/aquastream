@@ -19,7 +19,6 @@
 - Установлены Node.js 22 LTS и pnpm.
 - Доступ к репозиторию с модулями `/frontend`, `/infra`, `/.github`.
 - Возможность запускать Docker локально.
-- Создана ветка `feature/t07`.
 
 ## Шаги выполнения
 1. Верстка `OrganizerCard` (Card/Avatar/Badge).
@@ -51,5 +50,4 @@
 Ты — агент, выполняющий работу в монорепозитории AquaStream. Следуй шагам выше **точно**.  
 - Держись принципа **MVP**, без оверинженеринга.  
 - Используй **pnpm** для всех установок.  
-- Коммиты — в стиле Conventional Commits (напр., `feat(T07): краткое описание`).  
-- Открой PR и сослаться на: `/frontend/docs/AquaStream_Business_Spec_v1.1.md` и `/frontend/docs/tasks/T07.md`.
+- Коммиты — в стиле Conventional Commits (напр., `feat(T07): краткое описание`).

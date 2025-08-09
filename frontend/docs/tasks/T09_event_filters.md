@@ -49,4 +49,4 @@
 - Держись принципа **MVP**, без оверинженеринга.  
 - Используй **pnpm** для всех установок.  
 - Коммиты — в стиле Conventional Commits (напр., `feat(T09): краткое описание`).  
-- Открой PR и сослаться на: `/frontend/docs/AquaStream_Business_Spec_v1.1.md` и `/frontend/docs/tasks/T09.md`.
+- Открой PR и собеери все правки.

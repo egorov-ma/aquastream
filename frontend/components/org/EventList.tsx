@@ -17,27 +17,49 @@ export function EventList({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters, resetFilters] = useEventFilters();
 
+  // Загружаем один раз список событий; фильтруем на клиенте (серверная фильтрация вне объёма T09)
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     const base = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const sp = new URLSearchParams();
-    if (filters.q) sp.set("q", filters.q);
-    if (filters.minPrice != null) sp.set("minPrice", String(filters.minPrice));
-    if (filters.maxPrice != null) sp.set("maxPrice", String(filters.maxPrice));
-    if (filters.minCap != null) sp.set("minCap", String(filters.minCap));
-    if (filters.maxCap != null) sp.set("maxCap", String(filters.maxCap));
-    if (filters.from) sp.set("from", filters.from);
-    if (filters.to) sp.set("to", filters.to);
-    const qs = sp.toString();
-    const baseUrl = base ? `${base.replace(/\/$/, "")}/organizers/${slug}/events` : `/organizers/${slug}/events`;
-    const url = qs ? `${baseUrl}?${qs}` : baseUrl;
+    const url = base
+      ? `${base.replace(/\/$/, "")}/organizers/${slug}/events`
+      : `/organizers/${slug}/events`;
     fetch(url, { signal: controller.signal })
       .then((r) => r.json())
       .then((json: { items: Item[] }) => setItems(json.items))
       .finally(() => setLoading(false));
     return () => controller.abort();
-  }, [slug, filters.q, filters.minPrice, filters.maxPrice, filters.minCap, filters.maxCap, filters.from, filters.to]);
+  }, [slug]);
+
+  const visibleItems = useMemo(() => {
+    const byText = (it: Item) =>
+      !filters.q || it.title.toLowerCase().includes(filters.q.toLowerCase());
+    const byPrice = (it: Item) => {
+      const p = it.price ?? 0;
+      if (filters.minPrice != null && p < filters.minPrice) return false;
+      if (filters.maxPrice != null && p > filters.maxPrice) return false;
+      return true;
+    };
+    const byCap = (it: Item) => {
+      const c = it.capacity ?? 0;
+      if (filters.minCap != null && c < filters.minCap) return false;
+      if (filters.maxCap != null && c > filters.maxCap) return false;
+      return true;
+    };
+    const byDate = (it: Item) => {
+      const d = new Date(it.dateStart);
+      if (filters.from && d < new Date(filters.from)) return false;
+      if (filters.to) {
+        const to = new Date(filters.to);
+        // включительно до конца дня
+        to.setHours(23, 59, 59, 999);
+        if (d > to) return false;
+      }
+      return true;
+    };
+    return items.filter((it) => byText(it) && byPrice(it) && byCap(it) && byDate(it));
+  }, [items, filters]);
 
   if (loading) return (
     <div className="space-y-3">
@@ -57,7 +79,9 @@ export function EventList({ slug }: { slug: string }) {
     <div className="space-y-3" data-test-id="org-events">
       <EventFilters value={filters} onChange={setFilters} onReset={resetFilters} />
       <ul className="space-y-3">
-      {items.map((e) => (
+      {visibleItems.length === 0 ? (
+        <li className="text-sm text-muted-foreground">Нет событий по выбранным фильтрам</li>
+      ) : visibleItems.map((e) => (
         <li key={e.id} className="rounded-md border p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
