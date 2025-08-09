@@ -3,10 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["msw"],
-  webpack: (config) => {
-    // Turbopack предупреждает про webpack-конфиг — для dev оставляем только instrumentation.ts
-    return config;
-  },
+  // Не используем кастомный webpack-конфиг в dev с Turbopack, чтобы убрать предупреждение
+  // Оставляем поле пустым: Next сам подставит дефолтную функцию
 };
 
 export default nextConfig;
