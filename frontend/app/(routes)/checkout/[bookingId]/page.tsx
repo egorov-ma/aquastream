@@ -19,9 +19,28 @@ export default async function CheckoutPage({
           <div className="text-sm">Статус: {booking.status}</div>
         </div>
       ) : (
-        <p className="mt-2 text-destructive">Не удалось загрузить данные брони</p>
+        <CheckoutFallback />
       )}
     </section>
+  );
+}
+
+function CheckoutFallback() {
+  // В SSR узнаём об ошибке только по res.ok; покажем Alert и Skeleton
+  return (
+    <div className="mt-4 grid gap-3">
+      <div role="alert" className="border-destructive/30 bg-destructive/10 text-destructive rounded-md border p-3 text-sm">
+        Не удалось загрузить данные брони. Повторите попытку позже.
+      </div>
+      <div className="grid gap-2">
+        <div className="text-sm text-muted-foreground">Загрузка информации…</div>
+        <div className="grid gap-2">
+          <div className="h-4 w-1/2 animate-pulse rounded-md bg-muted" />
+          <div className="h-4 w-1/3 animate-pulse rounded-md bg-muted" />
+          <div className="h-4 w-1/4 animate-pulse rounded-md bg-muted" />
+        </div>
+      </div>
+    </div>
   );
 }
 

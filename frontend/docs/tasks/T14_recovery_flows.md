@@ -18,7 +18,6 @@ UI `​/auth/recovery` для восстановления через Telegram (
 - Установлены Node.js 22 LTS и pnpm.
 - Доступ к репозиторию с модулями `/frontend`, `/infra`, `/.github`.
 - Возможность запускать Docker локально.
-- Создана ветка `feature/t14`.
 
 ## Шаги выполнения
 1. Собрать поток `/auth/recovery`.
@@ -41,10 +40,3 @@ UI `​/auth/recovery` для восстановления через Telegram (
 - Acceptance Criteria: https://www.atlassian.com/ru/agile/project-management/user-stories
 - Definition of Done: https://www.scrum.org/resources/what-definition-done
 - MSW quick start: https://mswjs.io/docs/quick-start/
-
-## Инструкции для агента (ChatGPT Agent)
-Ты — агент, выполняющий работу в монорепозитории AquaStream. Следуй шагам выше **точно**.  
-- Держись принципа **MVP**, без оверинженеринга.  
-- Используй **pnpm** для всех установок.  
-- Коммиты — в стиле Conventional Commits (напр., `feat(T14): краткое описание`).  
-- Открой PR и сослаться на: `/frontend/docs/AquaStream_Business_Spec_v1.1.md` и `/frontend/docs/tasks/T14.md`.

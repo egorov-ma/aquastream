@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { EventFilters, useEventFilters } from "@/components/org/EventFilters";
 
 type Item = {
@@ -79,28 +81,35 @@ export function EventList({ slug }: { slug: string }) {
     <div className="space-y-3" data-test-id="org-events">
       <EventFilters value={filters} onChange={setFilters} onReset={resetFilters} />
       <ul className="space-y-3">
-      {visibleItems.length === 0 ? (
+          {visibleItems.length === 0 ? (
         <li className="text-sm text-muted-foreground">Нет событий по выбранным фильтрам</li>
-      ) : visibleItems.map((e) => (
-        <li key={e.id} className="rounded-md border p-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <div className="font-medium">{e.title}</div>
-              <div className="text-sm text-muted-foreground">
-                {new Date(e.dateStart).toLocaleString()}
-              </div>
-            </div>
-            <div className="text-right text-sm text-muted-foreground">
-              {typeof e.price === "number" && <div>₽ {e.price}</div>}
-              {typeof e.capacity === "number" && (
+          ) : visibleItems.map((e) => (
+            <li key={e.id} className="rounded-md border p-3">
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  Места: {e.available ?? 0}/{e.capacity}
+                  <Link href={`/events/${e.id}`} className="font-medium hover:underline">
+                    {e.title}
+                  </Link>
+                  <div className="text-sm text-muted-foreground">
+                    {new Date(e.dateStart).toLocaleString()}
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </li>
-      ))}
+                <div className="text-right text-sm text-muted-foreground">
+                  {typeof e.price === "number" && <div>₽ {e.price}</div>}
+                  {typeof e.capacity === "number" && (
+                    <div>
+                      Места: {e.available ?? 0}/{e.capacity}
+                    </div>
+                  )}
+                  <div className="mt-2">
+                    <Button asChild size="sm">
+                      <Link href={`/events/${e.id}`}>О событии</Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
       </ul>
     </div>
   );

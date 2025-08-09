@@ -9,7 +9,12 @@ export function SiteHeader() {
         <SidebarTrigger />
         <h1 className="text-xl font-semibold">Панель организатора</h1>
       </div>
-      <div className="text-sm text-muted-foreground">Сегодня: {new Date().toLocaleDateString()}</div>
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-muted-foreground hidden md:inline">Сегодня: {new Date().toLocaleDateString()}</span>
+        <form action="/api/auth/logout" method="post">
+          <button type="submit" className="h-8 rounded-md border px-3 text-sm hover:bg-muted/50">Выйти</button>
+        </form>
+      </div>
     </header>
   );
 }

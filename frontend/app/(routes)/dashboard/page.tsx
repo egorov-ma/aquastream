@@ -8,7 +8,12 @@ export default function DashboardPage() {
     <section data-test-id="page-dashboard" className="grid gap-6">
       <div>
         <h1 className="text-xl font-semibold">Личный кабинет</h1>
-        <p className="mt-2 text-muted-foreground">Профиль и верификация Telegram</p>
+        <div className="mt-2 flex items-center justify-between">
+          <p className="text-muted-foreground">Профиль и верификация Telegram</p>
+          <form action="/api/auth/logout" method="post">
+            <button type="submit" className="h-8 rounded-md border px-3 text-sm hover:bg-muted/50">Выйти</button>
+          </form>
+        </div>
       </div>
       <ProfileForm />
     </section>

@@ -4,6 +4,8 @@ export const ACCESS_RULES: Record<string, Role[]> = {
   "/dashboard": ["user", "organizer", "admin"],
   "/org/dashboard": ["organizer", "admin"],
   "/org/": ["organizer", "admin"],
+  "/admin": ["admin"],
+  "/admin/": ["admin"],
 };
 
 export function isAllowed(pathname: string, role: Role | null): boolean {

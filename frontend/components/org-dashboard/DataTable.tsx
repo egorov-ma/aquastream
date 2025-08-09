@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Row = { id: string; title: string; date: string; price: number; capacity: number; };
 
@@ -19,24 +19,24 @@ export function DataTable() {
   return (
     <div className="rounded-md border">
       <Table>
-        <Thead>
-          <Tr>
-            <Th>Событие</Th>
-            <Th>Дата</Th>
-            <Th>Цена</Th>
-            <Th>Вместимость</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Событие</TableHead>
+            <TableHead>Дата</TableHead>
+            <TableHead>Цена</TableHead>
+            <TableHead>Вместимость</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((r) => (
-            <Tr key={r.id}>
-              <Td>{r.title}</Td>
-              <Td>{new Date(r.date).toLocaleDateString()}</Td>
-              <Td>{r.price}</Td>
-              <Td>{r.capacity}</Td>
-            </Tr>
+            <TableRow key={r.id}>
+              <TableCell>{r.title}</TableCell>
+              <TableCell>{new Date(r.date).toLocaleDateString()}</TableCell>
+              <TableCell>{r.price}</TableCell>
+              <TableCell>{r.capacity}</TableCell>
+            </TableRow>
           ))}
-        </Tbody>
+        </TableBody>
       </Table>
     </div>
   );
