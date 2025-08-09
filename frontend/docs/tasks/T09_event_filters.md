@@ -19,7 +19,6 @@
 - Установлены Node.js 22 LTS и pnpm.
 - Доступ к репозиторию с модулями `/frontend`, `/infra`, `/.github`.
 - Возможность запускать Docker локально.
-- Создана ветка `feature/t09`.
 
 ## Шаги выполнения
 1. `EventFilters` с контролируемыми компонентами.
@@ -43,10 +42,3 @@
 - Acceptance Criteria: https://www.atlassian.com/ru/agile/project-management/user-stories
 - Definition of Done: https://www.scrum.org/resources/what-definition-done
 - MSW quick start: https://mswjs.io/docs/quick-start/
-
-## Инструкции для агента (ChatGPT Agent)
-Ты — агент, выполняющий работу в монорепозитории AquaStream. Следуй шагам выше **точно**.  
-- Держись принципа **MVP**, без оверинженеринга.  
-- Используй **pnpm** для всех установок.  
-- Коммиты — в стиле Conventional Commits (напр., `feat(T09): краткое описание`).  
-- Открой PR и собеери все правки.

@@ -2,7 +2,11 @@ import { unstable_cache } from "next/cache";
 import { CACHE_TAGS } from "@/shared/config/cache-tags";
 
 const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
-const withBase = (path: string) => `${apiBase}${path}`;
+const withBase = (path: string) => {
+  if (apiBase) return `${apiBase}${path}`;
+  const port = process.env.PORT || "3000";
+  return `http://localhost:${port}${path}`;
+};
 
 export type OrganizerDto = {
   id: string;
