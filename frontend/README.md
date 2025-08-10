@@ -129,9 +129,7 @@ flowchart TB
 ```
 
 ### Ссылки
-- Бизнес‑спецификация: `./docs/AquaStream_Business_Spec_v1.1.md`
-- Моки (MSW): `./docs/mocks.md`
-- Платежи/вебхуки: `./docs/payments.md`
+- Бизнес‑спецификация (включает разделы по мокам и платежам): `./docs/AquaStream_Business_Spec_v1.1.md`
 
 ### Conventional Commits
 - Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
