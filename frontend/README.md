@@ -26,8 +26,7 @@ pnpm install
 
 ```bash
 pnpm dev
-# опционально использовать порт 3100
-# PORT=3100 pnpm dev
+
 # режим с моками (MSW Node + браузер) на 3101
 NEXT_PUBLIC_USE_MOCKS=true NEXT_PUBLIC_API_BASE_URL=http://localhost:3101 PORT=3101 pnpm dev
 ```
