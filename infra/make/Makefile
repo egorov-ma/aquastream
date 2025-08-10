@@ -46,7 +46,8 @@ liq-user-sql:
 	  --url="jdbc:postgresql://postgres:5432/$${POSTGRES_DB:-aquastream}" \
 	  --username=$${POSTGRES_USER:-aquastream} \
 	  --password=$${POSTGRES_PASSWORD:-postgres} \
-	  --changeLogFile=/liquibase/changelog/master.xml updateSQL | cat
+	  --searchPath=/liquibase/changelog \
+	  --changelog-file=master.xml updateSQL | cat
 
 liq-user-update:
 	@docker run --rm --network aquastream-net \
@@ -56,6 +57,7 @@ liq-user-update:
 	  --url="jdbc:postgresql://postgres:5432/$${POSTGRES_DB:-aquastream}" \
 	  --username=$${POSTGRES_USER:-aquastream} \
 	  --password=$${POSTGRES_PASSWORD:-postgres} \
-	  --changeLogFile=/liquibase/changelog/master.xml update | cat
+	  --searchPath=/liquibase/changelog \
+	  --changelog-file=master.xml update | cat
 
 
