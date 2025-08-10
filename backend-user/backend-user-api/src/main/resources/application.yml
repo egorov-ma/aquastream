@@ -33,5 +33,14 @@ app:
     refreshTtlSeconds: 2592000
   logging:
     maskPII: true
+  telegram:
+    bot: aqstream_bot
+    botToken: ""
+  recovery:
+    codeTtlSeconds: 900
+
+services:
+  notification:
+    base-url: http://localhost:8105
 
 
