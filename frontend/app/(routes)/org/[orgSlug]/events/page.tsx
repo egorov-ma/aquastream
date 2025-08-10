@@ -1,11 +1,10 @@
 export const revalidate = 60;
 import { OrgEventsTable, type OrgEventRow } from "@/components/org/OrgEventsTable";
+import { getOrganizerEventsCached } from "@/shared/data";
 
 async function fetchEvents(slug: string): Promise<OrgEventRow[]> {
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-  const r = await fetch(`${base.replace(/\/$/, "")}/organizers/${slug}/events`, { cache: "no-store" });
-  const json = await r.json();
-  return json.items as OrgEventRow[];
+  const items = await getOrganizerEventsCached(slug);
+  return items as OrgEventRow[];
 }
 
 export default async function OrganizerEventsPage({

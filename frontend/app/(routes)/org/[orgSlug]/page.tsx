@@ -1,5 +1,5 @@
 export const revalidate = 60;
-import { getOrganizerCached } from "@/shared/data";
+import { getOrganizerCached, getOrganizerEventsCached } from "@/shared/data";
 import { EventCard } from "@/components/org/EventCard";
 import type { EventRow } from "@/components/org/EventsDataTable";
 
@@ -10,10 +10,8 @@ export default async function OrganizerHomePage({
 }) {
   const { orgSlug } = await params;
   const org = await getOrganizerCached(orgSlug);
-  // Подтягиваем ближайшие события (первые 2)
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-  const resp = await fetch(`${base.replace(/\/$/, "")}/organizers/${orgSlug}/events`, { cache: "no-store" });
-  const list: EventRow[] = resp.ok ? (await resp.json()).items : [];
+  // Подтягиваем ближайшие события (первые 2) через кэш‑хелпер
+  const list: EventRow[] = await getOrganizerEventsCached(orgSlug) as unknown as EventRow[];
   const top2 = list.slice(0, 2);
   return (
     <section data-test-id="page-org" className="space-y-4">
