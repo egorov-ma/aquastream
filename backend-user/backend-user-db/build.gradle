@@ -6,12 +6,3 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDir 'src/main/resources'
-        }
-    }
-}
-
-

@@ -1,7 +1,12 @@
 rootProject.name = 'aquastream'
 
 include 'backend-common'
+
 include 'backend-gateway'
+
+include 'backend-user:backend-user-api'
 include 'backend-user:backend-user-db'
+include 'backend-user:backend-user-service'
+
 
 

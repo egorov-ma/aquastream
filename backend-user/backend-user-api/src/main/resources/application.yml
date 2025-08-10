@@ -1,0 +1,23 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: backend-user-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.default_schema: user
+  liquibase:
+    change-log: classpath:migration/liquibase/master.xml
+
+app:
+  jwt:
+    secret: dev-secret-change-me
+
+
