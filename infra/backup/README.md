@@ -21,7 +21,7 @@
 1. Скопируйте `.env.example` → `.env` и задайте пароли (`POSTGRES_PASSWORD`, и т. д.).
 2. Поднимите инфраструктуру (хватает `postgres`):
    ```bash
-   make up-stage
+   make up-stage  # использует infra/docker/compose/docker-compose.yml
    ```
 
 ## Резервное копирование

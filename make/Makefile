@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
-DC := docker compose -f $(ROOT_DIR)/infra/compose/docker-compose.yml
+DC := docker compose -f $(ROOT_DIR)/infra/docker/compose/docker-compose.yml
 
 .PHONY: up-dev up-stage up-prod down logs backup restore
 
