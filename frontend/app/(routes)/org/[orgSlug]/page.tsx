@@ -1,4 +1,5 @@
 export const revalidate = 60;
+export const metadata = { title: "Организатор" };
 import { getOrganizerCached, getOrganizerEventsCached } from "@/shared/data";
 import { EventCard } from "@/components/org/EventCard";
 import type { EventRow } from "@/components/org/EventsDataTable";

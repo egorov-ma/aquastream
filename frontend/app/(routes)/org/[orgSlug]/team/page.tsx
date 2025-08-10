@@ -1,4 +1,5 @@
 export const revalidate = 60;
+export const metadata = { title: "Команда организатора" };
 import { TeamList } from "@/components/org/TeamList";
 
 export default async function OrganizerTeamPage({

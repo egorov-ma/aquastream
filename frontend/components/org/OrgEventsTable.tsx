@@ -15,23 +15,51 @@ export type OrgEventRow = {
 };
 
 export function OrgEventsTable({ rows }: { rows: OrgEventRow[] }) {
-  const total = rows.length;
+  const [q, setQ] = React.useState("");
+  const [sort, setSort] = React.useState<null | { key: keyof OrgEventRow; dir: "asc" | "desc" }>(null);
   const fmt = new Intl.DateTimeFormat(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
+  const filtered = React.useMemo(() => {
+    const base = rows.filter((r) =>
+      (r.title?.toLowerCase() ?? "").includes(q.toLowerCase()) || (r.location?.toLowerCase() ?? "").includes(q.toLowerCase()),
+    );
+    if (!sort) return base;
+    const dir = sort.dir === "asc" ? 1 : -1;
+    return [...base].sort((a, b) => {
+      const av = a[sort.key];
+      const bv = b[sort.key];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return String(av).localeCompare(String(bv)) * dir;
+    });
+  }, [rows, q, sort]);
+  const total = filtered.length;
+
   return (
-    <Table>
+    <div className="grid gap-3">
+      <div className="flex items-center justify-between gap-2">
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск..." className="h-9 rounded-md border px-3 text-sm" />
+      </div>
+      <Table>
       <TableCaption>Список событий организатора.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[220px]">Событие</TableHead>
+          <TableHead className="w-[220px]">
+            <button className="hover:underline" onClick={() => setSort((s) => ({ key: "title", dir: s?.key === "title" && s.dir === "asc" ? "desc" : "asc" }))}>Событие</button>
+          </TableHead>
           <TableHead>Период</TableHead>
-          <TableHead>Локация</TableHead>
-          <TableHead className="text-right">Цена</TableHead>
+          <TableHead>
+            <button className="hover:underline" onClick={() => setSort((s) => ({ key: "location", dir: s?.key === "location" && s.dir === "asc" ? "desc" : "asc" }))}>Локация</button>
+          </TableHead>
+          <TableHead className="text-right">
+            <button className="hover:underline" onClick={() => setSort((s) => ({ key: "price", dir: s?.key === "price" && s.dir === "asc" ? "desc" : "asc" }))}>Цена</button>
+          </TableHead>
           <TableHead className="text-right">Места</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((ev) => {
+        {filtered.map((ev) => {
           const start = fmt.format(new Date(ev.dateStart));
           const end = ev.dateEnd ? fmt.format(new Date(ev.dateEnd)) : null;
           const price = ev.price ?? 0;
@@ -66,6 +94,7 @@ export function OrgEventsTable({ rows }: { rows: OrgEventRow[] }) {
         </TableRow>
       </TableFooter>
     </Table>
+    </div>
   );
 }
 

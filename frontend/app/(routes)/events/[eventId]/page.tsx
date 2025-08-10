@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'default-no-store';
+export const metadata = { title: 'Событие' };
 
 export default async function EventPage({
   params,
@@ -38,31 +39,27 @@ export default async function EventPage({
 }
 
 function WaitlistSection({ eventId, initialCount }: { eventId: string; initialCount: number }) {
+  const Toggle = async (_: FormData) => {
+    "use server";
+    const origin = process.env.NEXT_PUBLIC_API_BASE_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
+    const url = new URL(`/api/events/${eventId}/waitlist`, origin);
+    const userId = "u_user1";
+    // простая проверка текущего статуса
+    const cur = await fetch(url, { cache: "no-store" }).then(r => r.json()).catch(() => ({ joined: false }));
+    if (!cur.joined) {
+      await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) });
+    } else {
+      await fetch(url, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) });
+    }
+  };
   return (
-    <form
-      action={async (formData: FormData) => {
-        "use server";
-        const action = String(formData.get("wl_action"));
-        const userId = "u_user1"; // dev stub
-        const origin = process.env.NEXT_PUBLIC_API_BASE_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
-        const url = new URL(`/api/events/${eventId}/waitlist`, origin);
-        if (action === "join") {
-          await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) });
-        } else if (action === "leave") {
-          await fetch(url, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) });
-        }
-      }}
-      className="mt-4 grid gap-2 rounded-md border p-3"
-    >
+    <form action={Toggle} className="mt-4 grid gap-2 rounded-md border p-3">
       <div className="flex items-center justify-between">
         <div>
           <div className="font-medium">Лист ожидания</div>
           <div className="text-sm text-muted-foreground">В очереди: {initialCount}</div>
         </div>
-        <div className="flex gap-2">
-          <button name="wl_action" value="join" className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Встать в очередь</button>
-          <button name="wl_action" value="leave" className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Выйти</button>
-        </div>
+        <button className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Переключить</button>
       </div>
     </form>
   );

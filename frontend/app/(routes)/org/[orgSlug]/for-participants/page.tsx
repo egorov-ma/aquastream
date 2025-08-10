@@ -1,4 +1,5 @@
 export const revalidate = 60;
+export const metadata = { title: "FAQ организатора" };
 import { FaqList } from "@/components/org/FaqList";
 
 export default async function OrganizerFaqPage({

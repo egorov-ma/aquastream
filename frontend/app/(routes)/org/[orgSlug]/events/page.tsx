@@ -1,4 +1,5 @@
 export const revalidate = 60;
+export const metadata = { title: "События организатора" };
 import { OrgEventsTable, type OrgEventRow } from "@/components/org/OrgEventsTable";
 import { getOrganizerEventsCached } from "@/shared/data";
 

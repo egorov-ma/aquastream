@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import DOMPurify from "isomorphic-dompurify";
 import type EditorJS from "@editorjs/editorjs";
 import type { OutputData } from "@editorjs/editorjs";
 
@@ -39,6 +40,20 @@ export function EditorJs({ value, onChange }: { value?: OutputData; onChange?: (
   }, [onChange, value]);
 
   return <div className="rounded-md border p-3"><div ref={holderRef} /></div>;
+}
+
+export function EditorPreview({ data }: { data: unknown }) {
+  const html = React.useMemo(() => {
+    try {
+      const json = JSON.stringify(data, null, 2);
+      const safe = DOMPurify.sanitize(json);
+      return `<pre>${safe}</pre>`;
+    } catch {
+      return "";
+    }
+  }, [data]);
+  // eslint-disable-next-line react/no-danger
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 
