@@ -61,6 +61,8 @@ pnpm exec playwright test
 # опции: --headed, --project=chromium
 # при необходимости можно переопределить базовый URL:
 # PLAYWRIGHT_BASE_URL=http://localhost:3101 pnpm exec playwright test
+# smoke тест очереди ожидания (waitlist):
+pnpm exec playwright test tests/e2e/waitlist.spec.ts
 ```
 
 ## ENV
@@ -69,9 +71,14 @@ pnpm exec playwright test
 |---|---|---|---|
 | `NODE_ENV` | server | `development` | Режим окружения |
 | `PORT` | server | `3000` | Порт dev/prod сервера Next.js |
+| `NEXT_PUBLIC_APP_ENV` | client | `dev` | Метка окружения (dev/prod) |
 | `NEXT_PUBLIC_USE_MOCKS` | client | `false` | Включение MSW (браузер/SSR) для разработки |
 | `NEXT_PUBLIC_API_BASE_URL` | client/server | — | Базовый origin для SSR‑fetch и моков (напр., `http://localhost:3101`) |
 | `PAYMENTS_PROVIDER` | server | `yookassa` | Моковый провайдер платежей (например, `yookassa|cloudpayments|stripe`) |
+| `PAYMENTS_PUBLIC_KEY` | client | — | Публичный ключ провайдера (если требуется) |
+| `PAYMENTS_SUCCESS_URL` | client/server | — | URL успешной оплаты |
+| `PAYMENTS_CANCEL_URL` | client/server | — | URL отмены оплаты |
+| `NEXT_PUBLIC_TELEGRAM_BOT_NAME` | client | — | Имя бота Телеграм (UI) |
 | `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | server/client | — | DSN Sentry (используется только в prod) |
 | `SENTRY_ENV` / `NEXT_PUBLIC_SENTRY_ENV` | server/client | `production` | Окружение для Sentry |
 
