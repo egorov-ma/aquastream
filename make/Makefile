@@ -37,4 +37,25 @@ smoke:
 	@echo "[smoke] Checking gateway health..."; \
 	curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/actuator/health | grep -q '^200$' && echo "OK" || (echo "Gateway health not 200" && exit 1)
 
+.PHONY: liq-user-sql liq-user-update
+liq-user-sql:
+	@docker run --rm --network aquastream-net \
+	  -e PGPASSWORD=$${POSTGRES_PASSWORD:-postgres} \
+	  -v $(ROOT_DIR)/backend-user/backend-user-db/src/main/resources/migration/liquibase:/liquibase/changelog \
+	  liquibase/liquibase:4.29 \
+	  --url="jdbc:postgresql://postgres:5432/$${POSTGRES_DB:-aquastream}" \
+	  --username=$${POSTGRES_USER:-aquastream} \
+	  --password=$${POSTGRES_PASSWORD:-postgres} \
+	  --changeLogFile=/liquibase/changelog/master.xml updateSQL | cat
+
+liq-user-update:
+	@docker run --rm --network aquastream-net \
+	  -e PGPASSWORD=$${POSTGRES_PASSWORD:-postgres} \
+	  -v $(ROOT_DIR)/backend-user/backend-user-db/src/main/resources/migration/liquibase:/liquibase/changelog \
+	  liquibase/liquibase:4.29 \
+	  --url="jdbc:postgresql://postgres:5432/$${POSTGRES_DB:-aquastream}" \
+	  --username=$${POSTGRES_USER:-aquastream} \
+	  --password=$${POSTGRES_PASSWORD:-postgres} \
+	  --changeLogFile=/liquibase/changelog/master.xml update | cat
+
 
