@@ -59,6 +59,9 @@ pnpm exec playwright test tests/e2e/waitlist.spec.ts
 | `NEXT_PUBLIC_TELEGRAM_BOT_NAME` | client | — | Имя бота Телеграм |
 | `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | server/client | — | DSN (prod) |
 | `SENTRY_ENV` / `NEXT_PUBLIC_SENTRY_ENV` | server/client | `production` | Окружение Sentry |
+| `NEXT_PUBLIC_OAUTH2_AUTH_URL` | client | — | OAuth2 authorize endpoint |
+| `NEXT_PUBLIC_OAUTH2_CLIENT_ID` | client | — | OAuth2 client id |
+| `NEXT_PUBLIC_OAUTH2_REDIRECT_URI` | client | `/api/auth/callback` | Callback URI |
 
 Подсказка: создайте `.env.local` на основе списка выше.
 
@@ -129,7 +132,7 @@ flowchart TB
 ```
 
 ### Ссылки
-- Бизнес‑спецификация (включает разделы по мокам и платежам): `./docs/AquaStream_Business_Spec_v1.1.md`
+- Бизнес‑спецификация: `./docs/AquaStream_Business_Spec_v1.1.md`
 
 ### Conventional Commits
 - Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`

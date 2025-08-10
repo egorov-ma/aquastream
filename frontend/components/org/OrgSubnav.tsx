@@ -15,7 +15,7 @@ export function OrgSubnav({ slug }: { slug: string }) {
   ];
   return (
     <div data-test-id="org-subnav" className="flex items-center justify-between">
-      <nav className="hidden gap-4 sm:flex">
+      <nav className="hidden gap-4 sm:flex px-2">
         {items.map((it) => {
           const active = pathname === it.href;
           return (
@@ -36,7 +36,7 @@ export function OrgSubnav({ slug }: { slug: string }) {
       <div className="sm:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm">Меню</Button>
+            <Button variant="outline" size="sm" className="h-11 px-4">Меню</Button>
           </SheetTrigger>
           <SheetContent side="left">
             <div className="flex flex-col gap-4 mt-6">

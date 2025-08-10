@@ -1,44 +1,21 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-const schema = z.object({
-  username: z.string().min(3, "Минимум 3 символа"),
-  password: z.string().min(6, "Минимум 6 символов"),
-  role: z.enum(["user", "organizer", "admin"]),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = { username: string; password: string; role: "user" | "organizer" | "admin" };
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
-  const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { role: "user" } });
-
-  const onSubmit = async (values: FormValues) => {
-      const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-      if (res.ok) {
-        if (values.role === "organizer" || values.role === "admin") {
-          router.push("/org/dashboard");
-        } else {
-          router.push("/dashboard");
-        }
-      }
-  };
+  const form = useForm<FormValues>({ defaultValues: { role: "user", username: "", password: "" } });
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -49,7 +26,30 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              onSubmit={form.handleSubmit(async (values) => {
+                try {
+                  const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: values.username, password: values.password, role: values.role }),
+                  });
+                  if (res.ok) {
+                    // локальное хранение токена как дублирующая стратегия (dev)
+                    const data = await res.json();
+                    try { sessionStorage.setItem("token", data.token); } catch {}
+                    const target = values.role === "organizer" || values.role === "admin" ? "/org/dashboard" : "/dashboard";
+                    router.push(target);
+                    form.reset({ username: "", password: "", role: values.role });
+                  } else {
+                    const err = await res.json().catch(() => ({ error: "Ошибка соединения" }));
+                    alert(err.error || "Ошибка авторизации");
+                  }
+                } catch {
+                  alert("Ошибка соединения с сервером");
+                }
+              })}
+            >
               <div className="flex flex-col gap-6">
                 <FormField
                   name="username"
@@ -58,7 +58,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     <FormItem className="grid gap-3">
                       <FormLabel>Имя пользователя</FormLabel>
                       <FormControl>
-                        <Input autoComplete="username" {...field} />
+                        <Input autoComplete="username" disabled={form.formState.isSubmitting} {...field} />
                       </FormControl>
                       <FormMessage className="text-sm text-destructive" />
                     </FormItem>
@@ -74,7 +74,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                         <Link href="/auth/recovery" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">Забыли пароль?</Link>
                       </div>
                       <FormControl>
-                        <Input type="password" autoComplete="current-password" {...field} />
+                        <Input type="password" autoComplete="current-password" disabled={form.formState.isSubmitting} {...field} />
                       </FormControl>
                       <FormMessage className="text-sm text-destructive" />
                     </FormItem>
@@ -105,7 +105,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 />
                 <div className="flex flex-col gap-3">
                   <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                    Войти
+                    {form.formState.isSubmitting ? "Входим..." : "Войти"}
                   </Button>
                 </div>
               </div>

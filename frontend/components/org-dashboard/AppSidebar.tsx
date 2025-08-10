@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
+import { useRole } from "@/shared/client-auth";
 
 export function AppSidebar() {
+  const role = useRole();
   return (
     <nav className="text-sm grid gap-2">
       <div className="text-muted-foreground px-2">Навигация</div>
@@ -11,6 +13,9 @@ export function AppSidebar() {
       <Link href="/org/dashboard/groups" className="hover:underline px-2">Группы</Link>
       <Link href="/org/dashboard/moderation" className="hover:underline px-2">Модерация оплат</Link>
       <Link href="/org/dashboard/settings" className="hover:underline px-2">Настройки</Link>
+      {role === "admin" ? (
+        <Link href="/admin" className="hover:underline px-2">Админ</Link>
+      ) : null}
     </nav>
   );
 }

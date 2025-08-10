@@ -81,7 +81,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
                     <FormItem className="grid gap-3">
                       <FormLabel>Пароль</FormLabel>
                       <FormControl>
-                        <Input type="password" autoComplete="new-password" {...field} />
+                        <Input type="password" inputMode="text" autoComplete="new-password" {...field} />
                       </FormControl>
                       <FormMessage className="text-sm text-destructive" />
                     </FormItem>

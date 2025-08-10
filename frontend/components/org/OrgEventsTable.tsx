@@ -39,7 +39,7 @@ export function OrgEventsTable({ rows }: { rows: OrgEventRow[] }) {
   return (
     <div className="grid gap-3">
       <div className="flex items-center justify-between gap-2">
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск..." className="h-9 rounded-md border px-3 text-sm" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск..." className="h-11 rounded-md border px-3 text-base md:h-9 md:text-sm" />
       </div>
       <Table>
       <TableCaption>Список событий организатора.</TableCaption>

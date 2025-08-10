@@ -9,4 +9,12 @@ export async function POST() {
   return res;
 }
 
+export async function GET() {
+  const res = NextResponse.redirect("/");
+  const secure = process.env.NODE_ENV === "production" ? true : false;
+  res.cookies.set({ name: "sid", value: "", httpOnly: true, sameSite: "lax", secure, path: "/", maxAge: 0 });
+  res.cookies.set({ name: "role", value: "", httpOnly: false, sameSite: "lax", secure, path: "/", maxAge: 0 });
+  return res;
+}
+
 

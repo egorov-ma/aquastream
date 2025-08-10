@@ -2,6 +2,13 @@ export const dynamic = 'force-dynamic';
 export const fetchCache = 'default-no-store';
 
 import { ProfileForm } from "@/components/dashboard/ProfileForm";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Личный кабинет — AquaStream",
+  description: "Профиль участника и верификация Telegram.",
+  robots: { index: false },
+};
 
 export default function DashboardPage() {
   return (

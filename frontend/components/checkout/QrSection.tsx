@@ -49,12 +49,12 @@ export function QrSection({ bookingId }: { bookingId: string }) {
     <div className="grid gap-4">
       <div className="text-sm text-muted-foreground">Оплата по QR: отсканируйте и переведите сумму, затем загрузите скрин чека.</div>
       <div className="grid gap-2">
-        <Input type="file" accept="image/*" onChange={onFileChange} />
+        <Input type="file" accept="image/*" onChange={onFileChange} className="h-11 md:h-10" />
         {uploading && <Progress value={progress} />}
         {message && <div className="text-sm">{message}</div>}
       </div>
       <div>
-        <Button onClick={onUpload} disabled={!file || uploading}>Загрузить пруф</Button>
+        <Button onClick={onUpload} disabled={!file || uploading} className="h-11 px-4 md:h-9">Загрузить пруф</Button>
       </div>
     </div>
   );
