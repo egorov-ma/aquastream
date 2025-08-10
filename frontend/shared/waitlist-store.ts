@@ -47,4 +47,9 @@ export function freeSeat(eventId: string): { notifiedUserId: string | null } {
   return { notifiedUserId: first.userId };
 }
 
+// Test/dev only: reset all queues
+export function __reset() {
+  waitlists.clear();
+}
+
 

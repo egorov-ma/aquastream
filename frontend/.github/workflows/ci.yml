@@ -1,0 +1,61 @@
+name: frontend-ci
+
+on:
+  push:
+    branches: [ main, feature/** ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run-e2e:
+        description: "Run Playwright smoke tests"
+        required: false
+        default: "false"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies (cached)
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      - name: Install Playwright Browsers
+        if: ${{ github.event.inputs.run-e2e == 'true' }}
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run Playwright smoke tests
+        if: ${{ github.event.inputs.run-e2e == 'true' }}
+        env:
+          NEXT_PUBLIC_USE_MOCKS: 'true'
+          NEXT_PUBLIC_API_BASE_URL: 'http://localhost:3101'
+          PORT: '3101'
+        run: pnpm exec playwright test tests/e2e/smoke.spec.ts
+
+
