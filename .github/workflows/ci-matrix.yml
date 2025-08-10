@@ -1,0 +1,86 @@
+name: CI Matrix
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  backend-gateway:
+    uses: ./.github/workflows/ci-service.yml
+    secrets: inherit
+    with:
+      service_name: backend-gateway
+      image_name: aquastream-backend-gateway
+      service_dir: .
+      dockerfile: infra/docker/images/Dockerfile.gateway
+
+  backend-user:
+    if: false
+    uses: ./.github/workflows/ci-service.yml
+    secrets: inherit
+    with:
+      service_name: backend-user
+      image_name: aquastream-backend-user
+      service_dir: .
+      dockerfile: backend/temp/docker/images/Dockerfile.backend
+
+  backend-event:
+    if: false
+    uses: ./.github/workflows/ci-service.yml
+    secrets: inherit
+    with:
+      service_name: backend-event
+      image_name: aquastream-backend-event
+      service_dir: .
+      dockerfile: backend/temp/docker/images/Dockerfile.backend
+
+  backend-crew:
+    if: false
+    uses: ./.github/workflows/ci-service.yml
+    secrets: inherit
+    with:
+      service_name: backend-crew
+      image_name: aquastream-backend-crew
+      service_dir: .
+      dockerfile: backend/temp/docker/images/Dockerfile.backend
+
+  backend-payment:
+    if: false
+    uses: ./.github/workflows/ci-service.yml
+    secrets: inherit
+    with:
+      service_name: backend-payment
+      image_name: aquastream-backend-payment
+      service_dir: .
+      dockerfile: backend/temp/docker/images/Dockerfile.backend
+
+  backend-notification:
+    if: false
+    uses: ./.github/workflows/ci-service.yml
+    secrets: inherit
+    with:
+      service_name: backend-notification
+      image_name: aquastream-backend-notification
+      service_dir: .
+      dockerfile: backend/temp/docker/images/Dockerfile.backend
+
+  backend-media:
+    if: false
+    uses: ./.github/workflows/ci-service.yml
+    secrets: inherit
+    with:
+      service_name: backend-media
+      image_name: aquastream-backend-media
+      service_dir: .
+      dockerfile: backend/temp/docker/images/Dockerfile.backend
+
+

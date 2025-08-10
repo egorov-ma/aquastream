@@ -1,0 +1,36 @@
+<configuration>
+    <springProperty name="appName" source="spring.application.name" defaultValue="application"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+                <pattern>
+                    <pattern>
+                        {
+                        "level":"%level",
+                        "logger":"%logger{36}",
+                        "thread":"%thread",
+                        "message":"%message"
+                        }
+                    </pattern>
+                </pattern>
+                <mdc>
+                    <includeMdcKeyName>correlationId</includeMdcKeyName>
+                </mdc>
+                <arguments/>
+                <stackTrace/>
+                <globalCustomFields>{"service":"${appName}"}</globalCustomFields>
+            </providers>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
+
+

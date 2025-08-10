@@ -7,11 +7,15 @@ import { OrganizerGrid } from "@/components/organizers/OrganizerGrid";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { clientRequest } from "@/shared/http";
 import { LoadingState, EmptyState, ErrorState } from "@/components/ui/states";
+import { useSearchParams, useRouter } from "next/navigation";
 
 type ApiResponse = { items: { id: string; slug: string; name: string }[]; total: number };
 
 export function HomeCatalog() {
-  const [q, setQ] = useState("");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialQ = searchParams.get("q") ?? "";
+  const [q, setQ] = useState(initialQ);
   const [page, setPage] = useState(1);
   const pageSize = 6;
   const [loading, setLoading] = useState(false);
@@ -46,6 +50,16 @@ export function HomeCatalog() {
         .finally(() => setLoading(false));
       return () => controller.abort();
     }
+  }, [q, page]);
+
+  // Синхронизируем URL при локальном вводе в поле на странице
+  useEffect(() => {
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    if (q) params.set("q", q); else params.delete("q");
+    params.set("page", String(page));
+    const qs = params.toString();
+    router.replace(qs ? `/?${qs}` : "/");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, page]);
 
   useEffect(() => {

@@ -34,7 +34,7 @@ export default function RootLayout({
         <MswProvider />
         <ThemeProvider>
           <Header />
-          <main className="mx-auto flex-1 max-w-6xl px-4 py-6">{children}</main>
+          <main className="mx-auto flex-1 max-w-6xl p-4">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

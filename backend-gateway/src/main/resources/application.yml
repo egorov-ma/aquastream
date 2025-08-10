@@ -1,0 +1,60 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: backend-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - RemoveHopByHopHeaders
+      routes:
+        - id: user-service
+          uri: http://localhost:8101
+          predicates:
+            - Path=/api/v1/auth/**,/api/v1/profile/**
+        - id: event-service
+          uri: http://localhost:8102
+          predicates:
+            - Path=/api/v1/events/**,/api/v1/bookings/**,/api/v1/organizers/**
+        - id: crew-service
+          uri: http://localhost:8103
+          predicates:
+            - Path=/api/v1/crews/**
+        - id: payment-service
+          uri: http://localhost:8104
+          predicates:
+            - Path=/api/v1/payments/**,/api/v1/webhooks/**
+        - id: notification-service
+          uri: http://localhost:8105
+          predicates:
+            - Path=/api/v1/notifications/**
+        - id: media-service
+          uri: http://localhost:8106
+          predicates:
+            - Path=/api/v1/media/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+gateway:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+  rate-limit:
+    default-per-minute: 60
+    login-per-minute: 10
+    recovery-per-minute: 5
+  admin:
+    services:
+      - http://localhost:8101
+      - http://localhost:8102
+      - http://localhost:8103
+      - http://localhost:8104
+      - http://localhost:8105
+      - http://localhost:8106
+
+
