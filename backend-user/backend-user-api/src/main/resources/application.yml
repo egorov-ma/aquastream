@@ -19,5 +19,9 @@ spring:
 app:
   jwt:
     secret: dev-secret-change-me
+    accessTtlSeconds: 900
+    refreshTtlSeconds: 2592000
+  logging:
+    maskPII: true
 
 
