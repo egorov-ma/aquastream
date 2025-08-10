@@ -3,13 +3,15 @@ package org.aquastream.user.api.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.aquastream.user.db.entity.UserEntity;
 import org.aquastream.user.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.aquastream.user.api.dto.request.LoginRequest;
+import org.aquastream.user.api.dto.request.RegisterRequest;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -20,23 +22,21 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestParam @NotBlank String username,
-                                      @RequestParam @NotBlank String password,
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest req,
                                       HttpServletResponse response) {
-        UserEntity user = authService.register(username, password);
-        var tokens = authService.login(username, password);
-        response.addCookie(buildJwtCookie("access", tokens.access(), 15 * 60));
-        response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), 30 * 24 * 60 * 60));
+        UserEntity user = authService.register(req.getUsername(), req.getPassword());
+        var tokens = authService.login(req.getUsername(), req.getPassword());
+        response.addCookie(buildJwtCookie("access", tokens.access(), authService.getAccessTtlSeconds()));
+        response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), authService.getRefreshTtlSeconds()));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam @NotBlank String username,
-                                   @RequestParam @NotBlank String password,
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest req,
                                    HttpServletResponse response) {
-        var tokens = authService.login(username, password);
-        response.addCookie(buildJwtCookie("access", tokens.access(), 15 * 60));
-        response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), 30 * 24 * 60 * 60));
+        var tokens = authService.login(req.getUsername(), req.getPassword());
+        response.addCookie(buildJwtCookie("access", tokens.access(), authService.getAccessTtlSeconds()));
+        response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), authService.getRefreshTtlSeconds()));
         return ResponseEntity.ok().build();
     }
 
@@ -62,8 +62,8 @@ public class AuthController {
         // validate refresh and rotate
         var userId = authService.validateRefreshAndGetUser(refreshJti);
         var tokens = authService.refresh(userId, refreshJti);
-        response.addCookie(buildJwtCookie("access", tokens.access(), 15 * 60));
-        response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), 30 * 24 * 60 * 60));
+        response.addCookie(buildJwtCookie("access", tokens.access(), authService.getAccessTtlSeconds()));
+        response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), authService.getRefreshTtlSeconds()));
         return ResponseEntity.ok().build();
     }
 

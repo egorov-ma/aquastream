@@ -1,8 +1,4 @@
-plugins {
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
-    id 'java'
-}
+plugins { id 'java-library' }
 
 dependencies {
     implementation project(':backend-common')
@@ -11,6 +7,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // bouncycastle не обязателен, удален
 
 
     implementation "io.jsonwebtoken:jjwt-api:${jsonWebTokenVersion}"
@@ -20,8 +17,6 @@ dependencies {
     runtimeOnly "org.postgresql:postgresql:${postgresVersion}"
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
+tasks.test { useJUnitPlatform() }
 
 

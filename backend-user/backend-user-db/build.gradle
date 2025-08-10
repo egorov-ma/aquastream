@@ -1,8 +1,4 @@
-plugins {
-    id 'java'
-}
+plugins { }
 
-dependencies {
-    implementation 'org.liquibase:liquibase-core'
-}
+dependencies { implementation 'org.liquibase:liquibase-core' }
 

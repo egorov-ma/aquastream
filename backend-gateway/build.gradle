@@ -1,8 +1,4 @@
-plugins {
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
-    id 'java'
-}
+plugins { id 'org.springframework.boot' }
 
 dependencies {
     implementation project(':backend-common')
@@ -11,17 +7,12 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-    implementation 'org.springframework.data:spring-data-redis'
 
     implementation 'com.bucket4j:bucket4j-core:8.10.1'
 
-    testImplementation platform("org.junit:junit-bom:${junitVersion}")
-    testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
+tasks.test { useJUnitPlatform() }
 
 

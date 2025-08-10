@@ -1,7 +1,5 @@
 package org.aquastream.user.api.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aquastream.user.db.entity.ProfileEntity;
 import org.aquastream.user.db.entity.UserEntity;
@@ -12,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -27,16 +26,11 @@ public class ProfileController {
     private final ProfileRepository profiles;
 
     @GetMapping("/me")
-    public ResponseEntity<?> me(HttpServletRequest request) {
-        String token = Arrays.stream(request.getCookies() == null ? new Cookie[]{} : request.getCookies())
-                .filter(c -> "token".equals(c.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-        if (token == null || token.isEmpty()) {
+    public ResponseEntity<?> me(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
             return ResponseEntity.status(401).build();
         }
-        UUID userId = authService.parseTokenSubject(token);
+        UUID userId = UUID.fromString(authentication.getName());
         UserEntity user = users.findById(userId).orElseThrow();
         ProfileEntity profile = profiles.findById(userId).orElse(null);
         return ResponseEntity.ok(Map.of(

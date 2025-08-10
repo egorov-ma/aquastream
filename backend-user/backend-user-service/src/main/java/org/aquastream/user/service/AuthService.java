@@ -138,6 +138,14 @@ public class AuthService {
         if (!maskPii || value == null || value.length() < 3) return value;
         return value.charAt(0) + "***" + value.charAt(value.length() - 1);
     }
+
+    public int getAccessTtlSeconds() {
+        return Math.toIntExact(accessTtlSeconds);
+    }
+
+    public int getRefreshTtlSeconds() {
+        return Math.toIntExact(refreshTtlSeconds);
+    }
 }
 
 
