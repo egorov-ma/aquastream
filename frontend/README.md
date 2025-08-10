@@ -1,97 +1,101 @@
+## AquaStream Frontend — DevEx README
 
+Этот документ — быстрый и практичный гид по запуску, разработке и отладке фронтенда AquaStream.
 
-## Технический стек и стандарты
-- **Node.js 22 LTS**, **pnpm**, Docker base `node:22-alpine`.
-- **Next.js 15 (App Router, RSC/ISR, Route Handlers)**, **React 19**.
-- **TypeScript** strict, **ESLint 9 (flat)**, **Prettier 3**.
-- **Tailwind v4**, плагин `@tailwindcss/forms` по необходимости.
-- **TanStack Query**, **react-hook-form** + **zod**, **lucide-react**, **msw** (dev).
-- **Sentry** (prod only).
+### Содержание
+- Быстрый старт
+- Скрипты и задачи
+- Окружение (ENV)
+- Режимы запуска (локально, с моками, Docker)
+- Качество кода (lint, types, форматирование)
+- Тесты (Playwright)
+- Отладка и советы
+- Диаграммы и ссылки
+- Conventional Commits
 
-## Документация
-- Бизнес‑спецификация: [`./docs/AquaStream_Business_Spec_v1.1.md`](./docs/AquaStream_Business_Spec_v1.1.md)
-- Моки (MSW): [`./docs/mocks.md`](./docs/mocks.md)
-- Платежи и вебхуки: [`./docs/payments.md`](./docs/payments.md)
-
-## Запуск фронтенда локально
-- Требования: Node.js 22 LTS, pnpm.
-
-1) Установка зависимостей
-
+### Быстрый старт
+1) Установите зависимости
 ```bash
 pnpm install
 ```
-
-2) Режим разработки (по умолчанию: http://localhost:3000)
-
+2) Запустите дев‑сервер (по умолчанию http://localhost:3000)
 ```bash
 pnpm dev
-
-# режим с моками (MSW Node + браузер) на 3101
+```
+3) Разработка с моками (SSR+браузер), порт 3101
+```bash
 NEXT_PUBLIC_USE_MOCKS=true NEXT_PUBLIC_API_BASE_URL=http://localhost:3101 PORT=3101 pnpm dev
 ```
 
-3) Продакшен‑сборка и запуск
-
+### Скрипты и задачи
 ```bash
+# дев‑сервер / прод‑сборка / старт
+pnpm dev
 pnpm build
-pnpm exec tsc --noEmit 
-pnpm start  # http://localhost:3000
-```
+pnpm start
 
-4) Проверки качества
-
-```bash
+# качество
 pnpm lint
 pnpm typecheck
-```
 
-## E2E (Playwright)
-
-1) Установка браузеров (один раз)
-
-```bash
+# e2e
 pnpm exec playwright install --with-deps
-```
-
-2) Запуск smoke‑тестов (автозапуск dev‑сервера на 3101)
-
-```bash
 pnpm exec playwright test
-# опции: --headed, --project=chromium
-# при необходимости можно переопределить базовый URL:
-# PLAYWRIGHT_BASE_URL=http://localhost:3101 pnpm exec playwright test
-# smoke тест очереди ожидания (waitlist):
 pnpm exec playwright test tests/e2e/waitlist.spec.ts
 ```
 
-## ENV
-
-| Переменная | Область | Значение по умолчанию | Назначение |
+### Окружение (ENV)
+| Переменная | Область | По умолчанию | Назначение |
 |---|---|---|---|
 | `NODE_ENV` | server | `development` | Режим окружения |
-| `PORT` | server | `3000` | Порт dev/prod сервера Next.js |
-| `NEXT_PUBLIC_APP_ENV` | client | `dev` | Метка окружения (dev/prod) |
-| `NEXT_PUBLIC_USE_MOCKS` | client | `false` | Включение MSW (браузер/SSR) для разработки |
-| `NEXT_PUBLIC_API_BASE_URL` | client/server | — | Базовый origin для SSR‑fetch и моков (напр., `http://localhost:3101`) |
-| `PAYMENTS_PROVIDER` | server | `yookassa` | Моковый провайдер платежей (например, `yookassa|cloudpayments|stripe`) |
-| `PAYMENTS_PUBLIC_KEY` | client | — | Публичный ключ провайдера (если требуется) |
-| `PAYMENTS_SUCCESS_URL` | client/server | — | URL успешной оплаты |
-| `PAYMENTS_CANCEL_URL` | client/server | — | URL отмены оплаты |
-| `NEXT_PUBLIC_TELEGRAM_BOT_NAME` | client | — | Имя бота Телеграм (UI) |
-| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | server/client | — | DSN Sentry (используется только в prod) |
-| `SENTRY_ENV` / `NEXT_PUBLIC_SENTRY_ENV` | server/client | `production` | Окружение для Sentry |
+| `PORT` | server | `3000` | Порт Next.js |
+| `NEXT_PUBLIC_APP_ENV` | client | `dev` | Метка окружения |
+| `NEXT_PUBLIC_USE_MOCKS` | client | `false` | Включение MSW (SSR/браузер) |
+| `NEXT_PUBLIC_API_BASE_URL` | client/server | — | Origin API для SSR и моков |
+| `PAYMENTS_PROVIDER` | server | `yookassa` | Мок‑провайдер платежей |
+| `PAYMENTS_PUBLIC_KEY` | client | — | Публичный ключ виджета |
+| `PAYMENTS_SUCCESS_URL` | client/server | — | URL успеха оплаты |
+| `PAYMENTS_CANCEL_URL` | client/server | — | URL отмены |
+| `NEXT_PUBLIC_TELEGRAM_BOT_NAME` | client | — | Имя бота Телеграм |
+| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | server/client | — | DSN (prod) |
+| `SENTRY_ENV` / `NEXT_PUBLIC_SENTRY_ENV` | server/client | `production` | Окружение Sentry |
 
-## Порты и профили
+Подсказка: создайте `.env.local` на основе списка выше.
 
-- Dev локально: `3000` (или переопределите `PORT`)
-- Dev с моками: `3101` (`NEXT_PUBLIC_USE_MOCKS=true PORT=3101`)
-- Docker dev‑профиль: `3100`
-- Docker prod‑профиль: `3000`
+### Режимы запуска
+- Обычный dev: `pnpm dev` → http://localhost:3000
+- Dev с моками: `NEXT_PUBLIC_USE_MOCKS=true PORT=3101 pnpm dev` → http://localhost:3101
+- Docker dev:
+```bash
+docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile dev up --build
+```
+- Docker prod:
+```bash
+docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile prod up --build
+```
 
-## Диаграммы (Mermaid)
+### Качество кода
+- ESLint 9 (flat) и Prettier 3 уже настроены
+- TypeScript strict включён
+- UI: строго Tailwind v4 + shadcn/ui (без кастомного CSS)
 
-Маршрутизация и гарды:
+```bash
+pnpm lint && pnpm typecheck
+```
+
+### Тесты (Playwright)
+- Установка браузеров (один раз): `pnpm exec playwright install --with-deps`
+- Запуск всех тестов: `pnpm exec playwright test`
+- Smoke тест waitlist: `pnpm exec playwright test tests/e2e/waitlist.spec.ts`
+- В конфиге включён автозапуск дев‑сервера на 3101
+
+### Отладка и советы
+- SSR‑fetch использует абсолютный origin (см. `shared/http.ts` → `serverFetch`).
+- Для моков включите `NEXT_PUBLIC_USE_MOCKS=true`; SSR‑моки стартуют через `instrumentation.ts`.
+- Ошибки в проде отправляются в Sentry (client/server).
+
+### Диаграммы
+Маршрутизация и RBAC (Mermaid):
 
 ```mermaid
 flowchart LR
@@ -116,8 +120,6 @@ flowchart LR
   class D,OD,ADM prot;
 ```
 
-RBAC (упрощённо):
-
 ```mermaid
 flowchart TB
   A[Path] --> B{Role}
@@ -126,29 +128,11 @@ flowchart TB
   A3["/admin"] -->|admin| B
 ```
 
-## Запуск в Docker
-Из корня репозитория:
+### Ссылки
+- Бизнес‑спецификация: `./docs/AquaStream_Business_Spec_v1.1.md`
+- Моки (MSW): `./docs/mocks.md`
+- Платежи/вебхуки: `./docs/payments.md`
 
-5) Dev-профиль (моки включены, порт 3100)
-
-```bash
-docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile dev up --build
-# открыть http://localhost:3100
-```
-
-6) Prod-профиль (standalone, порт 3000)
-
-```bash
-docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile prod up --build
-# открыть http://localhost:3000
-```
-
-Остановка:
-
-```bash
-docker compose -f infra/docker/compose/docker-compose.frontend.yml --profile dev down
-```
-
-## Conventional Commits
-- Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
-- Формат: `<type>(<scope>): <subject>` — пример: `feat(T02): добавить CI workflow`.
+### Conventional Commits
+- Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+- Формат: `<type>(<scope>): <subject>` (пример: `feat(T02): добавить CI workflow`)
