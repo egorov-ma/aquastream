@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(reg -> reg
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
