@@ -34,11 +34,3 @@
 
 ## Definition of Done (техническая готовность)
 - Нет hydration‑ворнингов; smoke‑тест проходит.
-
-## Ссылки
-- Бизнес‑документ: `/frontend/docs/AquaStream_Business_Spec_v1.1.md`
-- Next.js ISR: https://nextjs.org/docs/app/guides/incremental-static-regeneration
-- revalidateTag: https://nextjs.org/docs/app/api-reference/functions/revalidateTag
-- Acceptance Criteria: https://www.atlassian.com/ru/agile/project-management/user-stories
-- Definition of Done: https://www.scrum.org/resources/what-definition-done
-- MSW quick start: https://mswjs.io/docs/quick-start/

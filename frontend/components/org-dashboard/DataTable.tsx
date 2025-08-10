@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Link from "next/link";
 
 type Row = { id: string; title: string; date: string; price: number; capacity: number; };
 
@@ -30,7 +31,10 @@ export function DataTable() {
         <TableBody>
           {rows.map((r) => (
             <TableRow key={r.id}>
-              <TableCell>{r.title}</TableCell>
+              <TableCell className="flex items-center gap-2">
+                <span>{r.title}</span>
+                <Link href={`/org/dashboard/groups?eventId=${encodeURIComponent(r.id)}`} className="text-xs text-muted-foreground underline">Группы</Link>
+              </TableCell>
               <TableCell>{new Date(r.date).toLocaleDateString()}</TableCell>
               <TableCell>{r.price}</TableCell>
               <TableCell>{r.capacity}</TableCell>

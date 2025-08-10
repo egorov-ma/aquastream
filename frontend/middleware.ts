@@ -4,7 +4,7 @@ import { isAllowed } from "@/shared/rbac";
 
 export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
-  const protectedRoutes = ["/dashboard", "/org/dashboard"];
+  const protectedRoutes = ["/dashboard", "/org/dashboard", "/admin"];
   if (protectedRoutes.some((r) => pathname.startsWith(r))) {
     const sid = req.cookies.get("sid")?.value;
     if (!sid) {
@@ -24,7 +24,7 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/org/dashboard"],
+  matcher: ["/dashboard", "/org/dashboard", "/admin"],
 };
 
 

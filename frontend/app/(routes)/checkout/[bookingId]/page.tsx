@@ -17,10 +17,19 @@ export default async function CheckoutPage({
           <div className="text-sm text-muted-foreground">Событие: {booking.event.title}</div>
           <div className="text-sm text-muted-foreground">Сумма к оплате: {booking.amount} ₽</div>
           <div className="text-sm">Статус: {booking.status}</div>
+          <div className="my-3 h-px w-full bg-border" />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <h2 className="font-medium">Оплата виджетом</h2>
+              <PaymentSection bookingId={bookingId} />
+            </div>
+            <div>
+              <h2 className="font-medium">Оплата по QR (пруф)</h2>
+              <QrSection bookingId={bookingId} />
+            </div>
+          </div>
         </div>
-      ) : (
-        <CheckoutFallback />
-      )}
+      ) : <CheckoutFallback />}
     </section>
   );
 }
@@ -40,6 +49,17 @@ function CheckoutFallback() {
           <div className="h-4 w-1/4 animate-pulse rounded-md bg-muted" />
         </div>
       </div>
+    </div>
+  );
+}
+
+import { PaymentWidget } from "@/components/checkout/PaymentWidget";
+import { QrSection } from "@/components/checkout/QrSection";
+
+function PaymentSection({ bookingId }: { bookingId: string }) {
+  return (
+    <div>
+      <PaymentWidget bookingId={bookingId} />
     </div>
   );
 }

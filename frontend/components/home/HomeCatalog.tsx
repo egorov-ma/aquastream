@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { OrganizerGrid } from "@/components/organizers/OrganizerGrid";
-import { Button } from "@/components/ui/button";
+// removed unused Button
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 type ApiResponse = { items: { id: string; slug: string; name: string }[]; total: number };
 
@@ -98,17 +99,33 @@ export function HomeCatalog() {
         <OrganizerGrid items={data.items} />
       )}
 
-      <div className="flex items-center justify-center gap-2" aria-label="Пагинация каталога">
-        <Button variant="outline" disabled={!canPrev} onClick={() => setPage((p) => p - 1)}>
-          Назад
-        </Button>
-        <span className="text-sm text-muted-foreground">
-          Стр. {page} из {totalPages}
-        </span>
-        <Button disabled={!canNext} onClick={() => setPage((p) => p + 1)}>
-          Далее
-        </Button>
-      </div>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); if (canPrev) setPage((p) => p - 1); }} />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              {page}
+            </PaginationLink>
+          </PaginationItem>
+          {page + 1 <= totalPages && (
+            <PaginationItem>
+              <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setPage(page + 1); }}>
+                {page + 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          {page + 2 < totalPages && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationNext href="#" onClick={(e) => { e.preventDefault(); if (canNext) setPage((p) => p + 1); }} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }
