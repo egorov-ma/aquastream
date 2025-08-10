@@ -16,7 +16,7 @@ export function middleware(req: NextRequest) {
     const role = (req.cookies.get("role")?.value as any) ?? null;
     if (!isAllowed(pathname, role as any)) {
       const url = req.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = "/403";
       return NextResponse.redirect(url);
     }
   }
@@ -24,7 +24,7 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/org/dashboard", "/admin"],
+  matcher: ["/dashboard(.*)", "/org/dashboard(.*)", "/admin(.*)"],
 };
 
 
