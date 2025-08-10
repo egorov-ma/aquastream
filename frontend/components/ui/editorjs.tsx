@@ -43,17 +43,16 @@ export function EditorJs({ value, onChange }: { value?: OutputData; onChange?: (
 }
 
 export function EditorPreview({ data }: { data: unknown }) {
-  const html = React.useMemo(() => {
+  const content = React.useMemo(() => {
     try {
       const json = JSON.stringify(data, null, 2);
-      const safe = DOMPurify.sanitize(json);
-      return `<pre>${safe}</pre>`;
+      const safe = DOMPurify.sanitize(json, { USE_PROFILES: { html: true } });
+      return safe;
     } catch {
       return "";
     }
   }, [data]);
-  // eslint-disable-next-line react/no-danger
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  return <pre className="whitespace-pre-wrap break-words text-sm">{content}</pre>;
 }
 
 

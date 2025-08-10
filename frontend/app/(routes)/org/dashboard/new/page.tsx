@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { EditorJs } from "@/components/ui/editorjs";
+import { EditorJs, EditorPreview } from "@/components/ui/editorjs";
 import { InfoIcon, UsersIcon, MapPinIcon, CalendarIcon, ImageIcon, TagIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -142,6 +142,12 @@ export default function NewEventPage() {
             <div className="space-y-2">
               <Label>Подробное описание</Label>
               <EditorJs onChange={(data) => form.setValue("longDescription", data)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Предпросмотр (безопасный)</Label>
+              <div className="rounded-md border p-3 text-sm">
+                <EditorPreview data={form.watch("longDescription")} />
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Теги</Label>
