@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { OrganizerGrid } from "@/components/organizers/OrganizerGrid";
 // removed unused Button
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { clientRequest } from "@/shared/http";
+import { LoadingState, EmptyState, ErrorState } from "@/components/ui/states";
 
 type ApiResponse = { items: { id: string; slug: string; name: string }[]; total: number };
 
@@ -31,22 +33,17 @@ export function HomeCatalog() {
     }
     fetchPage();
     function fetchPage() {
-    const controller = new AbortController();
-    setLoading(true);
-    setError(null);
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const params = new URLSearchParams({ q, page: String(page), pageSize: String(pageSize) });
-    const endpoint = base
-      ? `${base.replace(/\/$/, "")}/organizers?${params.toString()}`
-      : `/organizers?${params.toString()}`;
-    fetch(endpoint, { signal: controller.signal })
-      .then(async (r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return (await r.json()) as ApiResponse;
-      })
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      const controller = new AbortController();
+      setLoading(true);
+      setError(null);
+      const params = new URLSearchParams({ q, page: String(page), pageSize: String(pageSize) });
+      clientRequest<ApiResponse>(`/organizers?${params.toString()}`, { signal: controller.signal, timeoutMs: 10_000 })
+        .then((res) => {
+          if (res.ok) setData(res.data);
+          else setError(res.error);
+        })
+        .catch((e) => setError(e.message))
+        .finally(() => setLoading(false));
       return () => controller.abort();
     }
   }, [q, page]);
@@ -85,15 +82,9 @@ export function HomeCatalog() {
         </div>
       </div>
 
-      {loading && <p data-test-id="state-loading">Загрузка…</p>}
-      {error && !loading && (
-        <p className="text-destructive" data-test-id="state-error">
-          Ошибка: {error}
-        </p>
-      )}
-      {!loading && !error && data.items.length === 0 && (
-        <p data-test-id="state-empty">Ничего не найдено</p>
-      )}
+      {loading && <LoadingState />}
+      {error && !loading && <ErrorState message={`Ошибка: ${error}`} />}
+      {!loading && !error && data.items.length === 0 && <EmptyState title="Ничего не найдено" />}
 
       {!loading && !error && data.items.length > 0 && (
         <OrganizerGrid items={data.items} />

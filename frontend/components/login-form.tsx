@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -24,15 +23,9 @@ type FormValues = z.infer<typeof schema>;
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    watch,
-    setValue,
-  } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { role: "user" } });
+  const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { role: "user" } });
 
-  const onSubmit: Parameters<typeof handleSubmit>[0] = async (values) => {
+  const onSubmit = async (values: FormValues) => {
       const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -55,59 +48,75 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           <CardDescription>Введите имя пользователя и пароль</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="username">Имя пользователя</Label>
-                <Input id="username" autoComplete="username" {...register("username")} />
-                {errors.username && (
-                  <p className="text-sm text-destructive">{errors.username.message}</p>
-                )}
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Пароль</Label>
-                  <Link
-                    href="/auth/recovery"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Забыли пароль?
-                  </Link>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="flex flex-col gap-6">
+                <FormField
+                  name="username"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="grid gap-3">
+                      <FormLabel>Имя пользователя</FormLabel>
+                      <FormControl>
+                        <Input autoComplete="username" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-sm text-destructive" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="password"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="grid gap-3">
+                      <div className="flex items-center">
+                        <FormLabel>Пароль</FormLabel>
+                        <Link href="/auth/recovery" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">Забыли пароль?</Link>
+                      </div>
+                      <FormControl>
+                        <Input type="password" autoComplete="current-password" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-sm text-destructive" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="role"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="grid gap-3">
+                      <FormLabel>Роль (dev)</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Выберите роль" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Роль</SelectLabel>
+                            <SelectItem value="user">Пользователь</SelectItem>
+                            <SelectItem value="organizer">Организатор</SelectItem>
+                            <SelectItem value="admin">Администратор</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-sm text-destructive" />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-col gap-3">
+                  <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                    Войти
+                  </Button>
                 </div>
-                <Input id="password" type="password" autoComplete="current-password" {...register("password")} />
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password.message}</p>
-                )}
               </div>
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  Войти
-                </Button>
+              <div className="mt-4 text-center text-sm">
+                Нет аккаунта?{" "}
+                <Link href="/auth/register" className="underline underline-offset-4">
+                  Зарегистрируйтесь
+                </Link>
               </div>
-              <div className="grid gap-3">
-                <Label>Роль (dev)</Label>
-                <Select value={watch("role")} onValueChange={(v) => setValue("role", v as FormValues["role"])}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Выберите роль" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Роль</SelectLabel>
-                      <SelectItem value="user">Пользователь</SelectItem>
-                      <SelectItem value="organizer">Организатор</SelectItem>
-                      <SelectItem value="admin">Администратор</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Нет аккаунта?{" "}
-              <Link href="/auth/register" className="underline underline-offset-4">
-                Зарегистрируйтесь
-              </Link>
-            </div>
-          </form>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
