@@ -15,4 +15,17 @@ export async function register() {
   }
 }
 
+// Перехват ошибок запросов (совместимо с modern-setup Sentry)
+export function onRequestError(err: unknown) {
+  if (process.env.NODE_ENV !== "production") return;
+  // динамический импорт, чтобы не тянуть Sentry в dev
+  import("@sentry/nextjs")
+    .then((Sentry) => {
+      const anyS = Sentry as unknown as { captureRequestError?: (e: unknown) => void; captureException?: (e: unknown) => void };
+      if (typeof anyS.captureRequestError === "function") anyS.captureRequestError(err);
+      else if (typeof anyS.captureException === "function") anyS.captureException(err);
+    })
+    .catch(() => {});
+}
+
 
