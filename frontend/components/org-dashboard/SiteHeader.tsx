@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   return (
@@ -12,7 +13,7 @@ export function SiteHeader() {
       <div className="flex items-center gap-3">
         <span className="text-sm text-muted-foreground hidden md:inline">Сегодня: {new Date().toLocaleDateString()}</span>
         <form action="/api/auth/logout" method="post">
-          <button type="submit" className="h-8 rounded-md border px-3 text-sm hover:bg-muted/50">Выйти</button>
+          <Button type="submit" variant="outline" size="sm">Выйти</Button>
         </form>
       </div>
     </header>

@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import * as React from "react";
 
 export function WaitlistSection({ eventId, initialCount, initialJoined }: { eventId: string; initialCount: number; initialJoined: boolean }) {
@@ -43,23 +45,19 @@ export function WaitlistSection({ eventId, initialCount, initialJoined }: { even
   };
 
   return (
-    <section className="mt-4 grid gap-2 rounded-md border p-3" data-test-id="waitlist-section">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="font-medium">Лист ожидания</div>
-          <div className="text-sm text-muted-foreground">В очереди: {count}</div>
-          <div className="mt-1 text-xs">Статус: {joined ? "в очереди" : "не в очереди"}</div>
-        </div>
-        <button
-          type="button"
-          aria-label="Переключить"
-          onClick={toggle}
-          disabled={pending}
-          className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50 disabled:opacity-50"
-        >
-          {joined ? "Выйти из очереди" : "Встать в очередь"}
-        </button>
-      </div>
+    <section className="mt-4" data-test-id="waitlist-section">
+      <Card className="[contain:content]">
+        <CardContent className="flex items-center justify-between p-3">
+          <div>
+            <div className="font-medium">Лист ожидания</div>
+            <div className="text-sm text-muted-foreground">В очереди: {count}</div>
+            <div className="mt-1 text-xs">Статус: {joined ? "в очереди" : "не в очереди"}</div>
+          </div>
+          <Button type="button" aria-label="Переключить" onClick={toggle} disabled={pending} variant="outline" size="sm">
+            {joined ? "Выйти из очереди" : "Встать в очередь"}
+          </Button>
+        </CardContent>
+      </Card>
     </section>
   );
 }

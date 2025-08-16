@@ -10,6 +10,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { useRole } from "@/shared/client-auth";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "default-no-store";
@@ -17,7 +18,7 @@ export const fetchCache = "default-no-store";
 export default function OrganizerDashboardPage() {
   const role = useRole();
   return (
-    <SidebarProvider style={{ ["--sidebar-width" as unknown as string]: "280px" }}>
+    <SidebarProvider>
       <aside className="hidden md:block w-[280px] border rounded-md p-3"><AppSidebar /></aside>
       <SidebarInset>
         <section data-test-id="page-organizer-dashboard" className="grid gap-4 min-h-[70vh]">
@@ -27,13 +28,13 @@ export default function OrganizerDashboardPage() {
             description="Обзор метрик и управление событиями"
             actions={(
               <>
-                <Link href="/org/dashboard/settings" className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Настройки</Link>
-                <Link href="/org/dashboard/groups" className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Группы</Link>
-                <Link href="/org/dashboard/moderation" className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Модерация оплат</Link>
+                <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/settings">Настройки</Link></Button>
+                <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/groups">Группы</Link></Button>
+                <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/moderation">Модерация оплат</Link></Button>
                 {role === "admin" ? (
-                  <Link href="/admin" className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Админ</Link>
+                  <Button asChild variant="outline" size="sm"><Link href="/admin">Админ</Link></Button>
                 ) : null}
-                <Link href="/org/dashboard/new" className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50">Новое событие</Link>
+                <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/new">Новое событие</Link></Button>
               </>
             )}
           />

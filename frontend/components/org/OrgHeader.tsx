@@ -30,14 +30,15 @@ export function OrgHeader({ slug }: { slug: string }) {
   }, [slug]);
 
   const accent = data?.brandColor || "#6366f1"; // fallback Indigo-500
+  const ACCENT_CSS_VAR = "--accent" as const;
 
   return (
-    <div className="space-y-1" data-test-id="org-header">
-      <div className="flex items-center gap-2 border-b pb-2" style={{ borderColor: accent }}>
+    <div className="space-y-1" data-test-id="org-header" style={{ [ACCENT_CSS_VAR]: accent } as React.CSSProperties}>
+      <div className="flex items-center gap-2 border-b pb-2 border-[var(--accent)]">
         <h1 className="text-2xl font-semibold">
           {loading ? "…" : data?.name ?? slug}
         </h1>
-        <Badge variant="secondary" style={{ backgroundColor: accent + "20", color: accent }}>
+        <Badge variant="secondary" className="bg-[color:var(--accent)/0.125] text-[var(--accent)]">
           Организатор
         </Badge>
       </div>

@@ -3,24 +3,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { OrganizerGrid } from "@/components/organizers/OrganizerGrid";
+import { OrganizerGridSkeleton } from "@/components/organizers/OrganizerGridSkeleton";
 // removed unused Button
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { clientRequest } from "@/shared/http";
-import { LoadingState, EmptyState, ErrorState } from "@/components/ui/states";
+import { EmptyState, ErrorState } from "@/components/ui/states";
 import { useSearchParams, useRouter } from "next/navigation";
 
-type ApiResponse = { items: { id: string; slug: string; name: string }[]; total: number };
+export type ApiResponse = { items: { id: string; slug: string; name: string }[]; total: number };
 
-export function HomeCatalog() {
+export function HomeCatalog({ initialData, initialQ, initialPage }: { initialData?: ApiResponse; initialQ?: string; initialPage?: number }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const initialQ = searchParams.get("q") ?? "";
-  const [q, setQ] = useState(initialQ);
-  const [page, setPage] = useState(1);
+  const initialQResolved = initialQ ?? (searchParams.get("q") ?? "");
+  const [q, setQ] = useState(initialQResolved);
+  const [page, setPage] = useState(initialPage ?? 1);
   const pageSize = 6;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<ApiResponse>({ items: [], total: 0 });
+  const [data, setData] = useState<ApiResponse>(initialData ?? { items: [], total: 0 });
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil((data?.total ?? 0) / pageSize)),
@@ -35,7 +36,9 @@ export function HomeCatalog() {
       window.addEventListener("msw-ready", onReady, { once: true });
       return () => window.removeEventListener("msw-ready", onReady);
     }
-    fetchPage();
+    // Если есть начальные данные и параметры не поменялись — не делаем немедленный refetch
+    const shouldSkipInitial = !!initialData && q === initialQResolved && page === (initialPage ?? 1);
+    if (!shouldSkipInitial) fetchPage();
     function fetchPage() {
       const controller = new AbortController();
       setLoading(true);
@@ -50,7 +53,7 @@ export function HomeCatalog() {
         .finally(() => setLoading(false));
       return () => controller.abort();
     }
-  }, [q, page]);
+  }, [q, page, initialData, initialPage, initialQResolved]);
 
   // Синхронизируем URL при локальном вводе в поле на странице
   useEffect(() => {
@@ -82,7 +85,6 @@ export function HomeCatalog() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Каталог организаторов</h1>
         <div className="w-full max-w-sm">
           <Input
             placeholder="Поиск по имени... (нажмите /)"
@@ -96,7 +98,7 @@ export function HomeCatalog() {
         </div>
       </div>
 
-      {loading && <LoadingState />}
+      {loading && <OrganizerGridSkeleton />}
       {error && !loading && <ErrorState message={`Ошибка: ${error}`} />}
       {!loading && !error && data.items.length === 0 && <EmptyState title="Ничего не найдено" />}
 

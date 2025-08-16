@@ -6,8 +6,8 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
   React.useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
     import("@sentry/nextjs").then((S) => {
-      const anyS = S as any;
-      anyS.captureException?.(error);
+      const capture = (S as { captureException?: (e: unknown) => void }).captureException;
+      capture?.(error);
     });
   }, [error]);
   return (

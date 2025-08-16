@@ -18,12 +18,21 @@ export type EventCardProps = {
   features?: string[]; // произвольные пункты (иконки/эмоджи можно в тексте)
 };
 
+// Кешируем форматтеры дат (снижение TBT)
+const DATE_FMT = new Intl.DateTimeFormat(undefined, {
+  day: "2-digit",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+const TIME_FMT = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" });
+
 export function EventCard({ id, title, dateStart, dateEnd, location, capacity, available, difficulty, features }: EventCardProps) {
   const taken = Math.max(0, (capacity ?? 0) - (available ?? 0));
   const percent = capacity && capacity > 0 ? Math.round((taken / capacity) * 100) : 0;
 
   return (
-    <Card className="w-full">
+    <Card className="w-full min-h-48 [contain:content]">
       <CardHeader>
         <CardTitle className="text-xl leading-tight">
           <Link href={`/events/${id}`} className="hover:underline">
@@ -87,15 +96,8 @@ export function EventCard({ id, title, dateStart, dateEnd, location, capacity, a
 function DateRange({ dateStart, dateEnd }: { dateStart: string; dateEnd?: string | null }) {
   const start = new Date(dateStart);
   const end = dateEnd ? new Date(dateEnd) : null;
-  const fmt = new Intl.DateTimeFormat(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-  // const fmtDayOnly = new Intl.DateTimeFormat(undefined, { day: "2-digit", month: "short" });
-  const fmtTimeOnly = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" });
-  // Варианты: только дата начала; дата начала + дата конца; только время и т.п. — показываем гибко
-  const left = fmt.format(start);
-  let right: string | null = null;
-  if (end) {
-    right = start.toDateString() === end.toDateString() ? fmtTimeOnly.format(end) : fmt.format(end);
-  }
+  const left = DATE_FMT.format(start);
+  const right: string | null = end ? (start.toDateString() === end.toDateString() ? TIME_FMT.format(end) : DATE_FMT.format(end)) : null;
   return (
     <div className="flex items-center gap-2">
       <span>{left}</span>

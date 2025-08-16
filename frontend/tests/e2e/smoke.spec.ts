@@ -25,7 +25,8 @@ test.describe('Smoke', () => {
 
   test('/auth/login loads', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.getByRole('button', { name: /Войти/i })).toBeVisible();
+    // В шапке есть кнопка «Войти» и на странице — submit, уточняем область поиска
+    await expect(page.getByRole('main').getByRole('button', { name: /Войти/i })).toBeVisible();
   });
 
   test('/dashboard guard redirects to login if unauthenticated', async ({ page }) => {

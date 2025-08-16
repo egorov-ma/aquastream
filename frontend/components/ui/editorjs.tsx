@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import DOMPurify from "isomorphic-dompurify";
+import { Card, CardContent } from "@/components/ui/card";
 import type EditorJS from "@editorjs/editorjs";
 import type { OutputData } from "@editorjs/editorjs";
 
@@ -39,7 +40,13 @@ export function EditorJs({ value, onChange }: { value?: OutputData; onChange?: (
     };
   }, [onChange, value]);
 
-  return <div className="rounded-md border p-3"><div ref={holderRef} /></div>;
+  return (
+    <Card>
+      <CardContent className="pt-0">
+        <div ref={holderRef} />
+      </CardContent>
+    </Card>
+  );
 }
 
 export function EditorPreview({ data }: { data: unknown }) {

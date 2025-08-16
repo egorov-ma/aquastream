@@ -123,9 +123,13 @@ function TeamEditor() {
       <div><Button onClick={add} disabled={!name || !role}>Добавить</Button></div>
       <ul className="grid gap-2">
         {items.map((m) => (
-          <li key={m.id} className="flex items-center justify-between rounded-md border p-2">
-            <span>{m.name} — {m.role}</span>
-            <Button variant="secondary" size="sm" onClick={() => del(m.id)}>Удалить</Button>
+          <li key={m.id}>
+            <Card>
+              <CardContent className="flex items-center justify-between py-3">
+                <span>{m.name} — {m.role}</span>
+                <Button variant="secondary" size="sm" onClick={() => del(m.id)}>Удалить</Button>
+              </CardContent>
+            </Card>
           </li>
         ))}
       </ul>
@@ -148,10 +152,14 @@ function FaqEditor() {
       <div><Button onClick={add} disabled={!q || !a}>Добавить</Button></div>
       <ul className="grid gap-2">
         {items.map((it) => (
-          <li key={it.id} className="rounded-md border p-2">
-            <div className="font-medium">{it.question}</div>
-            <div className="text-sm text-muted-foreground">{it.answer}</div>
-            <div className="mt-2"><Button variant="secondary" size="sm" onClick={() => del(it.id)}>Удалить</Button></div>
+          <li key={it.id}>
+            <Card>
+              <CardContent className="py-3">
+                <div className="font-medium">{it.question}</div>
+                <div className="text-sm text-muted-foreground">{it.answer}</div>
+                <div className="mt-2"><Button variant="secondary" size="sm" onClick={() => del(it.id)}>Удалить</Button></div>
+              </CardContent>
+            </Card>
           </li>
         ))}
       </ul>

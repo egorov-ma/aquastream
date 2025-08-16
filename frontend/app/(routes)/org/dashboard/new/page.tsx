@@ -145,9 +145,11 @@ export default function NewEventPage() {
             </div>
             <div className="space-y-2">
               <Label>Предпросмотр (безопасный)</Label>
-              <div className="rounded-md border p-3 text-sm">
-                <EditorPreview data={form.watch("longDescription")} />
-              </div>
+              <Card>
+                <CardContent className="pt-0 text-sm">
+                  <EditorPreview data={form.watch("longDescription")} />
+                </CardContent>
+              </Card>
             </div>
             <div className="space-y-2">
               <Label>Теги</Label>
@@ -155,7 +157,7 @@ export default function NewEventPage() {
                 {selectedTags.map((t) => (
                   <span key={t} className="rounded-md border px-2 py-1 text-xs">
                     {t}
-                    <button type="button" className="ml-2 text-muted-foreground" onClick={() => setSelectedTags(selectedTags.filter((x) => x !== t))}>×</button>
+                    <Button type="button" variant="link" size="sm" className="ml-2 h-auto p-0 text-muted-foreground" onClick={() => setSelectedTags(selectedTags.filter((x) => x !== t))}>×</Button>
                   </span>
                 ))}
               </div>

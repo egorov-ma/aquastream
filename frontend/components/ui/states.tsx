@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function LoadingState() {
   return (
@@ -14,23 +15,27 @@ export function LoadingState() {
 
 export function EmptyState({ title = "Нет данных", action }: { title?: string; action?: React.ReactNode }) {
   return (
-    <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
-      <div>{title}</div>
-      {action ? <div className="mt-3">{action}</div> : null}
-    </div>
+    <Alert className="text-center">
+      <AlertDescription>
+        <div>{title}</div>
+        {action ? <div className="mt-3">{action}</div> : null}
+      </AlertDescription>
+    </Alert>
   );
 }
 
 export function ErrorState({ message = "Произошла ошибка", onRetry }: { message?: string; onRetry?: () => void }) {
   return (
-    <div className="rounded-md border p-6 text-center">
-      <div className="text-sm text-destructive">{message}</div>
-      {onRetry ? (
-        <div className="mt-3">
-          <Button variant="outline" size="sm" onClick={onRetry}>Повторить</Button>
-        </div>
-      ) : null}
-    </div>
+    <Alert variant="destructive" className="text-center">
+      <AlertDescription>
+        <div>{message}</div>
+        {onRetry ? (
+          <div className="mt-3">
+            <Button variant="outline" size="sm" onClick={onRetry}>Повторить</Button>
+          </div>
+        ) : null}
+      </AlertDescription>
+    </Alert>
   );
 }
 

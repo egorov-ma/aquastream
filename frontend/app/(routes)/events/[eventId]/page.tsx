@@ -9,7 +9,7 @@ export default async function EventPage({
 }) {
   const { eventId } = await params;
   // summary по группам
-  const origin = process.env.NEXT_PUBLIC_API_BASE_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
+  const origin = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
   const [summaryRes, waitRes] = await Promise.all([
     fetch(new URL(`/api/organizer/events/${eventId}/groups?summary=1`, origin), { cache: "no-store" }).catch(() => null),
     fetch(new URL(`/api/events/${eventId}/waitlist`, origin), { cache: "no-store" }).catch(() => null),
@@ -22,23 +22,25 @@ export default async function EventPage({
       <h1 className="text-xl font-semibold">Событие #{eventId}</h1>
       <p className="mt-2 text-muted-foreground">Карточка события (заглушка)</p>
       {summary && (
-        <div className="mt-4 grid gap-2 rounded-md border p-3 text-sm">
-          <div className="font-medium">Группы</div>
-          <div className="text-muted-foreground">Экипажи: {summary.crew.used}/{summary.crew.capacity} (групп: {summary.crew.groups})</div>
-          <div className="text-muted-foreground">Лодки: {summary.boat.used}/{summary.boat.capacity} (групп: {summary.boat.groups})</div>
-          <div className="text-muted-foreground">Палатки: {summary.tent.used}/{summary.tent.capacity} (групп: {summary.tent.groups})</div>
-        </div>
+        <Card className="mt-4">
+          <CardContent className="grid gap-2 text-sm pt-0">
+            <div className="font-medium">Группы</div>
+            <div className="text-muted-foreground">Экипажи: {summary.crew.used}/{summary.crew.capacity} (групп: {summary.crew.groups})</div>
+            <div className="text-muted-foreground">Лодки: {summary.boat.used}/{summary.boat.capacity} (групп: {summary.boat.groups})</div>
+            <div className="text-muted-foreground">Палатки: {summary.tent.used}/{summary.tent.capacity} (групп: {summary.tent.groups})</div>
+          </CardContent>
+        </Card>
       )}
       <ClientWaitlistSection eventId={eventId} initialCount={(wait.items as { userId: string; joinedAt: number }[]).length} initialJoined={joined} />
       <form action={async () => { 'use server'; const { createBookingAndGo } = await import('./actions'); await createBookingAndGo(eventId); }}>
-        <button type="submit" className="mt-4 h-10 rounded-md border px-4 text-sm hover:bg-muted/50">
-          Записаться
-        </button>
+        <Button type="submit" className="mt-4">Записаться</Button>
       </form>
     </section>
   );
 }
 
 import { WaitlistSection as ClientWaitlistSection } from "@/components/events/WaitlistSection";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 

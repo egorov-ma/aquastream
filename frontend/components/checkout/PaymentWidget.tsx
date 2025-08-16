@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 type Props = {
   bookingId: string;
@@ -48,14 +49,14 @@ export function PaymentWidget({ bookingId, provider = ((process.env.PAYMENTS_PRO
         <Button variant="secondary" onClick={onCancel} disabled={loading}>Отменить</Button>
       </div>
       {result === "success" && (
-        <div role="status" className="border-green-200 bg-green-50 text-green-700 rounded-md border p-3 text-sm">
-          Оплата успешна. Статус брони изменён на paid.
-        </div>
+        <Alert>
+          <AlertDescription>Оплата успешна. Статус брони изменён на paid.</AlertDescription>
+        </Alert>
       )}
       {result === "cancel" && (
-        <div role="status" className="border-yellow-200 bg-yellow-50 text-yellow-700 rounded-md border p-3 text-sm">
-          Оплата отменена. Вы можете попробовать снова.
-        </div>
+        <Alert>
+          <AlertDescription>Оплата отменена. Вы можете попробовать снова.</AlertDescription>
+        </Alert>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 export const fetchCache = 'default-no-store';
 
 import { ProfileForm } from "@/components/dashboard/ProfileForm";
+import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export default function DashboardPage() {
         <div className="mt-2 flex items-center justify-between">
           <p className="text-muted-foreground">Профиль и верификация Telegram</p>
           <form action="/api/auth/logout" method="post">
-            <button type="submit" className="h-8 rounded-md border px-3 text-sm hover:bg-muted/50">Выйти</button>
+            <Button type="submit" variant="outline" size="sm">Выйти</Button>
           </form>
         </div>
       </div>

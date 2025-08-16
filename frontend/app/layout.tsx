@@ -28,10 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground`}
-      >
-        <MswProvider />
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}>
+        {/* Preload не нужен для статической главной */}
+        {process.env.NEXT_PUBLIC_USE_MOCKS === "true" && process.env.NODE_ENV !== "production" ? (
+          <MswProvider />
+        ) : null}
         <ThemeProvider>
           <Header />
           <main className="mx-auto flex-1 max-w-6xl p-4">{children}</main>

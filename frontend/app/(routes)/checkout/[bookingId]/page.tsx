@@ -38,9 +38,9 @@ function CheckoutFallback() {
   // В SSR узнаём об ошибке только по res.ok; покажем Alert и Skeleton
   return (
     <div className="mt-4 grid gap-3">
-      <div role="alert" className="border-destructive/30 bg-destructive/10 text-destructive rounded-md border p-3 text-sm">
-        Не удалось загрузить данные брони. Повторите попытку позже.
-      </div>
+      <Alert variant="destructive">
+        <AlertDescription>Не удалось загрузить данные брони. Повторите попытку позже.</AlertDescription>
+      </Alert>
       <div className="grid gap-2">
         <div className="text-sm text-muted-foreground">Загрузка информации…</div>
         <div className="grid gap-2">
@@ -55,6 +55,7 @@ function CheckoutFallback() {
 
 import { PaymentWidget } from "@/components/checkout/PaymentWidget";
 import { QrSection } from "@/components/checkout/QrSection";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 function PaymentSection({ bookingId }: { bookingId: string }) {
   return (

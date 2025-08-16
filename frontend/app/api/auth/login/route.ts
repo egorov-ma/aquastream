@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     res.cookies.set({ name: "sid", value: token, httpOnly: true, sameSite: "lax", secure, path: "/" });
     res.cookies.set({ name: "role", value: role, httpOnly: false, sameSite: "lax", secure, path: "/" });
     return res;
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 }

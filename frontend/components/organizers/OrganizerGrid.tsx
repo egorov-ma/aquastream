@@ -3,7 +3,7 @@ import { OrganizerCard, type Organizer } from "./OrganizerCard";
 export function OrganizerGrid({ items }: { items: Organizer[] }) {
   return (
     <div
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 [container-type:inline-size]"
       data-test-id="org-grid"
     >
       {items.map((o) => (

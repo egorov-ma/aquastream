@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
 
 type SidebarContextValue = {
   collapsed: boolean;
@@ -14,14 +15,14 @@ export function useSidebar() {
   return ctx;
 }
 
-type ProviderProps = React.PropsWithChildren<{ style?: React.CSSProperties }>;
+type ProviderProps = React.PropsWithChildren<unknown>;
 
-export function SidebarProvider({ children, style }: ProviderProps) {
+export function SidebarProvider({ children }: ProviderProps) {
   const [collapsed, setCollapsed] = React.useState(false);
   const value = React.useMemo<SidebarContextValue>(() => ({ collapsed, toggle: () => setCollapsed((v) => !v) }), [collapsed]);
   return (
     <SidebarContext.Provider value={value}>
-      <div className="flex gap-4" data-collapsed={collapsed ? "icon" : "full"} style={style}>
+      <div className="flex gap-4 [--sidebar-width:280px]" data-collapsed={collapsed ? "icon" : "full"}>
         {children}
       </div>
     </SidebarContext.Provider>
@@ -35,7 +36,7 @@ export function SidebarInset({ children }: React.PropsWithChildren) {
 export function SidebarTrigger({ className }: { className?: string }) {
   const { toggle } = useSidebar();
   return (
-    <button type="button" onClick={toggle} className={"inline-flex h-8 items-center rounded-md border px-2 text-sm hover:bg-muted/50 " + (className ?? "")}>≡</button>
+    <Button type="button" onClick={toggle} variant="outline" size="sm" className={className}>≡</Button>
   );
 }
 

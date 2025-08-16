@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 export type Organizer = {
@@ -17,7 +16,7 @@ export function OrganizerCard({ organizer }: { organizer: Organizer }) {
     .slice(0, 2)
     .toUpperCase();
   return (
-    <Card data-test-id={`org-card-${organizer.slug}`} className="w-full">
+    <Card data-test-id={`org-card-${organizer.slug}`} className="w-full min-h-28 [contain:content]">
       <CardHeader>
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">

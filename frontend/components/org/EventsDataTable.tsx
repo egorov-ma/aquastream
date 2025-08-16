@@ -13,6 +13,7 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
@@ -62,7 +63,7 @@ export const eventColumns: ColumnDef<EventRow>[] = [
     header: "",
     cell: ({ row }) => (
       <Button asChild size="sm">
-        <a href={`/events/${row.original.id}`}>Открыть</a>
+        <Link href={`/events/${row.original.id}`}>Открыть</Link>
       </Button>
     ),
   },

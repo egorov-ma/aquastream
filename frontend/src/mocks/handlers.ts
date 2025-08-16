@@ -55,7 +55,7 @@ export const handlers = [
   }),
   // GET /organizers
   http.get(withBase("/organizers"), async ({ request }) => {
-    await delay(300);
+    await delay(50);
     const url = new URL(request.url);
     const q = (url.searchParams.get("q") || "").toLowerCase();
     const page = Number(url.searchParams.get("page") || "1");
@@ -81,7 +81,7 @@ export const handlers = [
   }),
   // Node/any-origin variant
   http.get("*/organizers", async ({ request }) => {
-    await delay(300);
+    await delay(50);
     const url = new URL(request.url);
     const q = (url.searchParams.get("q") || "").toLowerCase();
     const page = Number(url.searchParams.get("page") || "1");
@@ -108,7 +108,7 @@ export const handlers = [
 
   // GET /organizers/:slug
   http.get(withBase("/organizers/:slug"), async ({ params }) => {
-    await delay(250);
+    await delay(50);
     const { slug } = params as { slug: string };
     return HttpResponse.json({
       id: `org-${slug}`,
@@ -120,7 +120,7 @@ export const handlers = [
   }),
   // Node/any-origin variant
   http.get("*/organizers/:slug", async ({ params }) => {
-    await delay(250);
+    await delay(50);
     const { slug } = params as { slug: string };
     return HttpResponse.json({
       id: `org-${slug}`,
@@ -133,7 +133,7 @@ export const handlers = [
 
   // GET /organizers/:slug/events
   http.get(withBase("/organizers/:slug/events"), async ({ params }) => {
-    await delay(400);
+    await delay(120);
     const { slug } = params as { slug: string };
     const now = Date.now();
     const items = [
@@ -217,7 +217,7 @@ export const handlers = [
   }),
   // Node/any-origin variant
   http.get("*/organizers/:slug/events", async ({ params }) => {
-    await delay(400);
+    await delay(120);
     const { slug } = params as { slug: string };
     const now = Date.now();
     const items = [
