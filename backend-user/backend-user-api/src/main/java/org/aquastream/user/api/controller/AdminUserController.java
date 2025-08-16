@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.Instant;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class AdminUserController {
     private final AuditLogRepository auditLogs;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> list(@RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "20") int size,
                                   @RequestParam(required = false) String q,
@@ -52,6 +54,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/{id}/role")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> setRole(@PathVariable UUID id, @RequestParam String role, Authentication auth) {
         if (role == null || role.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "role is required");
@@ -61,7 +64,7 @@ public class AdminUserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "unsupported role");
         }
         UserEntity user = users.findById(id).orElseThrow();
-        if (user.getRole().equals("ADMIN") && role != null && !role.equals("ADMIN")) {
+        if (user.getRole().equals("ADMIN") && !newRole.equals("ADMIN")) {
             long admins = users.countByRole("ADMIN");
             if (admins <= 1) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cannot demote last admin");

@@ -1,0 +1,4 @@
+dependencies {
+    api project(':backend-event:backend-event-db')
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+}

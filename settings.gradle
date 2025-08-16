@@ -11,5 +11,9 @@ include 'backend-user:backend-user-service'
 include 'backend-notification:backend-notification-api'
 include 'backend-notification:backend-notification-service'
 
+include 'backend-event:backend-event-api'
+include 'backend-event:backend-event-db'
+include 'backend-event:backend-event-service'
+
 
 
