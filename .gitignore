@@ -85,6 +85,7 @@ infra/*.tfstate*
 infra/docker/data/
 infra/docker/logs/
 infra/docker/backups/
+infra/backup/artifacts/
 infra/docker/compose/secrets/
 
 # Docker
