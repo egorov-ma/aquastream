@@ -4,6 +4,7 @@ import org.aquastream.event.exception.EventConflictException;
 import org.aquastream.event.exception.EventNotFoundException;
 import org.aquastream.event.exception.OrganizerNotFoundException;
 import org.aquastream.event.exception.UnauthorizedEventAccessException;
+import org.aquastream.event.exception.WaitlistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +82,16 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Constraint Violation");
         problemDetail.setProperty("timestamp", Instant.now());
         problemDetail.setProperty("violations", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+    }
+
+    @ExceptionHandler(WaitlistException.class)
+    public ResponseEntity<ProblemDetail> handleWaitlistException(WaitlistException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setType(URI.create("https://aquastream.org/problems/waitlist-error"));
+        problemDetail.setTitle("Waitlist Error");
+        problemDetail.setProperty("timestamp", Instant.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 

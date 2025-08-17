@@ -15,5 +15,20 @@ include 'backend-event:backend-event-api'
 include 'backend-event:backend-event-db'
 include 'backend-event:backend-event-service'
 
+include 'backend-crew'
+include 'backend-crew:backend-crew-api'
+include 'backend-crew:backend-crew-service'
+include 'backend-crew:backend-crew-db'
+
+include 'backend-media'
+include 'backend-media:backend-media-api'
+include 'backend-media:backend-media-service'
+include 'backend-media:backend-media-db'
+
+include 'backend-payment'
+include 'backend-payment:backend-payment-api'
+include 'backend-payment:backend-payment-service'
+include 'backend-payment:backend-payment-db'
+
 
 

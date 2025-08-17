@@ -1,0 +1,89 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: backend-payment-api
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream
+    username: aquastream_user
+    password: aquastream_pass
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: payment
+  
+  liquibase:
+    change-log: classpath:migration/liquibase/master.xml
+    default-schema: payment
+
+# Payment configuration
+app:
+  payment:
+    providers:
+      tinkoff:
+        terminal-key: ${TINKOFF_TERMINAL_KEY:test_terminal}
+        secret-key: ${TINKOFF_SECRET_KEY:test_secret}
+        api-url: ${TINKOFF_API_URL:https://securepay.tinkoff.ru/v2/}
+        enabled: ${TINKOFF_ENABLED:true}
+      
+      sber:
+        merchant-id: ${SBER_MERCHANT_ID:test_merchant}
+        secret-key: ${SBER_SECRET_KEY:test_secret}
+        api-url: ${SBER_API_URL:https://3dsec.sberbank.ru/payment/rest/}
+        enabled: ${SBER_ENABLED:false}
+      
+      yookassa:
+        shop-id: ${YOOKASSA_SHOP_ID:test_shop}
+        secret-key: ${YOOKASSA_SECRET_KEY:test_secret}
+        api-url: ${YOOKASSA_API_URL:https://api.yookassa.ru/v3/}
+        enabled: ${YOOKASSA_ENABLED:false}
+    
+    timeouts:
+      payment-expiry: PT15M      # 15 минут на оплату
+      status-check-delay: PT5M   # Проверка статуса через 5 минут
+      webhook-retry-delay: PT1M  # Retry вебхуков через 1 минуту
+      max-retry-attempts: 5      # Максимум 5 попыток
+    
+    limits:
+      min-amount-kopecks: 100          # Минимум 1 рубль
+      max-amount-kopecks: 10000000     # Максимум 100,000 рублей
+      daily-limit-kopecks: 100000000   # Дневной лимит 1,000,000 рублей
+    
+    receipt:
+      enabled: ${RECEIPT_ENABLED:false}
+      ofd-url: ${OFD_URL:https://ofd.example.com/}
+      inn: ${COMPANY_INN:1234567890}
+      payment-object: service
+      payment-method: full_payment
+      vat: none
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging
+logging:
+  level:
+    org.aquastream.payment: DEBUG
+    org.springframework.security: WARN
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

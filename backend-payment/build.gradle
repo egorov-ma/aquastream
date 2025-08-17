@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // Aggregate all payment modules
+    api project(':backend-payment:backend-payment-api')
+    api project(':backend-payment:backend-payment-service')
+    api project(':backend-payment:backend-payment-db')
+}

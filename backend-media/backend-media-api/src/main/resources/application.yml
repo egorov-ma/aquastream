@@ -1,0 +1,68 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: backend-media-api
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aquastream
+    username: aquastream_user
+    password: aquastream_pass
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: media
+  
+  liquibase:
+    change-log: classpath:migration/liquibase/master.xml
+    default-schema: media
+
+# Media storage configuration
+app:
+  media:
+    storage:
+      endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+      access-key: ${MINIO_ACCESS_KEY:minioadmin}
+      secret-key: ${MINIO_SECRET_KEY:minioadmin}
+      bucket-name: ${MINIO_BUCKET:aquastream-media}
+      region: ${MINIO_REGION:us-east-1}
+      
+      presigned-url:
+        upload-expiry: PT15M  # 15 minutes
+        download-expiry: PT1H # 1 hour
+      
+      files:
+        max-photo-mb: 5
+        max-proof-mb: 5
+        max-document-mb: 10
+        max-video-mb: 50
+      
+      retention:
+        proofs-days: 90
+        temp-files-days: 1
+        log-retention-days: 365
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging
+logging:
+  level:
+    org.aquastream.media: DEBUG
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

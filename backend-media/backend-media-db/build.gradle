@@ -1,0 +1,13 @@
+dependencies {
+    implementation project(':backend-common')
+    
+    // JPA and Database
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.postgresql:postgresql'
+    
+    // Liquibase
+    implementation 'org.liquibase:liquibase-core'
+    
+    // JSON types
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.5.1'
+}

@@ -1,0 +1,19 @@
+dependencies {
+    implementation project(':backend-common')
+    implementation project(':backend-media:backend-media-db')
+    
+    // Spring Boot starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    // MinIO/S3 SDK
+    implementation 'io.minio:minio:8.5.7'
+    
+    // JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    // Scheduling
+    implementation 'org.springframework:spring-context'
+}

@@ -27,6 +27,16 @@ spring:
     change-log: classpath:migration/liquibase/master.xml
     contexts: dev
     default-schema: event
+  
+  task:
+    scheduling:
+      pool:
+        size: 2
+
+app:
+  waitlist:
+    notification-window-minutes: 30
+    cleanup-interval-minutes: 5
 
 management:
   endpoints:
