@@ -10,9 +10,7 @@ dependencies {
     // MinIO/S3 SDK
     implementation 'io.minio:minio:8.5.7'
     
-    // JSON processing
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    // JSON processing comes from Spring Boot starters
     
     // Scheduling
     implementation 'org.springframework:spring-context'

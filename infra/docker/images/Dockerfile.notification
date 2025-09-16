@@ -1,0 +1,15 @@
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+# Copy boot jar built by Gradle
+ARG JAR_FILE=backend-notification/backend-notification-api/build/libs/backend-notification-api-*.jar
+COPY ${JAR_FILE} app.jar
+
+ENV JAVA_TOOL_OPTIONS "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+# Health check for Kubernetes readiness/liveness probes
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8105/actuator/health/liveness || exit 1
+
+EXPOSE 8105
+ENTRYPOINT ["java","-jar","/app/app.jar"]

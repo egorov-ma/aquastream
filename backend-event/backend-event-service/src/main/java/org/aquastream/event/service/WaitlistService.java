@@ -241,4 +241,79 @@ public class WaitlistService {
                 .status(status)
                 .build();
     }
+    
+    /**
+     * Process waitlist when event capacity is freed up (e.g., booking cancellation/expiration).
+     * This method is called when spots become available to notify the next person in line.
+     */
+    @Async
+    public void processWaitlistForEvent(UUID eventId) {
+        try {
+            log.info("Processing waitlist for event {}", eventId);
+            
+            EventEntity event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new EventNotFoundException("Event not found: " + eventId));
+            
+            // Only process if there are available spots
+            if (event.getAvailable() <= 0) {
+                log.debug("No available spots for event {}, skipping waitlist processing", eventId);
+                return;
+            }
+            
+            // Find the next person in line who hasn't been notified
+            Optional<WaitlistEntity> nextInLine = waitlistRepository.findNextInLine(eventId);
+            
+            if (nextInLine.isEmpty()) {
+                log.debug("No one in waitlist for event {}", eventId);
+                return;
+            }
+            
+            WaitlistEntity waitlistEntry = nextInLine.get();
+            
+            // Skip if already notified and notification hasn't expired
+            if (waitlistEntry.getNotifiedAt() != null && 
+                waitlistEntry.getNotificationExpiresAt() != null &&
+                waitlistEntry.getNotificationExpiresAt().isAfter(Instant.now())) {
+                log.debug("Next person in line for event {} is already notified and notification hasn't expired", eventId);
+                return;
+            }
+            
+            // Notify the next person
+            notifyWaitlistUser(waitlistEntry, event.getOrganizerSlug());
+            
+            log.info("Successfully processed waitlist for event {} - notified user {}", 
+                    eventId, waitlistEntry.getUserId());
+            
+        } catch (Exception e) {
+            log.error("Error processing waitlist for event {}: {}", eventId, e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Notify a specific waitlist user about available spot
+     */
+    private void notifyWaitlistUser(WaitlistEntity waitlistEntry, String organizerSlug) {
+        Instant notificationTime = Instant.now();
+        Instant expirationTime = notificationTime.plus(notificationWindowMinutes, ChronoUnit.MINUTES);
+        
+        // Update notification fields
+        waitlistEntry.setNotifiedAt(notificationTime);
+        waitlistEntry.setNotificationExpiresAt(expirationTime);
+        waitlistRepository.save(waitlistEntry);
+        
+        // Send notification
+        notificationService.sendWaitlistSpotAvailable(
+                waitlistEntry.getUserId(), 
+                waitlistEntry.getEventId(),
+                organizerSlug,
+                notificationWindowMinutes
+        );
+        
+        // Audit log
+        auditService.logNotified(waitlistEntry.getEventId(), waitlistEntry.getUserId(), 
+                                waitlistEntry.getPriority(), expirationTime);
+        
+        log.info("Notified user {} about available spot for event {} (expires at {})", 
+                waitlistEntry.getUserId(), waitlistEntry.getEventId(), expirationTime);
+    }
 }

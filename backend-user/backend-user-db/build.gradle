@@ -1,4 +1,19 @@
-plugins { }
+plugins { id 'java-library' }
 
-dependencies { implementation 'org.liquibase:liquibase-core' }
+dependencies {
+    implementation project(':backend-common')
+    
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.data:spring-data-jpa'
+    
+    // Database
+    runtimeOnly "org.postgresql:postgresql:${postgresVersion}"
+    
+    // Liquibase for migrations
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.test { useJUnitPlatform() }
 

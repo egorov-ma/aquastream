@@ -9,5 +9,5 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     
     // JSON types
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.5.1'
+    implementation "io.hypersistence:hypersistence-utils-hibernate-60:${hypersistenceVersion}"
 }

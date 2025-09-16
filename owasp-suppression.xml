@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions>
+    <!--
+      Add false positives here to prevent build failures.
+      Example:
+      <suppress>
+          <notes>Example suppression</notes>
+          <cve>CVE-2024-12345</cve>
+          <gav regex="true">^com\.example:some-artifact:.*$</gav>
+      </suppress>
+    -->
+</suppressions>
+

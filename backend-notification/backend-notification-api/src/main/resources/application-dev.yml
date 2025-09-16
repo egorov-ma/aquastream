@@ -1,0 +1,163 @@
+# Development profile configuration with mocks and in-memory components
+server:
+  port: 8105
+
+spring:
+  application:
+    name: backend-notification-api
+  
+  # Development H2 database for fast startup
+  datasource:
+    url: jdbc:h2:mem:notification_dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        # Use default schema for H2
+        format_sql: true
+        
+  # Disable Liquibase in dev mode (using JPA ddl-auto instead)
+  liquibase:
+    enabled: false
+    
+  # Embedded Redis for development
+  redis:
+    host: localhost
+    port: 6379
+    password: ""
+    database: 1  # Use different DB for dev
+    timeout: 2000ms
+    
+  # H2 Console for debugging
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+logging:
+  level:
+    org.aquastream.notification: DEBUG
+    org.aquastream.common.metrics: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,metrics-debug,h2-console
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true  # Enable liveness and readiness probes
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db,redis,telegramService,userService
+    info:
+      show-details: always
+  info:
+    git:
+      mode: full  # Show full git information
+    build:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+# Metrics configuration for dev
+aquastream:
+  metrics:
+    enabled: true
+    service-name: notification-dev
+    ttl: PT1H  # Shorter TTL for dev
+    flush-interval: PT30S  # More frequent flush for testing
+
+# Mock configurations
+app:
+  mocks:
+    enabled: true  # Enable mocks in dev profile
+    
+  telegram:
+    bot:
+      # Mock Telegram Bot configuration
+      token: "dev-mock-token"
+      webhook-url: "http://localhost:8105/api/v1/notify/telegram/webhook"
+      webhook-secret: "dev-mock-secret"
+      mock-enabled: true  # Use mock Telegram service
+    api:
+      base-url: "http://localhost:8105/mock/telegram"  # Point to mock endpoint
+      timeout: 1s  # Fast timeout for mocks
+  
+  user-service:
+    base-url: "http://localhost:8105/mock/user"  # Point to mock endpoint
+    timeout: 1s
+    mock-enabled: true
+
+# Development fixtures and test data
+fixtures:
+  enabled: true
+  load-on-startup: true
+
+# Rate limiting configuration for development
+aquastream:
+  rate-limit:
+    enabled: true
+    default-limit:
+      capacity: 200          # 200 requests per minute for development
+      window: PT1M           # 1 minute window
+      refill-tokens: 50      # Refill 50 tokens per 15 seconds
+      refill-period: PT15S   # Every 15 seconds
+      retry-after-seconds: 15
+    limits:
+      login:
+        capacity: 20         # 20 login attempts per 5 minutes
+        window: PT5M
+        refill-tokens: 5
+        refill-period: PT1M
+        retry-after-seconds: 60
+      recovery:
+        capacity: 10         # 10 recovery requests per 15 minutes  
+        window: PT15M
+        refill-tokens: 2
+        refill-period: PT5M
+        retry-after-seconds: 300
+      default:
+        capacity: 100        # 100 general requests per minute
+        window: PT1M
+        refill-tokens: 25
+        refill-period: PT15S
+        retry-after-seconds: 15
+  
+  # Predefined test users
+  users:
+    - id: "550e8400-e29b-41d4-a716-446655440000"
+      username: "testuser1"
+      email: "test1@example.com"
+      telegram-chat-id: 123456789
+    - id: "550e8400-e29b-41d4-a716-446655440001"
+      username: "testuser2"
+      email: "test2@example.com"
+      telegram-chat-id: 987654321
+  
+  # Predefined notification preferences
+  preferences:
+    - user-id: "550e8400-e29b-41d4-a716-446655440000"
+      category: "BOOKING_CONFIRMED"
+      channel: "TELEGRAM"
+      enabled: true
+    - user-id: "550e8400-e29b-41d4-a716-446655440000"
+      category: "EVENT_NEWS"
+      channel: "EMAIL"
+      enabled: false

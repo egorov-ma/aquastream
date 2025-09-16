@@ -9,18 +9,10 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     
     // JSON types
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.5.1'
+    implementation "io.hypersistence:hypersistence-utils-hibernate-60:${hypersistenceVersion}"
     
     // Array types
-    implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
+    implementation "com.vladmihalcea:hibernate-types-60:${hibernateTypesVersion}"
 }
 
-// Skip bootJar for library modules
-jar {
-    enabled = true
-    archiveClassifier = ''
-}
-
-bootJar {
-    enabled = false
-}
+// jar/bootJar configured globally in root build.gradle

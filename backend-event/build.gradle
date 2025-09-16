@@ -8,8 +8,6 @@ java {
 
 subprojects {
     apply plugin: 'java-library'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
 
     java {
         sourceCompatibility = '21'
@@ -22,8 +20,7 @@ subprojects {
     dependencies {
         implementation project(':backend-common')
         implementation 'org.springframework.boot:spring-boot-starter'
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
+        // Lombok provided by root subprojects
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 

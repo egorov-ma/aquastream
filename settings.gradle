@@ -8,7 +8,9 @@ include 'backend-user:backend-user-api'
 include 'backend-user:backend-user-db'
 include 'backend-user:backend-user-service'
 
+include 'backend-notification'
 include 'backend-notification:backend-notification-api'
+include 'backend-notification:backend-notification-db'
 include 'backend-notification:backend-notification-service'
 
 include 'backend-event:backend-event-api'

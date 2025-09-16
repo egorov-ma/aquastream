@@ -1,8 +1,9 @@
 dependencies {
-    api project(':backend-event:backend-event-service')
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation project(':backend-event:backend-event-service')
+    implementation project(':backend-common')
+    
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.testcontainers:postgresql'

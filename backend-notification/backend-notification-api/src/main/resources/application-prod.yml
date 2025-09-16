@@ -1,0 +1,218 @@
+# Production profile configuration with real dependencies and security
+server:
+  port: 8105
+
+spring:
+  application:
+    name: backend-notification-api
+  
+  # Production PostgreSQL configuration
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    # Production connection pool settings
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Never modify schema in production
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: notification
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        
+  liquibase:
+    enabled: true
+    change-log: classpath:migration/liquibase/master.xml
+    default-schema: notification
+    
+  # Production Redis configuration
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD}
+    database: 0
+    timeout: 10000ms
+    ssl: ${REDIS_SSL:true}
+    # Production Redis pool settings
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 8
+        min-idle: 2
+
+logging:
+  level:
+    org.aquastream.notification: INFO
+    org.aquastream.common.metrics: WARN
+    org.springframework.web: WARN
+    org.hibernate: WARN
+    org.liquibase: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics  # Limited endpoints in production
+  endpoint:
+    health:
+      show-details: never  # Hide sensitive info
+      probes:
+        enabled: true  # Enable liveness and readiness probes
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db,redis,telegramService,userService
+    info:
+      show-details: never  # Hide sensitive info in production
+  info:
+    git:
+      mode: simple  # Show minimal git info
+    build:
+      enabled: true
+    java:
+      enabled: false  # Hide Java details in production
+    os:
+      enabled: false  # Hide OS details in production
+  security:
+    enabled: true
+
+# Production metrics configuration
+aquastream:
+  metrics:
+    enabled: true
+    service-name: notification-prod
+    ttl: PT48H
+    flush-interval: PT1M
+
+# Real service configurations for production
+app:
+  mocks:
+    enabled: false  # Never use mocks in production
+    
+  telegram:
+    bot:
+      token: ${TELEGRAM_BOT_TOKEN}
+      webhook-url: ${TELEGRAM_WEBHOOK_URL}
+      webhook-secret: ${TELEGRAM_WEBHOOK_SECRET}
+      mock-enabled: false
+    api:
+      base-url: "https://api.telegram.org/bot"
+      timeout: 30s  # Longer timeout for production
+      retry:
+        max-attempts: 5
+        backoff-delay: PT5S
+        max-delay: PT30S
+  
+  user-service:
+    base-url: ${USER_SERVICE_URL}
+    timeout: 15s
+    mock-enabled: false
+    retry:
+      max-attempts: 5
+      backoff-delay: PT2S
+      max-delay: PT20S
+
+# Production monitoring and observability
+monitoring:
+  tracing:
+    enabled: true
+    sample-rate: 0.01  # 1% sampling in production
+  
+  alerts:
+    enabled: true
+    error-threshold: 0.01  # 1% error rate threshold
+    
+  health-checks:
+    database:
+      enabled: true
+      timeout: PT10S
+    redis:
+      enabled: true
+      timeout: PT5S
+    external-services:
+      enabled: true
+      timeout: PT15S
+
+# Production security configurations
+security:
+  api-keys:
+    enabled: true
+    required-headers: ["X-API-Key"]
+    validation:
+      enabled: true
+  
+  rate-limiting:
+    enabled: true
+    default-limit: 5000  # Higher limit for production
+    burst-limit: 100
+    
+  ssl:
+    enabled: true
+    require-ssl: true
+    
+  headers:
+    frame-options: DENY
+    content-type-options: nosniff
+    xss-protection: "1; mode=block"
+
+# Production performance tuning
+performance:
+  caching:
+    enabled: true
+    ttl: PT1H
+    max-entries: 10000
+    
+  async:
+    core-pool-size: 5
+    max-pool-size: 20
+    queue-capacity: 100
+
+# No fixtures in production
+fixtures:
+  enabled: false
+
+# Rate limiting configuration for production
+aquastream:
+  rate-limit:
+    enabled: true
+    default-limit:
+      capacity: 5000         # 5000 requests per minute for production
+      window: PT1M
+      refill-tokens: 500
+      refill-period: PT6S    # Every 6 seconds
+      retry-after-seconds: 60
+    limits:
+      login:
+        capacity: 100        # 100 login attempts per 10 minutes
+        window: PT10M
+        refill-tokens: 20
+        refill-period: PT2M
+        retry-after-seconds: 300
+      recovery:
+        capacity: 30         # 30 recovery requests per 30 minutes
+        window: PT30M
+        refill-tokens: 5
+        refill-period: PT10M
+        retry-after-seconds: 1200
+      default:
+        capacity: 2000       # 2000 general requests per minute
+        window: PT1M
+        refill-tokens: 200
+        refill-period: PT6S
+        retry-after-seconds: 60

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0001-create-notification-schema" author="aquastream">
+        <sqlFile path="migration/liquibase/sql/0001_create_schema.sql"/>
+        <rollback>
+            <sql>DROP SCHEMA IF EXISTS notification CASCADE;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0002-create-notification-tables" author="aquastream">
+        <sqlFile path="migration/liquibase/sql/0002_create_tables.sql"/>
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS notification.outbox CASCADE;
+                DROP TABLE IF EXISTS notification.telegram_subscriptions CASCADE;
+                DROP TABLE IF EXISTS notification.notification_prefs CASCADE;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0003-indexes-constraints" author="aquastream">
+        <sqlFile path="migration/liquibase/sql/0003_indexes_constraints.sql"/>
+        <rollback>
+            <sql>
+                DROP INDEX IF EXISTS notification.ix_notification_prefs_user_category;
+                DROP INDEX IF EXISTS notification.ix_telegram_subscriptions_user_id;
+                DROP INDEX IF EXISTS notification.ix_telegram_subscriptions_telegram_chat_id;
+                DROP INDEX IF EXISTS notification.ix_outbox_user_category;
+                DROP INDEX IF EXISTS notification.ix_outbox_status_created;
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -60,14 +60,13 @@ jobs:
       dockerfile: backend/temp/docker/images/Dockerfile.backend
 
   backend-notification:
-    if: false
     uses: ./.github/workflows/ci-service.yml
     secrets: inherit
     with:
       service_name: backend-notification
       image_name: aquastream-backend-notification
       service_dir: .
-      dockerfile: backend/temp/docker/images/Dockerfile.backend
+      dockerfile: infra/docker/images/Dockerfile.notification
 
   backend-media:
     if: false

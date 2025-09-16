@@ -34,6 +34,10 @@ spring:
           predicates:
             - Path=/api/v1/media/**
 
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-change-me}
+
 management:
   endpoints:
     web:

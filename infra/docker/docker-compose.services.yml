@@ -1,0 +1,174 @@
+# Docker Compose configuration for AquaStream microservices
+# This file demonstrates how to configure service URLs for different environments
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: aquastream
+      POSTGRES_USER: aquastream
+      POSTGRES_PASSWORD: aquastream
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aquastream
+
+  # Redis for caching and metrics
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - aquastream
+
+  # Gateway service
+  gateway:
+    build:
+      context: ../../
+      dockerfile: infra/docker/images/Dockerfile.gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      # Service discovery configuration
+      APP_SERVICES_USER_BASE_URL: http://user-service:8101
+      APP_SERVICES_EVENT_BASE_URL: http://event-service:8102
+      APP_SERVICES_CREW_BASE_URL: http://crew-service:8103
+      APP_SERVICES_PAYMENT_BASE_URL: http://payment-service:8104
+      APP_SERVICES_NOTIFICATION_BASE_URL: http://notification-service:8105
+      APP_SERVICES_MEDIA_BASE_URL: http://media-service:8106
+    depends_on:
+      - user-service
+      - event-service
+      - payment-service
+      - notification-service
+    networks:
+      - aquastream
+
+  # User service
+  user-service:
+    build:
+      context: ../../
+      dockerfile: infra/docker/images/Dockerfile.user
+    ports:
+      - "8101:8101"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream
+      SPRING_DATASOURCE_USERNAME: aquastream
+      SPRING_DATASOURCE_PASSWORD: aquastream
+      # Service discovery configuration
+      APP_SERVICES_NOTIFICATION_BASE_URL: http://notification-service:8105
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aquastream
+
+  # Event service
+  event-service:
+    build:
+      context: ../../
+      dockerfile: infra/docker/images/Dockerfile.event
+    ports:
+      - "8102:8102"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream
+      SPRING_DATASOURCE_USERNAME: aquastream
+      SPRING_DATASOURCE_PASSWORD: aquastream
+      # Service discovery configuration
+      APP_SERVICES_PAYMENT_BASE_URL: http://payment-service:8104
+      APP_SERVICES_USER_BASE_URL: http://user-service:8101
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aquastream
+
+  # Crew service
+  crew-service:
+    build:
+      context: ../../
+      dockerfile: infra/docker/images/Dockerfile.crew
+    ports:
+      - "8103:8103"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream
+      SPRING_DATASOURCE_USERNAME: aquastream
+      SPRING_DATASOURCE_PASSWORD: aquastream
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aquastream
+
+  # Payment service
+  payment-service:
+    build:
+      context: ../../
+      dockerfile: infra/docker/images/Dockerfile.payment
+    ports:
+      - "8104:8104"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream
+      SPRING_DATASOURCE_USERNAME: aquastream
+      SPRING_DATASOURCE_PASSWORD: aquastream
+      # Service discovery configuration
+      APP_SERVICES_EVENT_BASE_URL: http://event-service:8102
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aquastream
+
+  # Notification service
+  notification-service:
+    build:
+      context: ../../
+      dockerfile: infra/docker/images/Dockerfile.notification
+    ports:
+      - "8105:8105"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream
+      SPRING_DATASOURCE_USERNAME: aquastream
+      SPRING_DATASOURCE_PASSWORD: aquastream
+      # Service discovery configuration
+      APP_SERVICES_USER_BASE_URL: http://user-service:8101
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aquastream
+
+  # Media service  
+  media-service:
+    build:
+      context: ../../
+      dockerfile: infra/docker/images/Dockerfile.media
+    ports:
+      - "8106:8106"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aquastream
+      SPRING_DATASOURCE_USERNAME: aquastream
+      SPRING_DATASOURCE_PASSWORD: aquastream
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aquastream
+
+networks:
+  aquastream:
+    driver: bridge
+
+volumes:
+  postgres_data:

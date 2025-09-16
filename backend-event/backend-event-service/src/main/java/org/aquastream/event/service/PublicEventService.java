@@ -111,4 +111,14 @@ public class PublicEventService {
         Page<EventDto> dtoPage = eventsPage.map(eventMapper::toEventDtoWithOrganizer);
         return eventMapper.toPagedResponse(dtoPage);
     }
+
+    public List<TeamMemberDto> getOrganizerTeam(String slug) {
+        List<TeamMemberEntity> teamMembers = teamMemberRepository.findByOrganizerSlugOrderBySortOrder(slug);
+        return teamMembers.stream().map(eventMapper::toTeamMemberDto).toList();
+    }
+
+    public List<FaqItemDto> getOrganizerFaq(String slug) {
+        List<FaqItemEntity> faqItems = faqItemRepository.findByOrganizerSlugOrderBySortOrder(slug);
+        return faqItems.stream().map(eventMapper::toFaqItemDto).toList();
+    }
 }

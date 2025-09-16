@@ -1,0 +1,15 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api project(':backend-common')
+    
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-tx'
+    
+    // Lombok provided by root subprojects
+}

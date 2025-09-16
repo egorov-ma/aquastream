@@ -7,6 +7,7 @@ import org.aquastream.payment.db.entity.PaymentStatusLogEntity;
 import org.aquastream.payment.db.entity.WebhookEventEntity;
 import org.aquastream.payment.db.repository.PaymentRepository;
 import org.aquastream.payment.db.repository.PaymentStatusLogRepository;
+import org.aquastream.payment.service.EventServiceClient;
 import org.aquastream.payment.service.provider.PaymentProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class WebhookProcessor {
 
     private final PaymentRepository paymentRepository;
     private final PaymentStatusLogRepository statusLogRepository;
+    private final EventServiceClient eventServiceClient;
 
     @Transactional
     public void processWebhookEvent(WebhookEventEntity webhookEvent, PaymentProvider provider) {
@@ -89,6 +91,9 @@ public class WebhookProcessor {
             statusLogRepository.save(statusLog);
 
             log.info("Payment {} status updated successfully", payment.getId());
+            
+            // Notify event service about payment status update
+            notifyEventService(payment, newStatus);
         } else {
             log.debug("No status change needed for payment {}", payment.getId());
         }
@@ -143,5 +148,26 @@ public class WebhookProcessor {
             case "payment.canceled" -> PaymentEntity.PaymentStatus.CANCELED;
             default -> null;
         };
+    }
+    
+    /**
+     * Notify event service about payment status changes
+     */
+    private void notifyEventService(PaymentEntity payment, PaymentEntity.PaymentStatus newStatus) {
+        try {
+            // Always update the payment status
+            eventServiceClient.updateBookingPaymentStatus(payment.getId(), newStatus.name());
+            
+            // If payment succeeded, also confirm the booking
+            if (newStatus == PaymentEntity.PaymentStatus.SUCCEEDED) {
+                eventServiceClient.confirmBookingAfterPayment(payment.getId());
+                log.info("Booking confirmation requested for payment {}", payment.getId());
+            }
+            
+        } catch (Exception e) {
+            log.error("Failed to notify event service about payment {} status update: {}", 
+                    payment.getId(), e.getMessage());
+            // Don't throw - payment processing should continue
+        }
     }
 }

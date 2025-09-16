@@ -1,0 +1,155 @@
+# Staging profile configuration with real dependencies
+server:
+  port: 8105
+
+spring:
+  application:
+    name: backend-notification-api
+  
+  # PostgreSQL configuration for staging
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://postgres-stage:5432/aquastream}
+    username: ${DATABASE_USERNAME:aquastream}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Strict validation in staging
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: notification
+        
+  liquibase:
+    enabled: true
+    change-log: classpath:migration/liquibase/master.xml
+    default-schema: notification
+    
+  # Redis configuration for staging
+  redis:
+    host: ${REDIS_HOST:redis-stage}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD}
+    database: 0
+    timeout: 5000ms
+    ssl: ${REDIS_SSL:false}
+
+logging:
+  level:
+    org.aquastream.notification: INFO
+    org.aquastream.common.metrics: INFO
+    org.springframework.web: WARN
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true  # Enable liveness and readiness probes
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db,redis,telegramService,userService
+    info:
+      show-details: when-authorized
+  info:
+    git:
+      mode: simple  # Show essential git info only
+    build:
+      enabled: true
+    java:
+      enabled: false  # Hide Java details in staging
+    os:
+      enabled: false  # Hide OS details in staging
+
+# Real service configurations
+app:
+  mocks:
+    enabled: false  # Disable mocks in staging
+    
+  telegram:
+    bot:
+      token: ${TELEGRAM_BOT_TOKEN}
+      webhook-url: ${TELEGRAM_WEBHOOK_URL}
+      webhook-secret: ${TELEGRAM_WEBHOOK_SECRET}
+      mock-enabled: false
+    api:
+      base-url: "https://api.telegram.org/bot"
+      timeout: 10s
+      retry:
+        max-attempts: 3
+        backoff-delay: PT2S
+  
+  user-service:
+    base-url: ${USER_SERVICE_URL:http://user-service-stage:8101}
+    timeout: 10s
+    mock-enabled: false
+    retry:
+      max-attempts: 3
+      backoff-delay: PT1S
+
+# Staging monitoring and observability
+monitoring:
+  tracing:
+    enabled: true
+    sample-rate: 0.1  # 10% sampling in staging
+  
+  alerts:
+    enabled: true
+    error-threshold: 0.05  # 5% error rate threshold
+
+# Security configurations for staging
+security:
+  api-keys:
+    enabled: true
+    required-headers: ["X-API-Key"]
+  
+  rate-limiting:
+    enabled: true
+    default-limit: 1000  # requests per hour
+    
+# No fixtures in staging
+fixtures:
+  enabled: false
+
+# Metrics and rate limiting configuration for staging
+aquastream:
+  metrics:
+    enabled: true
+    service-name: notification-stage
+    ttl: PT48H
+    flush-interval: PT1M
+  rate-limit:
+    enabled: true
+    default-limit:
+      capacity: 1000         # 1000 requests per minute for staging
+      window: PT1M
+      refill-tokens: 100
+      refill-period: PT6S    # Every 6 seconds
+      retry-after-seconds: 30
+    limits:
+      login:
+        capacity: 50         # 50 login attempts per 5 minutes
+        window: PT5M
+        refill-tokens: 15
+        refill-period: PT1M
+        retry-after-seconds: 120
+      recovery:
+        capacity: 20         # 20 recovery requests per 15 minutes
+        window: PT15M
+        refill-tokens: 5
+        refill-period: PT5M
+        retry-after-seconds: 600
+      default:
+        capacity: 500        # 500 general requests per minute
+        window: PT1M
+        refill-tokens: 50
+        refill-period: PT6S
+        retry-after-seconds: 30

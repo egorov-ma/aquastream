@@ -1,7 +1,5 @@
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
 
     group = 'org.aquastream.crew'
     version = '1.0.0'
@@ -19,8 +17,7 @@ subprojects {
         // Common dependencies for all crew modules
         implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'org.springframework.boot:spring-boot-starter-validation'
-        implementation 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
+        // Lombok provided by root subprojects
         
         // Testing
         testImplementation 'org.springframework.boot:spring-boot-starter-test'

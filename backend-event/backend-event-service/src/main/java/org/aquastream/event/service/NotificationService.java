@@ -43,4 +43,18 @@ public class NotificationService {
     public void sendWaitlistLeftNotification(UUID userId, UUID eventId) {
         log.info("NOTIFICATION: User {} left waitlist for event {}", userId, eventId);
     }
+    
+    @Async
+    public void sendWaitlistSpotAvailable(UUID userId, UUID eventId, String organizerSlug, int windowMinutes) {
+        log.info("NOTIFICATION: Spot available for user {} in event {} (organizer: {}). {} minutes to respond.", 
+                 userId, eventId, organizerSlug, windowMinutes);
+        
+        // TODO: Implement actual notification sending
+        // This should send an urgent notification to the user that a spot is available
+        // and they have limited time to claim it
+        
+        log.info("URGENT NOTIFICATION: User {}, a spot is now available for event {}! " +
+                "You have {} minutes to confirm your booking or it will go to the next person in line.",
+                userId, eventId, windowMinutes);
+    }
 }

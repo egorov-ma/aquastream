@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -127,6 +128,36 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh");
         }
         return rs.getUserId();
+    }
+    
+    /**
+     * Revoke all active sessions for a user.
+     * Used for password reset, account security events, etc.
+     */
+    public int revokeAllUserSessions(UUID userId) {
+        log.info("user.sessions.revokeAll userId={}", userId);
+        return Math.toIntExact(refreshSessions.deleteByUserId(userId));
+    }
+    
+    /**
+     * Clean up expired sessions (for scheduled cleanup).
+     */
+    public int cleanupExpiredSessions() {
+        Instant now = Instant.now();
+        List<RefreshSessionEntity> expired = refreshSessions.findByExpiresAtBeforeAndRevokedAtIsNull(now);
+        
+        int count = 0;
+        for (RefreshSessionEntity session : expired) {
+            session.setRevokedAt(now);
+            refreshSessions.save(session);
+            count++;
+        }
+        
+        if (count > 0) {
+            log.info("user.sessions.cleanup expired={}", count);
+        }
+        
+        return count;
     }
 
     private ResponseStatusException unauthorized(String username) {

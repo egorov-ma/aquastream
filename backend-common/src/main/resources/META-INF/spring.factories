@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.aquastream.common.ratelimit.config.RateLimitAutoConfiguration,\
+  org.aquastream.common.web.config.WebAutoConfiguration,\
+  org.aquastream.common.config.ServiceDiscoveryAutoConfiguration

@@ -1,0 +1,74 @@
+# Service Discovery Configuration Template
+# This configuration provides default service URLs for development environment
+# Override these values in your application.yml or environment variables for different environments
+
+app:
+  services:
+    # User service configuration
+    user:
+      base-url: ${USER_SERVICE_URL:http://localhost:8101}
+      health-path: /actuator/health
+      connection-timeout: 5000
+      read-timeout: 10000
+      health-check-enabled: true
+    
+    # Event service configuration  
+    event:
+      base-url: ${EVENT_SERVICE_URL:http://localhost:8102}
+      health-path: /actuator/health
+      connection-timeout: 5000
+      read-timeout: 10000
+      health-check-enabled: true
+    
+    # Crew service configuration
+    crew:
+      base-url: ${CREW_SERVICE_URL:http://localhost:8103}
+      health-path: /actuator/health
+      connection-timeout: 5000
+      read-timeout: 10000
+      health-check-enabled: true
+    
+    # Payment service configuration
+    payment:
+      base-url: ${PAYMENT_SERVICE_URL:http://localhost:8104}
+      health-path: /actuator/health
+      connection-timeout: 5000
+      read-timeout: 10000
+      health-check-enabled: true
+    
+    # Notification service configuration
+    notification:
+      base-url: ${NOTIFICATION_SERVICE_URL:http://localhost:8105}
+      health-path: /actuator/health
+      connection-timeout: 5000
+      read-timeout: 10000
+      health-check-enabled: true
+    
+    # Media service configuration
+    media:
+      base-url: ${MEDIA_SERVICE_URL:http://localhost:8106}
+      health-path: /actuator/health
+      connection-timeout: 5000
+      read-timeout: 10000
+      health-check-enabled: true
+    
+    # Gateway service configuration
+    gateway:
+      base-url: ${GATEWAY_SERVICE_URL:http://localhost:8080}
+      health-path: /actuator/health
+      connection-timeout: 5000
+      read-timeout: 10000
+      health-check-enabled: true
+
+# Management endpoints configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,services
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+    services:
+      enabled: true

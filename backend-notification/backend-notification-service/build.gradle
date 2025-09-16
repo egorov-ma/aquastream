@@ -1,11 +1,35 @@
-plugins { id 'java-library' }
+plugins {
+    id 'java-library'
+}
 
 dependencies {
-    implementation project(':backend-common')
+    api project(':backend-notification:backend-notification-db')
+    
+    // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-tx'
+    
+    // HTTP Client for Telegram API
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    
+    // Redis for Pub/Sub and throttling
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
+    // JSON processing comes via Spring Boot starters
+    
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    // Configuration properties
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+    
+    // H2 Database for development
+    runtimeOnly 'com.h2database:h2'
+    
+    // Lombok provided by root subprojects
 }
 
 tasks.test { useJUnitPlatform() }
-
 

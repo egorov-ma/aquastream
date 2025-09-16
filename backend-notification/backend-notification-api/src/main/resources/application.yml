@@ -1,0 +1,68 @@
+server:
+  port: 8105
+  
+spring:
+  application:
+    name: backend-notification-api
+  
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aquastream}
+    username: ${DATABASE_USERNAME:aquastream}
+    password: ${DATABASE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: notification
+        
+  liquibase:
+    change-log: classpath:migration/liquibase/master.xml
+    default-schema: notification
+    
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: 0
+    timeout: 2000ms
+    
+logging:
+  level:
+    org.aquastream.notification: DEBUG
+    org.aquastream.common.metrics: DEBUG
+    org.springframework.web: INFO
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,metrics-debug
+  endpoint:
+    health:
+      show-details: always
+
+aquastream:
+  metrics:
+    enabled: true
+    service-name: notification
+    ttl: PT48H
+    flush-interval: PT1M
+      
+app:
+  telegram:
+    bot:
+      token: ${TELEGRAM_BOT_TOKEN:dummy-token-for-dev}
+      webhook-url: ${TELEGRAM_WEBHOOK_URL:https://api.aquastream.app/api/v1/notify/telegram/webhook}
+      webhook-secret: ${TELEGRAM_WEBHOOK_SECRET:dev-secret}
+    api:
+      base-url: https://api.telegram.org/bot
+      timeout: 10s
+  
+  user-service:
+    base-url: ${USER_SERVICE_URL:http://localhost:8101}
+    timeout: 5s

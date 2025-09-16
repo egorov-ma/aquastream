@@ -2,8 +2,8 @@ package org.aquastream.crew.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aquastream.crew.api.dto.TentDto;
-import org.aquastream.crew.api.service.TentService;
+import org.aquastream.crew.dto.TentDto;
+import org.aquastream.crew.service.TentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
