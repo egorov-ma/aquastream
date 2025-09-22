@@ -1,0 +1,6 @@
+site_name: Backend Common Docs
+docs_dir: docs
+nav:
+  - Overview: docs/README.md
+  - Runbook: docs/runbook.md
+  - Changelog: docs/changelog.md
