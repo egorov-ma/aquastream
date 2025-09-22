@@ -1,0 +1,15 @@
+from,to,reason
+BUILD.md,docs/ops/build.md,move-build-to-ops
+backend-common/README.md,backend-common/docs/README.md,module-root-docs
+backend-crew/README.md,backend-crew/docs/README.md,module-root-docs
+backend-event/README.md,backend-event/docs/README.md,module-root-docs
+backend-gateway/README.md,backend-gateway/docs/README.md,module-root-docs
+backend-media/README.md,backend-media/docs/README.md,module-root-docs
+backend-notification/README.md,backend-notification/docs/README.md,module-root-docs
+backend-payment/README.md,backend-payment/docs/README.md,module-root-docs
+backend-user/README.md,backend-user/docs/README.md,module-root-docs
+frontend/README.md,frontend/docs/README.md,module-root-docs
+infra/CHANGELOG.md,infra/docs/CHANGELOG.md,module-root-docs
+infra/RELEASES.md,infra/docs/RELEASES.md,module-root-docs
+infra/backup/README.md,infra/backup/docs/README.md,module-sub-docs
+infra/docker/compose/README.md,infra/docker/docs/README.md,module-sub-docs
