@@ -56,6 +56,18 @@ nav:
           - Overview: modules/infra/README.md
           - Runbook: modules/infra/runbook.md
           - Changelog: modules/infra/changelog.md
+  - Internal notes:
+      - Frontend:
+          - AquaStream Frontend Spec: modules/frontend/aquastream-frontend-spec.md
+          - Claude-ready brief: modules/frontend/claude-ready-brief.md
+          - Finalization checklist: modules/frontend/frontend-finalization-checklist.md
+          - Hardening & unification: modules/frontend/frontend-hardening-unification.md
+          - Tailwind + shadcn unification: modules/frontend/tailwind-shadcn-unification.md
+          - FE todos: modules/frontend/todos-fe.md
+      - Infra:
+          - CI README: modules/infra/CI-README.md
+          - Developer Guide: modules/infra/DEVELOPER.md
+          - Backend Spec (complete): modules/infra/aquastream-backend-spec-complete.md
   - FAQ: faq.md
 theme:
   name: material

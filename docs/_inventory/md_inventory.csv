@@ -1,39 +1,39 @@
 path,h1,h2_first,lang,size_bytes,last_commit_date,last_author
-BUILD.md,,Обзор проекта,mixed,10328,2025-09-22,egorovma
-CONTRIBUTING.md,CONTRIBUTING,,mixed,649,2025-09-22,egorovma
+BUILD.md,,Docs,mixed,10739,2025-09-22,egorovma
+CONTRIBUTING.md,CONTRIBUTING,,mixed,811,2025-09-22,egorovma
 README.md,AquaStream,Документация,mixed,466,2025-09-22,egorovma
 backend-common/README.md,AquaStream Backend Common,Описание,mixed,10219,2025-09-17,egorovma
 backend-common/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-common/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-common/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
-backend-crew/README.md,AquaStream Backend Crew Service,Описание,mixed,12822,2025-09-17,egorovma
 backend-crew/backend-crew-service/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-crew/backend-crew-service/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-crew/backend-crew-service/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
-backend-event/README.md,AquaStream Backend Event Service,Описание,mixed,17040,2025-09-17,egorovma
+backend-crew/docs/README.md,AquaStream Backend Crew Service,Описание,mixed,12822,2025-09-22,egorovma
 backend-event/backend-event-service/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-event/backend-event-service/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-event/backend-event-service/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
+backend-event/docs/README.md,AquaStream Backend Event Service,Описание,mixed,17040,2025-09-22,egorovma
 backend-gateway/README.md,AquaStream Backend Gateway,Описание,mixed,15834,2025-09-17,egorovma
 backend-gateway/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-gateway/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-gateway/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
-backend-media/README.md,AquaStream Backend Media Service,Описание,mixed,21518,2025-09-17,egorovma
 backend-media/backend-media-service/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-media/backend-media-service/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-media/backend-media-service/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
-backend-notification/README.md,AquaStream Backend Notification Service,Описание,mixed,25999,2025-09-17,egorovma
+backend-media/docs/README.md,AquaStream Backend Media Service,Описание,mixed,21518,2025-09-22,egorovma
 backend-notification/backend-notification-service/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-notification/backend-notification-service/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-notification/backend-notification-service/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
-backend-payment/README.md,AquaStream Backend Payment Service,Описание,mixed,21281,2025-09-17,egorovma
+backend-notification/docs/README.md,AquaStream Backend Notification Service,Описание,mixed,25999,2025-09-22,egorovma
 backend-payment/backend-payment-service/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-payment/backend-payment-service/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-payment/backend-payment-service/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
-backend-user/README.md,AquaStream Backend User Service,Описание,mixed,25814,2025-09-22,egorovma
+backend-payment/docs/README.md,AquaStream Backend Payment Service,Описание,mixed,21281,2025-09-22,egorovma
 backend-user/backend-user-service/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 backend-user/backend-user-service/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 backend-user/backend-user-service/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
+backend-user/docs/README.md,AquaStream Backend User Service,Описание,mixed,25814,2025-09-22,egorovma
 doc-as-code-todos/00-foundation-tooling.md,Задача 00 — Основы и выбор инструментов Doc as Code,Цель,mixed,2544,2025-09-22,egorovma
 doc-as-code-todos/01-inventory.md,Задача 01 — Инвентаризация всех Markdown‑файлов,Цель,mixed,2934,2025-09-22,egorovma
 doc-as-code-todos/02-taxonomy-mapping.md,Задача 02 — Таксономия и маппинг: сквозные vs модульные,Цель,mixed,2432,2025-09-22,egorovma
@@ -56,8 +56,10 @@ doc-as-code-todos/18-build-integration.md,Задача 18 — Интеграци
 doc-as-code-todos/19-team-enablement.md,Задача 19 — Обучение команды и руководство по работе с доками,Цель,mixed,2308,2025-09-22,egorovma
 doc-as-code-todos/README.md,Doc‑as‑Code — чек‑лист задач (аквиведение документации),Оглавление задач,mixed,3595,2025-09-22,egorovma
 docs/_diagrams/README.md,Диаграммы — структура и правила,,mixed,808,2025-09-22,egorovma
+docs/_reports/docs-quality-report.md,Docs Quality Report,Coverage,en,581,2025-09-22,egorovma
+docs/_reports/docs-training-notes.md,Docs Training Notes,,mixed,308,2025-09-22,egorovma
 docs/_reports/markdown_normalization_report.md,Markdown Normalization Report,,en,71,2025-09-22,egorovma
-docs/_reports/migration-report.md,Migration Report,,mixed,278,N/A,N/A
+docs/_reports/migration-report.md,Migration Report,,mixed,278,2025-09-22,egorovma
 docs/_reports/navigation-scenarios.md,Navigation Scenarios Report,,mixed,1192,2025-09-22,egorovma
 docs/_templates/README.service.md,,Контекст,mixed,911,2025-09-22,egorovma
 docs/_templates/adr-template.md,,Контекст,mixed,458,2025-09-22,egorovma
@@ -72,8 +74,10 @@ docs/adr/adr-0003-api-redoc.md,,Контекст,mixed,1269,2025-09-22,egorovma
 docs/adr/index.md,,,mixed,774,2025-09-22,egorovma
 docs/api/index.md,,,mixed,314,2025-09-22,egorovma
 docs/architecture/index.md,,Связанные материалы,mixed,436,2025-09-22,egorovma
+docs/contributor-guide.md,,Быстрый старт,mixed,1541,2025-09-22,egorovma
+docs/faq.md,,Предпросмотр не поднимается,mixed,666,2025-09-22,egorovma
 docs/glossary.md,,,mixed,930,2025-09-22,egorovma
-docs/index.md,,Start here,mixed,838,2025-09-22,egorovma
+docs/index.md,,Start here,mixed,900,2025-09-22,egorovma
 docs/modules/backend-common/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 docs/modules/backend-common/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 docs/modules/backend-common/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
@@ -118,7 +122,7 @@ docs/overview.md,,,mixed,706,2025-09-22,egorovma
 docs/qa/index.md,,,mixed,287,2025-09-22,egorovma
 docs/roadmap.md,,Ближайшие,mixed,266,2025-09-22,egorovma
 docs/styleguides/markdown_style.md,Компонент X,Обязательные требования,mixed,2388,2025-09-22,egorovma
-docs/styleguides/versioning.md,Политика версионирования документации,,mixed,714,N/A,N/A
+docs/styleguides/versioning.md,Политика версионирования документации,,mixed,714,2025-09-22,egorovma
 frontend/README.md,дев‑сервер / прод‑сборка / старт,AquaStream Frontend — DevEx README,mixed,5103,2025-08-10,egorovma
 frontend/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
 frontend/docs/aquastream-frontend-spec.md,AquaStream — бизнес‑постановка v1.1 (MVP),1. Назначение и контекст,mixed,20837,2025-08-10,egorovma
@@ -130,12 +134,12 @@ frontend/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
 frontend/docs/tailwind-shadcn-unification.md,,План унификации стилей: Tailwind CSS v4 + shadcn/ui,mixed,15461,2025-08-16,egorovma
 frontend/docs/todos-fe.md,Frontend TODOs,,en,3841,2025-08-10,egorovma
 infra/CHANGELOG.md,Changelog,[Unreleased],en,2168,2025-09-17,egorovma
-infra/RELEASES.md,AquaStream Release Process,Semantic Versioning (SemVer),en,9916,2025-09-17,egorovma
-infra/backup/README.md,Бэкапы PostgreSQL (per-schema),Что делает `backup.sh`,mixed,2990,2025-08-10,egorovma
-infra/docker/compose/README.md,Docker Compose (dev|stage|prod),Профили,mixed,1936,2025-08-10,egorovma
+infra/backup/docs/README.md,Бэкапы PostgreSQL (per-schema),Что делает `backup.sh`,mixed,2990,2025-09-22,egorovma
+infra/docker/docs/README.md,Docker Compose (dev|stage|prod),Профили,mixed,1936,2025-09-22,egorovma
 infra/docs/CI-README.md,CI/CD (GitHub Actions),Workflows,mixed,961,2025-08-10,egorovma
 infra/docs/DEVELOPER.md,AquaStream Backend - Developer Guide,📋 Оглавление,mixed,34492,2025-09-17,egorovma
 infra/docs/README.md,,Контекст,mixed,911,2025-09-22,egorovma
+infra/docs/RELEASES.md,AquaStream Release Process,Semantic Versioning (SemVer),en,9916,2025-09-22,egorovma
 infra/docs/aquastream-backend-spec-complete.md,AquaStream Backend - Техническая спецификация,Оглавление,mixed,27196,2025-09-17,egorovma
 infra/docs/changelog.md,,[Unreleased],mixed,515,2025-09-22,egorovma
 infra/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma

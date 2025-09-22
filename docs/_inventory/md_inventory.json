@@ -2,9 +2,9 @@
   {
     "path": "BUILD.md",
     "h1": "",
-    "h2_first": "Обзор проекта",
+    "h2_first": "Docs",
     "lang": "mixed",
-    "size_bytes": "10328",
+    "size_bytes": "10739",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -13,7 +13,7 @@
     "h1": "CONTRIBUTING",
     "h2_first": "",
     "lang": "mixed",
-    "size_bytes": "649",
+    "size_bytes": "811",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -63,15 +63,6 @@
     "last_author": "egorovma"
   },
   {
-    "path": "backend-crew/README.md",
-    "h1": "AquaStream Backend Crew Service",
-    "h2_first": "Описание",
-    "lang": "mixed",
-    "size_bytes": "12822",
-    "last_commit_date": "2025-09-17",
-    "last_author": "egorovma"
-  },
-  {
     "path": "backend-crew/backend-crew-service/docs/README.md",
     "h1": "",
     "h2_first": "Контекст",
@@ -99,12 +90,12 @@
     "last_author": "egorovma"
   },
   {
-    "path": "backend-event/README.md",
-    "h1": "AquaStream Backend Event Service",
+    "path": "backend-crew/docs/README.md",
+    "h1": "AquaStream Backend Crew Service",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "17040",
-    "last_commit_date": "2025-09-17",
+    "size_bytes": "12822",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
@@ -131,6 +122,15 @@
     "h2_first": "Мониторинг",
     "lang": "mixed",
     "size_bytes": "653",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "backend-event/docs/README.md",
+    "h1": "AquaStream Backend Event Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "17040",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -171,15 +171,6 @@
     "last_author": "egorovma"
   },
   {
-    "path": "backend-media/README.md",
-    "h1": "AquaStream Backend Media Service",
-    "h2_first": "Описание",
-    "lang": "mixed",
-    "size_bytes": "21518",
-    "last_commit_date": "2025-09-17",
-    "last_author": "egorovma"
-  },
-  {
     "path": "backend-media/backend-media-service/docs/README.md",
     "h1": "",
     "h2_first": "Контекст",
@@ -207,12 +198,12 @@
     "last_author": "egorovma"
   },
   {
-    "path": "backend-notification/README.md",
-    "h1": "AquaStream Backend Notification Service",
+    "path": "backend-media/docs/README.md",
+    "h1": "AquaStream Backend Media Service",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "25999",
-    "last_commit_date": "2025-09-17",
+    "size_bytes": "21518",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
@@ -243,12 +234,12 @@
     "last_author": "egorovma"
   },
   {
-    "path": "backend-payment/README.md",
-    "h1": "AquaStream Backend Payment Service",
+    "path": "backend-notification/docs/README.md",
+    "h1": "AquaStream Backend Notification Service",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "21281",
-    "last_commit_date": "2025-09-17",
+    "size_bytes": "25999",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
@@ -279,11 +270,11 @@
     "last_author": "egorovma"
   },
   {
-    "path": "backend-user/README.md",
-    "h1": "AquaStream Backend User Service",
+    "path": "backend-payment/docs/README.md",
+    "h1": "AquaStream Backend Payment Service",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "25814",
+    "size_bytes": "21281",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -311,6 +302,15 @@
     "h2_first": "Мониторинг",
     "lang": "mixed",
     "size_bytes": "653",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "backend-user/docs/README.md",
+    "h1": "AquaStream Backend User Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "25814",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -513,6 +513,24 @@
     "last_author": "egorovma"
   },
   {
+    "path": "docs/_reports/docs-quality-report.md",
+    "h1": "Docs Quality Report",
+    "h2_first": "Coverage",
+    "lang": "en",
+    "size_bytes": "581",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_reports/docs-training-notes.md",
+    "h1": "Docs Training Notes",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "308",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
     "path": "docs/_reports/markdown_normalization_report.md",
     "h1": "Markdown Normalization Report",
     "h2_first": "",
@@ -527,8 +545,8 @@
     "h2_first": "",
     "lang": "mixed",
     "size_bytes": "278",
-    "last_commit_date": "N/A",
-    "last_author": "N/A"
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
   },
   {
     "path": "docs/_reports/navigation-scenarios.md",
@@ -657,6 +675,24 @@
     "last_author": "egorovma"
   },
   {
+    "path": "docs/contributor-guide.md",
+    "h1": "",
+    "h2_first": "Быстрый старт",
+    "lang": "mixed",
+    "size_bytes": "1541",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/faq.md",
+    "h1": "",
+    "h2_first": "Предпросмотр не поднимается",
+    "lang": "mixed",
+    "size_bytes": "666",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
     "path": "docs/glossary.md",
     "h1": "",
     "h2_first": "",
@@ -670,7 +706,7 @@
     "h1": "",
     "h2_first": "Start here",
     "lang": "mixed",
-    "size_bytes": "838",
+    "size_bytes": "900",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1076,8 +1112,8 @@
     "h2_first": "",
     "lang": "mixed",
     "size_bytes": "714",
-    "last_commit_date": "N/A",
-    "last_author": "N/A"
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
   },
   {
     "path": "frontend/README.md",
@@ -1179,30 +1215,21 @@
     "last_author": "egorovma"
   },
   {
-    "path": "infra/RELEASES.md",
-    "h1": "AquaStream Release Process",
-    "h2_first": "Semantic Versioning (SemVer)",
-    "lang": "en",
-    "size_bytes": "9916",
-    "last_commit_date": "2025-09-17",
-    "last_author": "egorovma"
-  },
-  {
-    "path": "infra/backup/README.md",
+    "path": "infra/backup/docs/README.md",
     "h1": "Бэкапы PostgreSQL (per-schema)",
     "h2_first": "Что делает `backup.sh`",
     "lang": "mixed",
     "size_bytes": "2990",
-    "last_commit_date": "2025-08-10",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
-    "path": "infra/docker/compose/README.md",
+    "path": "infra/docker/docs/README.md",
     "h1": "Docker Compose (dev|stage|prod)",
     "h2_first": "Профили",
     "lang": "mixed",
     "size_bytes": "1936",
-    "last_commit_date": "2025-08-10",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
@@ -1229,6 +1256,15 @@
     "h2_first": "Контекст",
     "lang": "mixed",
     "size_bytes": "911",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "infra/docs/RELEASES.md",
+    "h1": "AquaStream Release Process",
+    "h2_first": "Semantic Versioning (SemVer)",
+    "lang": "en",
+    "size_bytes": "9916",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
