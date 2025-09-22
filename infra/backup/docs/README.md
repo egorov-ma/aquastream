@@ -20,6 +20,7 @@
 ## Подготовка
 1. Скопируйте `.env.example` → `.env` и задайте пароли (`POSTGRES_PASSWORD`, и т. д.).
 2. Поднимите инфраструктуру (хватает `postgres`):
+   
    ```bash
    make up-stage  # использует infra/docker/compose/docker-compose.yml
    ```
@@ -45,7 +46,8 @@ bash infra/backup/backup.sh
 1. Pre-check: убедитесь, что целевая БД НЕ prod; сделайте снапшот/бэкап перед восстановлением.
 2. Остановите пишущие сервисы для целевой схемы.
 3. Выполните `restore.sh` (см. примеры выше).
-4. Проверьте `
+4. Проверьте:
+
    ```sql
    SELECT count(*) FROM information_schema.tables WHERE table_schema = '<schema>';
    ```

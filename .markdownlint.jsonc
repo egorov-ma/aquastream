@@ -3,5 +3,7 @@
   "default": true,
   "MD013": { "line_length": 120 },
   "MD033": false,
-  "MD041": true
+  "MD041": true,
+  "MD034": false,
+  "MD040": { "allowed_languages": ["bash", "sh", "yaml", "yml", "json", "java", "gradle", "dockerfile", "mermaid", "sql"] }
 }
