@@ -83,7 +83,10 @@ docs-build:
     . .venv-docs/bin/activate && mkdocs build
 
 docs-lint:
-	@echo "[docs] Lint placeholders (vale/cspell/lychee to be added)"
+	@echo "[docs] markdownlint" && npx --yes markdownlint-cli2 "**/*.md" --config .markdownlint.jsonc || true; \
+	 echo "[docs] cspell" && npx --yes cspell "**/*.md" --no-progress --show-context || true; \
+	 echo "[docs] vale" && vale "**/*.md" || true; \
+	 echo "[docs] lychee" && lychee --config lychee.toml "**/*.md" || true
 
 docs-inventory:
 	. .venv-docs/bin/activate || true; \

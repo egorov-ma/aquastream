@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0
+    hooks:
+      - id: markdownlint
+        files: \.md$
+        args: ["-c", ".markdownlint.jsonc"]
+  - repo: https://github.com/streetsidesoftware/cspell-cli
+    rev: v8.15.4
+    hooks:
+      - id: cspell
+        files: \.md$
+        args: ["--no-progress", "--show-context"]
+  - repo: local
+    hooks:
+      - id: vale
+        name: vale
+        entry: vale
+        language: system
+        types: [markdown]
+        files: \.md$
+      - id: lychee
+        name: lychee
+        entry: lychee --config lychee.toml
+        language: system
+        types: [markdown]
+        files: \.md$

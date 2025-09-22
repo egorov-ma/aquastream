@@ -1,0 +1,6 @@
+# lychee link checker config
+exclude_path = ["**/node_modules/**", "**/build/**", "**/dist/**", "**/.next/**", "**/.cache/**"]
+max_concurrency = 10
+accept = ["200..399"]
+retry_wait_time = 2
+user_agent = "aquastream-docs-lychee"
