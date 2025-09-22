@@ -3,7 +3,7 @@ ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 REPO_ROOT := $(abspath $(ROOT_DIR)/..)
 DC := docker compose -f $(ROOT_DIR)/docker/compose/docker-compose.yml
 
-.PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-inventory docs-map
+.PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-inventory docs-map docs-normalize-report docs-sync-modules docs-api docs-diagrams
 
 up-dev:
 	$(DC) --profile dev up -d
@@ -71,10 +71,16 @@ docs-setup:
 	pip install -r $(REPO_ROOT)/requirements-docs.txt
 
 docs-serve:
-	. .venv-docs/bin/activate && mkdocs serve
+    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
+    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
+    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
+    . .venv-docs/bin/activate && mkdocs serve
 
 docs-build:
-	. .venv-docs/bin/activate && mkdocs build --strict
+    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
+    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
+    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
+    . .venv-docs/bin/activate && mkdocs build
 
 docs-lint:
 	@echo "[docs] Lint placeholders (vale/cspell/lychee to be added)"
@@ -87,5 +93,21 @@ docs-inventory:
 docs-map:
 	. .venv-docs/bin/activate || true; \
 	python $(REPO_ROOT)/tools/map_docs.py || python3 $(REPO_ROOT)/tools/map_docs.py
+
+docs-normalize-report:
+	. .venv-docs/bin/activate || true; \
+	python $(REPO_ROOT)/tools/normalize_md.py || python3 $(REPO_ROOT)/tools/normalize_md.py
+
+docs-sync-modules:
+	. .venv-docs/bin/activate || true; \
+	python $(REPO_ROOT)/tools/sync_module_docs.py || python3 $(REPO_ROOT)/tools/sync_module_docs.py
+
+docs-api:
+	. .venv-docs/bin/activate || true; \
+	python $(REPO_ROOT)/tools/generate_api_docs.py || python3 $(REPO_ROOT)/tools/generate_api_docs.py
+
+docs-diagrams:
+    . .venv-docs/bin/activate || true; \
+    python $(REPO_ROOT)/tools/generate_diagrams.py || python3 $(REPO_ROOT)/tools/generate_diagrams.py
 
 
