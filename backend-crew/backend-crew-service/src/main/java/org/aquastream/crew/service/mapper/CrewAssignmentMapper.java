@@ -1,6 +1,6 @@
 package org.aquastream.crew.service.mapper;
 
-import org.aquastream.crew.api.dto.CrewAssignmentDto;
+import org.aquastream.crew.dto.CrewAssignmentDto;
 import org.aquastream.crew.db.entity.CrewAssignmentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

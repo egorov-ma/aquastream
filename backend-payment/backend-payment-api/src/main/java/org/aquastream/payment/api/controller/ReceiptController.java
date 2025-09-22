@@ -3,15 +3,18 @@ package org.aquastream.payment.api.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aquastream.payment.db.entity.PaymentReceiptEntity;
+import org.aquastream.payment.service.dto.PaymentReceiptInfo;
 import org.aquastream.payment.service.dto.ReceiptSubmissionRequest;
 import org.aquastream.payment.service.receipt.ReceiptService;
+import org.aquastream.payment.api.dto.response.ReceiptSubmissionResponse;
+import org.aquastream.payment.api.dto.response.PaymentReceiptDto;
+import org.aquastream.payment.api.dto.response.ModerationResponse;
+import org.aquastream.payment.api.dto.request.ModerationRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -24,7 +27,7 @@ public class ReceiptController {
     private final ReceiptService receiptService;
 
     @PostMapping("/{paymentId}/receipt")
-    public ResponseEntity<Map<String, Object>> submitReceipt(
+    public ResponseEntity<ReceiptSubmissionResponse> submitReceipt(
             @PathVariable UUID paymentId,
             @Valid @RequestBody ReceiptSubmissionRequest request) {
 
@@ -34,47 +37,57 @@ public class ReceiptController {
 
         UUID receiptId = receiptService.submitReceipt(paymentId, request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "receiptId", receiptId,
-                "status", "pending_moderation",
-                "message", "Receipt submitted for moderation"
-        ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new ReceiptSubmissionResponse(receiptId, "pending_moderation", "Receipt submitted for moderation")
+        );
     }
 
     @GetMapping("/{paymentId}/receipt")
-    public ResponseEntity<PaymentReceiptEntity> getReceipt(@PathVariable UUID paymentId) {
+    public ResponseEntity<PaymentReceiptDto> getReceipt(@PathVariable UUID paymentId) {
         log.info("Getting receipt for payment: {}", paymentId);
 
-        PaymentReceiptEntity receipt = receiptService.getReceiptByPayment(paymentId);
-
-        return ResponseEntity.ok(receipt);
+        PaymentReceiptInfo receipt = receiptService.getReceiptByPayment(paymentId);
+        PaymentReceiptDto dto = mapToTransportDto(receipt);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/receipts/{receiptId}/moderate")
-    public ResponseEntity<Map<String, String>> moderateReceipt(
+    public ResponseEntity<ModerationResponse> moderateReceipt(
             @PathVariable UUID receiptId,
-            @RequestBody Map<String, Object> moderationRequest) {
+            @Valid @RequestBody ModerationRequest request) {
 
         log.info("Moderating receipt: {}", receiptId);
 
-        boolean approved = (Boolean) moderationRequest.get("approved");
-        String notes = (String) moderationRequest.get("notes");
-        UUID moderatorId = UUID.fromString((String) moderationRequest.get("moderatorId"));
+        receiptService.moderateReceipt(receiptId, request.approved(), request.notes(), request.moderatorId());
 
-        receiptService.moderateReceipt(receiptId, approved, notes, moderatorId);
-
-        return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "result", approved ? "approved" : "rejected"
+        return ResponseEntity.ok(new ModerationResponse(
+                "success",
+                request.approved() ? "approved" : "rejected"
         ));
     }
 
     @GetMapping("/receipts/{receiptId}")
-    public ResponseEntity<PaymentReceiptEntity> getReceiptById(@PathVariable UUID receiptId) {
+    public ResponseEntity<PaymentReceiptDto> getReceiptById(@PathVariable UUID receiptId) {
         log.info("Getting receipt by ID: {}", receiptId);
 
-        PaymentReceiptEntity receipt = receiptService.getReceipt(receiptId);
+        PaymentReceiptInfo receipt = receiptService.getReceipt(receiptId);
+        PaymentReceiptDto dto = mapToTransportDto(receipt);
+        return ResponseEntity.ok(dto);
+    }
 
-        return ResponseEntity.ok(receipt);
+    private PaymentReceiptDto mapToTransportDto(PaymentReceiptInfo serviceDto) {
+        return new PaymentReceiptDto(
+                serviceDto.getId(),
+                serviceDto.getPaymentId(),
+                serviceDto.getFiscalReceiptNumber(),
+                null, // amount not available in service DTO
+                "RUB", // default currency
+                serviceDto.getStatus(),
+                serviceDto.getOfdReceiptUrl(),
+                null, // notes not available in service DTO
+                serviceDto.getCreatedAt(),
+                serviceDto.getUpdatedAt(),
+                null // moderatorId not available in service DTO
+        );
     }
 }

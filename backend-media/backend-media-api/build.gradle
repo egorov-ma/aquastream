@@ -11,4 +11,6 @@ dependencies {
     
     // Documentation
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
 }

@@ -2,7 +2,7 @@ package org.aquastream.crew.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aquastream.crew.api.dto.BoatDto;
+import org.aquastream.crew.dto.BoatDto;
 import org.aquastream.crew.db.entity.BoatEntity;
 import org.aquastream.crew.db.repository.BoatRepository;
 import org.aquastream.crew.service.exception.BoatNotFoundException;

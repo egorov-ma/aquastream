@@ -2,7 +2,7 @@ package org.aquastream.crew.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aquastream.crew.api.dto.TentDto;
+import org.aquastream.crew.dto.TentDto;
 import org.aquastream.crew.db.entity.TentEntity;
 import org.aquastream.crew.db.repository.TentRepository;
 import org.aquastream.crew.service.exception.TentNotFoundException;

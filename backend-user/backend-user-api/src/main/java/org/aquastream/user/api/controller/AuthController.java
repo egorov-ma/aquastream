@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.aquastream.user.db.entity.UserEntity;
 import org.aquastream.user.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.aquastream.user.api.dto.request.LoginRequest;
 import org.aquastream.user.api.dto.request.RegisterRequest;
 import org.aquastream.user.api.dto.response.RevokeAllResponse;
+import org.aquastream.user.api.dto.response.SimpleSuccessResponse;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -29,31 +29,31 @@ public class AuthController {
     @Operation(summary = "Register new user", description = "Create new user account and return authentication tokens")
     @ApiResponse(responseCode = "200", description = "User registered successfully")
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest req,
+    public ResponseEntity<SimpleSuccessResponse> register(@RequestBody @Valid RegisterRequest req,
                                       HttpServletResponse response) {
-        UserEntity user = authService.register(req.getUsername(), req.getPassword());
+        authService.register(req.getUsername(), req.getPassword());
         var tokens = authService.login(req.getUsername(), req.getPassword());
         response.addCookie(buildJwtCookie("access", tokens.access(), authService.getAccessTtlSeconds()));
         response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), authService.getRefreshTtlSeconds()));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(SimpleSuccessResponse.builder().success(true).message("registered").build());
     }
 
     @Operation(summary = "User login", description = "Authenticate user and return JWT tokens")
     @ApiResponse(responseCode = "200", description = "Login successful")
     @ApiResponse(responseCode = "401", description = "Invalid credentials")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest req,
+    public ResponseEntity<SimpleSuccessResponse> login(@RequestBody @Valid LoginRequest req,
                                    HttpServletResponse response) {
         var tokens = authService.login(req.getUsername(), req.getPassword());
         response.addCookie(buildJwtCookie("access", tokens.access(), authService.getAccessTtlSeconds()));
         response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), authService.getRefreshTtlSeconds()));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(SimpleSuccessResponse.builder().success(true).message("logged in").build());
     }
 
     @Operation(summary = "User logout", description = "Invalidate current session and clear cookies")
     @ApiResponse(responseCode = "200", description = "Logout successful")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<SimpleSuccessResponse> logout(HttpServletRequest request, HttpServletResponse response) {
         // revoke refresh by cookie
         String refreshJti = getCookie(request, "refresh");
         if (refreshJti != null) {
@@ -62,31 +62,31 @@ public class AuthController {
         // clear cookies
         response.addCookie(buildJwtCookie("access", "", 0));
         response.addCookie(buildJwtCookie("refresh", "", 0));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(SimpleSuccessResponse.builder().success(true).message("logged out").build());
     }
 
     @Operation(summary = "Refresh tokens", description = "Refresh access token using refresh token")
     @ApiResponse(responseCode = "200", description = "Tokens refreshed successfully")
     @ApiResponse(responseCode = "401", description = "Invalid refresh token")
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<SimpleSuccessResponse> refresh(HttpServletRequest request, HttpServletResponse response) {
         String refreshJti = getCookie(request, "refresh");
         if (refreshJti == null || refreshJti.isEmpty()) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401).body(SimpleSuccessResponse.builder().success(false).message("no refresh token").build());
         }
         // validate refresh and rotate
         var userId = authService.validateRefreshAndGetUser(refreshJti);
         var tokens = authService.refresh(userId, refreshJti);
         response.addCookie(buildJwtCookie("access", tokens.access(), authService.getAccessTtlSeconds()));
         response.addCookie(buildJwtCookie("refresh", tokens.refreshJti(), authService.getRefreshTtlSeconds()));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(SimpleSuccessResponse.builder().success(true).message("tokens refreshed").build());
     }
     
     @Operation(summary = "Revoke all sessions", description = "Revoke all active sessions for current user")
     @ApiResponse(responseCode = "200", description = "All sessions revoked")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @PostMapping("/revoke-all")
-    public ResponseEntity<?> revokeAllSessions(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<RevokeAllResponse> revokeAllSessions(HttpServletRequest request, HttpServletResponse response) {
         // Get user from current refresh token
         String refreshJti = getCookie(request, "refresh");
         if (refreshJti == null || refreshJti.isEmpty()) {
@@ -124,5 +124,3 @@ public class AuthController {
         return null;
     }
 }
-
-

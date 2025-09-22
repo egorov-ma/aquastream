@@ -10,9 +10,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     
     // Bucket4j for rate limiting
     api "com.bucket4j:bucket4j-redis:${bucket4jVersion}"
@@ -41,7 +38,28 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            pom {
+                name = 'backend-common'
+                description = 'AquaStream shared backend library (web/validation/security/ratelimit utilities)'
+                url = 'https://github.com/egorov-ma/aquastream'
+                licenses {
+                    license {
+                        name = 'Proprietary'
+                        url = 'https://github.com/egorov-ma/aquastream'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'aquastream'
+                        name = 'AquaStream Team'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/egorov-ma/aquastream'
+                    connection = 'scm:git:https://github.com/egorov-ma/aquastream.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/egorov-ma/aquastream.git'
+                }
+            }
         }
     }
 }
-

@@ -1,7 +1,7 @@
 package org.aquastream.crew.api.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.aquastream.crew.api.service.exception.*;
+import org.aquastream.crew.service.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.aquastream.user.db.entity.UserEntity;
-import org.aquastream.user.db.repo.UserRepository;
+import org.aquastream.user.db.repository.UserRepository;
 import org.aquastream.user.service.AuthService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -53,5 +53,4 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
-
 

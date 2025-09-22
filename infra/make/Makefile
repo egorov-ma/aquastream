@@ -1,8 +1,9 @@
 SHELL := /bin/bash
 ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
-DC := docker compose -f $(ROOT_DIR)/infra/docker/compose/docker-compose.yml
+REPO_ROOT := $(abspath $(ROOT_DIR)/..)
+DC := docker compose -f $(ROOT_DIR)/docker/compose/docker-compose.yml
 
-.PHONY: up-dev up-stage up-prod down logs backup restore
+.PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-inventory
 
 up-dev:
 	$(DC) --profile dev up -d
@@ -59,5 +60,28 @@ liq-user-update:
 	  --password=$${POSTGRES_PASSWORD:-postgres} \
 	  --searchPath=/liquibase/changelog \
 	  --changelog-file=master.xml update | cat
+
+# ------------------------------
+# Docs as Code helpers
+# ------------------------------
+docs-setup:
+	python3 -m venv .venv-docs && \
+	. .venv-docs/bin/activate && \
+	pip install --upgrade pip && \
+	pip install -r $(REPO_ROOT)/requirements-docs.txt
+
+docs-serve:
+	. .venv-docs/bin/activate && mkdocs serve
+
+docs-build:
+	. .venv-docs/bin/activate && mkdocs build --strict
+
+docs-lint:
+	@echo "[docs] Lint placeholders (vale/cspell/lychee to be added)"
+
+docs-inventory:
+	. .venv-docs/bin/activate || true; \
+	python $(REPO_ROOT)/tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json || \
+	python3 $(REPO_ROOT)/tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json
 
 

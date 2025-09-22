@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
-import org.aquastream.event.db.entity.BookingLogEntity;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -18,7 +17,7 @@ public class BookingLogDto {
     
     private UUID id;
     private UUID bookingId;
-    private BookingLogEntity.BookingLogAction action;
+    private BookingLogAction action;
     private JsonNode oldValue;
     private JsonNode newValue;
     private UUID actorUserId;

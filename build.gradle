@@ -1,4 +1,6 @@
 // Critical fix for Gradle 8.5 + Spring Boot 3.3.5 commons-compress compatibility
+import org.gradle.api.artifacts.dsl.LockMode
+
 buildscript {
     configurations.all {
         resolutionStrategy {
@@ -14,6 +16,7 @@ plugins {
     id 'org.openapi.generator' version '7.2.0' apply false
     id 'com.google.protobuf' version '0.9.4' apply false
     id 'org.owasp.dependencycheck' version '10.0.4' apply false
+    id 'com.github.ben-manes.versions' version '0.51.0'
 }
 
 ext {
@@ -50,6 +53,8 @@ ext {
     set('hypersistenceVersion', '3.6.0')
     set('hibernateTypesVersion', '2.21.1')
     set('jacksonVersion', '2.17.2')
+    set('minioVersion', '8.5.7')
+    set('archunitVersion', '1.3.0')
 }
 
 // Load version from properties file
@@ -76,7 +81,7 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'java'
+    apply plugin: com.aquastream.JavaLibraryConventionsPlugin
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.owasp.dependencycheck'
     
@@ -106,6 +111,7 @@ subprojects {
     dependencies {
         testImplementation platform("org.junit:junit-bom:${junitVersion}")
         testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation 'org.testcontainers:junit-jupiter'
         compileOnly "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     }
@@ -120,7 +126,43 @@ subprojects {
             html.required = true
             junitXml.required = true
         }
+        maxParallelForks = (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
     }
+
+    // Optional integration test profile (available if sources exist)
+    sourceSets {
+        integrationTest {
+            java.srcDir file('src/integrationTest/java')
+            resources.srcDir file('src/integrationTest/resources')
+            compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+            runtimeClasspath += output + compileClasspath
+        }
+    }
+
+    configurations {
+        integrationTestImplementation.extendsFrom testImplementation
+        integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+    }
+
+    tasks.register('integrationTest', Test) {
+        description = 'Runs integration tests.'
+        group = 'verification'
+        testClassesDirs = sourceSets.integrationTest.output.classesDirs
+        classpath = sourceSets.integrationTest.runtimeClasspath
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+            showStandardStreams = false
+        }
+        reports {
+            html.required = true
+            junitXml.required = true
+        }
+        maxParallelForks = (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
+        shouldRunAfter test
+    }
+
+    tasks.named('check') { dependsOn tasks.named('integrationTest') }
 
     dependencyCheck {
         formats = ['SARIF', 'HTML']
@@ -137,7 +179,15 @@ subprojects {
 // Apply Spring Boot plugin only to API modules
 subprojects {
     if (project.name.endsWith('-api')) {
-        apply plugin: 'org.springframework.boot'
+        apply plugin: com.aquastream.SpringBootApiConventionsPlugin
+    }
+}
+
+// Enable dependency locking for reproducible builds
+subprojects {
+    dependencyLocking {
+        lockAllConfigurations()
+        lockMode = LockMode.STRICT
     }
 }
 

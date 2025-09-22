@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.aquastream.user.db.entity.RecoveryCodeEntity;
 import org.aquastream.user.db.entity.AuditLogEntity;
 import org.aquastream.user.db.entity.UserEntity;
-import org.aquastream.user.db.repo.RecoveryCodeRepository;
-import org.aquastream.user.db.repo.RefreshSessionRepository;
-import org.aquastream.user.db.repo.UserRepository;
-import org.aquastream.user.db.repo.ProfileRepository;
+import org.aquastream.user.db.repository.RecoveryCodeRepository;
+import org.aquastream.user.db.repository.RefreshSessionRepository;
+import org.aquastream.user.db.repository.UserRepository;
+import org.aquastream.user.db.repository.ProfileRepository;
 import org.aquastream.user.db.entity.ProfileEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
-import org.aquastream.user.db.repo.AuditLogRepository;
+import org.aquastream.user.db.repository.AuditLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
@@ -32,8 +32,7 @@ public class RecoveryService {
     private final AuditLogRepository auditLogs;
     @Value("${app.recovery.codeTtlSeconds:900}")
     private long codeTtlSeconds;
-    @Value("${services.notification.base-url:http://localhost:8105}")
-    private String notificationBaseUrl;
+    private final NotificationClient notificationClient;
 
     public Map<String, Object> options(String username) {
         var userOpt = users.findByUsernameIgnoreCase(username);
@@ -43,6 +42,27 @@ public class RecoveryService {
             return p != null && p.isTelegramVerified();
         }).orElse(false);
         return Map.of("telegram", hasTelegram, "backupCode", hasBackup);
+    }
+
+    public void initByUsername(String username) {
+        var user = users.findByUsernameIgnoreCase(username).orElse(null);
+        if (user != null) {
+            initTelegram(user.getId());
+        }
+    }
+
+    public boolean verifyByUsername(String username, String code) {
+        var user = users.findByUsernameIgnoreCase(username).orElse(null);
+        return user != null && verifyCode(user.getId(), code);
+    }
+
+    public boolean resetByUsername(String username, String code, String newPassword) {
+        var user = users.findByUsernameIgnoreCase(username).orElse(null);
+        if (user == null || !verifyCode(user.getId(), code)) {
+            return false;
+        }
+        resetPassword(user.getId(), newPassword);
+        return true;
     }
 
     public void initTelegram(UUID userId) {
@@ -59,8 +79,7 @@ public class RecoveryService {
             var user = users.findById(userId).orElse(null);
             if (user != null) {
                 String text = "Код для восстановления: " + plain + " (действителен " + (codeTtlSeconds/60) + " минут)";
-                postJson(notificationBaseUrl + "/api/v1/notification/telegram/send",
-                        "{\"username\":\"" + user.getUsername() + "\",\"text\":\"" + text.replace("\"","'") + "\"}");
+                notificationClient.sendTelegram(user.getUsername(), text);
             }
         } catch (Exception ignored) {}
     }
@@ -106,22 +125,5 @@ public class RecoveryService {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 
-    private void postJson(String url, String json) {
-        try {
-            java.net.URL u = new java.net.URL(url);
-            java.net.HttpURLConnection c = (java.net.HttpURLConnection) u.openConnection();
-            c.setConnectTimeout(2000);
-            c.setReadTimeout(2000);
-            c.setRequestMethod("POST");
-            c.setRequestProperty("Content-Type", "application/json");
-            c.setDoOutput(true);
-            try (var os = c.getOutputStream()) {
-                os.write(json.getBytes());
-            }
-            c.getResponseCode();
-            c.disconnect();
-        } catch (Exception ignored) {}
-    }
+    // HTTP logic delegated to NotificationClient
 }
-
-

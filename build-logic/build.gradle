@@ -1,0 +1,23 @@
+plugins {
+    id 'groovy-gradle-plugin'
+}
+
+gradlePlugin {
+    plugins {
+        javaLibraryConventions {
+            id = 'com.aquastream.java-library-conventions'
+            implementationClass = 'com.aquastream.JavaLibraryConventionsPlugin'
+        }
+        springBootApiConventions {
+            id = 'com.aquastream.spring-boot-api-conventions'
+            implementationClass = 'com.aquastream.SpringBootApiConventionsPlugin'
+        }
+    }
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation localGroovy()
+}
+

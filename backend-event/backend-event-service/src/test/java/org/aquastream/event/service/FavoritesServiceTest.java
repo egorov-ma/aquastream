@@ -119,7 +119,7 @@ class FavoritesServiceTest {
         assertNotNull(result);
         assertEquals(eventId, result.eventId());
         assertTrue(result.isFavorited());
-        assertEquals("Event is already in favorites", result.message());
+        assertEquals("Event already in favorites", result.message());
         
         verify(favoritesRepository, never()).save(any());
     }

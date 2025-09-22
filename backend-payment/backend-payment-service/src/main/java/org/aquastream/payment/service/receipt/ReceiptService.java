@@ -116,16 +116,36 @@ public class ReceiptService {
         moderationService.sendModerationNotification(receipt, approved, moderatorNotes);
     }
 
-    public PaymentReceiptEntity getReceipt(UUID receiptId) {
-        return receiptRepository.findById(receiptId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+    public org.aquastream.payment.service.dto.PaymentReceiptInfo getReceipt(UUID receiptId) {
+        PaymentReceiptEntity e = receiptRepository.findById(receiptId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Receipt not found"));
+        return toInfo(e);
     }
 
-    public PaymentReceiptEntity getReceiptByPayment(UUID paymentId) {
-        return receiptRepository.findLastReceiptByPayment(paymentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+    public org.aquastream.payment.service.dto.PaymentReceiptInfo getReceiptByPayment(UUID paymentId) {
+        PaymentReceiptEntity e = receiptRepository.findLastReceiptByPayment(paymentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "No receipt found for payment"));
+        return toInfo(e);
+    }
+
+    private org.aquastream.payment.service.dto.PaymentReceiptInfo toInfo(PaymentReceiptEntity e) {
+        return org.aquastream.payment.service.dto.PaymentReceiptInfo.builder()
+                .id(e.getId())
+                .paymentId(e.getPaymentId())
+                .receiptType(e.getReceiptType() != null ? e.getReceiptType().name() : null)
+                .receiptData(e.getReceiptData())
+                .fiscalReceiptNumber(e.getFiscalReceiptNumber())
+                .fiscalDocumentNumber(e.getFiscalDocumentNumber())
+                .fiscalSign(e.getFiscalSign())
+                .ofdReceiptUrl(e.getOfdReceiptUrl())
+                .status(e.getStatus() != null ? e.getStatus().name() : null)
+                .createdAt(e.getCreatedAt())
+                .updatedAt(e.getUpdatedAt())
+                .sentAt(e.getSentAt())
+                .registeredAt(e.getRegisteredAt())
+                .build();
     }
 
     private void validateReceiptImage(String receiptImageUrl) {

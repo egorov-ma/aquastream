@@ -2,12 +2,12 @@ package org.aquastream.user.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.aquastream.user.db.entity.UserEntity;
-import org.aquastream.user.db.repo.UserRepository;
+import org.aquastream.user.db.repository.UserRepository;
 import org.aquastream.user.db.entity.RefreshSessionEntity;
-import org.aquastream.user.db.repo.RefreshSessionRepository;
+import org.aquastream.user.db.repository.RefreshSessionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +41,7 @@ public class AuthService {
     @Value("${app.logging.maskPII:true}")
     private boolean maskPii;
 
-    public UserEntity register(String username, String rawPassword) {
+    public UUID register(String username, String rawPassword) {
         users.findByUsernameIgnoreCase(username).ifPresent(u -> {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
         });
@@ -53,17 +53,18 @@ public class AuthService {
                 .build();
         UserEntity saved = users.save(u);
         log.info("user.registered username={} id={}", masked(username), saved.getId());
-        return saved;
+        return saved.getId();
     }
 
     public String issueAccessToken(UserEntity user, long ttlSeconds) {
         Instant now = Instant.now();
+        var key = Keys.hmacShaKeyFor(jwtSecretStr.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         return Jwts.builder()
-                .setSubject(user.getId().toString())
+                .subject(user.getId().toString())
                 .claim("role", user.getRole())
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plusSeconds(ttlSeconds)))
-                .signWith(SignatureAlgorithm.HS512, jwtSecretStr.getBytes())
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(ttlSeconds)))
+                .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
 
@@ -78,8 +79,9 @@ public class AuthService {
     }
 
     public UUID parseTokenSubject(String jwt) {
+        var key = Keys.hmacShaKeyFor(jwtSecretStr.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecretStr.getBytes())
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(jwt)
                 .getPayload();
@@ -178,5 +180,3 @@ public class AuthService {
         return Math.toIntExact(refreshTtlSeconds);
     }
 }
-
-

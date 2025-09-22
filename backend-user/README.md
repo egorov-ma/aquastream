@@ -163,6 +163,48 @@ public Tokens refresh(UUID userId, String oldJti) {
 
 ## API Endpoints
 
+### Модели ответов (общее)
+
+- SimpleSuccessResponse:
+```json
+{ "success": true, "message": "..." }
+```
+
+- ProfileResponse:
+```json
+{
+  "id": "<uuid>",
+  "username": "john_doe",
+  "role": "USER",
+  "active": true,
+  "profile": {
+    "phone": "+1-234-567-890",
+    "telegram": "@john",
+    "isTelegramVerified": true
+  }
+}
+```
+
+- AdminUserListResponse:
+```json
+{
+  "total": 123,
+  "items": [
+    { "id":"<uuid>", "username":"john", "role":"USER", "active":true, "createdAt":"2025-02-16T10:00:00Z" }
+  ]
+}
+```
+
+- RecoveryOptionsResponse:
+```json
+{ "telegram": true, "backupCode": false }
+```
+
+- TelegramLinkInitResponse:
+```json
+{ "code": "ABC123", "deeplink": "https://t.me/aqstream_bot?start=ABC123" }
+```
+
 ### Аутентификация
 
 #### `POST /api/v1/auth/register`
@@ -176,7 +218,10 @@ public Tokens refresh(UUID userId, String oldJti) {
 }
 ```
 
-**Response:** `200 OK` + HTTP-only cookies
+**Response:** `200 OK` + HTTP-only cookies, body:
+```json
+{ "success": true, "message": "registered" }
+```
 
 #### `POST /api/v1/auth/login`
 Вход в систему
@@ -189,14 +234,20 @@ public Tokens refresh(UUID userId, String oldJti) {
 }
 ```
 
-**Response:** `200 OK` + HTTP-only cookies
+**Response:** `200 OK` + HTTP-only cookies, body:
+```json
+{ "success": true, "message": "logged in" }
+```
 - `access` cookie (15 минут)
 - `refresh` cookie (30 дней)
 
 #### `POST /api/v1/auth/logout`
 Выход из системы с отзывом сессии
 
-**Response:** `200 OK` + очистка cookies
+**Response:** `200 OK` + очистка cookies, body:
+```json
+{ "success": true, "message": "logged out" }
+```
 
 #### `POST /api/v1/auth/refresh`
 Обновление access токена

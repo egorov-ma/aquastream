@@ -1,0 +1,143 @@
+% AquaStream — Руководство по сборке (BUILD.md)
+
+Этот документ описывает архитектуру системы сборки, правила управления зависимостями и типовые команды для разработки и CI.
+
+## Обзор проекта
+- Язык/платформа: Java 21, Spring Boot 3.3.5, Gradle 8.5
+- Структура: многомодульный Gradle-проект
+- Модули:
+  - Общие: `backend-common`, `backend-gateway`
+  - Домены: `backend-user`, `backend-event`, `backend-crew`, `backend-media`, `backend-payment`, `backend-notification`
+  - Внутри доменов: `*-api` (исполняемые), `*-service` и `*-db` (библиотеки)
+
+## Правила артефактов и плагинов
+- Плагины:
+  - Глобально: `java`, `io.spring.dependency-management`, `org.owasp.dependencycheck`
+  - Только для `*-api`: `org.springframework.boot`
+- Артефакты:
+  - Библиотеки (`*-db`, `*-service`): `jar` включён, `bootJar` отключён
+  - Исполняемые (`*-api`): `bootJar` включён, `jar` отключён
+- Конфигурация `jar/bootJar` централизована в корневом `build.gradle`
+
+## Управление зависимостями
+- Централизация версий в `build.gradle` (раздел `ext`):
+  - Ключевые версии: Spring Boot/Cloud, jjwt, bucket4j, hypersistence, hibernate-types, springdoc, jackson и др.
+- BOM'ы (в `dependencyManagement` корня):
+  - `org.springframework.boot:spring-boot-dependencies`
+  - `org.springframework.cloud:spring-cloud-dependencies`
+  - `org.testcontainers:testcontainers-bom`
+  - `com.fasterxml.jackson:jackson-bom`
+- Dependency locking: включён для всех сабпроектов (`lockAllConfigurations`, `STRICT`).
+- Правила `api` vs `implementation`:
+  - `backend-common`: экспортирует только то, что требуется всем модулям (например, web/validation, bucket4j-redis), прочее — `implementation`.
+  - При добавлении зависимостей избегайте дублирования Jackson: он уже приходит из Spring Boot starters.
+
+## Производительность сборки
+- `gradle.properties` настраивает: параллельность, кэширование, daemon, configuration cache, JVM параметры.
+- Configuration cache: включён, с предупреждением о совместимости gradle-git-properties plugin
+- Dependency locking: все модули используют strict lock-файлы для воспроизводимых сборок
+- Форс совместимости: `commons-compress:1.26.2` (из-за Gradle 8.5 + Spring Boot 3.3.5)
+
+## Команды сборки и тестов
+- Полная сборка всех модулей:
+  - `./gradlew clean build`
+- Сборка исполняемых артефактов (примеры):
+  - `./gradlew :backend-user:backend-user-api:bootJar`
+  - `./gradlew :backend-event:backend-event-api:bootJar`
+  - `./gradlew :backend-gateway:bootJar`
+- Тесты (JUnit 5, отчёты включены):
+  - `./gradlew test`
+  - Отчёты: `build/reports/tests/test/index.html` и JUnit XML
+- Dependency locking:
+  - Сгенерировать lock-файлы: `./gradlew dependencies --write-locks`
+  - Обновить lock-файлы всех модулей: `for dir in */; do cd "$dir" && ./gradlew dependencies --write-locks && cd ..; done`
+  - Commit'ить изменения lock-файлов в VCS
+- Configuration cache:
+  - Проверка совместимости: `./gradlew build --configuration-cache`
+  - Включён в gradle.properties, но gradle-git-properties plugin не полностью совместим
+- OWASP Dependency-Check:
+  - Запуск: `./gradlew dependencyCheckAnalyze`
+  - Отчёты: `build/reports/dependency-check-report.html` и `*.sarif`
+  - Suppress-файл: `owasp-suppression.xml`
+
+## Архитектура слоёв (Variant B)
+- Слои: `api → service → db`.
+- Правила доступа:
+  - `api` слой может импортировать только из `service` слоя
+  - `service` слой может импортировать только из `db` слоя и `backend-common`
+  - ЗАПРЕЩЕНО: `api` импортирует `..db..`; `service` импортирует `..api..`
+- DTO модели:
+  - **Transport DTO** (в `api`): используются в REST endpoints, содержат validation аннотации
+  - **Service DTO** (в `service`): доменные модели, бизнес-логика
+  - **Entity** (в `db`): JPA сущности для работы с БД
+- Маппинг:
+  - Controllers в `api` выполняют маппинг между Transport DTO ↔ Service DTO
+  - Services в `service` выполняют маппинг между Service DTO ↔ Entity
+  - ЗАПРЕЩЕНО: возвращать Entity напрямую из REST endpoints
+- Проверка (ArchUnit):
+  - Тесты архитектуры: `./gradlew test --tests "*LayerRulesTest"`
+  - Правила автоматически исключают test классы через `.haveNameNotMatching(".*Test.*")`
+  - Покрытие: user, event, crew, media, notification, payment доменов
+
+## Convention Plugins (buildSrc)
+- `JavaLibraryConventions`:
+  - Применяет `java`, `io.spring.dependency-management`, `org.owasp.dependencycheck`.
+  - Java 21, `-parameters`, `-Xlint`, UTF‑8; тесты JUnit 5 с отчётами.
+  - Импортирует BOM: Spring Boot/Cloud, Testcontainers, Jackson (версии берутся из root `ext`).
+- `SpringBootApiConventions`:
+  - Применяет Spring Boot к `*-api` модулям; включает `bootJar`, отключает `jar`.
+
+## CI
+- Файл: `.github/workflows/ci-architecture.yml`
+  - `build`: `./gradlew build -x test`
+  - `archunit`: `./gradlew test --tests "*LayerRulesTest"`
+  - `deps-and-security`: `dependencyUpdates`, `dependencyCheckAnalyze`, запуск скриптов из `scripts/`
+
+## Testcontainers (интеграционные тесты)
+- BOM уже подключён на уровне корня; в `subprojects` добавлен `testImplementation 'org.testcontainers:junit-jupiter'`.
+- Модульные специфичные контейнеры (например, `org.testcontainers:postgresql`) добавляйте только в модулях, где они реально используются.
+- Рекомендуемые пути исходников интеграционных тестов: `src/integrationTest/java` и `src/integrationTest/resources`.
+
+## Проверка актуальности зависимостей
+- Плагин: Gradle Versions Plugin (`com.github.ben-manes.versions`)
+- Запуск отчёта:
+  - `./gradlew dependencyUpdates -Drevision=release`
+  - или `scripts/check-outdated-deps.sh`
+- Отчёты: `build/dependencyUpdates/` (plain, json, html)
+
+## Гайд по добавлению модулей
+- Шаблоны имён: `your-domain-api`, `your-domain-service`, `your-domain-db`
+- Для `*-api`:
+  - Не добавляйте `id 'org.springframework.boot'` вручную — он применяется из корня по маске `*-api`
+  - Используйте стартеры Spring, версии управляются через BOM
+  - Создавайте Transport DTO в `src/main/java/.../api/dto/` с validation аннотациями
+  - Добавляйте ArchUnit тест в `src/test/java/.../architecture/LayerRulesTest.java`
+- Для `*-service`/`*-db`:
+  - Это библиотеки: не подключайте Boot, следите чтобы `bootJar` не включался
+  - Проверяйте `api`/`implementation` и избегайте утечек транзитивных зависимостей
+  - Service DTO в `*-service`, Entity в `*-db`
+
+## Принципы обновления зависимостей
+1. Добавьте/обновите версии в корневом `ext` при необходимости
+2. По возможности полагайтесь на импортированные BOM (без явных версий в модулях)
+3. Обновите модули, убрав хардкод версий
+4. Перегенерируйте lock-файлы: `./gradlew dependencies --write-locks`
+5. Прогоните тесты и OWASP проверку
+
+## Частые проблемы и советы
+- Конфликты Jackson/Testcontainers: проверьте, что версия берётся из BOM и нет явных версий в модулях
+- Ошибки bootJar у библиотек: убедитесь, что модуль не `*-api` и Boot к нему не применяется
+- OWASP ложные срабатывания: добавляйте подавления в `owasp-suppression.xml` точечно с комментариями
+- ArchUnit тесты падают: убедитесь что в правилах есть исключение test классов `.haveNameNotMatching(".*Test.*")`
+- Configuration cache warnings: gradle-git-properties plugin помечен как `notCompatibleWithConfigurationCache`
+- Transport DTO нарушения: controllers должны возвращать Transport DTO, а не Entity напрямую
+
+## Полезные пути и файлы
+- Корень: `build.gradle`, `settings.gradle`, `gradle.properties`, `owasp-suppression.xml`, `version.properties`
+- Общее ядро: `backend-common`
+- Гейтвей: `backend-gateway`
+- Доменные модули: `backend-*/**`
+
+---
+
+Поддерживайте единообразие: версии в одном месте, плагины — централизованно, минимизируйте дубли и транзитивные утечки. Это ускоряет сборку и упрощает сопровождение.

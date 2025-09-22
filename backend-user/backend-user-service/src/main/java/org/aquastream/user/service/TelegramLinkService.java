@@ -3,8 +3,8 @@ package org.aquastream.user.service;
 import lombok.RequiredArgsConstructor;
 import org.aquastream.user.db.entity.ProfileEntity;
 import org.aquastream.user.db.entity.UserEntity;
-import org.aquastream.user.db.repo.ProfileRepository;
-import org.aquastream.user.db.repo.UserRepository;
+import org.aquastream.user.db.repository.ProfileRepository;
+import org.aquastream.user.db.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +52,4 @@ public class TelegramLinkService {
 
     public record LinkResult(String code, String deeplink) {}
 }
-
 

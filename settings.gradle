@@ -1,3 +1,11 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+    includeBuild 'build-logic'
+}
+
 rootProject.name = 'aquastream'
 
 include 'backend-common'
@@ -31,6 +39,3 @@ include 'backend-payment'
 include 'backend-payment:backend-payment-api'
 include 'backend-payment:backend-payment-service'
 include 'backend-payment:backend-payment-db'
-
-
-

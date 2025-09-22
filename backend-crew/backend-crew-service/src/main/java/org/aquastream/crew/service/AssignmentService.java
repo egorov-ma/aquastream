@@ -2,8 +2,8 @@ package org.aquastream.crew.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aquastream.crew.api.dto.CrewAssignmentDto;
-import org.aquastream.crew.api.dto.CreateAssignmentDto;
+import org.aquastream.crew.dto.CrewAssignmentDto;
+import org.aquastream.crew.dto.CreateAssignmentDto;
 import org.aquastream.crew.db.entity.CrewAssignmentEntity;
 import org.aquastream.crew.db.entity.CrewEntity;
 import org.aquastream.crew.db.repository.CrewAssignmentRepository;

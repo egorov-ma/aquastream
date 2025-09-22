@@ -8,10 +8,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     
     // MinIO/S3 SDK
-    implementation 'io.minio:minio:8.5.7'
+    implementation "io.minio:minio:${minioVersion}"
     
     // JSON processing comes from Spring Boot starters
     
     // Scheduling
     implementation 'org.springframework:spring-context'
+
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
 }

@@ -9,3 +9,7 @@ dependencies {
 }
 
 // jar/bootJar configured globally in root build.gradle
+
+dependencies {
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
+}

@@ -29,6 +29,9 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     
     // Lombok provided by root subprojects
+    
+    // Architecture tests
+    testImplementation "com.tngtech.archunit:archunit-junit5:${archunitVersion}"
 }
 
 tasks.test { useJUnitPlatform() }
