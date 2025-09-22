@@ -1,5 +1,11 @@
 # ADR-0001: Выбор стека Doc as Code для aquastream
 
+---
+title: ADR-0001 Docs Stack
+summary: Принятое решение по стеку Doc as Code (формат, генератор, плагины, процессы).
+tags: [adr]
+---
+
 Принятое решение по стеку Doc as Code (формат, генератор, плагины, процессы).
 
 - Статус: Accepted

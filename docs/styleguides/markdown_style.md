@@ -1,5 +1,11 @@
 # Markdown Styleguide (Aquastream)
 
+---
+title: Markdown Styleguide
+summary: Единые правила оформления Markdown для консистентной и предсказуемой документации.
+tags: [style]
+---
+
 Единые правила оформления Markdown для консистентной и предсказуемой документации.
 
 Цель — единый и предсказуемый стиль Markdown для Doc as Code.

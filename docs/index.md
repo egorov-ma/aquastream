@@ -1,5 +1,11 @@
 # AquaStream — портал документации
 
+---
+title: AquaStream Docs Portal
+summary: Портал Doc as Code со сквозными разделами и навигацией по модулям.
+tags: [overview]
+---
+
 Портал Doc as Code: сквозные разделы и ссылки на документацию модулей.
 
 - Начать: см. Overview
