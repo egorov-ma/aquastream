@@ -28,19 +28,19 @@
   },
   {
     "path": "backend-common/README.md",
-    "h1": "AquaStream Backend Common",
-    "h2_first": "Описание",
+    "h1": "",
+    "h2_first": "",
     "lang": "mixed",
-    "size_bytes": "10219",
-    "last_commit_date": "2025-09-17",
+    "size_bytes": "270",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
     "path": "backend-common/docs/README.md",
-    "h1": "",
-    "h2_first": "Контекст",
+    "h1": "AquaStream Backend Common",
+    "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "5208",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -136,19 +136,19 @@
   },
   {
     "path": "backend-gateway/README.md",
-    "h1": "AquaStream Backend Gateway",
-    "h2_first": "Описание",
+    "h1": "",
+    "h2_first": "",
     "lang": "mixed",
-    "size_bytes": "15834",
-    "last_commit_date": "2025-09-17",
+    "size_bytes": "272",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
     "path": "backend-gateway/docs/README.md",
-    "h1": "",
-    "h2_first": "Контекст",
+    "h1": "AquaStream Backend Gateway",
+    "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "1482",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -517,7 +517,7 @@
     "h1": "Docs Quality Report",
     "h2_first": "Coverage",
     "lang": "en",
-    "size_bytes": "581",
+    "size_bytes": "130",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -712,10 +712,10 @@
   },
   {
     "path": "docs/modules/backend-common/README.md",
-    "h1": "",
-    "h2_first": "Контекст",
+    "h1": "AquaStream Backend Common",
+    "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "5208",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -793,10 +793,10 @@
   },
   {
     "path": "docs/modules/backend-gateway/README.md",
-    "h1": "",
-    "h2_first": "Контекст",
+    "h1": "AquaStream Backend Gateway",
+    "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "1482",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -929,9 +929,9 @@
   {
     "path": "docs/modules/frontend/README.md",
     "h1": "",
-    "h2_first": "Контекст",
+    "h2_first": "AquaStream Frontend — DevEx README",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "1568",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1035,6 +1035,15 @@
     "last_author": "egorovma"
   },
   {
+    "path": "docs/modules/infra/RELEASES.md",
+    "h1": "AquaStream Release Process",
+    "h2_first": "Semantic Versioning (SemVer)",
+    "lang": "en",
+    "size_bytes": "9916",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
     "path": "docs/modules/infra/aquastream-backend-spec-complete.md",
     "h1": "AquaStream Backend - Техническая спецификация",
     "h2_first": "Оглавление",
@@ -1045,10 +1054,10 @@
   },
   {
     "path": "docs/modules/infra/changelog.md",
-    "h1": "",
+    "h1": "Changelog — Infra",
     "h2_first": "[Unreleased]",
     "lang": "mixed",
-    "size_bytes": "515",
+    "size_bytes": "2027",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1117,19 +1126,19 @@
   },
   {
     "path": "frontend/README.md",
-    "h1": "дев‑сервер / прод‑сборка / старт",
-    "h2_first": "AquaStream Frontend — DevEx README",
+    "h1": "",
+    "h2_first": "",
     "lang": "mixed",
-    "size_bytes": "5103",
-    "last_commit_date": "2025-08-10",
+    "size_bytes": "268",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
     "path": "frontend/docs/README.md",
     "h1": "",
-    "h2_first": "Контекст",
+    "h2_first": "AquaStream Frontend — DevEx README",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "1568",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1206,15 +1215,6 @@
     "last_author": "egorovma"
   },
   {
-    "path": "infra/CHANGELOG.md",
-    "h1": "Changelog",
-    "h2_first": "[Unreleased]",
-    "lang": "en",
-    "size_bytes": "2168",
-    "last_commit_date": "2025-09-17",
-    "last_author": "egorovma"
-  },
-  {
     "path": "infra/backup/docs/README.md",
     "h1": "Бэкапы PostgreSQL (per-schema)",
     "h2_first": "Что делает `backup.sh`",
@@ -1279,10 +1279,10 @@
   },
   {
     "path": "infra/docs/changelog.md",
-    "h1": "",
+    "h1": "Changelog — Infra",
     "h2_first": "[Unreleased]",
     "lang": "mixed",
-    "size_bytes": "515",
+    "size_bytes": "2027",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
