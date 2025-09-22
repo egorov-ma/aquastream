@@ -51,11 +51,11 @@ nav:
           - Overview: modules/frontend/README.md
           - Runbook: modules/frontend/runbook.md
           - Changelog: modules/frontend/changelog.md
-  - FAQ: faq.md
       - Infra:
           - Overview: modules/infra/README.md
           - Runbook: modules/infra/runbook.md
           - Changelog: modules/infra/changelog.md
+  - FAQ: faq.md
 theme:
   name: material
   features:
