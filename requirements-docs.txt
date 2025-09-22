@@ -1,9 +1,6 @@
 # MkDocs & plugins (pinned)
 mkdocs==1.6.0
 mkdocs-material==9.5.19
-mkdocs-monorepo-plugin==1.1.0
-mkdocs-awesome-pages-plugin==2.9.2
 mkdocs-mermaid2-plugin==1.1.1
 mkdocs-redirects==1.2.1
 pymdown-extensions==10.10.1
-mike==2.1.3

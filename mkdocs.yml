@@ -77,9 +77,6 @@ theme:
     - navigation.tabs
     - navigation.sections
     - toc.integrate
-extra:
-  version:
-    provider: mike
 markdown_extensions:
   - admonition
   - toc:
