@@ -2,8 +2,8 @@
 
 ## Coverage
 - Inventory total: 140
-- Nav entries: 42
-- Missing in nav (docs/*, excl. service/ADR/cards): 10
+- Nav entries: 43
+- Missing in nav (docs/*, excl. service/ADR/cards): 9
 
 ### Missing in nav
 - docs/modules/frontend/aquastream-frontend-spec.md
@@ -15,4 +15,3 @@
 - docs/modules/infra/CI-README.md
 - docs/modules/infra/DEVELOPER.md
 - docs/modules/infra/aquastream-backend-spec-complete.md
-- docs/styleguides/versioning.md
