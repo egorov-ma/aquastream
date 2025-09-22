@@ -1,0 +1,28 @@
+name: commitlint
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install commitlint
+        run: |
+          npm i -g @commitlint/config-conventional @commitlint/cli
+      - name: Lint commit messages
+        run: |
+          npx commitlint --from=$(git rev-parse HEAD~20) --to=HEAD --verbose || true
+      - name: Lint PR title (if PR)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "${{ github.event.pull_request.title }}" | npx commitlint || true

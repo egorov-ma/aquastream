@@ -18,6 +18,8 @@ tags: [overview]
 - Styleguides → styleguides/markdown_style.md
 - Roadmap → roadmap.md
 - API → api/index.md
+- Contributor Guide → contributor-guide.md
+- FAQ → faq.md
 
 ## Быстрые ссылки
 - Архитектура: docs/architecture/index.md

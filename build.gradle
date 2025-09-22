@@ -211,3 +211,22 @@ configure(subprojects.findAll { it.name.endsWith('-api') }) {
         tasks.named('bootJar') { enabled = true }
     }
 }
+
+// Root-level docs tasks that proxy to Makefile (must be after plugins block)
+tasks.register('docsSetup', Exec) {
+    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-setup'
+}
+
+tasks.register('docsServe', Exec) {
+    dependsOn 'docsSetup'
+    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-serve'
+}
+
+tasks.register('docsBuild', Exec) {
+    dependsOn 'docsSetup'
+    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-build'
+}
+
+tasks.register('docsLint', Exec) {
+    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-lint'
+}

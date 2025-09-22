@@ -1,0 +1,9 @@
+- name: docs-required
+  color: d73a4a
+  description: PR изменяет код без обновления документации
+- name: no-docs-needed
+  color: c5def5
+  description: Изменения не требуют обновления документации
+- name: docs-changed
+  color: 0e8a16
+  description: В PR есть изменения в документации

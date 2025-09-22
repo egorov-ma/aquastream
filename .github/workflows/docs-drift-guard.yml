@@ -10,9 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Detect bypass label
+        run: |
+          echo '${{ toJson(github.event.pull_request.labels) }}' | grep -qi '"name":"no-docs-needed"' && echo "NO_DOCS_NEEDED=1" >> $GITHUB_ENV || true
+
       - name: Detect drift between code and docs
         run: |
           set -e
+          if [ "${NO_DOCS_NEEDED:-0}" = "1" ]; then
+            echo "Bypass via label no-docs-needed"; exit 0; fi
+          git fetch origin ${{ github.base_ref }} --depth=1
           CHANGED_CODE=$(git diff --name-only origin/${{ github.base_ref }}... | grep -E '^(backend-|frontend/|infra/)' || true)
           CHANGED_DOCS=$(git diff --name-only origin/${{ github.base_ref }}... | grep -E '(^docs/|/docs/)' || true)
           if [ -n "$CHANGED_CODE" ] && [ -z "$CHANGED_DOCS" ]; then

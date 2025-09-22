@@ -1,3 +1,19 @@
+## Docs
+
+Команды (Make):
+
+- Установка: `make docs-setup`
+- Предпросмотр: `make docs-serve`
+- Сборка: `make docs-build`
+- Линтеры: `make docs-lint`
+
+Команды (Gradle):
+
+- Предпросмотр: `./gradlew docsServe`
+- Сборка: `./gradlew docsBuild`
+- Линтеры: `./gradlew docsLint`
+
+Установка deps скриптом: `scripts/docs/install.sh`
 % AquaStream — Руководство по сборке (BUILD.md)
 
 Этот документ описывает архитектуру системы сборки, правила управления зависимостями и типовые команды для разработки и CI.

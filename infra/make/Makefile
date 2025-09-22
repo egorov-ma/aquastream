@@ -3,7 +3,7 @@ ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 REPO_ROOT := $(abspath $(ROOT_DIR)/..)
 DC := docker compose -f $(ROOT_DIR)/docker/compose/docker-compose.yml
 
-.PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-inventory docs-map docs-normalize-report docs-sync-modules docs-api docs-diagrams
+.PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-check-links docs-inventory docs-map docs-normalize-report docs-sync-modules docs-api docs-diagrams
 
 up-dev:
 	$(DC) --profile dev up -d
@@ -71,22 +71,25 @@ docs-setup:
 	pip install -r $(REPO_ROOT)/requirements-docs.txt
 
 docs-serve:
-    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
-    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
-    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
-    . .venv-docs/bin/activate && mkdocs serve
+	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
+	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
+	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
+	. .venv-docs/bin/activate && mkdocs serve
 
 docs-build:
-    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
-    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
-    $(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
-    . .venv-docs/bin/activate && mkdocs build
+	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
+	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
+	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
+	. .venv-docs/bin/activate && mkdocs build
 
 docs-lint:
 	@echo "[docs] markdownlint" && npx --yes markdownlint-cli2 "**/*.md" --config .markdownlint.jsonc || true; \
 	 echo "[docs] cspell" && npx --yes cspell "**/*.md" --no-progress --show-context || true; \
 	 echo "[docs] vale" && vale "**/*.md" || true; \
 	 echo "[docs] lychee" && lychee --config lychee.toml "**/*.md" || true
+
+docs-check-links:
+	@echo "[docs] lychee (links only)" && lychee --config lychee.toml "**/*.md" || true
 
 docs-inventory:
 	. .venv-docs/bin/activate || true; \
@@ -96,6 +99,11 @@ docs-inventory:
 docs-map:
 	. .venv-docs/bin/activate || true; \
 	python $(REPO_ROOT)/tools/map_docs.py || python3 $(REPO_ROOT)/tools/map_docs.py
+
+.PHONY: docs-apply-map
+docs-apply-map:
+	. .venv-docs/bin/activate || true; \
+	python $(REPO_ROOT)/tools/apply_move_plan.py || python3 $(REPO_ROOT)/tools/apply_move_plan.py
 
 docs-normalize-report:
 	. .venv-docs/bin/activate || true; \
@@ -110,7 +118,12 @@ docs-api:
 	python $(REPO_ROOT)/tools/generate_api_docs.py || python3 $(REPO_ROOT)/tools/generate_api_docs.py
 
 docs-diagrams:
-    . .venv-docs/bin/activate || true; \
-    python $(REPO_ROOT)/tools/generate_diagrams.py || python3 $(REPO_ROOT)/tools/generate_diagrams.py
+	. .venv-docs/bin/activate || true; \
+	python $(REPO_ROOT)/tools/generate_diagrams.py || python3 $(REPO_ROOT)/tools/generate_diagrams.py
+
+.PHONY: docs-quality-report
+docs-quality-report:
+	. .venv-docs/bin/activate || true; \
+	python $(REPO_ROOT)/tools/check_docs_quality.py || python3 $(REPO_ROOT)/tools/check_docs_quality.py
 
 

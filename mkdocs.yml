@@ -7,6 +7,7 @@ nav:
   - Ops: ops/index.md
   - QA: qa/index.md
   - Glossary: glossary.md
+  - Contributor Guide: contributor-guide.md
   - ADR: adr/index.md
   - Styleguides:
       - Markdown: styleguides/markdown_style.md
@@ -50,12 +51,21 @@ nav:
           - Overview: modules/frontend/README.md
           - Runbook: modules/frontend/runbook.md
           - Changelog: modules/frontend/changelog.md
+  - FAQ: faq.md
       - Infra:
           - Overview: modules/infra/README.md
           - Runbook: modules/infra/runbook.md
           - Changelog: modules/infra/changelog.md
 theme:
   name: material
+  features:
+    - content.action.edit
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+extra:
+  version:
+    provider: mike
 markdown_extensions:
   - admonition
   - toc:
@@ -69,3 +79,4 @@ markdown_extensions:
 plugins:
   - search
   - mermaid2
+  - redirects
