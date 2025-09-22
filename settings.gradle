@@ -12,6 +12,7 @@ include 'backend-common'
 
 include 'backend-gateway'
 
+include 'backend-user'
 include 'backend-user:backend-user-api'
 include 'backend-user:backend-user-db'
 include 'backend-user:backend-user-service'
@@ -24,6 +25,7 @@ include 'backend-notification:backend-notification-service'
 include 'backend-event:backend-event-api'
 include 'backend-event:backend-event-db'
 include 'backend-event:backend-event-service'
+include 'backend-event'
 
 include 'backend-crew'
 include 'backend-crew:backend-crew-api'

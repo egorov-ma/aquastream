@@ -74,14 +74,22 @@ def analyze_file(path: str) -> Dict[str, object]:
             issues.append('has-absolute-github-link')
             break
 
-    # Code fence languages
-    for i, line in enumerate(content_lines):
+    # Code fence languages (check only opening fences)
+    inside_fence = False
+    for line in content_lines:
         m = CODE_FENCE_RE.match(line)
-        if m:
-            lang = m.group(1)
+        if not m:
+            continue
+        lang = m.group(1)
+        if not inside_fence:
+            # opening fence
             if lang == '':
                 issues.append('code-fence-missing-language')
                 break
+            inside_fence = True
+        else:
+            # closing fence
+            inside_fence = False
 
     # Relative links existence (superficial check)
     joined = ''.join(content_lines)

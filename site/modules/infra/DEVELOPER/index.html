@@ -1,0 +1,4230 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.19">
+    
+    
+      
+        <title>AquaStream Backend - Developer Guide - AquaStream Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.66ac8b77.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aquastream-backend-developer-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="AquaStream Docs" class="md-header__button md-logo" aria-label="AquaStream Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AquaStream Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AquaStream Backend - Developer Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/egorov-ma/aquastream" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="AquaStream Docs" class="md-nav__button md-logo" aria-label="AquaStream Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AquaStream Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/egorov-ma/aquastream" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ops/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ops
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../qa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    QA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../adr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADR
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Styleguides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Styleguides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../styleguides/markdown_style/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Services
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Services
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1" id="__nav_11_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Backend
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1">
+            <span class="md-nav__icon md-icon"></span>
+            Backend
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_1" id="__nav_11_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-user/backend-user-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-user/backend-user-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-user/backend-user-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_2" id="__nav_11_1_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Event
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            Event
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-event/backend-event-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-event/backend-event-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-event/backend-event-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_3" id="__nav_11_1_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Crew
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            Crew
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-crew/backend-crew-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-crew/backend-crew-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-crew/backend-crew-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_4" id="__nav_11_1_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Media
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            Media
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-media/backend-media-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-media/backend-media-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-media/backend-media-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_5" id="__nav_11_1_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Notification
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_5">
+            <span class="md-nav__icon md-icon"></span>
+            Notification
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-notification/backend-notification-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-notification/backend-notification-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-notification/backend-notification-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_6" id="__nav_11_1_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Payment
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            Payment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-payment/backend-payment-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-payment/backend-payment-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-payment/backend-payment-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_7" id="__nav_11_1_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gateway
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_7">
+            <span class="md-nav__icon md-icon"></span>
+            Gateway
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-gateway/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-gateway/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_8" id="__nav_11_1_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Common
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_8">
+            <span class="md-nav__icon md-icon"></span>
+            Common
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-common/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-common/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-common/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_2" id="__nav_11_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Frontend
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_2">
+            <span class="md-nav__icon md-icon"></span>
+            Frontend
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_3" id="__nav_11_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Infra
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_3">
+            <span class="md-nav__icon md-icon"></span>
+            Infra
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Оглавление
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Быстрый старт
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Быстрый старт">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Требования
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Клонирование и первый запуск
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      Порты сервисов (dev режим)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏗️ Архитектура
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🏗️ Архитектура">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Микросервисная архитектура
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Сервисы
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Технологический стек
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚙️ Настройка окружения
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ Настройка окружения">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-java-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Установка Java 21
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Установка Docker
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Настройка переменных окружения
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Запуск проекта
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Запуск проекта">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#make" class="md-nav__link">
+    <span class="md-ellipsis">
+      Через Make (рекомендуется)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Через Docker Compose напрямую
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Локальная разработка (без Docker)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Локальная разработка (без Docker)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Запуск инфраструктуры
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ide" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Запуск сервисов в IDE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gradle" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Gradle команды
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      📝 Переменные окружения
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📝 Переменные окружения">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Категории переменных
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Категории переменных">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Redis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      External APIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3minio" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3/MinIO
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spring Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cors-networking" class="md-nav__link">
+    <span class="md-ellipsis">
+      CORS &amp; Networking
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Профили окружения
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Профили окружения">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development (dev)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#staging-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Staging (stage)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-prod" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production (prod)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗄️ База данных
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗄️ База данных">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Схемы PostgreSQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#liquibase" class="md-nav__link">
+    <span class="md-ellipsis">
+      Liquibase миграции
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Liquibase миграции">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      Структура миграций
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      Команды миграций
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      Создание новой миграции
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      Подключение к БД
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      💾 Бэкапы и восстановление
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💾 Бэкапы и восстановление">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      Автоматические бэкапы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Автоматические бэкапы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      Создание бэкапа
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Политика retention
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      Восстановление из бэкапа
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Восстановление из бэкапа">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      Восстановление одной схемы
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    <span class="md-ellipsis">
+      Восстановление всех схем
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_25" class="md-nav__link">
+    <span class="md-ellipsis">
+      Восстановление в другую БД
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_26" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ручное создание бэкапов
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ручное создание бэкапов">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_27" class="md-nav__link">
+    <span class="md-ellipsis">
+      Полный дамп
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_28" class="md-nav__link">
+    <span class="md-ellipsis">
+      Дамп конкретной схемы
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_29" class="md-nav__link">
+    <span class="md-ellipsis">
+      Дамп только данных (без схемы)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 CI/CD процессы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔄 CI/CD процессы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-actions-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Actions Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GitHub Actions Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-ci-matrix-ci-matrixyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. CI Matrix (ci-matrix.yml)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-backend-ci-backend-ciyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Backend CI (backend-ci.yml)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-service-ci-ci-serviceyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Service CI (ci-service.yml)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-release-releaseyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Release (release.yml)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-deploy-deployyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Deploy (deploy.yml)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD конфигурация
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD конфигурация">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secrets-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      Secrets (GitHub)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Registry
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      Запуск CI локально
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Запуск CI локально">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_30" class="md-nav__link">
+    <span class="md-ellipsis">
+      Проверка билда
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Проверка Docker образа
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#act-github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Act (запуск GitHub Actions локально)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_31" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Релизы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Релизы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#semantic-versioning-semver" class="md-nav__link">
+    <span class="md-ellipsis">
+      Semantic Versioning (SemVer)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Semantic Versioning (SemVer)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#majorminorpatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      MAJOR.MINOR.PATCH
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_32" class="md-nav__link">
+    <span class="md-ellipsis">
+      Процесс релиза
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Процесс релиза">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Подготовка релиза
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Создание релиза
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Автоматический процесс
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Проверка релиза
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hotfix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hotfix процесс
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hotfix процесс">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_33" class="md-nav__link">
+    <span class="md-ellipsis">
+      Для критических исправлений:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollback процесс
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rollback процесс">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Быстрый откат Docker образов
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_34" class="md-nav__link">
+    <span class="md-ellipsis">
+      Откат базы данных
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_35" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Мониторинг и отладка
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Мониторинг и отладка">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spring-boot-actuator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spring Boot Actuator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spring Boot Actuator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Health Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metrics
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_36" class="md-nav__link">
+    <span class="md-ellipsis">
+      Логирование
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Логирование">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_37" class="md-nav__link">
+    <span class="md-ellipsis">
+      Уровни логирования по профилям
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_38" class="md-nav__link">
+    <span class="md-ellipsis">
+      Просмотр логов
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#remote-debug-intellij-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remote Debug (IntelliJ IDEA)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_39" class="md-nav__link">
+    <span class="md-ellipsis">
+      Профилирование
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#load-testing-apache-bench" class="md-nav__link">
+    <span class="md-ellipsis">
+      Load Testing с Apache Bench
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database Performance
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_40" class="md-nav__link">
+    <span class="md-ellipsis">
+      ❗ Типичные ошибки
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❗ Типичные ошибки">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Docker &amp; Compose проблемы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Docker & Compose проблемы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#network-aquastream-net-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "network aquastream-net not found"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#port-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "port already in use"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-name-already-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "container name already exists"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. База данных
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. База данных">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-refused-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "connection refused" к PostgreSQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-does-not-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "schema does not exist"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#too-many-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "too many connections"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-java-gradle" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Java &amp; Gradle
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Java & Gradle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#java-version-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Java version mismatch"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gradle-daemon-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Gradle daemon issues"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outofmemoryerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "OutOfMemoryError" при сборке
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Spring Boot проблемы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Spring Boot проблемы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#port-8105-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Port 8105 already in use"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bean-creation-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Bean creation failed"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actuator-endpoints-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Actuator endpoints not found"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Redis проблемы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Redis проблемы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#redis-connection-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Redis connection refused"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-authentication-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Redis authentication failed"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-liquibase" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Liquibase проблемы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Liquibase проблемы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checksum-validation-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Checksum validation failed"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lock-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Lock database"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. CI/CD проблемы
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. CI/CD проблемы">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-actions-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "GitHub Actions timeout"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-push-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ошибка: "Docker push failed"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      ❓ FAQ
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❓ FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как добавить новый сервис?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-ssltls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как настроить SSL/TLS?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как масштабировать сервисы?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как настроить мониторинг?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-actuator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как настроить аутентификацию для Actuator?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как отладить проблемы с производительностью?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как обновить зависимости?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-cors-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как настроить CORS для frontend?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-backup-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q: Как backup автоматизировать в production?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_41" class="md-nav__link">
+    <span class="md-ellipsis">
+      📞 Поддержка
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📞 Поддержка">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_42" class="md-nav__link">
+    <span class="md-ellipsis">
+      Контакты
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_43" class="md-nav__link">
+    <span class="md-ellipsis">
+      Полезные ссылки
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_44" class="md-nav__link">
+    <span class="md-ellipsis">
+      Документация
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="aquastream-backend-developer-guide">AquaStream Backend - Developer Guide<a class="headerlink" href="#aquastream-backend-developer-guide" title="Permanent link">&para;</a></h1>
+<p>Полная документация для разработчиков по настройке, запуску и работе с backend-сервисами AquaStream.</p>
+<h2 id="_1">📋 Оглавление<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#быстрый-старт">Быстрый старт</a></li>
+<li><a href="#архитектура">Архитектура</a></li>
+<li><a href="#настройка-окружения">Настройка окружения</a></li>
+<li><a href="#запуск-проекта">Запуск проекта</a></li>
+<li><a href="#переменные-окружения">Переменные окружения</a></li>
+<li><a href="#база-данных">База данных</a></li>
+<li><a href="#бэкапы-и-восстановление">Бэкапы и восстановление</a></li>
+<li><a href="#cicd-процессы">CI/CD процессы</a></li>
+<li><a href="#релизы">Релизы</a></li>
+<li><a href="#мониторинг-и-отладка">Мониторинг и отладка</a></li>
+<li><a href="#типичные-ошибки">Типичные ошибки</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ul>
+<h2 id="_2">🚀 Быстрый старт<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">Требования<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Java 21</strong> (Eclipse Temurin или OpenJDK)</li>
+<li><strong>Docker</strong> и <strong>Docker Compose</strong></li>
+<li><strong>Git</strong></li>
+<li><strong>Make</strong> (опционально, для удобства)</li>
+</ul>
+<h3 id="_4">Клонирование и первый запуск<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Клонируем репозиторий</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/your-org/aquastream.git
+<span class="nb">cd</span><span class="w"> </span>aquastream
+
+<span class="c1"># Запускаем dev окружение</span>
+make<span class="w"> </span>up-dev
+
+<span class="c1"># Или без Make:</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/compose/docker-compose.yml<span class="w"> </span>--profile<span class="w"> </span>dev<span class="w"> </span>up<span class="w"> </span>-d
+
+<span class="c1"># Проверяем что все работает</span>
+make<span class="w"> </span>smoke
+curl<span class="w"> </span>http://localhost:8080/actuator/health
+</code></pre></div>
+<h3 id="dev">Порты сервисов (dev режим)<a class="headerlink" href="#dev" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Gateway</strong>: http://localhost:8080</li>
+<li><strong>User API</strong>: http://localhost:8101</li>
+<li><strong>Event API</strong>: http://localhost:8102</li>
+<li><strong>Crew API</strong>: http://localhost:8103</li>
+<li><strong>Payment API</strong>: http://localhost:8104</li>
+<li><strong>Notification API</strong>: http://localhost:8105</li>
+<li><strong>Media API</strong>: http://localhost:8106</li>
+<li><strong>PostgreSQL</strong>: localhost:5432</li>
+<li><strong>Redis</strong>: localhost:6379</li>
+<li><strong>MinIO</strong>: localhost:9000 (UI: localhost:9001)</li>
+</ul>
+<h2 id="_5">🏗️ Архитектура<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="_6">Микросервисная архитектура<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>graph TB
+    FE[Frontend Next.js] --&gt; GW[Gateway :8080]
+
+    GW --&gt; U[User Service :8101]
+    GW --&gt; E[Event Service :8102]
+    GW --&gt; C[Crew Service :8103]
+    GW --&gt; P[Payment Service :8104]
+    GW --&gt; N[Notification Service :8105]
+    GW --&gt; M[Media Service :8106]
+
+    U --&gt; PG[(PostgreSQL)]
+    E --&gt; PG
+    C --&gt; PG
+    P --&gt; PG
+    N --&gt; PG
+    M --&gt; PG
+
+    U --&gt; R[(Redis)]
+    E --&gt; R
+    P --&gt; R
+    N --&gt; R
+    GW --&gt; R
+
+    P --&gt; MINIO[(MinIO S3)]
+    M --&gt; MINIO
+
+    N --&gt; TG[Telegram Bot API]
+    P --&gt; YK[YooKassa API]
+</code></pre></div>
+<h3 id="_7">Сервисы<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Сервис</th>
+<th>Назначение</th>
+<th>База схем</th>
+<th>Внешние API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gateway</strong></td>
+<td>Маршрутизация, CORS, Rate Limiting</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Аутентификация, профили, роли</td>
+<td><code>user</code></td>
+<td>Telegram Bot</td>
+</tr>
+<tr>
+<td><strong>Event</strong></td>
+<td>События, листы ожидания</td>
+<td><code>event</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Crew</strong></td>
+<td>Команды, назначения</td>
+<td><code>crew</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Payment</strong></td>
+<td>Платежи, бронирования</td>
+<td><code>payment</code></td>
+<td>YooKassa</td>
+</tr>
+<tr>
+<td><strong>Notification</strong></td>
+<td>Уведомления</td>
+<td><code>notification</code></td>
+<td>Telegram Bot</td>
+</tr>
+<tr>
+<td><strong>Media</strong></td>
+<td>Файлы, изображения</td>
+<td><code>media</code></td>
+<td>MinIO S3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">Технологический стек<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Backend</strong>: Java 21, Spring Boot 3.x, Spring WebFlux (Gateway)</li>
+<li><strong>Database</strong>: PostgreSQL 16 (одна БД, схемы на сервис)</li>
+<li><strong>Cache</strong>: Redis 7</li>
+<li><strong>Storage</strong>: MinIO (S3-compatible)</li>
+<li><strong>Migrations</strong>: Liquibase</li>
+<li><strong>Monitoring</strong>: Spring Boot Actuator</li>
+<li><strong>Error Handling</strong>: RFC 7807 Problem Details</li>
+<li><strong>Rate Limiting</strong>: Bucket4j (soft limits)</li>
+<li><strong>CI/CD</strong>: GitHub Actions</li>
+<li><strong>Container</strong>: Docker, Docker Compose</li>
+</ul>
+<h2 id="_9">⚙️ Настройка окружения<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<h3 id="1-java-21">1. Установка Java 21<a class="headerlink" href="#1-java-21" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS (Homebrew)</span>
+brew<span class="w"> </span>install<span class="w"> </span>openjdk@21
+
+<span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>openjdk-21-jdk
+
+<span class="c1"># Windows (Chocolatey)</span>
+choco<span class="w"> </span>install<span class="w"> </span>openjdk21
+
+<span class="c1"># Проверка</span>
+java<span class="w"> </span>-version
+javac<span class="w"> </span>-version
+</code></pre></div>
+<h3 id="2-docker">2. Установка Docker<a class="headerlink" href="#2-docker" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS (Homebrew)</span>
+brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>docker
+
+<span class="c1"># Ubuntu/Debian</span>
+curl<span class="w"> </span>-fsSL<span class="w"> </span>https://get.docker.com<span class="w"> </span>-o<span class="w"> </span>get-docker.sh
+sh<span class="w"> </span>get-docker.sh
+sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
+
+<span class="c1"># Проверка</span>
+docker<span class="w"> </span>--version
+docker-compose<span class="w"> </span>--version
+</code></pre></div>
+<h3 id="3">3. Настройка переменных окружения<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>Создайте файл <code>.env</code> в корне проекта:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># .env файл (создайте в корне проекта)</span>
+cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</code></pre></div>
+<p><strong>Базовый .env для разработки:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># PostgreSQL</span>
+<span class="nv">POSTGRES_DB</span><span class="o">=</span>aquastream
+<span class="nv">POSTGRES_USER</span><span class="o">=</span>aquastream
+<span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>postgres
+<span class="nv">POSTGRES_PORT</span><span class="o">=</span><span class="m">5432</span>
+
+<span class="c1"># Redis</span>
+<span class="nv">REDIS_PASSWORD</span><span class="o">=</span>redis
+<span class="nv">REDIS_PORT</span><span class="o">=</span><span class="m">6379</span>
+
+<span class="c1"># MinIO</span>
+<span class="nv">MINIO_ROOT_USER</span><span class="o">=</span>minio
+<span class="nv">MINIO_ROOT_PASSWORD</span><span class="o">=</span>minio123
+<span class="nv">MINIO_PORT</span><span class="o">=</span><span class="m">9000</span>
+<span class="nv">MINIO_CONSOLE_PORT</span><span class="o">=</span><span class="m">9001</span>
+
+<span class="c1"># JWT</span>
+<span class="nv">JWT_SECRET</span><span class="o">=</span>your-super-secret-jwt-key-256-bits-long
+
+<span class="c1"># Telegram Bot (опционально для разработки)</span>
+<span class="nv">TELEGRAM_BOT_TOKEN</span><span class="o">=</span>your_bot_token_here
+
+<span class="c1"># YooKassa (опционально для разработки)</span>
+<span class="nv">YOOKASSA_SHOP_ID</span><span class="o">=</span>your_shop_id
+<span class="nv">YOOKASSA_SECRET_KEY</span><span class="o">=</span>your_secret_key
+
+<span class="c1"># Spring Profiles</span>
+<span class="nv">SPRING_PROFILES_ACTIVE</span><span class="o">=</span>dev
+
+<span class="c1"># CORS</span>
+<span class="nv">GATEWAY_CORS_ALLOWED_ORIGINS</span><span class="o">=</span>http://localhost:3000
+</code></pre></div></p>
+<h2 id="_10">🚀 Запуск проекта<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h3 id="make">Через Make (рекомендуется)<a class="headerlink" href="#make" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Development окружение</span>
+make<span class="w"> </span>up-dev
+
+<span class="c1"># Staging окружение  </span>
+make<span class="w"> </span>up-stage
+
+<span class="c1"># Production окружение</span>
+make<span class="w"> </span>up-prod
+
+<span class="c1"># Остановка всех сервисов</span>
+make<span class="w"> </span>down
+
+<span class="c1"># Просмотр логов</span>
+make<span class="w"> </span>logs
+
+<span class="c1"># Статус сервисов</span>
+make<span class="w"> </span>ps
+
+<span class="c1"># Health check</span>
+make<span class="w"> </span>smoke
+</code></pre></div>
+<h3 id="docker-compose">Через Docker Compose напрямую<a class="headerlink" href="#docker-compose" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Development</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/compose/docker-compose.yml<span class="w"> </span>--profile<span class="w"> </span>dev<span class="w"> </span>up<span class="w"> </span>-d
+
+<span class="c1"># Staging</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/compose/docker-compose.yml<span class="w"> </span>--profile<span class="w"> </span>stage<span class="w"> </span>up<span class="w"> </span>-d
+
+<span class="c1"># Production</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/compose/docker-compose.yml<span class="w"> </span>--profile<span class="w"> </span>prod<span class="w"> </span>up<span class="w"> </span>-d
+
+<span class="c1"># Остановка</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/compose/docker-compose.yml<span class="w"> </span>down<span class="w"> </span>-v
+
+<span class="c1"># Логи</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/compose/docker-compose.yml<span class="w"> </span>logs<span class="w"> </span>-f
+</code></pre></div>
+<h3 id="docker">Локальная разработка (без Docker)<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h3>
+<h4 id="1">1. Запуск инфраструктуры<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Только инфраструктурные сервисы</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/compose/docker-compose.yml<span class="w"> </span>up<span class="w"> </span>postgres<span class="w"> </span>redis<span class="w"> </span>minio<span class="w"> </span>-d
+</code></pre></div>
+<h4 id="2-ide">2. Запуск сервисов в IDE<a class="headerlink" href="#2-ide" title="Permanent link">&para;</a></h4>
+<p><strong>Для IntelliJ IDEA / Eclipse:</strong>
+1. Импортируйте проект как Gradle Multi-Module
+2. Настройте конфигурации запуска для каждого *-api модуля
+3. Укажите active profile: <code>dev</code>
+4. Установите переменные окружения</p>
+<p><strong>Пример конфигурации для User Service:</strong>
+- Main class: <code>org.aquastream.user.api.UserApiApplication</code>
+- Active profiles: <code>dev</code>
+- Environment variables: все из <code>.env</code> файла
+- Program arguments: нет</p>
+<h4 id="3-gradle">3. Gradle команды<a class="headerlink" href="#3-gradle" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Компиляция всех модулей</span>
+./gradlew<span class="w"> </span>build
+
+<span class="c1"># Компиляция конкретного сервиса</span>
+./gradlew<span class="w"> </span>:backend-user:backend-user-api:build
+
+<span class="c1"># Запуск тестов</span>
+./gradlew<span class="w"> </span><span class="nb">test</span>
+
+<span class="c1"># Запуск конкретного сервиса</span>
+./gradlew<span class="w"> </span>:backend-user:backend-user-api:bootRun
+
+<span class="c1"># Создание JAR файлов</span>
+./gradlew<span class="w"> </span>:backend-user:backend-user-api:bootJar
+</code></pre></div>
+<h2 id="_11">📝 Переменные окружения<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<h3 id="_12">Категории переменных<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<h4 id="postgresql">PostgreSQL<a class="headerlink" href="#postgresql" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nv">POSTGRES_DB</span><span class="o">=</span>aquastream<span class="w">          </span><span class="c1"># Имя базы данных</span>
+<span class="nv">POSTGRES_USER</span><span class="o">=</span>aquastream<span class="w">        </span><span class="c1"># Пользователь БД</span>
+<span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>postgres<span class="w">      </span><span class="c1"># Пароль БД</span>
+<span class="nv">POSTGRES_PORT</span><span class="o">=</span><span class="m">5432</span><span class="w">             </span><span class="c1"># Порт БД</span>
+</code></pre></div>
+<h4 id="redis">Redis<a class="headerlink" href="#redis" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nv">REDIS_PASSWORD</span><span class="o">=</span>redis<span class="w">           </span><span class="c1"># Пароль Redis</span>
+<span class="nv">REDIS_PORT</span><span class="o">=</span><span class="m">6379</span><span class="w">               </span><span class="c1"># Порт Redis</span>
+<span class="nv">REDIS_HOST</span><span class="o">=</span>redis<span class="w">              </span><span class="c1"># Хост Redis (для Docker)</span>
+</code></pre></div>
+<h4 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nv">JWT_SECRET</span><span class="o">=</span>your-256-bit-secret<span class="w"> </span><span class="c1"># JWT подпись (обязательно 256+ бит)</span>
+</code></pre></div>
+<h4 id="external-apis">External APIs<a class="headerlink" href="#external-apis" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Telegram Bot</span>
+<span class="nv">TELEGRAM_BOT_TOKEN</span><span class="o">=</span>bot123:ABC<span class="w">  </span><span class="c1"># Токен Telegram бота</span>
+<span class="nv">TELEGRAM_WEBHOOK_URL</span><span class="o">=</span>https://<span class="w">  </span><span class="c1"># Webhook URL для бота</span>
+<span class="nv">TELEGRAM_WEBHOOK_SECRET</span><span class="o">=</span>secret<span class="w"> </span><span class="c1"># Секрет для webhook</span>
+
+<span class="c1"># YooKassa</span>
+<span class="nv">YOOKASSA_SHOP_ID</span><span class="o">=</span><span class="m">123456</span><span class="w">       </span><span class="c1"># ID магазина</span>
+<span class="nv">YOOKASSA_SECRET_KEY</span><span class="o">=</span>secret<span class="w">    </span><span class="c1"># Секретный ключ</span>
+</code></pre></div>
+<h4 id="s3minio">S3/MinIO<a class="headerlink" href="#s3minio" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nv">S3_ENDPOINT</span><span class="o">=</span>http://minio:9000<span class="w">     </span><span class="c1"># Endpoint S3</span>
+<span class="nv">S3_ACCESS_KEY</span><span class="o">=</span>minio<span class="w">              </span><span class="c1"># Access Key</span>
+<span class="nv">S3_SECRET_KEY</span><span class="o">=</span>minio123<span class="w">           </span><span class="c1"># Secret Key</span>
+<span class="nv">MINIO_ROOT_USER</span><span class="o">=</span>minio<span class="w">            </span><span class="c1"># Root пользователь MinIO</span>
+<span class="nv">MINIO_ROOT_PASSWORD</span><span class="o">=</span>minio123<span class="w">     </span><span class="c1"># Root пароль MinIO</span>
+</code></pre></div>
+<h4 id="spring-configuration">Spring Configuration<a class="headerlink" href="#spring-configuration" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nv">SPRING_PROFILES_ACTIVE</span><span class="o">=</span>dev<span class="w">    </span><span class="c1"># Активный профиль: dev/stage/prod</span>
+</code></pre></div>
+<h4 id="cors-networking">CORS &amp; Networking<a class="headerlink" href="#cors-networking" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nv">GATEWAY_CORS_ALLOWED_ORIGINS</span><span class="o">=</span>http://localhost:3000<span class="w">  </span><span class="c1"># Разрешенные origins</span>
+</code></pre></div>
+<h3 id="_13">Профили окружения<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<h4 id="development-dev">Development (<code>dev</code>)<a class="headerlink" href="#development-dev" title="Permanent link">&para;</a></h4>
+<ul>
+<li>H2 in-memory база для быстрой разработки</li>
+<li>Моки для внешних API включены</li>
+<li>Подробное логирование</li>
+<li>Все Actuator endpoint'ы доступны</li>
+<li>CORS разрешен для localhost</li>
+</ul>
+<h4 id="staging-stage">Staging (<code>stage</code>)<a class="headerlink" href="#staging-stage" title="Permanent link">&para;</a></h4>
+<ul>
+<li>PostgreSQL база данных</li>
+<li>Настоящие внешние API</li>
+<li>Ограниченное логирование</li>
+<li>Только основные Actuator endpoint'ы</li>
+<li>Базовая безопасность</li>
+</ul>
+<h4 id="production-prod">Production (<code>prod</code>)<a class="headerlink" href="#production-prod" title="Permanent link">&para;</a></h4>
+<ul>
+<li>PostgreSQL база данных</li>
+<li>Настоящие внешние API</li>
+<li>Минимальное логирование</li>
+<li>Только health check endpoint'ы</li>
+<li>Полная безопасность</li>
+</ul>
+<h2 id="_14">🗄️ База данных<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="postgresql_1">Схемы PostgreSQL<a class="headerlink" href="#postgresql_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Схемы сервисов (создаются автоматически)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="ss">&quot;user&quot;</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="ss">&quot;event&quot;</span><span class="p">;</span><span class="w">  </span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="ss">&quot;crew&quot;</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="ss">&quot;payment&quot;</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="ss">&quot;notification&quot;</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="ss">&quot;media&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="liquibase">Liquibase миграции<a class="headerlink" href="#liquibase" title="Permanent link">&para;</a></h3>
+<h4 id="_15">Структура миграций<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>backend-{service}/backend-{service}-db/src/main/resources/migration/liquibase/
+├── master.xml              # Главный файл миграций
+└── sql/
+    ├── 0001_create_schema.sql    # Создание схемы
+    ├── 0002_create_tables.sql    # Создание таблиц
+    ├── 0003_indexes_constraints.sql  # Индексы и ограничения
+    └── ...
+</code></pre></div>
+<h4 id="_16">Команды миграций<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Показать SQL, который будет выполнен (dry-run)</span>
+make<span class="w"> </span>liq-user-sql
+
+<span class="c1"># Выполнить миграции для user сервиса</span>
+make<span class="w"> </span>liq-user-update
+
+<span class="c1"># Для других сервисов аналогично:</span>
+./gradlew<span class="w"> </span>:backend-event:backend-event-api:liquibaseUpdateSQL
+./gradlew<span class="w"> </span>:backend-event:backend-event-api:liquibaseUpdate
+</code></pre></div>
+<h4 id="_17">Создание новой миграции<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Создайте новый SQL файл</span>
+touch<span class="w"> </span>backend-user/backend-user-db/src/main/resources/migration/liquibase/sql/0004_add_user_preferences.sql
+
+<span class="c1"># 2. Добавьте в master.xml:</span>
+&lt;changeSet<span class="w"> </span><span class="nv">id</span><span class="o">=</span><span class="s2">&quot;0004&quot;</span><span class="w"> </span><span class="nv">author</span><span class="o">=</span><span class="s2">&quot;developer&quot;</span>&gt;
+<span class="w">    </span>&lt;sqlFile<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;sql/0004_add_user_preferences.sql&quot;</span>/&gt;
+&lt;/changeSet&gt;
+
+<span class="c1"># 3. Проверьте SQL</span>
+make<span class="w"> </span>liq-user-sql
+
+<span class="c1"># 4. Примените миграцию</span>
+make<span class="w"> </span>liq-user-update
+</code></pre></div>
+<h3 id="_18">Подключение к БД<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Через Docker</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>aquastream-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream
+
+<span class="c1"># Локально (если PostgreSQL установлен)</span>
+psql<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-p<span class="w"> </span><span class="m">5432</span><span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream
+
+<span class="c1"># Просмотр таблиц в схеме</span>
+<span class="se">\d</span>t<span class="w"> </span>user.*
+<span class="se">\d</span>t<span class="w"> </span>event.*
+</code></pre></div>
+<h2 id="_19">💾 Бэкапы и восстановление<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<h3 id="_20">Автоматические бэкапы<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h3>
+<h4 id="_21">Создание бэкапа<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Создать бэкап всех схем</span>
+make<span class="w"> </span>backup
+
+<span class="c1"># Или напрямую</span>
+bash<span class="w"> </span>infra/backup/backup.sh
+</code></pre></div>
+<p><strong>Что происходит при бэкапе:</strong>
+1. Создаются дампы для каждой схемы: <code>user</code>, <code>event</code>, <code>crew</code>, <code>payment</code>, <code>notification</code>, <code>media</code>
+2. Файлы сохраняются в <code>infra/backup/artifacts/</code>
+3. Формат файлов: <code>{schema}_{YYYYMMDD}.dump</code>
+4. Еженедельные копии (воскресенье): <code>weekly_{schema}_{YYYY-WW}.dump</code>
+5. Ежемесячные копии (1 число): <code>monthly_{schema}_{YYYY-MM}.dump</code></p>
+<h4 id="retention">Политика retention<a class="headerlink" href="#retention" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Ежедневные</strong>: 7 дней</li>
+<li><strong>Еженедельные</strong>: 4 недели  </li>
+<li><strong>Ежемесячные</strong>: 3 месяца</li>
+</ul>
+<h3 id="_22">Восстановление из бэкапа<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h3>
+<h4 id="_23">Восстановление одной схемы<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Синтаксис</span>
+make<span class="w"> </span>restore<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>&lt;schema&gt;<span class="w"> </span><span class="nv">FILE</span><span class="o">=</span>&lt;path&gt;
+
+<span class="c1"># Примеры</span>
+make<span class="w"> </span>restore<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>user<span class="w"> </span><span class="nv">FILE</span><span class="o">=</span>infra/backup/artifacts/user_20250818.dump
+make<span class="w"> </span>restore<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>event<span class="w"> </span><span class="nv">FILE</span><span class="o">=</span>infra/backup/artifacts/weekly_event_2025-33.dump
+
+<span class="c1"># Или напрямую</span>
+bash<span class="w"> </span>infra/backup/restore.sh<span class="w"> </span>user<span class="w"> </span>infra/backup/artifacts/user_20250818.dump
+</code></pre></div>
+<h4 id="_24">Восстановление всех схем<a class="headerlink" href="#_24" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Если у вас полный дамп</span>
+make<span class="w"> </span>restore<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>all<span class="w"> </span><span class="nv">FILE</span><span class="o">=</span>infra/backup/artifacts/full_backup.dump
+</code></pre></div>
+<h4 id="_25">Восстановление в другую БД<a class="headerlink" href="#_25" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Временно измените переменные в .env</span>
+<span class="nv">POSTGRES_DB</span><span class="o">=</span>aquastream_test
+<span class="nv">POSTGRES_USER</span><span class="o">=</span>test_user
+<span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>test_pass
+
+<span class="c1"># Затем восстановите</span>
+make<span class="w"> </span>restore<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>user<span class="w"> </span><span class="nv">FILE</span><span class="o">=</span>infra/backup/artifacts/user_20250818.dump
+</code></pre></div>
+<h3 id="_26">Ручное создание бэкапов<a class="headerlink" href="#_26" title="Permanent link">&para;</a></h3>
+<h4 id="_27">Полный дамп<a class="headerlink" href="#_27" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--network<span class="w"> </span>aquastream-net<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">PGPASSWORD</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/infra/backup/artifacts:/backup&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>postgres:16-alpine<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>pg_dump<span class="w"> </span>-Fc<span class="w"> </span>-h<span class="w"> </span>postgres<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream<span class="w"> </span>-f<span class="w"> </span>/backup/full_<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>.dump
+</code></pre></div>
+<h4 id="_28">Дамп конкретной схемы<a class="headerlink" href="#_28" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--network<span class="w"> </span>aquastream-net<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">PGPASSWORD</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/infra/backup/artifacts:/backup&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>postgres:16-alpine<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>pg_dump<span class="w"> </span>-Fc<span class="w"> </span>-h<span class="w"> </span>postgres<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream<span class="w"> </span>-n<span class="w"> </span>user<span class="w"> </span>-f<span class="w"> </span>/backup/user_manual_<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>.dump
+</code></pre></div>
+<h4 id="_29">Дамп только данных (без схемы)<a class="headerlink" href="#_29" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--network<span class="w"> </span>aquastream-net<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">PGPASSWORD</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/infra/backup/artifacts:/backup&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>postgres:16-alpine<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>pg_dump<span class="w"> </span>-Fc<span class="w"> </span>-a<span class="w"> </span>-h<span class="w"> </span>postgres<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream<span class="w"> </span>-n<span class="w"> </span>user<span class="w"> </span>-f<span class="w"> </span>/backup/user_data_<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>.dump
+</code></pre></div>
+<h2 id="cicd">🔄 CI/CD процессы<a class="headerlink" href="#cicd" title="Permanent link">&para;</a></h2>
+<h3 id="github-actions-workflows">GitHub Actions Workflows<a class="headerlink" href="#github-actions-workflows" title="Permanent link">&para;</a></h3>
+<h4 id="1-ci-matrix-ci-matrixyml">1. CI Matrix (<code>ci-matrix.yml</code>)<a class="headerlink" href="#1-ci-matrix-ci-matrixyml" title="Permanent link">&para;</a></h4>
+<p><strong>Триггеры:</strong> Push to main/develop, Pull Requests
+<div class="highlight"><pre><span></span><code><span class="nt">Strategy</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Backend CI (Java 21, Gradle)</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Frontend CI (Node.js 18, pnpm)</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Integration Tests</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Security Scans</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dependency Checks</span>
+</code></pre></div></p>
+<h4 id="2-backend-ci-backend-ciyml">2. Backend CI (<code>backend-ci.yml</code>)<a class="headerlink" href="#2-backend-ci-backend-ciyml" title="Permanent link">&para;</a></h4>
+<p><strong>Триггеры:</strong> Changes in <code>backend-*/**</code>, <code>common/**</code>
+<div class="highlight"><pre><span></span><code>Steps:
+<span class="m">1</span>.<span class="w"> </span>Setup<span class="w"> </span>Java<span class="w"> </span><span class="m">21</span><span class="w"> </span>+<span class="w"> </span>Node.js
+<span class="m">2</span>.<span class="w"> </span>Gradle<span class="w"> </span>build<span class="w"> </span><span class="o">(</span>all<span class="w"> </span>modules<span class="o">)</span>
+<span class="m">3</span>.<span class="w"> </span>Unit<span class="w"> </span>tests
+<span class="m">4</span>.<span class="w"> </span>Upload<span class="w"> </span>artifacts
+</code></pre></div></p>
+<h4 id="3-service-ci-ci-serviceyml">3. Service CI (<code>ci-service.yml</code>)<a class="headerlink" href="#3-service-ci-ci-serviceyml" title="Permanent link">&para;</a></h4>
+<p><strong>Reusable workflow для отдельных сервисов</strong>
+<div class="highlight"><pre><span></span><code>Parameters:
+-<span class="w"> </span>service_name:<span class="w"> </span>backend-notification
+-<span class="w"> </span>image_name:<span class="w"> </span>aquastream-backend-notification<span class="w">  </span>
+-<span class="w"> </span>dockerfile:<span class="w"> </span>infra/docker/images/Dockerfile.notification
+
+Steps:
+<span class="m">1</span>.<span class="w"> </span>Gradle<span class="w"> </span>build<span class="w"> </span>+<span class="w"> </span>tests
+<span class="m">2</span>.<span class="w"> </span>Liquibase<span class="w"> </span>dry-run
+<span class="m">3</span>.<span class="w"> </span>Docker<span class="w"> </span>build<span class="w"> </span>+<span class="w"> </span>push
+<span class="m">4</span>.<span class="w"> </span>Tag<span class="w"> </span>images<span class="w"> </span><span class="o">(</span>vX.Y.Z<span class="w"> </span>or<span class="w"> </span>latest<span class="o">)</span>
+</code></pre></div></p>
+<h4 id="4-release-releaseyml">4. Release (<code>release.yml</code>)<a class="headerlink" href="#4-release-releaseyml" title="Permanent link">&para;</a></h4>
+<p><strong>Триггеры:</strong> Git tags <code>v*</code>
+<div class="highlight"><pre><span></span><code>Services:
+-<span class="w"> </span>backend-gateway<span class="w"> </span>✅
+-<span class="w"> </span>backend-notification<span class="w"> </span>✅
+-<span class="w"> </span>backend-user<span class="w"> </span><span class="o">(</span>disabled<span class="o">)</span>
+-<span class="w"> </span>backend-event<span class="w"> </span><span class="o">(</span>disabled<span class="o">)</span>
+-<span class="w"> </span>backend-crew<span class="w"> </span><span class="o">(</span>disabled<span class="o">)</span>
+-<span class="w"> </span>backend-payment<span class="w"> </span><span class="o">(</span>disabled<span class="o">)</span>
+-<span class="w"> </span>backend-media<span class="w"> </span><span class="o">(</span>disabled<span class="o">)</span>
+
+Steps:
+<span class="m">1</span>.<span class="w"> </span>Build<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>each<span class="w"> </span>service
+<span class="m">2</span>.<span class="w"> </span>Create<span class="w"> </span>Docker<span class="w"> </span>images
+<span class="m">3</span>.<span class="w"> </span>Push<span class="w"> </span>to<span class="w"> </span>GHCR
+<span class="m">4</span>.<span class="w"> </span>Create<span class="w"> </span>GitHub<span class="w"> </span>Release
+</code></pre></div></p>
+<h4 id="5-deploy-deployyml">5. Deploy (<code>deploy.yml</code>)<a class="headerlink" href="#5-deploy-deployyml" title="Permanent link">&para;</a></h4>
+<p><strong>Триггеры:</strong> Manual (workflow_dispatch)
+<div class="highlight"><pre><span></span><code>Environments:<span class="w"> </span>staging,<span class="w"> </span>production
+Steps:
+<span class="m">1</span>.<span class="w"> </span>Workflow<span class="w"> </span>lint
+<span class="m">2</span>.<span class="w"> </span>Docker<span class="w"> </span>buildx
+<span class="m">3</span>.<span class="w"> </span>Environment-specific<span class="w"> </span>deployment
+</code></pre></div></p>
+<h3 id="cicd_1">CI/CD конфигурация<a class="headerlink" href="#cicd_1" title="Permanent link">&para;</a></h3>
+<h4 id="secrets-github">Secrets (GitHub)<a class="headerlink" href="#secrets-github" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Required secrets in repository settings</span>
+GITHUB_TOKEN<span class="w">              </span><span class="c1"># Автоматически предоставляется</span>
+REGISTRY_USERNAME<span class="w">          </span><span class="c1"># Опционально для custom registry</span>
+REGISTRY_TOKEN<span class="w">             </span><span class="c1"># Опционально для custom registry</span>
+
+<span class="c1"># Environment-specific secrets</span>
+POSTGRES_PASSWORD
+REDIS_PASSWORD
+TELEGRAM_BOT_TOKEN
+YOOKASSA_SHOP_ID
+YOOKASSA_SECRET_KEY
+JWT_SECRET
+</code></pre></div>
+<h4 id="docker-registry">Docker Registry<a class="headerlink" href="#docker-registry" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># GitHub Container Registry (GHCR)</span>
+Registry:<span class="w"> </span>ghcr.io
+Images:<span class="w"> </span>
+<span class="w">  </span>-<span class="w"> </span>ghcr.io/your-org/aquastream-backend-gateway:latest
+<span class="w">  </span>-<span class="w"> </span>ghcr.io/your-org/aquastream-backend-notification:latest
+<span class="w">  </span>-<span class="w"> </span>ghcr.io/your-org/aquastream-backend-notification:v1.0.1
+</code></pre></div>
+<h3 id="ci">Запуск CI локально<a class="headerlink" href="#ci" title="Permanent link">&para;</a></h3>
+<h4 id="_30">Проверка билда<a class="headerlink" href="#_30" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Весь проект</span>
+./gradlew<span class="w"> </span>build
+
+<span class="c1"># Конкретный сервис</span>
+./gradlew<span class="w"> </span>:backend-notification:backend-notification-api:build
+
+<span class="c1"># С тестами</span>
+./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+<h4 id="docker_1">Проверка Docker образа<a class="headerlink" href="#docker_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Билд образа как в CI</span>
+./gradlew<span class="w"> </span>:backend-notification:backend-notification-api:bootJar
+
+docker<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>infra/docker/images/Dockerfile.notification<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--build-arg<span class="w"> </span><span class="nv">JAR_FILE</span><span class="o">=</span>backend-notification/backend-notification-api/build/libs/backend-notification-api-*.jar<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-t<span class="w"> </span>aquastream-backend-notification:test<span class="w"> </span>.
+
+<span class="c1"># Запуск для тестирования</span>
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8105</span>:8105<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">SPRING_PROFILES_ACTIVE</span><span class="o">=</span>dev<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>aquastream-backend-notification:test
+</code></pre></div>
+<h4 id="act-github-actions">Act (запуск GitHub Actions локально)<a class="headerlink" href="#act-github-actions" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Установка act</span>
+brew<span class="w"> </span>install<span class="w"> </span>act
+
+<span class="c1"># Запуск workflow</span>
+act<span class="w"> </span>push<span class="w"> </span>-j<span class="w"> </span>backend-ci
+</code></pre></div>
+<h2 id="_31">🚀 Релизы<a class="headerlink" href="#_31" title="Permanent link">&para;</a></h2>
+<h3 id="semantic-versioning-semver">Semantic Versioning (SemVer)<a class="headerlink" href="#semantic-versioning-semver" title="Permanent link">&para;</a></h3>
+<p>Проект следует <a href="https://semver.org/">Semantic Versioning 2.0.0</a>:</p>
+<h4 id="majorminorpatch">MAJOR.MINOR.PATCH<a class="headerlink" href="#majorminorpatch" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>MAJOR</strong> (X.0.0): Breaking changes, несовместимые изменения API</li>
+<li><strong>MINOR</strong> (X.Y.0): Новая функциональность, обратно совместимая</li>
+<li><strong>PATCH</strong> (X.Y.Z): Исправления багов, обратно совместимые</li>
+</ul>
+<h3 id="_32">Процесс релиза<a class="headerlink" href="#_32" title="Permanent link">&para;</a></h3>
+<h4 id="1_1">1. Подготовка релиза<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Убедитесь что main актуален</span>
+git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>main
+
+<span class="c1"># Проверьте что все тесты проходят</span>
+./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span><span class="nb">test</span>
+
+<span class="c1"># Обновите CHANGELOG.md</span>
+vim<span class="w"> </span>CHANGELOG.md
+</code></pre></div>
+<h4 id="2">2. Создание релиза<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Создайте annotated tag</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.2.3<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release v1.2.3</span>
+
+<span class="s2">Added:</span>
+<span class="s2">- Notification service</span>
+<span class="s2">- Rate limiting</span>
+
+<span class="s2">Fixed:</span>
+<span class="s2">- Authentication issues</span>
+<span class="s2">- Memory leaks&quot;</span>
+
+<span class="c1"># Отправьте tag (запустит автоматический релиз)</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.2.3
+</code></pre></div>
+<h4 id="3_1">3. Автоматический процесс<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h4>
+<p>GitHub Actions автоматически:
+1. ✅ Соберет и протестирует все сервисы
+2. ✅ Создаст Docker образы с тегами <code>v1.2.3</code> и <code>latest</code>
+3. ✅ Загрузит образы в GHCR
+4. ✅ Создаст GitHub Release с auto-generated notes</p>
+<h4 id="4">4. Проверка релиза<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверьте статус workflow</span>
+https://github.com/your-org/aquastream/actions
+
+<span class="c1"># Проверьте созданный релиз</span>
+https://github.com/your-org/aquastream/releases
+
+<span class="c1"># Проверьте Docker образы</span>
+https://github.com/your-org/aquastream/pkgs/container/aquastream-backend-notification
+</code></pre></div>
+<h3 id="hotfix">Hotfix процесс<a class="headerlink" href="#hotfix" title="Permanent link">&para;</a></h3>
+<h4 id="_33">Для критических исправлений:<a class="headerlink" href="#_33" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Создайте hotfix ветку от тега</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>hotfix/v1.2.4<span class="w"> </span>v1.2.3
+
+<span class="c1"># 2. Внесите минимальные изменения</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: critical security vulnerability&quot;</span>
+
+<span class="c1"># 3. Создайте hotfix тег</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.2.4<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Hotfix v1.2.4 - Security patch&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.2.4
+
+<span class="c1"># 4. Merge обратно в main</span>
+git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>merge<span class="w"> </span>hotfix/v1.2.4
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main
+</code></pre></div>
+<h3 id="rollback">Rollback процесс<a class="headerlink" href="#rollback" title="Permanent link">&para;</a></h3>
+<h4 id="docker_2">Быстрый откат Docker образов<a class="headerlink" href="#docker_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># В Kubernetes/Docker Compose</span>
+docker<span class="w"> </span>tag<span class="w"> </span>ghcr.io/your-org/aquastream-backend-notification:v1.2.2<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>ghcr.io/your-org/aquastream-backend-notification:latest
+
+<span class="c1"># Перезапуск сервисов</span>
+make<span class="w"> </span>down<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>up-prod
+</code></pre></div>
+<h4 id="_34">Откат базы данных<a class="headerlink" href="#_34" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Если есть бэкап перед релизом</span>
+make<span class="w"> </span>restore<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>all<span class="w"> </span><span class="nv">FILE</span><span class="o">=</span>infra/backup/artifacts/pre_release_v1.2.3.dump
+</code></pre></div>
+<h2 id="_35">📊 Мониторинг и отладка<a class="headerlink" href="#_35" title="Permanent link">&para;</a></h2>
+<h3 id="spring-boot-actuator">Spring Boot Actuator<a class="headerlink" href="#spring-boot-actuator" title="Permanent link">&para;</a></h3>
+<h4 id="health-checks">Health Checks<a class="headerlink" href="#health-checks" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Общее состояние</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/health
+
+<span class="c1"># Liveness probe (Kubernetes)</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/health/liveness
+
+<span class="c1"># Readiness probe (Kubernetes)  </span>
+curl<span class="w"> </span>http://localhost:8105/actuator/health/readiness
+
+<span class="c1"># Информация о сборке</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/info
+</code></pre></div>
+<h4 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Список всех метрик</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/metrics
+
+<span class="c1"># JVM memory</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/metrics/jvm.memory.used
+
+<span class="c1"># HTTP requests</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/metrics/http.server.requests
+
+<span class="c1"># Custom metrics (AquaStream)</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/metrics/aquastream.notifications.sent
+curl<span class="w"> </span>http://localhost:8105/actuator/metrics/aquastream.rate-limit.requests
+</code></pre></div>
+<h3 id="_36">Логирование<a class="headerlink" href="#_36" title="Permanent link">&para;</a></h3>
+<h4 id="_37">Уровни логирования по профилям<a class="headerlink" href="#_37" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Development</span>
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">org.aquastream</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+<span class="w">    </span><span class="nt">org.springframework</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INFO</span>
+<span class="w">    </span><span class="nt">org.hibernate.SQL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+
+<span class="c1"># Staging  </span>
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">org.aquastream.notification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INFO</span>
+<span class="w">    </span><span class="nt">org.springframework</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">WARN</span>
+
+<span class="c1"># Production</span>
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">org.aquastream.notification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">WARN</span>
+<span class="w">    </span><span class="nt">org.springframework</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ERROR</span>
+</code></pre></div>
+<h4 id="_38">Просмотр логов<a class="headerlink" href="#_38" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Все сервисы</span>
+make<span class="w"> </span>logs
+
+<span class="c1"># Конкретный сервис</span>
+docker<span class="w"> </span>logs<span class="w"> </span>aquastream-backend-notification<span class="w"> </span>-f
+
+<span class="c1"># С фильтрацией</span>
+docker<span class="w"> </span>logs<span class="w"> </span>aquastream-backend-notification<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ERROR
+
+<span class="c1"># Последние 100 строк</span>
+docker<span class="w"> </span>logs<span class="w"> </span>aquastream-backend-notification<span class="w"> </span>--tail<span class="w"> </span><span class="m">100</span>
+</code></pre></div>
+<h3 id="debugging">Debugging<a class="headerlink" href="#debugging" title="Permanent link">&para;</a></h3>
+<h4 id="remote-debug-intellij-idea">Remote Debug (IntelliJ IDEA)<a class="headerlink" href="#remote-debug-intellij-idea" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Добавьте JVM опции в docker-compose.yml</span>
+environment:
+<span class="w">  </span>JAVA_TOOL_OPTIONS:<span class="w"> </span>&gt;-
+<span class="w">    </span>-agentlib:jdwp<span class="o">=</span><span class="nv">transport</span><span class="o">=</span>dt_socket,server<span class="o">=</span>y,suspend<span class="o">=</span>n,address<span class="o">=</span>*:5005
+
+<span class="c1"># 2. Откройте порт</span>
+ports:
+<span class="w">  </span>-<span class="w"> </span><span class="s2">&quot;8105:8105&quot;</span>
+<span class="w">  </span>-<span class="w"> </span><span class="s2">&quot;5005:5005&quot;</span><span class="w">  </span><span class="c1"># Debug port</span>
+
+<span class="c1"># 3. В IDEA: Run &gt; Edit Configurations &gt; + &gt; Remote JVM Debug</span>
+<span class="c1"># Host: localhost, Port: 5005</span>
+</code></pre></div>
+<h4 id="_39">Профилирование<a class="headerlink" href="#_39" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># JVM memory dump</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-backend-notification<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>jcmd<span class="w"> </span><span class="m">1</span><span class="w"> </span>GC.run_finalization
+
+<span class="c1"># Thread dump  </span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-backend-notification<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>jcmd<span class="w"> </span><span class="m">1</span><span class="w"> </span>Thread.print
+
+<span class="c1"># Heap dump</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-backend-notification<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>jcmd<span class="w"> </span><span class="m">1</span><span class="w"> </span>GC.class_histogram
+</code></pre></div>
+<h3 id="performance-testing">Performance Testing<a class="headerlink" href="#performance-testing" title="Permanent link">&para;</a></h3>
+<h4 id="load-testing-apache-bench">Load Testing с Apache Bench<a class="headerlink" href="#load-testing-apache-bench" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Health endpoint</span>
+ab<span class="w"> </span>-n<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-c<span class="w"> </span><span class="m">10</span><span class="w"> </span>http://localhost:8105/actuator/health
+
+<span class="c1"># API endpoint</span>
+ab<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w"> </span>-c<span class="w"> </span><span class="m">5</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>http://localhost:8105/api/v1/notifications
+</code></pre></div>
+<h4 id="database-performance">Database Performance<a class="headerlink" href="#database-performance" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Подключение к БД</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>aquastream-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream
+
+<span class="c1"># Медленные запросы</span>
+SELECT<span class="w"> </span>query,<span class="w"> </span>mean_exec_time,<span class="w"> </span>calls<span class="w"> </span>
+FROM<span class="w"> </span>pg_stat_statements<span class="w"> </span>
+ORDER<span class="w"> </span>BY<span class="w"> </span>mean_exec_time<span class="w"> </span>DESC<span class="w"> </span>LIMIT<span class="w"> </span><span class="m">10</span><span class="p">;</span>
+
+<span class="c1"># Активные подключения</span>
+SELECT<span class="w"> </span>count<span class="o">(</span>*<span class="o">)</span><span class="w"> </span>FROM<span class="w"> </span>pg_stat_activity<span class="p">;</span>
+
+<span class="c1"># Размер таблиц</span>
+SELECT<span class="w"> </span>schemaname,tablename,pg_size_pretty<span class="o">(</span>pg_total_relation_size<span class="o">(</span>schemaname<span class="o">||</span><span class="s1">&#39;.&#39;</span><span class="o">||</span>tablename<span class="o">))</span><span class="w"> </span>AS<span class="w"> </span>size
+FROM<span class="w"> </span>pg_tables<span class="w"> </span>
+WHERE<span class="w"> </span>schemaname<span class="w"> </span>IN<span class="w"> </span><span class="o">(</span><span class="s1">&#39;user&#39;</span>,<span class="s1">&#39;event&#39;</span>,<span class="s1">&#39;crew&#39;</span>,<span class="s1">&#39;payment&#39;</span>,<span class="s1">&#39;notification&#39;</span>,<span class="s1">&#39;media&#39;</span><span class="o">)</span>
+ORDER<span class="w"> </span>BY<span class="w"> </span>pg_total_relation_size<span class="o">(</span>schemaname<span class="o">||</span><span class="s1">&#39;.&#39;</span><span class="o">||</span>tablename<span class="o">)</span><span class="w"> </span>DESC<span class="p">;</span>
+</code></pre></div>
+<h2 id="_40">❗ Типичные ошибки<a class="headerlink" href="#_40" title="Permanent link">&para;</a></h2>
+<h3 id="1-docker-compose">1. Docker &amp; Compose проблемы<a class="headerlink" href="#1-docker-compose" title="Permanent link">&para;</a></h3>
+<h4 id="network-aquastream-net-not-found">Ошибка: "network aquastream-net not found"<a class="headerlink" href="#network-aquastream-net-not-found" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Решение</span>
+docker<span class="w"> </span>network<span class="w"> </span>create<span class="w"> </span>aquastream-net
+
+<span class="c1"># Или пересоздать compose</span>
+make<span class="w"> </span>down<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>up-dev
+</code></pre></div>
+<h4 id="port-already-in-use">Ошибка: "port already in use"<a class="headerlink" href="#port-already-in-use" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Найти процесс</span>
+lsof<span class="w"> </span>-i<span class="w"> </span>:8105
+
+<span class="c1"># Убить процесс  </span>
+<span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span>&lt;PID&gt;
+
+<span class="c1"># Или изменить порт в .env</span>
+<span class="nv">NOTIFICATION_PORT</span><span class="o">=</span><span class="m">8106</span>
+</code></pre></div>
+<h4 id="container-name-already-exists">Ошибка: "container name already exists"<a class="headerlink" href="#container-name-already-exists" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Удалить контейнер</span>
+docker<span class="w"> </span>rm<span class="w"> </span>aquastream-backend-notification
+
+<span class="c1"># Или форсированно</span>
+docker<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>aquastream-backend-notification
+</code></pre></div>
+<h3 id="2_1">2. База данных<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
+<h4 id="connection-refused-postgresql">Ошибка: "connection refused" к PostgreSQL<a class="headerlink" href="#connection-refused-postgresql" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить статус</span>
+docker<span class="w"> </span>ps<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>postgres
+
+<span class="c1"># Логи PostgreSQL</span>
+docker<span class="w"> </span>logs<span class="w"> </span>aquastream-postgres
+
+<span class="c1"># Проверить health</span>
+docker<span class="w"> </span>inspect<span class="w"> </span>aquastream-postgres<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Health
+
+<span class="c1"># Решение: перезапуск</span>
+docker<span class="w"> </span>restart<span class="w"> </span>aquastream-postgres
+</code></pre></div>
+<h4 id="schema-does-not-exist">Ошибка: "schema does not exist"<a class="headerlink" href="#schema-does-not-exist" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Создать схему вручную</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>aquastream-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream
+CREATE<span class="w"> </span>SCHEMA<span class="w"> </span>IF<span class="w"> </span>NOT<span class="w"> </span>EXISTS<span class="w"> </span><span class="s2">&quot;notification&quot;</span><span class="p">;</span>
+
+<span class="c1"># Или запустить миграции</span>
+./gradlew<span class="w"> </span>:backend-notification:backend-notification-api:liquibaseUpdate
+</code></pre></div>
+<h4 id="too-many-connections">Ошибка: "too many connections"<a class="headerlink" href="#too-many-connections" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Текущие подключения</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-c<span class="w"> </span><span class="s2">&quot;SELECT count(*) FROM pg_stat_activity;&quot;</span>
+
+<span class="c1"># Убить idle подключения</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-c<span class="w"> </span><span class="s2">&quot;SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = &#39;idle&#39;;&quot;</span>
+</code></pre></div>
+<h3 id="3-java-gradle">3. Java &amp; Gradle<a class="headerlink" href="#3-java-gradle" title="Permanent link">&para;</a></h3>
+<h4 id="java-version-mismatch">Ошибка: "Java version mismatch"<a class="headerlink" href="#java-version-mismatch" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить версию</span>
+java<span class="w"> </span>-version
+./gradlew<span class="w"> </span>-v
+
+<span class="c1"># Установить правильную версию</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/path/to/java21
+
+<span class="c1"># В IntelliJ: File &gt; Project Structure &gt; Project SDK</span>
+</code></pre></div>
+<h4 id="gradle-daemon-issues">Ошибка: "Gradle daemon issues"<a class="headerlink" href="#gradle-daemon-issues" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Остановить daemon</span>
+./gradlew<span class="w"> </span>--stop
+
+<span class="c1"># Очистить cache</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>~/.gradle/caches/
+
+<span class="c1"># Пересобрать</span>
+./gradlew<span class="w"> </span>clean<span class="w"> </span>build
+</code></pre></div>
+<h4 id="outofmemoryerror">Ошибка: "OutOfMemoryError" при сборке<a class="headerlink" href="#outofmemoryerror" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Увеличить память для Gradle</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">GRADLE_OPTS</span><span class="o">=</span><span class="s2">&quot;-Xmx4g -XX:MaxMetaspaceSize=1g&quot;</span>
+
+<span class="c1"># Или в gradle.properties</span>
+org.gradle.jvmargs<span class="o">=</span>-Xmx4g<span class="w"> </span>-XX:MaxMetaspaceSize<span class="o">=</span>1g
+</code></pre></div>
+<h3 id="4-spring-boot">4. Spring Boot проблемы<a class="headerlink" href="#4-spring-boot" title="Permanent link">&para;</a></h3>
+<h4 id="port-8105-already-in-use">Ошибка: "Port 8105 already in use"<a class="headerlink" href="#port-8105-already-in-use" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Найти процесс</span>
+netstat<span class="w"> </span>-tulpn<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8105</span>
+lsof<span class="w"> </span>-i<span class="w"> </span>:8105
+
+<span class="c1"># Изменить порт в application.yml</span>
+server:
+<span class="w">  </span>port:<span class="w"> </span><span class="m">8106</span>
+</code></pre></div>
+<h4 id="bean-creation-failed">Ошибка: "Bean creation failed"<a class="headerlink" href="#bean-creation-failed" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить конфигурацию</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SPRING_PROFILES_ACTIVE</span><span class="o">=</span>dev
+
+<span class="c1"># Проверить зависимости в build.gradle</span>
+<span class="c1"># Логи Spring Boot startup:</span>
+java<span class="w"> </span>-jar<span class="w"> </span>-Ddebug<span class="o">=</span><span class="nb">true</span><span class="w"> </span>app.jar
+</code></pre></div>
+<h4 id="actuator-endpoints-not-found">Ошибка: "Actuator endpoints not found"<a class="headerlink" href="#actuator-endpoints-not-found" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить конфигурацию</span>
+management:
+<span class="w">  </span>endpoints:
+<span class="w">    </span>web:
+<span class="w">      </span>exposure:
+<span class="w">        </span>include:<span class="w"> </span>health,info,metrics
+
+<span class="c1"># Проверить dependency</span>
+implementation<span class="w"> </span><span class="s1">&#39;org.springframework.boot:spring-boot-starter-actuator&#39;</span>
+</code></pre></div>
+<h3 id="5-redis">5. Redis проблемы<a class="headerlink" href="#5-redis" title="Permanent link">&para;</a></h3>
+<h4 id="redis-connection-refused">Ошибка: "Redis connection refused"<a class="headerlink" href="#redis-connection-refused" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить Redis</span>
+docker<span class="w"> </span>ps<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>redis
+docker<span class="w"> </span>logs<span class="w"> </span>aquastream-redis
+
+<span class="c1"># Тест подключения</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-redis<span class="w"> </span>redis-cli<span class="w"> </span>-a<span class="w"> </span>redis<span class="w"> </span>PING
+
+<span class="c1"># Проверить password в .env</span>
+<span class="nv">REDIS_PASSWORD</span><span class="o">=</span>redis
+</code></pre></div>
+<h4 id="redis-authentication-failed">Ошибка: "Redis authentication failed"<a class="headerlink" href="#redis-authentication-failed" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить пароль</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-redis<span class="w"> </span>redis-cli<span class="w"> </span>-a<span class="w"> </span>redis<span class="w"> </span>AUTH<span class="w"> </span>redis
+
+<span class="c1"># Или подключиться без пароля (если disabled)</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-redis<span class="w"> </span>redis-cli<span class="w"> </span>PING
+</code></pre></div>
+<h3 id="6-liquibase">6. Liquibase проблемы<a class="headerlink" href="#6-liquibase" title="Permanent link">&para;</a></h3>
+<h4 id="checksum-validation-failed">Ошибка: "Checksum validation failed"<a class="headerlink" href="#checksum-validation-failed" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Очистить checksums</span>
+./gradlew<span class="w"> </span>liquibaseClearChecksums
+
+<span class="c1"># Или mark changeset as ran</span>
+./gradlew<span class="w"> </span>liquibaseChangelogSync
+</code></pre></div>
+<h4 id="lock-database">Ошибка: "Lock database"<a class="headerlink" href="#lock-database" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Освободить lock</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>aquastream-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>aquastream<span class="w"> </span>-d<span class="w"> </span>aquastream<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-c<span class="w"> </span><span class="s2">&quot;UPDATE public.databasechangeloglock SET locked=false;&quot;</span>
+</code></pre></div>
+<h3 id="7-cicd">7. CI/CD проблемы<a class="headerlink" href="#7-cicd" title="Permanent link">&para;</a></h3>
+<h4 id="github-actions-timeout">Ошибка: "GitHub Actions timeout"<a class="headerlink" href="#github-actions-timeout" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить workflow файлы</span>
+.github/workflows/*.yml
+
+<span class="c1"># Локальный запуск с act</span>
+act<span class="w"> </span>push<span class="w"> </span>-j<span class="w"> </span>backend-ci
+
+<span class="c1"># Проверить secrets</span>
+GitHub<span class="w"> </span>→<span class="w"> </span>Settings<span class="w"> </span>→<span class="w"> </span>Secrets<span class="w"> </span>and<span class="w"> </span>variables<span class="w"> </span>→<span class="w"> </span>Actions
+</code></pre></div>
+<h4 id="docker-push-failed">Ошибка: "Docker push failed"<a class="headerlink" href="#docker-push-failed" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Проверить GHCR permissions</span>
+GitHub<span class="w"> </span>→<span class="w"> </span>Settings<span class="w"> </span>→<span class="w"> </span>Actions<span class="w"> </span>→<span class="w"> </span>General<span class="w"> </span>→<span class="w"> </span>Workflow<span class="w"> </span>permissions
+
+<span class="c1"># Проверить token</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$GITHUB_TOKEN</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span>login<span class="w"> </span>ghcr.io<span class="w"> </span>-u<span class="w"> </span>username<span class="w"> </span>--password-stdin
+</code></pre></div>
+<h2 id="faq">❓ FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h3 id="q">Q: Как добавить новый сервис?<a class="headerlink" href="#q" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> Следуйте существующей структуре:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Создайте модули</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>backend-myservice/<span class="o">{</span>backend-myservice-api,backend-myservice-service,backend-myservice-db<span class="o">}</span>
+
+<span class="c1"># 2. Скопируйте build.gradle от существующего сервиса</span>
+cp<span class="w"> </span>backend-notification/backend-notification-api/build.gradle<span class="w"> </span>backend-myservice/backend-myservice-api/
+
+<span class="c1"># 3. Создайте основные классы:</span>
+<span class="c1"># - Application.java</span>
+<span class="c1"># - Schema migrations  </span>
+<span class="c1"># - Controller, Service, Repository</span>
+
+<span class="c1"># 4. Добавьте в settings.gradle</span>
+include<span class="w"> </span><span class="s1">&#39;backend-myservice&#39;</span>
+include<span class="w"> </span><span class="s1">&#39;backend-myservice:backend-myservice-api&#39;</span>
+include<span class="w"> </span><span class="s1">&#39;backend-myservice:backend-myservice-service&#39;</span><span class="w">  </span>
+include<span class="w"> </span><span class="s1">&#39;backend-myservice:backend-myservice-db&#39;</span>
+
+<span class="c1"># 5. Добавьте в docker-compose.yml</span>
+<span class="c1"># 6. Обновите CI/CD workflows</span>
+</code></pre></div>
+<h3 id="q-ssltls">Q: Как настроить SSL/TLS?<a class="headerlink" href="#q-ssltls" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> Для production используйте reverse proxy:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># nginx.conf</span>
+<span class="l l-Scalar l-Scalar-Plain">server {</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">listen 443 ssl;</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">server_name api.aquastream.ru;</span>
+
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ssl_certificate /etc/ssl/certs/aquastream.crt;</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ssl_certificate_key /etc/ssl/private/aquastream.key;</span>
+
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">location / {</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">proxy_pass http://localhost:8080;</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">proxy_set_header Host $host;</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">proxy_set_header X-Real-IP $remote_addr;</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">proxy_set_header X-Forwarded-Proto $scheme;</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">}</span>
+<span class="l l-Scalar l-Scalar-Plain">}</span>
+</code></pre></div>
+<h3 id="q_1">Q: Как масштабировать сервисы?<a class="headerlink" href="#q_1" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> Используйте Docker Compose scaling:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Масштабирование</span>
+docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--scale<span class="w"> </span>backend-notification<span class="o">=</span><span class="m">3</span>
+
+<span class="c1"># С load balancer (nginx/traefik)</span>
+<span class="c1"># Или Kubernetes deployment с replicas</span>
+</code></pre></div>
+<h3 id="q_2">Q: Как настроить мониторинг?<a class="headerlink" href="#q_2" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> Рекомендуемый стек:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Prometheus + Grafana</span>
+<span class="nt">monitoring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">prometheus</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./prometheus.yml:/etc/prometheus/prometheus.yml</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9090:9090&quot;</span>
+
+<span class="w">  </span><span class="nt">grafana</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/grafana</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3000:3000&quot;</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">GF_SECURITY_ADMIN_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
+</code></pre></div>
+<h3 id="q-actuator">Q: Как настроить аутентификацию для Actuator?<a class="headerlink" href="#q-actuator" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> В application-prod.yml:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">security</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">never</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">security</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">user</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
+<span class="w">      </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${ACTUATOR_PASSWORD}</span>
+<span class="w">      </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ACTUATOR</span>
+</code></pre></div>
+<h3 id="q_3">Q: Как отладить проблемы с производительностью?<a class="headerlink" href="#q_3" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> Пошаговый план:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Проверьте метрики</span>
+curl<span class="w"> </span>http://localhost:8105/actuator/metrics/jvm.memory.used
+curl<span class="w"> </span>http://localhost:8105/actuator/metrics/http.server.requests
+
+<span class="c1"># 2. Профилирование</span>
+<span class="c1"># Добавьте в docker-compose.yml:</span>
+JAVA_TOOL_OPTIONS:<span class="w"> </span>&gt;-
+<span class="w">  </span>-XX:+FlightRecorder<span class="w"> </span>
+<span class="w">  </span>-XX:StartFlightRecording<span class="o">=</span><span class="nv">duration</span><span class="o">=</span>60s,filename<span class="o">=</span>profile.jfr
+
+<span class="c1"># 3. Анализируйте логи</span>
+docker<span class="w"> </span>logs<span class="w"> </span>aquastream-backend-notification<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;took&quot;</span>
+
+<span class="c1"># 4. Проверьте DB queries</span>
+SELECT<span class="w"> </span>query,<span class="w"> </span>mean_exec_time<span class="w"> </span>FROM<span class="w"> </span>pg_stat_statements<span class="w"> </span>
+ORDER<span class="w"> </span>BY<span class="w"> </span>mean_exec_time<span class="w"> </span>DESC<span class="w"> </span>LIMIT<span class="w"> </span><span class="m">10</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="q_4">Q: Как обновить зависимости?<a class="headerlink" href="#q_4" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> Безопасное обновление:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Проверьте текущие версии</span>
+./gradlew<span class="w"> </span>dependencyUpdates
+
+<span class="c1"># 2. Обновите в build.gradle</span>
+<span class="c1"># 3. Тестируйте локально</span>
+./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span><span class="nb">test</span>
+
+<span class="c1"># 4. Проверьте security vulnerabilities</span>
+./gradlew<span class="w"> </span>dependencyCheckAnalyze
+
+<span class="c1"># 5. Commit и push для CI проверки</span>
+</code></pre></div>
+<h3 id="q-cors-frontend">Q: Как настроить CORS для frontend?<a class="headerlink" href="#q-cors-frontend" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> В Gateway конфигурации:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># application.yml</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cors</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed-origins</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:3000</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://aquastream.ru</span>
+<span class="w">    </span><span class="nt">allowed-methods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">GET</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">POST</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PUT</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">DELETE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">OPTIONS</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">allowed-headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Authorization</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Content-Type</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">allow-credentials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<h3 id="q-backup-production">Q: Как backup автоматизировать в production?<a class="headerlink" href="#q-backup-production" title="Permanent link">&para;</a></h3>
+<p><strong>A:</strong> Используйте cron job:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># crontab -e</span>
+<span class="c1"># Ежедневный бэкап в 2:00</span>
+<span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/aquastream/infra/backup/backup.sh<span class="w"> </span>&gt;&gt;<span class="w"> </span>/var/log/aquastream-backup.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+
+<span class="c1"># Еженедельная очистка старых бэкапов  </span>
+<span class="m">0</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">0</span><span class="w"> </span>find<span class="w"> </span>/path/to/aquastream/infra/backup/artifacts<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.dump&quot;</span><span class="w"> </span>-mtime<span class="w"> </span>+30<span class="w"> </span>-delete
+</code></pre></div>
+<hr />
+<h2 id="_41">📞 Поддержка<a class="headerlink" href="#_41" title="Permanent link">&para;</a></h2>
+<h3 id="_42">Контакты<a class="headerlink" href="#_42" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>DevOps Team</strong>: devops@aquastream.org</li>
+<li><strong>Backend Team</strong>: backend@aquastream.org  </li>
+<li><strong>Security</strong>: security@aquastream.org</li>
+</ul>
+<h3 id="_43">Полезные ссылки<a class="headerlink" href="#_43" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/your-org/aquastream">GitHub Repository</a></li>
+<li><a href="https://github.com/your-org/aquastream/issues">Issue Tracker</a></li>
+<li><a href="https://github.com/your-org/aquastream/actions">CI/CD Dashboard</a></li>
+<li><a href="https://github.com/your-org/aquastream/releases">Release Notes</a></li>
+</ul>
+<h3 id="_44">Документация<a class="headerlink" href="#_44" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://api.aquastream.ru/swagger-ui.html">API Documentation</a></li>
+<li><a href="./backend/docs/">Architecture Decision Records</a></li>
+<li><a href="../CHANGELOG.md">Changelog</a></li>
+<li><a href="../RELEASES.md">Release Process</a></li>
+</ul>
+<hr />
+<p><strong>Последнее обновление</strong>: 18 августа 2025<br />
+<strong>Версия документации</strong>: 1.0<br />
+<strong>Авторы</strong>: AquaStream Development Team</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      
+    
+  </body>
+</html>

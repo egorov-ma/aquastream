@@ -1,0 +1,1964 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.19">
+    
+    
+      
+        <title>Tailwind shadcn unification - AquaStream Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.66ac8b77.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tailwind-css-v4-shadcnui" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="AquaStream Docs" class="md-header__button md-logo" aria-label="AquaStream Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AquaStream Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tailwind shadcn unification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/egorov-ma/aquastream" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="AquaStream Docs" class="md-nav__button md-logo" aria-label="AquaStream Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AquaStream Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/egorov-ma/aquastream" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ops/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ops
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../qa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    QA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../adr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADR
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Styleguides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Styleguides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../styleguides/markdown_style/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Services
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Services
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1" id="__nav_11_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Backend
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1">
+            <span class="md-nav__icon md-icon"></span>
+            Backend
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_1" id="__nav_11_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-user/backend-user-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-user/backend-user-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-user/backend-user-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_2" id="__nav_11_1_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Event
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            Event
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-event/backend-event-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-event/backend-event-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-event/backend-event-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_3" id="__nav_11_1_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Crew
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            Crew
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-crew/backend-crew-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-crew/backend-crew-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-crew/backend-crew-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_4" id="__nav_11_1_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Media
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            Media
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-media/backend-media-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-media/backend-media-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-media/backend-media-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_5" id="__nav_11_1_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Notification
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_5">
+            <span class="md-nav__icon md-icon"></span>
+            Notification
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-notification/backend-notification-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-notification/backend-notification-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-notification/backend-notification-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_6" id="__nav_11_1_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Payment
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            Payment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-payment/backend-payment-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-payment/backend-payment-service/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-payment/backend-payment-service/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_7" id="__nav_11_1_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gateway
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_7">
+            <span class="md-nav__icon md-icon"></span>
+            Gateway
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-gateway/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-gateway/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_1_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1_8" id="__nav_11_1_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Common
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_11_1_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1_8">
+            <span class="md-nav__icon md-icon"></span>
+            Common
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-common/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-common/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend-common/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_2" id="__nav_11_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Frontend
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_2">
+            <span class="md-nav__icon md-icon"></span>
+            Frontend
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_3" id="__nav_11_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Infra
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_3">
+            <span class="md-nav__icon md-icon"></span>
+            Infra
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../infra/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../infra/runbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runbook
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../infra/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tailwind-css-v4-shadcnui" class="md-nav__link">
+    <span class="md-ellipsis">
+      План унификации стилей: Tailwind CSS v4 + shadcn/ui
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="План унификации стилей: Tailwind CSS v4 + shadcn/ui">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Контекст и текущее состояние
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Цели
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Принципы и best practices (применять везде)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Изменения по репозиторию (по файлам/зонам)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Пошаговый план внедрения
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition-of-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      Критерии приемки (Definition of Done)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Риски и смягчающие меры
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Технические примеры (референсные фрагменты)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Чек‑лист ревью перед мерджем
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Оценка объема работ
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Tailwind shadcn unification</h1>
+
+<h2 id="tailwind-css-v4-shadcnui">План унификации стилей: Tailwind CSS v4 + shadcn/ui<a class="headerlink" href="#tailwind-css-v4-shadcnui" title="Permanent link">&para;</a></h2>
+<h3 id="_1">Контекст и текущее состояние<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Бандл: Next.js 15 + Tailwind CSS v4 через PostCSS (<code>@tailwindcss/postcss</code>), глобальные токены и темы заданы в <code>app/globals.css</code> (<code>@theme inline</code>, <code>@layer base</code>).</li>
+<li>UI-библиотека: shadcn/ui (Radix-праймитивы + утилиты Tailwind), есть <code>cn</code> на базе <code>clsx</code> + <code>tailwind-merge</code>.</li>
+<li>Анимации: подключен <code>tw-animate-css</code> через <code>@import</code> (используются классы <code>animate-in</code>, <code>fade-in-0</code>, <code>slide-in-from-*</code>, и т.д.).</li>
+<li>Выявленные отклонения от целевой модели:</li>
+<li>Остаточный CSS-модуль <code>app/page.module.css</code> (не используется).</li>
+<li>Инлайновые стили в нескольких местах (цвета/бордеры, ширина сайдбара, transform прогресса).</li>
+<li>Повторяющиеся «ссылки как кнопки» с вручную собранными классами вместо <code>Button</code>/<code>buttonVariants</code>.</li>
+<li>Целевая модель: только Tailwind v4 утилиты и компоненты shadcn/ui; без кастомных CSS-классов и CSS-модулей; инлайновые стили не использовать, кроме установки CSS‑переменных, далее — только утилиты Tailwind.</li>
+</ul>
+<p>Ссылки:
+- Документация по установке Tailwind (Vite-гайд как ориентир по v4 экосистеме): <a href="https://tailwindcss.com/docs/installation/using-vite">Using Vite</a>
+- shadcn - https://ui.shadcn.com/docs/installation/next </p>
+<h3 id="_2">Цели<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>1) Полная унификация визуального слоя на Tailwind v4 + shadcn/ui.
+2) Исключить кастомные CSS-модули и стили, оставить только тему/токены в <code>globals.css</code>.
+3) Упростить поддержку за счет переиспользуемых компонентов и паттернов shadcn (варианты через <code>cva</code>, <code>data-*</code> состояния, <code>focus-visible</code> ring и т.п.).
+4) Сохранить визуальный паритет (или улучшить) и не нарушить UX.</p>
+<h3 id="best-practices">Принципы и best practices (применять везде)<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Tailwind v4:</li>
+<li>Использовать токены из <code>@theme inline</code> и CSS-переменные (<code>--background</code>, <code>--foreground</code>, <code>--primary</code>, и т.д.).</li>
+<li>Утилиты только Tailwind; произвольные значения — через синтаксис Tailwind <code>[prop:value]</code> и переменные <code>var(--*)</code>.</li>
+<li>Состояния и анимации — через <code>data-*</code> и соответствующие утилиты.</li>
+<li>shadcn/ui:</li>
+<li>Компоненты с вариантами через <code>cva</code>; публичный API: <code>className</code> мержится через <code>cn</code>.</li>
+<li>Везде обеспечивать <code>focus-visible:ring</code>/<code>border</code> для доступности; aria-атрибуты у интерактивных элементов.</li>
+<li>Переиспользовать <code>Button</code>, <code>Input</code>, <code>Badge</code>, <code>Card</code>, <code>Dialog</code>, <code>Sheet</code>, и пр., вместо ручных комбинаций классов.</li>
+<li>Стандарты кода:</li>
+<li>Не использовать <code>style={...}</code> за исключением задания CSS‑переменных (например, <code>style={{ "--accent": accent }}</code>) и только если невозможно иначе.</li>
+<li>Не создавать новые CSS-файлы/модули; все стили — утилитами Tailwind.</li>
+<li>Анимации — единым плагином, совместимым со shadcn (см. ниже).</li>
+</ul>
+<h3 id="_3">Изменения по репозиторию (по файлам/зонам)<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>1) Удаление остаточного CSS-модуля
+- Файл: <code>frontend/app/page.module.css</code> — удалить (не используется).</p>
+<p>2) Инлайновые стили → Tailwind + CSS‑переменные
+- <code>frontend/app/(routes)/org/dashboard/page.tsx</code>
+  - SidebarProvider: заменить
+    - БЫЛО: <code>style={{ ["--sidebar-width" as unknown as string]: "280px" }}</code>
+    - СТАЛО: <code>className="[--sidebar-width:280px]"</code>
+  - Ссылки-кнопки «Настройки/Группы/…»: заменить ручные классы на <code>Button</code> (<code>asChild</code>) с <code>variant="outline"</code>/<code>size="sm"</code>.
+- <code>frontend/components/org/OrgHeader.tsx</code>
+  - Бордер и цвет бейджа:
+    - Вводить переменную <code>--accent</code> через style: <code>style={{ "--accent": accent }}</code> (или через проп на ближайшем контейнере, если данные динамические).
+    - Применение: <code>border-b border-[var(--accent)]</code>, <code>bg-[color:var(--accent)/0.125]</code>, <code>text-[var(--accent)]</code>.
+    - Удалить <code>style={{ borderColor: ... }}</code> и <code>style={{ backgroundColor: ... , color: ... }}</code>.
+- <code>frontend/components/ui/progress.tsx</code>
+  - Индикатор прогресса:
+    - Вводим <code>--progress</code> в <code>style</code> (число 0–100) на корне/индикаторе.
+    - Применяем ширину: <code>w-[calc(var(--progress)*1%)]</code> вместо <code>style.transform</code>.
+- <code>frontend/components/ui/sidebar.tsx</code>
+  - Избавиться от <code>style</code> на контейнере; ширину и иные параметры принимать через CSS‑переменные в <code>className</code>.
+  - <code>SidebarTrigger</code>: заменить ручные классы на <code>Button</code> (<code>asChild</code>) со схожим видом (<code>variant="outline"</code>, <code>size="sm"</code>).</p>
+<p>3) Ссылки как кнопки → shadcn <code>Button</code>
+- Файлы с ручными классами на ссылках:
+  - <code>frontend/app/(routes)/403/page.tsx</code>
+  - <code>frontend/app/(routes)/org/dashboard/page.tsx</code>
+  - <code>frontend/components/events/WaitlistSection.tsx</code>
+- Шаблон:
+  - БЫЛО: <code>&lt;Link className="h-9 rounded-md border px-3 text-sm hover:bg-muted/50" ...&gt;</code>
+  - СТАЛО:
+    - Вариант 1 (предпочтительно): <code>&lt;Button asChild variant="outline" size="sm"&gt;&lt;Link href="..."&gt;…&lt;/Link&gt;&lt;/Button&gt;</code>
+    - Вариант 2: использовать <code>buttonVariants({ variant: "outline", size: "sm" })</code> для получения классов и присвоить их ссылке, если <code>asChild</code> неудобен в конкретном месте.</p>
+<p>4) Анимации: унифицировать плагин
+- Цель: использовать рекомендованный shadcn плагин <code>tailwindcss-animate</code>.
+- Действия:
+  - Заменить <code>tw-animate-css</code> на <code>tailwindcss-animate</code>.
+  - В <code>app/globals.css</code> подключить плагин (Tailwind v4): <code>@import "tailwindcss-animate";</code> (или <code>@plugin</code>, согласно версии плагина). Удалить <code>@import "tw-animate-css";</code>.
+  - Проверить совместимость классов (<code>animate-in</code>, <code>fade-in-0</code>, <code>zoom-in-95</code>, <code>slide-in-from-*</code>, и т.п.), заменить несовместимые аналоги при необходимости.</p>
+<p>5) Унификация UI-компонентов (shadcn best practices)
+- Общие требования ко всем компонентам в <code>components/ui/*</code>:
+  - <code>export</code> именованных компонентов, поддержка <code>className</code>, мерж через <code>cn</code>.
+  - Варианты — через <code>cva</code> (где применимо), дефолтные варианты заданы.
+  - <code>data-slot</code> на корневых узлах для удобства селекторов.
+  - Состояния Radix — через <code>data-*</code> и Tailwind-утилиты (уже используется в большинстве компонентов).
+  - Фокус/валидность: <code>focus-visible:ring-[3px]</code> + <code>border-ring</code>/<code>aria-invalid</code> классы.
+- Специфика по компонентам:
+  - <code>button.tsx</code>: оставить как есть (соответствует shadcn). Дополнить readme по паттерну <code>asChild</code>.
+  - <code>page-header.tsx</code>: ок; гарантировать единые размеры и отступы заголовков на страницах (см. раздел «Шаблон страницы»).
+  - <code>calendar.tsx</code>: уже Tailwind-only. Оставить; визуальные токены — из темы.
+  - <code>sidebar.tsx</code>: см. пункт 2 — увести от <code>style</code>, унифицировать триггер через <code>Button</code>.
+  - Остальные (<code>dialog/sheet/popover/select/tooltip/...</code>): оставить, проверить после смены анимационного плагина.</p>
+<p>6) Шаблон страницы и секции
+- Шаблон страницы должен использовать общие блоки:
+  - <code>PageHeader</code> (заголовок/описание/действия).
+  - <code>Section</code>/<code>Card</code> для контента и блоков.
+  - Грид/спейсинг — только Tailwind-утилитами без локальных классов.
+- Рекомендуемые утилиты для разметки:
+  - Обертка: <code>container mx-auto px-4 sm:px-6 lg:px-8</code> (или <code>max-w-*</code> по контексту), вертикальные отступы через <code>py-*</code>.
+  - Текст: <code>text-balance</code>, <code>tracking-tight/normal</code>, текстовые токены <code>text-muted-foreground</code>.</p>
+<h3 id="_4">Пошаговый план внедрения<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>Шаг 1. Подготовка зависимостей
+- Удалить: <code>tw-animate-css</code>.
+- Добавить: <code>tailwindcss-animate</code> (v4-совместимая версия).
+- Внести изменения в <code>app/globals.css</code>: заменить импорт плагина.</p>
+<p>Шаг 2. Удаление CSS-модулей
+- Удалить <code>frontend/app/page.module.css</code>.
+- Проверить отсутствие импортов CSS/SCSS в кодовой базе.</p>
+<p>Шаг 3. Рефактор инлайновых стилей
+- <code>SidebarProvider</code> (<code>org/dashboard/page.tsx</code>): <code>[--sidebar-width:280px]</code> вместо <code>style</code>.
+- <code>OrgHeader</code>: <code>--accent</code> + утилиты Tailwind, убрать <code>style.borderColor/backgroundColor/color</code>.
+- <code>Progress</code>: <code>--progress</code> + <code>w-[calc(var(--progress)*1%)]</code>, убрать <code>transform</code> из <code>style</code>.
+- <code>sidebar.tsx</code>: принимать <code>className</code> и CSS‑переменные вместо <code>style</code>; <code>SidebarTrigger</code> → <code>Button</code>.</p>
+<p>Шаг 4. Унификация «ссылок как кнопок»
+- Во всех местах с ручной сборкой классов для ссылок — перейти на <code>Button asChild</code> + <code>variant/size</code>.</p>
+<p>Шаг 5. Аудит компонентов ui/*
+- Проверить экспорт/пропсы/варианты/фокус/aria; привести к единому виду shadcn.
+- Проверить классы анимаций после смены плагина; адаптировать при необходимости.</p>
+<p>Шаг 6. Глобальные проверки
+- Поиск по проекту: отсутствие <code>style={</code> (кроме мест, где задаются CSS‑переменные с последующим использованием в утилитах Tailwind).
+- Поиск по проекту: отсутствие <code>*.module.css</code>.
+- Визуальная регрессия ключевых страниц и компонентов.</p>
+<h3 id="definition-of-done">Критерии приемки (Definition of Done)<a class="headerlink" href="#definition-of-done" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Зависимости: <code>tailwindcss-animate</code> подключен; <code>tw-animate-css</code> отсутствует. Анимационные классы работают во всех соответствующих компонентах.</li>
+<li>В репозитории нет CSS-модулей и импортов CSS/SCSS, кроме <code>app/globals.css</code>.</li>
+<li>Нет инлайновых стилей, кроме задания CSS‑переменных (например, <code>--accent</code>, <code>--progress</code>). Все визуальные свойства выражены Tailwind-классами.</li>
+<li>Все «ссылки как кнопки» реализованы через <code>Button asChild</code> или <code>buttonVariants</code>.</li>
+<li>Компоненты <code>components/ui/*</code> поддерживают <code>className</code>, используют <code>cn</code>, применяют <code>cva</code> для вариантов (где уместно), имеют корректные фокус/aria состояния.</li>
+<li>Визуальный паритет/улучшение подтвержден на страницах:</li>
+<li><code>/(routes)/403</code></li>
+<li><code>/org/dashboard</code> (включая <code>SiteHeader</code>, <code>SectionCards</code>, <code>DataTable</code>)</li>
+<li><code>/org/[orgSlug]/*</code> (включая <code>OrgHeader</code>)</li>
+<li><code>/events/[eventId]</code></li>
+<li><code>/checkout/[bookingId]</code></li>
+<li>Линт/типизация/сборка проходят без ошибок.</li>
+</ul>
+<h3 id="_5">Риски и смягчающие меры<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Несовместимость классов между <code>tw-animate-css</code> и <code>tailwindcss-animate</code>: адресовать точечными заменами, покрыть визуальной проверкой модалок/меню/tooltip.</li>
+<li>Динамические цвета бренда: централизовать через <code>--accent</code> на ближайшем контейнере, каскадно применять в дочерних элементах.</li>
+<li>Возможные отличия в размерах/отступах после унификации кнопок: согласовать <code>variant/size</code> в <code>button.tsx</code> (при необходимости добавить <code>xs</code>/<code>md</code>).</li>
+</ul>
+<h3 id="_6">Технические примеры (референсные фрагменты)<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>1) Ссылка как кнопка</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">Button</span><span class="w"> </span><span class="na">asChild</span><span class="w"> </span><span class="na">variant</span><span class="o">=</span><span class="s">&quot;outline&quot;</span><span class="w"> </span><span class="na">size</span><span class="o">=</span><span class="s">&quot;sm&quot;</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">Link</span><span class="w"> </span><span class="na">href</span><span class="o">=</span><span class="s">&quot;/org/dashboard/settings&quot;</span><span class="p">&gt;</span><span class="nx">Настройки</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">Button</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>2) Акцентный цвет через CSS‑переменную</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="s2">&quot;--accent&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">accent</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">&quot;border-b border-[var(--accent)] pb-2&quot;</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">Badge</span><span class="w"> </span><span class="na">variant</span><span class="o">=</span><span class="s">&quot;secondary&quot;</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">&quot;bg-[color:var(--accent)/0.125] text-[var(--accent)]&quot;</span><span class="p">&gt;</span><span class="nx">Организатор</span><span class="p">&lt;/</span><span class="nt">Badge</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>3) Прогресс через ширину</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">ProgressPrimitive</span><span class="p">.</span><span class="na">Root</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">&quot;relative h-2 w-full overflow-hidden rounded-full bg-primary/20&quot;</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">ProgressPrimitive</span><span class="p">.</span><span class="na">Indicator</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="s2">&quot;--progress&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">&quot;h-full w-[calc(var(--progress)*1%)] bg-primary transition-all&quot;</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ProgressPrimitive</span><span class="p">.</span><span class="na">Root</span><span class="p">&gt;</span>
+</code></pre></div>
+<h3 id="_7">Чек‑лист ревью перед мерджем<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] <code>tw-animate-css</code> удален, <code>tailwindcss-animate</code> подключен.</li>
+<li>[ ] Нет <code>style={</code> кроме задания <code>--*</code> и нет <code>*.module.css</code>.</li>
+<li>[ ] Все ссылки-кнопки унифицированы на <code>Button asChild</code>.</li>
+<li>[ ] Ария/фокус/контрасты соответствуют shadcn.</li>
+<li>[ ] Ключевые страницы визуально проверены.</li>
+</ul>
+<h3 id="_8">Оценка объема работ<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Замена зависимостей и настройка</li>
+<li>Рефактор инлайновых стилей и ссылок-кнопок</li>
+<li>Аудит и доводка компонентов ui/*</li>
+<li>Визуальная приемка</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      
+    
+  </body>
+</html>

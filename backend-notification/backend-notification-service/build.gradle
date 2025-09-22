@@ -3,7 +3,8 @@ plugins {
 }
 
 dependencies {
-    api project(':backend-notification:backend-notification-db')
+    implementation project(':backend-common')
+    implementation project(':backend-notification:backend-notification-db')
     
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter'
@@ -33,6 +34,3 @@ dependencies {
     // Architecture tests
     testImplementation "com.tngtech.archunit:archunit-junit5:${archunitVersion}"
 }
-
-tasks.test { useJUnitPlatform() }
-

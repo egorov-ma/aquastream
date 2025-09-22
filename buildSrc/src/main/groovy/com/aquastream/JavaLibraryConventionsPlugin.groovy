@@ -58,3 +58,4 @@ class JavaLibraryConventionsPlugin implements Plugin<Project> {
         }
     }
 }
+

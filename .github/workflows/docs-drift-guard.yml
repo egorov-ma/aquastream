@@ -1,0 +1,22 @@
+name: docs-drift-guard
+
+on:
+  pull_request:
+    paths:
+      - '**'
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect drift between code and docs
+        run: |
+          set -e
+          CHANGED_CODE=$(git diff --name-only origin/${{ github.base_ref }}... | grep -E '^(backend-|frontend/|infra/)' || true)
+          CHANGED_DOCS=$(git diff --name-only origin/${{ github.base_ref }}... | grep -E '(^docs/|/docs/)' || true)
+          if [ -n "$CHANGED_CODE" ] && [ -z "$CHANGED_DOCS" ]; then
+            echo "::error::Code changed without corresponding docs updates. Add docs changes or label 'no-docs-needed'.";
+            exit 1;
+          fi
+          echo "No drift detected"

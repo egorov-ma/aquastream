@@ -3,13 +3,9 @@ plugins {
 }
 
 dependencies {
-    api project(':backend-common')
-    
-    // Spring Boot
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework:spring-context'
-    implementation 'org.springframework:spring-tx'
-    
-    // Lombok provided by root subprojects
+    // Aggregate all notification modules
+    api project(':backend-notification:backend-notification-api')
+    api project(':backend-notification:backend-notification-service')
+    api project(':backend-notification:backend-notification-db')
 }
+

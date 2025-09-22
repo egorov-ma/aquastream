@@ -7,7 +7,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 class JavaLibraryConventionsPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
-        project.plugins.apply('java')
+        project.plugins.apply('java-library')
 
         project.extensions.configure(org.gradle.api.plugins.JavaPluginExtension) { java ->
             java.sourceCompatibility = org.gradle.api.JavaVersion.VERSION_21
@@ -28,4 +28,3 @@ class JavaLibraryConventionsPlugin implements Plugin<Project> {
         }
     }
 }
-

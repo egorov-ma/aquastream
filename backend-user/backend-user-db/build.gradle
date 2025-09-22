@@ -4,7 +4,6 @@ dependencies {
     implementation project(':backend-common')
     
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.data:spring-data-jpa'
     
     // Database
     runtimeOnly "org.postgresql:postgresql:${postgresVersion}"
@@ -14,6 +13,4 @@ dependencies {
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
-
-tasks.test { useJUnitPlatform() }
-
+ 

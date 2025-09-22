@@ -1,32 +1,11 @@
-subprojects {
-    apply plugin: 'java'
-
-    group = 'org.aquastream.crew'
-    version = '1.0.0'
-
-    java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        // Common dependencies for all crew modules
-        implementation 'org.springframework.boot:spring-boot-starter'
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
-        // Lombok provided by root subprojects
-        
-        // Testing
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'org.junit.jupiter:junit-jupiter'
-        testImplementation 'org.mockito:mockito-core'
-        testImplementation 'org.mockito:mockito-junit-jupiter'
-    }
-
-    test {
-        useJUnitPlatform()
-    }
+plugins {
+    id 'java-library'
 }
+
+dependencies {
+    // Aggregate all crew modules
+    api project(':backend-crew:backend-crew-api')
+    api project(':backend-crew:backend-crew-service')
+    api project(':backend-crew:backend-crew-db')
+}
+

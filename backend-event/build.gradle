@@ -2,29 +2,10 @@ plugins {
     id 'java-library'
 }
 
-java {
-    sourceCompatibility = '21'
+dependencies {
+    // Aggregate all event modules
+    api project(':backend-event:backend-event-api')
+    api project(':backend-event:backend-event-service')
+    api project(':backend-event:backend-event-db')
 }
 
-subprojects {
-    apply plugin: 'java-library'
-
-    java {
-        sourceCompatibility = '21'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        implementation project(':backend-common')
-        implementation 'org.springframework.boot:spring-boot-starter'
-        // Lombok provided by root subprojects
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    }
-
-    test {
-        useJUnitPlatform()
-    }
-}

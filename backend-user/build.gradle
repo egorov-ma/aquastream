@@ -1,0 +1,11 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // Aggregate all user modules
+    api project(':backend-user:backend-user-api')
+    api project(':backend-user:backend-user-service')
+    api project(':backend-user:backend-user-db')
+}
+

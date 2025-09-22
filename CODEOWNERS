@@ -1,0 +1,4 @@
+# Docs owners
+/docs/* @egorov-ma
+/docs/** @egorov-ma
+**/docs/** @egorov-ma

@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api project(':backend-common')
+    implementation project(':backend-common')
     
     // Spring Boot Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -11,7 +11,7 @@ dependencies {
     implementation 'org.springframework:spring-tx'
     
     // Database
-    implementation 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
     
     // Liquibase
     implementation 'org.liquibase:liquibase-core'

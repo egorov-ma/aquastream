@@ -45,7 +45,6 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 lerna-debug.log*
-*.lockfile
 
 # Temporary files
 *.tmp
@@ -97,6 +96,7 @@ docker-compose.override.yml
 # Project specific
 run
 .claude/
+.venv-docs/
 
 # Gradle wrapper (keep)
 !gradle/wrapper/gradle-wrapper.jar

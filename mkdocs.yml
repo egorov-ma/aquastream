@@ -1,0 +1,71 @@
+site_name: AquaStream Docs
+repo_url: https://github.com/egorov-ma/aquastream
+nav:
+  - Home: index.md
+  - Overview: overview.md
+  - Architecture: architecture/index.md
+  - Ops: ops/index.md
+  - QA: qa/index.md
+  - Glossary: glossary.md
+  - ADR: adr/index.md
+  - Styleguides:
+      - Markdown: styleguides/markdown_style.md
+  - Roadmap: roadmap.md
+  - API: api/index.md
+  - Services:
+      - Backend:
+          - User:
+              - Overview: modules/backend-user/backend-user-service/README.md
+              - Runbook: modules/backend-user/backend-user-service/runbook.md
+              - Changelog: modules/backend-user/backend-user-service/changelog.md
+          - Event:
+              - Overview: modules/backend-event/backend-event-service/README.md
+              - Runbook: modules/backend-event/backend-event-service/runbook.md
+              - Changelog: modules/backend-event/backend-event-service/changelog.md
+          - Crew:
+              - Overview: modules/backend-crew/backend-crew-service/README.md
+              - Runbook: modules/backend-crew/backend-crew-service/runbook.md
+              - Changelog: modules/backend-crew/backend-crew-service/changelog.md
+          - Media:
+              - Overview: modules/backend-media/backend-media-service/README.md
+              - Runbook: modules/backend-media/backend-media-service/runbook.md
+              - Changelog: modules/backend-media/backend-media-service/changelog.md
+          - Notification:
+              - Overview: modules/backend-notification/backend-notification-service/README.md
+              - Runbook: modules/backend-notification/backend-notification-service/runbook.md
+              - Changelog: modules/backend-notification/backend-notification-service/changelog.md
+          - Payment:
+              - Overview: modules/backend-payment/backend-payment-service/README.md
+              - Runbook: modules/backend-payment/backend-payment-service/runbook.md
+              - Changelog: modules/backend-payment/backend-payment-service/changelog.md
+          - Gateway:
+              - Overview: modules/backend-gateway/README.md
+              - Runbook: modules/backend-gateway/runbook.md
+              - Changelog: modules/backend-gateway/changelog.md
+          - Common:
+              - Overview: modules/backend-common/README.md
+              - Runbook: modules/backend-common/runbook.md
+              - Changelog: modules/backend-common/changelog.md
+      - Frontend:
+          - Overview: modules/frontend/README.md
+          - Runbook: modules/frontend/runbook.md
+          - Changelog: modules/frontend/changelog.md
+      - Infra:
+          - Overview: modules/infra/README.md
+          - Runbook: modules/infra/runbook.md
+          - Changelog: modules/infra/changelog.md
+theme:
+  name: material
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed
+  - pymdownx.tilde
+  - pymdownx.caret
+plugins:
+  - search
+  - mermaid2

@@ -3,7 +3,8 @@ plugins {
 }
 
 dependencies {
-    api project(':backend-payment:backend-payment-db')
+    implementation project(':backend-common')
+    implementation project(':backend-payment:backend-payment-db')
     
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter'

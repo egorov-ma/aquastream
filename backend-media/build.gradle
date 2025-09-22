@@ -1,2 +1,11 @@
-// This is the parent module for backend-media
-// It doesn't need any dependencies itself
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // Aggregate all media modules
+    api project(':backend-media:backend-media-api')
+    api project(':backend-media:backend-media-service')
+    api project(':backend-media:backend-media-db')
+}
+

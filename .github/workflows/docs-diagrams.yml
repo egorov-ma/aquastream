@@ -1,0 +1,44 @@
+name: docs-diagrams
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/_diagrams/**'
+      - 'tools/generate_diagrams.py'
+      - '.github/workflows/docs-diagrams.yml'
+  pull_request:
+    paths:
+      - 'docs/_diagrams/**'
+      - 'tools/generate_diagrams.py'
+      - '.github/workflows/docs-diagrams.yml'
+
+jobs:
+  diagrams:
+    runs-on: ubuntu-latest
+    env:
+      DIAGRAMS_STRICT: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate diagrams (PlantUML via Docker)
+        run: |
+          python3 tools/generate_diagrams.py
+
+      - name: Upload diagrams artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagrams
+          path: docs/_media/diagrams/**
+
+      - name: Drift check for generated diagrams
+        run: |
+          git add -N docs/_media/diagrams || true
+          CHANGED=$(git status --porcelain=1 docs/_media/diagrams | wc -l | tr -d ' ')
+          if [ "$CHANGED" -ne 0 ]; then
+            echo "::error file=docs/_media/diagrams::Generated diagrams changed. Please run 'make docs-diagrams' and commit updates.";
+            git status --porcelain=1 docs/_media/diagrams;
+            exit 1;
+          fi

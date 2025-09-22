@@ -8,9 +8,16 @@ tags: [overview]
 
 Портал Doc as Code: сквозные разделы и ссылки на документацию модулей.
 
-- Начать: см. Overview
-- Если вносите изменения в код — проверьте, нужна ли правка доков (см. CONTRIBUTING)
-- Наши принципы: Doc as Code (Git, PR, CI, автосборка)
+## Start here
+- Overview → overview.md
+- Architecture → architecture/index.md
+- Ops → ops/index.md
+- QA → qa/index.md
+- Glossary → glossary.md
+- ADR → adr/index.md
+- Styleguides → styleguides/markdown_style.md
+- Roadmap → roadmap.md
+- API → api/index.md
 
 ## Быстрые ссылки
 - Архитектура: docs/architecture/index.md

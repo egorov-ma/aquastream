@@ -1,13 +1,4 @@
 // Critical fix for Gradle 8.5 + Spring Boot 3.3.5 commons-compress compatibility
-import org.gradle.api.artifacts.dsl.LockMode
-
-buildscript {
-    configurations.all {
-        resolutionStrategy {
-            force "org.apache.commons:commons-compress:1.26.2"
-        }
-    }
-}
 
 plugins {
     id 'java'
@@ -17,6 +8,15 @@ plugins {
     id 'com.google.protobuf' version '0.9.4' apply false
     id 'org.owasp.dependencycheck' version '10.0.4' apply false
     id 'com.github.ben-manes.versions' version '0.51.0'
+}
+
+// Enforce dependency resolution across all projects
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force "org.apache.commons:commons-compress:1.26.2"
+        }
+    }
 }
 
 ext {
@@ -178,7 +178,7 @@ subprojects {
 
 // Apply Spring Boot plugin only to API modules
 subprojects {
-    if (project.name.endsWith('-api')) {
+    if (project.name.endsWith('-api') || project.name == 'backend-gateway') {
         apply plugin: com.aquastream.SpringBootApiConventionsPlugin
     }
 }
@@ -187,7 +187,7 @@ subprojects {
 subprojects {
     dependencyLocking {
         lockAllConfigurations()
-        lockMode = LockMode.STRICT
+        lockMode = org.gradle.api.artifacts.dsl.LockMode.STRICT
     }
 }
 
