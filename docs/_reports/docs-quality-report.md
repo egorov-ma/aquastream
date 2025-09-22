@@ -2,17 +2,10 @@
 
 ## Coverage
 - Inventory total: 140
-- Nav entries: 40
-- Missing in nav (docs/*): 17
+- Nav entries: 42
+- Missing in nav (docs/*, excl. service/ADR/cards): 10
 
 ### Missing in nav
-- docs/_diagrams/README.md
-- docs/_reports/markdown_normalization_report.md
-- docs/_reports/migration-report.md
-- docs/_reports/navigation-scenarios.md
-- docs/adr/adr-0001-docs-stack.md
-- docs/adr/adr-0002-sync-module-docs.md
-- docs/adr/adr-0003-api-redoc.md
 - docs/modules/frontend/aquastream-frontend-spec.md
 - docs/modules/frontend/claude-ready-brief.md
 - docs/modules/frontend/frontend-finalization-checklist.md
