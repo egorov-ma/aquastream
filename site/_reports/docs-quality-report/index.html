@@ -16,7 +16,7 @@
     
     
       
-        <title>ADR-0002: Стратегия сборки модульных доков через docs/modules - AquaStream Docs</title>
+        <title>Docs Quality Report - AquaStream Docs</title>
       
     
     
@@ -58,7 +58,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-0002-docsmodules" class="md-skip">
+        <a href="#docs-quality-report" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-0002: Стратегия сборки модульных доков через docs/modules
+              Docs Quality Report
             
           </span>
         </div>
@@ -292,7 +292,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../" class="md-tabs__link">
+      <a href="../../adr/" class="md-tabs__link">
         
   
     
@@ -630,7 +630,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../adr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2365,7 +2365,7 @@
                   
 
   
-    <a href="https://github.com/egorov-ma/aquastream/edit/master/docs/adr/adr-0002-sync-module-docs.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/egorov-ma/aquastream/edit/master/docs/_reports/docs-quality-report.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -2373,42 +2373,12 @@
   
 
 
-<h1 id="adr-0002-docsmodules">ADR-0002: Стратегия сборки модульных доков через docs/modules<a class="headerlink" href="#adr-0002-docsmodules" title="Permanent link">&para;</a></h1>
-<hr />
-<p>title: ADR-0002 Modules Sync Strategy
-summary: Копирование **/docs в docs/modules перед сборкой вместо monorepo-плагина.</p>
-<hr />
+<h1 id="docs-quality-report">Docs Quality Report<a class="headerlink" href="#docs-quality-report" title="Permanent link">&para;</a></h1>
+<h2 id="coverage">Coverage<a class="headerlink" href="#coverage" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Статус: Accepted</li>
-<li>Дата: 2025-09-22</li>
-</ul>
-<h2 id="_1">Контекст<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>Monorepo-плагин MkDocs создавал конфигурационные предупреждения и усложнял include. Нужна простая и предсказуемая сборка.</p>
-<h2 id="_2">Решение<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>Использовать скрипт <code>tools/sync_module_docs.py</code>, который перед сборкой копирует модульные <code>**/docs</code> в <code>docs/modules/*</code>. Навигация указывает на эти копии.</p>
-<h2 id="_3">Последствия<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<ul>
-<li>Простота сборки и CI.</li>
-</ul>
-</li>
-<li>
-<ul>
-<li>Предсказуемые относительные пути.</li>
-</ul>
-</li>
-<li>− Требуется шаг синхронизации перед сборкой.</li>
-</ul>
-<h2 id="_4">Альтернативы<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<ul>
-<li>MkDocs monorepo plugin с !include — отказано из‑за нестабильности и предупреждений в strict.</li>
-</ul>
-<h2 id="_5">Ссылки<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>tools/sync_module_docs.py</code></li>
-<li><code>mkdocs.yml</code></li>
-<li><code>infra/make/Makefile</code></li>
+<li>Inventory total: 144</li>
+<li>Nav entries: 53</li>
+<li>Missing in nav (docs/*, excl. service/ADR/cards): 0</li>
 </ul>
 
 

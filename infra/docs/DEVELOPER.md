@@ -17,7 +17,7 @@
 - [Типичные ошибки](#типичные-ошибки)
 - [FAQ](#faq)
 
-## 🚀 Быстрый старт
+## 🚀 Быстрый старт {#быстрый-старт}
 
 ### Требования
 - **Java 21** (Eclipse Temurin или OpenJDK)
@@ -54,7 +54,7 @@ curl http://localhost:8080/actuator/health
 - **Redis**: localhost:6379
 - **MinIO**: localhost:9000 (UI: localhost:9001)
 
-## 🏗️ Архитектура
+## 🏗️ Архитектура {#архитектура}
 
 ### Микросервисная архитектура
 
@@ -113,7 +113,7 @@ graph TB
 - **CI/CD**: GitHub Actions
 - **Container**: Docker, Docker Compose
 
-## ⚙️ Настройка окружения
+## ⚙️ Настройка окружения {#настройка-окружения}
 
 ### 1. Установка Java 21
 ```bash
@@ -190,7 +190,7 @@ SPRING_PROFILES_ACTIVE=dev
 GATEWAY_CORS_ALLOWED_ORIGINS=http://localhost:3000
 ```
 
-## 🚀 Запуск проекта
+## 🚀 Запуск проекта {#запуск-проекта}
 
 ### Через Make (рекомендуется)
 ```bash
@@ -216,7 +216,7 @@ make ps
 make smoke
 ```
 
-### Через Docker Compose напрямую
+### Через Docker Compose напрямую {#docker-compose}
 ```bash
 # Development
 docker compose -f infra/docker/compose/docker-compose.yml --profile dev up -d
@@ -234,7 +234,7 @@ docker compose -f infra/docker/compose/docker-compose.yml down -v
 docker compose -f infra/docker/compose/docker-compose.yml logs -f
 ```
 
-### Локальная разработка (без Docker)
+### Локальная разработка (без Docker) {#local-dev}
 
 #### 1. Запуск инфраструктуры
 ```bash
@@ -274,7 +274,7 @@ docker compose -f infra/docker/compose/docker-compose.yml up postgres redis mini
 ./gradlew :backend-user:backend-user-api:bootJar
 ```
 
-## 📝 Переменные окружения
+## 📝 Переменные окружения {#переменные-окружения}
 
 ### Категории переменных
 
@@ -352,7 +352,7 @@ GATEWAY_CORS_ALLOWED_ORIGINS=http://localhost:3000  # Разрешенные ori
 - Только health check endpoint'ы
 - Полная безопасность
 
-## 🗄️ База данных
+## 🗄️ База данных {#база-данных}
 
 ### Схемы PostgreSQL
 ```sql
@@ -421,7 +421,7 @@ psql -h localhost -p 5432 -U aquastream -d aquastream
 \dt event.*
 ```
 
-## 💾 Бэкапы и восстановление
+## 💾 Бэкапы и восстановление {#бэкапы-и-восстановление}
 
 ### Автоматические бэкапы
 
@@ -510,7 +510,7 @@ docker run --rm \
   pg_dump -Fc -a -h postgres -U aquastream -d aquastream -n user -f /backup/user_data_$(date +%Y%m%d).dump
 ```
 
-## 🔄 CI/CD процессы
+## 🔄 CI/CD процессы {#cicd-процессы}
 
 ### GitHub Actions Workflows
 
@@ -646,7 +646,7 @@ brew install act
 act push -j backend-ci
 ```
 
-## 🚀 Релизы
+## 🚀 Релизы {#релизы}
 
 ### Semantic Versioning (SemVer)
 
@@ -746,7 +746,7 @@ make down && make up-prod
 make restore SCHEMA=all FILE=infra/backup/artifacts/pre_release_v1.2.3.dump
 ```
 
-## 📊 Мониторинг и отладка
+## 📊 Мониторинг и отладка {#мониторинг-и-отладка}
 
 ### Spring Boot Actuator
 
@@ -885,7 +885,7 @@ WHERE schemaname IN ('user','event','crew','payment','notification','media')
 ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
 ```
 
-## ❗ Типичные ошибки
+## ❗ Типичные ошибки {#типичные-ошибки}
 
 ### 1. Docker & Compose проблемы
 
@@ -1093,7 +1093,7 @@ GitHub → Settings → Actions → General → Workflow permissions
 echo $GITHUB_TOKEN | docker login ghcr.io -u username --password-stdin
 ```
 
-## ❓ FAQ
+## ❓ FAQ {#faq}
 
 ### Q: Как добавить новый сервис?
 
@@ -1285,9 +1285,9 @@ gateway:
 
 ### Документация
 - [API Documentation](https://api.aquastream.ru/swagger-ui.html)
-- [Architecture Decision Records](./backend/docs/)
-- [Changelog](../CHANGELOG.md)
-- [Release Process](../RELEASES.md)
+- [Architecture Decision Records](../../adr/index.md)
+- [Changelog](changelog.md)
+- [Release Process](RELEASES.md)
 
 ---
 
