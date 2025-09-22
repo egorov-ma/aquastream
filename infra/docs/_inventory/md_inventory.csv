@@ -1,0 +1,8 @@
+path,h1,h2_first,lang,size_bytes,last_commit_date,last_author
+CHANGELOG.md,Changelog,[Unreleased],en,2168,2025-09-17,egorovma
+RELEASES.md,AquaStream Release Process,Semantic Versioning (SemVer),en,9916,2025-09-17,egorovma
+backup/README.md,Бэкапы PostgreSQL (per-schema),Что делает `backup.sh`,mixed,2990,2025-08-10,egorovma
+docker/compose/README.md,Docker Compose (dev|stage|prod),Профили,mixed,1936,2025-08-10,egorovma
+docs/CI-README.md,CI/CD (GitHub Actions),Workflows,mixed,961,2025-08-10,egorovma
+docs/DEVELOPER.md,AquaStream Backend - Developer Guide,📋 Оглавление,mixed,34492,2025-09-17,egorovma
+docs/aquastream-backend-spec-complete.md,AquaStream Backend - Техническая спецификация,Оглавление,mixed,27196,2025-09-17,egorovma
