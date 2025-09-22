@@ -40,7 +40,6 @@ def read_inventory(repo_root: str) -> List[Dict[str, str]]:
 
 
 def detect_scope(repo_root: str, path: str) -> Tuple[str, str]:
-    # returns (scope, moduleName)
     if path.startswith('docs/'):
         return 'root', ''
     first = path.split('/', 1)[0]
@@ -48,7 +47,6 @@ def detect_scope(repo_root: str, path: str) -> Tuple[str, str]:
         return f'module:{first}', first
     if path.startswith('doc-as-code-todos/') or path.startswith('.github/'):
         return 'root', ''
-    # default to root
     return 'root', ''
 
 
@@ -57,13 +55,13 @@ def detect_topic(path: str, h1: str, h2: str) -> str:
     checks = [
         ('adr', r'(\badr\b|/adr/)'),
         ('api', r'(openapi|swagger|api\b)'),
-        ('architecture', r'(architecture|архитектур|design)') ,
-        ('ops', r'(runbook|ops|operations|эксплуатац)') ,
-        ('qa', r'(qa|test|тест)') ,
-        ('style', r'(style|styleguide|contributing|стиль)') ,
-        ('changelog', r'(changelog|изменени|release\s+notes)') ,
-        ('faq', r'(faq|вопросы|часто\s+задаваемые)') ,
-        ('guide', r'(readme|guide|инструкц|руководств)') ,
+        ('architecture', r'(architecture|архитектур|design)'),
+        ('ops', r'(runbook|ops|operations|эксплуатац)'),
+        ('qa', r'(qa|test|тест)'),
+        ('style', r'(style|styleguide|contributing|стиль)'),
+        ('changelog', r'(changelog|изменени|release\s+notes)'),
+        ('faq', r'(faq|вопросы|часто\s+задаваемые)'),
+        ('guide', r'(readme|guide|инструкц|руководств)'),
     ]
     for topic, pat in checks:
         if re.search(pat, text):
@@ -72,34 +70,24 @@ def detect_topic(path: str, h1: str, h2: str) -> str:
 
 
 def target_path(repo_root: str, path: str, scope: str, module_name: str) -> Tuple[str, str]:
-    # returns (to_path, reason)
-    # Keep anything already under docs/
     if path.startswith('docs/'):
-        return path, 'already-in-root-docs'
-    # Keep doc-as-code-todos and .github content as is
+        return path, 'identity'
     if path.startswith('doc-as-code-todos/') or path.startswith('.github/'):
-        return path, 'keep-non-portal-docs'
-    # Root specials keep
+        return path, 'identity'
     if path in ROOT_SPECIAL_KEEP:
-        return path, 'keep-root-special'
-    # BUILD.md → docs/ops/build.md
+        return path, 'identity'
     if path == 'BUILD.md':
         return 'docs/ops/build.md', 'move-build-to-ops'
-    # Module scope
     if scope.startswith('module:'):
         rest = path[len(module_name):].lstrip('/')
         fname = os.path.basename(path)
-        # direct module root files like backend-user/README.md → backend-user/docs/README.md
         if '/' not in rest:
             return f'{module_name}/docs/{fname}', 'module-root-docs'
-        # If already under a docs folder within module, keep
         if '/docs/' in rest or rest.startswith('docs/'):
-            return path, 'already-in-module-docs'
-        # Otherwise place under nearest module subproject docs: module/sub/ → module/sub/docs/<fname>
+            return path, 'identity'
         sub = rest.split('/', 1)[0]
         return f'{module_name}/{sub}/docs/{fname}', 'module-sub-docs'
-    # default keep
-    return path, 'keep-default'
+    return path, 'identity'
 
 
 def write_csv(rows: List[Dict[str, str]], out_path: str, fieldnames: List[str]) -> None:
@@ -124,18 +112,9 @@ def main() -> int:
         h2 = row.get('h2_first', '') or ''
         scope, module_name = detect_scope(repo_root, path)
         topic = detect_topic(path, h1, h2)
-        tags_rows.append({
-            'path': path,
-            'scope': scope,
-            'topic': topic,
-        })
+        tags_rows.append({'path': path, 'scope': scope, 'topic': topic})
         to_path, reason = target_path(repo_root, path, scope, module_name)
-        if to_path != path:
-            plan_rows.append({
-                'from': path,
-                'to': to_path,
-                'reason': reason,
-            })
+        plan_rows.append({'from': path, 'to': to_path, 'reason': reason})
 
     write_csv(tags_rows, os.path.join(repo_root, TAGS_CSV), ['path', 'scope', 'topic'])
     write_csv(plan_rows, os.path.join(repo_root, MOVE_PLAN_CSV), ['from', 'to', 'reason'])
@@ -145,4 +124,5 @@ def main() -> int:
     return 0
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    import sys
+    sys.exit(main())
