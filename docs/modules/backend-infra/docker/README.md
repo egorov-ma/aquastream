@@ -40,12 +40,18 @@ cd backend-infra/docker/compose
 cp .env.dev.example .env.dev
 cp .env.stage.example .env.stage
 
-# Dev окружение
+# Dev окружение (base + override.dev)
 make -C ../../make up-dev
 
-# Stage окружение
+# Stage окружение (base + override.stage)
 make -C ../../make up-stage
 
 # Проверка здоровья (пример):
 curl -s http://localhost:8080/actuator/health | jq
 ```
+
+### Оверлеи
+- `docker-compose.override.dev.yml`: публикует порты Postgres/Redis/MinIO и всех приложений для локальной разработки.
+- `docker-compose.override.stage.yml`: публикует только порт `gateway` (8080); БД/Redis/MinIO и остальные сервисы без внешних портов.
+
+Базовый `docker-compose.yml` не публикует порты, содержит политики перезапуска, ротацию логов, ресурсные лимиты и healthcheck’и.
