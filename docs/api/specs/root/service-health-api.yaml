@@ -1,0 +1,419 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Service Health API
+  description: Унифицированный API для мониторинга здоровья микросервисов (Spring Boot Actuator)
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8101
+    description: User Service
+  - url: http://localhost:8102
+    description: Event Service
+  - url: http://localhost:8103
+    description: Crew Service
+  - url: http://localhost:8104
+    description: Payment Service
+  - url: http://localhost:8105
+    description: Notification Service
+  - url: http://localhost:8106
+    description: Media Service
+
+tags:
+  - name: Health
+    description: Проверка здоровья сервиса
+  - name: Info
+    description: Информация о сервисе
+  - name: Metrics
+    description: Метрики сервиса
+
+paths:
+  /actuator/health:
+    get:
+      tags: [Health]
+      summary: Проверка здоровья сервиса
+      description: Возвращает общий статус здоровья сервиса и его компонентов
+      responses:
+        '200':
+          description: Сервис работает нормально
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                healthy:
+                  summary: Все компоненты работают
+                  value:
+                    status: "UP"
+                    components:
+                      db:
+                        status: "UP"
+                        details:
+                          database: "PostgreSQL"
+                          validationQuery: "isValid()"
+                      redis:
+                        status: "UP"
+                        details:
+                          version: "7.0.0"
+                unhealthy:
+                  summary: Есть проблемы с компонентами
+                  value:
+                    status: "DOWN"
+                    components:
+                      db:
+                        status: "DOWN"
+                        details:
+                          error: "Connection timeout"
+                      redis:
+                        status: "UP"
+        '503':
+          description: Сервис недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /actuator/health/liveness:
+    get:
+      tags: [Health]
+      summary: Liveness Probe
+      description: Проверка живости сервиса (для Kubernetes)
+      responses:
+        '200':
+          description: Сервис жив
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleHealthResponse'
+        '503':
+          description: Сервис не отвечает
+
+  /actuator/health/readiness:
+    get:
+      tags: [Health]
+      summary: Readiness Probe
+      description: Проверка готовности сервиса к обработке запросов (для Kubernetes)
+      responses:
+        '200':
+          description: Сервис готов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleHealthResponse'
+        '503':
+          description: Сервис не готов
+
+  /actuator/info:
+    get:
+      tags: [Info]
+      summary: Информация о сервисе
+      description: Возвращает метаинформацию о сервисе
+      responses:
+        '200':
+          description: Информация о сервисе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfoResponse'
+              example:
+                app:
+                  name: "AquaStream User Service"
+                  version: "1.0.0"
+                  description: "Микросервис управления пользователями"
+                build:
+                  time: "2024-01-15T10:00:00Z"
+                  artifact: "backend-user-api"
+                  name: "backend-user-api"
+                  group: "org.aquastream"
+                  version: "1.0.0"
+                git:
+                  branch: "main"
+                  commit:
+                    id: "a1b2c3d"
+                    time: "2024-01-15T09:30:00Z"
+                java:
+                  version: "21.0.1"
+                  vendor: "Eclipse Adoptium"
+
+  /actuator/metrics:
+    get:
+      tags: [Metrics]
+      summary: Список доступных метрик
+      description: Возвращает список всех доступных метрик сервиса
+      responses:
+        '200':
+          description: Список метрик
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsListResponse'
+
+  /actuator/metrics/{metricName}:
+    get:
+      tags: [Metrics]
+      summary: Значение конкретной метрики
+      description: Возвращает текущее значение указанной метрики
+      parameters:
+        - name: metricName
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Имя метрики
+          example: "jvm.memory.used"
+        - name: tag
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Фильтр по тегу
+          example: "area:heap"
+      responses:
+        '200':
+          description: Значение метрики
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricResponse'
+              examples:
+                memory_metric:
+                  summary: Использование памяти
+                  value:
+                    name: "jvm.memory.used"
+                    description: "The amount of used memory"
+                    baseUnit: "bytes"
+                    measurements:
+                      - statistic: "VALUE"
+                        value: 157286400
+                    availableTags:
+                      - tag: "area"
+                        values: ["heap", "nonheap"]
+                      - tag: "id"
+                        values: ["G1 Eden Space", "G1 Old Gen"]
+        '404':
+          description: Метрика не найдена
+
+  /actuator/env:
+    get:
+      tags: [Info]
+      summary: Переменные окружения
+      description: Возвращает конфигурацию окружения (без чувствительных данных)
+      responses:
+        '200':
+          description: Конфигурация окружения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN, OUT_OF_SERVICE, UNKNOWN]
+          description: Общий статус здоровья
+        components:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ComponentHealth'
+          description: Статус компонентов сервиса
+      required:
+        - status
+
+    ComponentHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN, OUT_OF_SERVICE, UNKNOWN]
+          description: Статус компонента
+        details:
+          type: object
+          additionalProperties: true
+          description: Дополнительная информация о компоненте
+      required:
+        - status
+
+    SimpleHealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN]
+          description: Простой статус
+      required:
+        - status
+
+    InfoResponse:
+      type: object
+      properties:
+        app:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Название приложения
+            version:
+              type: string
+              description: Версия приложения
+            description:
+              type: string
+              description: Описание приложения
+        build:
+          type: object
+          properties:
+            time:
+              type: string
+              format: date-time
+              description: Время сборки
+            artifact:
+              type: string
+              description: Имя артефакта
+            name:
+              type: string
+              description: Имя модуля
+            group:
+              type: string
+              description: Группа Maven/Gradle
+            version:
+              type: string
+              description: Версия сборки
+        git:
+          type: object
+          properties:
+            branch:
+              type: string
+              description: Ветка Git
+            commit:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Хеш коммита
+                time:
+                  type: string
+                  format: date-time
+                  description: Время коммита
+        java:
+          type: object
+          properties:
+            version:
+              type: string
+              description: Версия Java
+            vendor:
+              type: string
+              description: Поставщик JVM
+
+    MetricsListResponse:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+          description: Список названий метрик
+          example:
+            - "jvm.memory.used"
+            - "jvm.memory.max"
+            - "http.server.requests"
+            - "jdbc.connections.active"
+            - "system.cpu.usage"
+      required:
+        - names
+
+    MetricResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название метрики
+        description:
+          type: string
+          description: Описание метрики
+        baseUnit:
+          type: string
+          description: Единица измерения
+        measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Measurement'
+          description: Измерения метрики
+        availableTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableTag'
+          description: Доступные теги для фильтрации
+      required:
+        - name
+        - measurements
+
+    Measurement:
+      type: object
+      properties:
+        statistic:
+          type: string
+          enum: [VALUE, TOTAL, COUNT, MAX, MEAN, ACTIVE_TASKS, DURATION]
+          description: Тип статистики
+        value:
+          type: number
+          description: Значение измерения
+      required:
+        - statistic
+        - value
+
+    AvailableTag:
+      type: object
+      properties:
+        tag:
+          type: string
+          description: Название тега
+        values:
+          type: array
+          items:
+            type: string
+          description: Возможные значения тега
+      required:
+        - tag
+        - values
+
+    EnvironmentResponse:
+      type: object
+      properties:
+        activeProfiles:
+          type: array
+          items:
+            type: string
+          description: Активные профили Spring
+        propertySources:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertySource'
+          description: Источники конфигурации
+      required:
+        - activeProfiles
+        - propertySources
+
+    PropertySource:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название источника
+        properties:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              value:
+                type: string
+                description: Значение свойства (может быть замаскировано)
+              origin:
+                type: string
+                description: Источник свойства
+          description: Свойства конфигурации
+      required:
+        - name
+        - properties

@@ -69,6 +69,11 @@ Desktop.ini
 .env.test
 .env.production
 .envrc
+backend-infra/docker/compose/.env
+backend-infra/docker/compose/.env.dev
+backend-infra/docker/compose/.env.stage
+backend-infra/docker/compose/.env.prod
+!backend-infra/docker/compose/.env*.example
 *.secret
 *_password.txt
 *_secret.txt
@@ -79,14 +84,14 @@ passwords.txt
 secrets.yml
 
 # Infrastructure
-infra/.terraform/
-infra/.terraform.lock.hcl
-infra/*.tfstate*
-infra/docker/data/
-infra/docker/logs/
-infra/docker/backups/
-infra/backup/artifacts/
-infra/docker/compose/secrets/
+backend-infra/.terraform/
+backend-infra/.terraform.lock.hcl
+backend-infra/*.tfstate*
+backend-infra/docker/data/
+backend-infra/docker/logs/
+backend-infra/docker/backups/
+backend-infra/backup/artifacts/
+backend-infra/docker/compose/secrets/
 
 # Docker
 .dockerignore

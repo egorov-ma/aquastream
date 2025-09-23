@@ -1,0 +1,306 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Gateway Admin API
+  description: Административный API для управления и мониторинга API Gateway
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Health
+    description: Проверка здоровья всех микросервисов
+  - name: Admin
+    description: Административные операции
+
+paths:
+  /api/v1/admin/health:
+    get:
+      tags: [Health]
+      summary: Агрегированная проверка здоровья
+      description: Проверяет статус всех зарегистрированных микросервисов
+      responses:
+        '200':
+          description: Статус всех сервисов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AggregatedHealthResponse'
+              examples:
+                all_healthy:
+                  summary: Все сервисы работают
+                  value:
+                    status: "UP"
+                    timestamp: "2024-01-15T10:30:00Z"
+                    services:
+                      user-service:
+                        status: "UP"
+                        responseTime: 45
+                        details:
+                          version: "1.0.0"
+                          uptime: 3600
+                      event-service:
+                        status: "UP"
+                        responseTime: 32
+                        details:
+                          version: "1.0.0"
+                          uptime: 3500
+                some_down:
+                  summary: Некоторые сервисы недоступны
+                  value:
+                    status: "DEGRADED"
+                    timestamp: "2024-01-15T10:30:00Z"
+                    services:
+                      user-service:
+                        status: "UP"
+                        responseTime: 45
+                      payment-service:
+                        status: "DOWN"
+                        error: "Connection timeout"
+        '503':
+          description: Критические сервисы недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AggregatedHealthResponse'
+
+  /api/v1/admin/services:
+    get:
+      tags: [Admin]
+      summary: Список зарегистрированных сервисов
+      description: Возвращает список всех микросервисов, зарегистрированных в Gateway
+      responses:
+        '200':
+          description: Список сервисов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicesListResponse'
+
+  /api/v1/admin/routes:
+    get:
+      tags: [Admin]
+      summary: Конфигурация маршрутизации
+      description: Возвращает текущую конфигурацию маршрутов Gateway
+      responses:
+        '200':
+          description: Конфигурация маршрутов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutesConfigResponse'
+
+  /api/v1/admin/reload:
+    post:
+      tags: [Admin]
+      summary: Перезагрузка конфигурации
+      description: Перезагружает конфигурацию Gateway без перезапуска
+      responses:
+        '200':
+          description: Конфигурация успешно перезагружена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '500':
+          description: Ошибка перезагрузки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    AggregatedHealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN, DEGRADED]
+          description: Общий статус системы
+        timestamp:
+          type: string
+          format: date-time
+          description: Время проверки
+        services:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ServiceHealth'
+          description: Статус каждого сервиса
+      required:
+        - status
+        - timestamp
+        - services
+
+    ServiceHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN, UNKNOWN]
+          description: Статус сервиса
+        responseTime:
+          type: integer
+          description: Время ответа в миллисекундах
+          minimum: 0
+        error:
+          type: string
+          description: Описание ошибки (если status = DOWN)
+        details:
+          type: object
+          properties:
+            version:
+              type: string
+              description: Версия сервиса
+            uptime:
+              type: integer
+              description: Время работы в секундах
+            url:
+              type: string
+              description: URL health endpoint
+          description: Дополнительная информация о сервисе
+      required:
+        - status
+
+    ServicesListResponse:
+      type: object
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceInfo'
+        total:
+          type: integer
+          description: Общее количество сервисов
+      required:
+        - services
+        - total
+
+    ServiceInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Имя сервиса
+          example: "user-service"
+        url:
+          type: string
+          description: Base URL сервиса
+          example: "http://localhost:8101"
+        healthEndpoint:
+          type: string
+          description: Endpoint для проверки здоровья
+          example: "/actuator/health"
+        routePrefix:
+          type: string
+          description: Префикс маршрута в Gateway
+          example: "/api/v1/users"
+        loadBalancing:
+          type: string
+          enum: [ROUND_ROBIN, LEAST_CONNECTIONS, RANDOM]
+          description: Алгоритм балансировки нагрузки
+        timeout:
+          type: integer
+          description: Таймаут запросов в миллисекундах
+          example: 5000
+      required:
+        - name
+        - url
+        - routePrefix
+
+    RoutesConfigResponse:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteConfig'
+        lastUpdated:
+          type: string
+          format: date-time
+          description: Время последнего обновления конфигурации
+      required:
+        - routes
+
+    RouteConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор маршрута
+          example: "user-service-route"
+        path:
+          type: string
+          description: Путь маршрута
+          example: "/api/v1/users/**"
+        uri:
+          type: string
+          description: URI целевого сервиса
+          example: "http://localhost:8101"
+        predicates:
+          type: array
+          items:
+            type: string
+          description: Предикаты маршрутизации
+          example: ["Path=/api/v1/users/**"]
+        filters:
+          type: array
+          items:
+            type: string
+          description: Фильтры обработки запросов
+          example: ["StripPrefix=2"]
+        order:
+          type: integer
+          description: Приоритет маршрута
+          example: 100
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Дополнительные метаданные
+      required:
+        - id
+        - path
+        - uri
+
+    OperationResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Успешность операции
+        message:
+          type: string
+          description: Сообщение о результате
+        timestamp:
+          type: string
+          format: date-time
+          description: Время выполнения операции
+      required:
+        - success
+        - message
+        - timestamp
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Описание ошибки
+        timestamp:
+          type: string
+          format: date-time
+          description: Время возникновения ошибки
+        path:
+          type: string
+          description: Путь запроса, вызвавшего ошибку
+      required:
+        - error
+        - message
+        - timestamp

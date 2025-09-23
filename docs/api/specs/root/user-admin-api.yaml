@@ -1,0 +1,761 @@
+openapi: 3.0.3
+info:
+  title: AquaStream User Admin API
+  description: Административный API для управления пользователями системы
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8101
+    description: User Service (Development)
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: User Management
+    description: Управление пользователями
+  - name: Roles & Permissions
+    description: Роли и права доступа
+  - name: Moderation
+    description: Модерация пользователей
+  - name: Analytics
+    description: Аналитика пользователей
+  - name: Security
+    description: Безопасность и аудит
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/admin/users:
+    get:
+      tags: [User Management]
+      summary: Получить список пользователей
+      description: Возвращает список всех пользователей с возможностью фильтрации
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Размер страницы
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Поиск по имени, email или username
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE, SUSPENDED, BANNED]
+          description: Фильтр по статусу
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [USER, ORGANIZER, ADMIN, SUPER_ADMIN]
+          description: Фильтр по роли
+        - name: created_after
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Зарегистрированы после даты
+        - name: created_before
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Зарегистрированы до даты
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [created_at, last_active, email, display_name]
+            default: created_at
+          description: Поле для сортировки
+        - name: direction
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Направление сортировки
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUsersResponse'
+        '403':
+          description: Недостаточно прав доступа
+
+  /api/v1/admin/users/{userId}:
+    get:
+      tags: [User Management]
+      summary: Получить детальную информацию о пользователе
+      description: Возвращает подробную информацию о конкретном пользователе
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      responses:
+        '200':
+          description: Детальная информация о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetails'
+        '404':
+          description: Пользователь не найден
+
+    put:
+      tags: [User Management]
+      summary: Обновить информацию о пользователе
+      description: Обновляет информацию о пользователе (только администраторы)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Пользователь успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetails'
+        '400':
+          description: Некорректные данные
+        '404':
+          description: Пользователь не найден
+
+    delete:
+      tags: [User Management]
+      summary: Удалить пользователя
+      description: Мягкое удаление пользователя (деактивация)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+        - name: reason
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Причина удаления
+      responses:
+        '204':
+          description: Пользователь успешно удален
+        '404':
+          description: Пользователь не найден
+
+  /api/v1/admin/users/{userId}/suspend:
+    post:
+      tags: [Moderation]
+      summary: Заблокировать пользователя
+      description: Временно блокирует пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspendUserRequest'
+      responses:
+        '200':
+          description: Пользователь заблокирован
+        '404':
+          description: Пользователь не найден
+
+  /api/v1/admin/users/{userId}/unsuspend:
+    post:
+      tags: [Moderation]
+      summary: Разблокировать пользователя
+      description: Снимает блокировку с пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      responses:
+        '200':
+          description: Пользователь разблокирован
+        '404':
+          description: Пользователь не найден
+
+  /api/v1/admin/users/{userId}/role:
+    put:
+      tags: [Roles & Permissions]
+      summary: Изменить роль пользователя
+      description: Назначает новую роль пользователю
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeRoleRequest'
+      responses:
+        '200':
+          description: Роль успешно изменена
+        '400':
+          description: Некорректная роль
+        '404':
+          description: Пользователь не найден
+
+  /api/v1/admin/users/{userId}/permissions:
+    get:
+      tags: [Roles & Permissions]
+      summary: Получить права пользователя
+      description: Возвращает список всех прав пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      responses:
+        '200':
+          description: Список прав пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPermissionsResponse'
+
+  /api/v1/admin/users/{userId}/audit-log:
+    get:
+      tags: [Security]
+      summary: Получить журнал действий пользователя
+      description: Возвращает историю действий пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Начало периода
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Конец периода
+        - name: action_type
+          in: query
+          schema:
+            type: string
+            enum: [LOGIN, LOGOUT, PROFILE_UPDATE, PASSWORD_CHANGE, EVENT_BOOKING, PAYMENT]
+          description: Тип действия
+      responses:
+        '200':
+          description: Журнал действий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogResponse'
+
+  /api/v1/admin/analytics/users:
+    get:
+      tags: [Analytics]
+      summary: Аналитика пользователей
+      description: Возвращает статистику по пользователям
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month, year]
+            default: month
+          description: Период для анализа
+        - name: metric
+          in: query
+          schema:
+            type: string
+            enum: [registrations, active_users, retention, engagement]
+            default: registrations
+          description: Тип метрики
+      responses:
+        '200':
+          description: Аналитические данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAnalyticsResponse'
+
+  /api/v1/admin/bulk-operations:
+    post:
+      tags: [User Management]
+      summary: Массовые операции с пользователями
+      description: Выполняет массовые операции над группой пользователей
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkOperationRequest'
+      responses:
+        '202':
+          description: Операция принята к выполнению
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkOperationResponse'
+        '400':
+          description: Некорректные параметры операции
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AdminUsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminUserSummary'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        totalElements:
+          type: integer
+          description: Общее количество пользователей
+        filters:
+          type: object
+          description: Примененные фильтры
+      required:
+        - users
+        - pagination
+        - totalElements
+
+    AdminUserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID пользователя
+        email:
+          type: string
+          format: email
+          description: Email пользователя
+        displayName:
+          type: string
+          description: Отображаемое имя
+        role:
+          type: string
+          enum: [USER, ORGANIZER, ADMIN, SUPER_ADMIN]
+          description: Роль пользователя
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, SUSPENDED, BANNED]
+          description: Статус пользователя
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата регистрации
+        lastActiveAt:
+          type: string
+          format: date-time
+          description: Последняя активность
+        eventCount:
+          type: integer
+          description: Количество событий пользователя
+        telegramLinked:
+          type: boolean
+          description: Привязан ли Telegram
+      required:
+        - id
+        - email
+        - displayName
+        - role
+        - status
+        - createdAt
+
+    AdminUserDetails:
+      allOf:
+        - $ref: '#/components/schemas/AdminUserSummary'
+        - type: object
+          properties:
+            firstName:
+              type: string
+              description: Имя
+            lastName:
+              type: string
+              description: Фамилия
+            phone:
+              type: string
+              description: Номер телефона
+            birthDate:
+              type: string
+              format: date
+              description: Дата рождения
+            bio:
+              type: string
+              description: Биография
+            emergencyContact:
+              $ref: '#/components/schemas/EmergencyContact'
+            preferences:
+              $ref: '#/components/schemas/UserPreferences'
+            statistics:
+              $ref: '#/components/schemas/UserStatistics'
+            metadata:
+              type: object
+              additionalProperties: true
+              description: Дополнительные данные
+
+    EmergencyContact:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Имя контактного лица
+        phone:
+          type: string
+          description: Телефон
+        relationship:
+          type: string
+          description: Степень родства
+
+    UserPreferences:
+      type: object
+      properties:
+        notifications:
+          type: object
+          properties:
+            email:
+              type: boolean
+            telegram:
+              type: boolean
+            push:
+              type: boolean
+        privacy:
+          type: object
+          properties:
+            showProfile:
+              type: boolean
+            showEvents:
+              type: boolean
+        language:
+          type: string
+          description: Предпочитаемый язык
+
+    UserStatistics:
+      type: object
+      properties:
+        totalEvents:
+          type: integer
+          description: Общее количество событий
+        completedEvents:
+          type: integer
+          description: Завершенные события
+        cancelledBookings:
+          type: integer
+          description: Отмененные бронирования
+        totalSpent:
+          type: number
+          description: Общая потраченная сумма
+        averageRating:
+          type: number
+          description: Средний рейтинг как организатора
+        loginCount:
+          type: integer
+          description: Количество входов в систему
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 50
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        bio:
+          type: string
+          maxLength: 500
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, SUSPENDED]
+
+    SuspendUserRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Причина блокировки
+          minLength: 10
+        duration:
+          type: integer
+          description: Длительность блокировки в днях (0 = бессрочно)
+          minimum: 0
+        note:
+          type: string
+          description: Дополнительная заметка
+      required:
+        - reason
+
+    ChangeRoleRequest:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [USER, ORGANIZER, ADMIN, SUPER_ADMIN]
+          description: Новая роль
+        reason:
+          type: string
+          description: Причина изменения роли
+      required:
+        - role
+        - reason
+
+    UserPermissionsResponse:
+      type: object
+      properties:
+        permissions:
+          type: array
+          items:
+            type: string
+          description: Список разрешений
+          example: ["read:events", "create:events", "update:own_profile", "admin:users"]
+        inherited:
+          type: array
+          items:
+            type: string
+          description: Права, унаследованные от роли
+        direct:
+          type: array
+          items:
+            type: string
+          description: Права, назначенные напрямую
+      required:
+        - permissions
+
+    AuditLogResponse:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLogEntry'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+        - entries
+
+    AuditLogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        action:
+          type: string
+          description: Тип действия
+        details:
+          type: object
+          additionalProperties: true
+          description: Детали действия
+        ipAddress:
+          type: string
+          description: IP адрес
+        userAgent:
+          type: string
+          description: User Agent
+        success:
+          type: boolean
+          description: Успешность действия
+      required:
+        - id
+        - timestamp
+        - action
+        - success
+
+    UserAnalyticsResponse:
+      type: object
+      properties:
+        period:
+          type: string
+          description: Анализируемый период
+        metric:
+          type: string
+          description: Тип метрики
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsDataPoint'
+        summary:
+          type: object
+          properties:
+            total:
+              type: integer
+            growth:
+              type: number
+              description: Рост в процентах
+            trend:
+              type: string
+              enum: [up, down, stable]
+      required:
+        - period
+        - metric
+        - data
+
+    AnalyticsDataPoint:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          type: integer
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - date
+        - value
+
+    BulkOperationRequest:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum: [suspend, unsuspend, change_role, delete, export]
+          description: Тип операции
+        userIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Список ID пользователей
+          minItems: 1
+          maxItems: 1000
+        parameters:
+          type: object
+          additionalProperties: true
+          description: Параметры операции
+        reason:
+          type: string
+          description: Причина выполнения операции
+      required:
+        - operation
+        - userIds
+        - reason
+
+    BulkOperationResponse:
+      type: object
+      properties:
+        operationId:
+          type: string
+          format: uuid
+          description: ID операции для отслеживания
+        status:
+          type: string
+          enum: [accepted, in_progress, completed, failed]
+          description: Статус операции
+        affectedUsers:
+          type: integer
+          description: Количество затронутых пользователей
+        estimatedCompletion:
+          type: string
+          format: date-time
+          description: Ожидаемое время завершения
+      required:
+        - operationId
+        - status
+        - affectedUsers
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Номер текущей страницы
+        size:
+          type: integer
+          description: Размер страницы
+        totalPages:
+          type: integer
+          description: Общее количество страниц
+        totalElements:
+          type: integer
+          description: Общее количество элементов
+        hasNext:
+          type: boolean
+          description: Есть ли следующая страница
+        hasPrevious:
+          type: boolean
+          description: Есть ли предыдущая страница
+      required:
+        - page
+        - size
+        - totalPages
+        - totalElements

@@ -1,0 +1,588 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Telegram Bot API
+  description: API для интеграции с Telegram Bot для уведомлений и взаимодействия с пользователями
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8101
+    description: User Service (Development)
+  - url: http://localhost:8105
+    description: Notification Service (Development)
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Webhook
+    description: Обработка webhook от Telegram
+  - name: Bot Commands
+    description: Команды бота
+  - name: Notifications
+    description: Отправка уведомлений через бота
+  - name: User Management
+    description: Управление пользователями через бота
+
+paths:
+  /api/v1/telegram/webhook:
+    post:
+      tags: [Webhook]
+      summary: Webhook от Telegram Bot API
+      description: Обработка входящих обновлений от Telegram Bot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelegramUpdate'
+            examples:
+              message:
+                summary: Текстовое сообщение
+                value:
+                  update_id: 12345678
+                  message:
+                    message_id: 1234
+                    date: 1640995200
+                    text: "/start"
+                    from:
+                      id: 123456789
+                      is_bot: false
+                      first_name: "Иван"
+                      last_name: "Иванов"
+                      username: "ivan_ivanov"
+                      language_code: "ru"
+                    chat:
+                      id: 123456789
+                      type: "private"
+                      first_name: "Иван"
+                      last_name: "Иванов"
+                      username: "ivan_ivanov"
+              callback_query:
+                summary: Callback от inline кнопки
+                value:
+                  update_id: 12345679
+                  callback_query:
+                    id: "callback_123"
+                    from:
+                      id: 123456789
+                      is_bot: false
+                      first_name: "Иван"
+                      username: "ivan_ivanov"
+                    data: "subscribe_event_550e8400-e29b-41d4-a716-446655440000"
+                    message:
+                      message_id: 1235
+                      date: 1640995300
+                      text: "Хотите подписаться на уведомления о событии?"
+                      chat:
+                        id: 123456789
+                        type: "private"
+      responses:
+        '200':
+          description: Обновление успешно обработано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelegramWebhookResponse'
+        '400':
+          description: Некорректные данные webhook
+        '500':
+          description: Ошибка обработки webhook
+
+  /api/v1/telegram/send-message:
+    post:
+      tags: [Notifications]
+      summary: Отправить сообщение через бота
+      description: Отправляет сообщение пользователю через Telegram бота
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+            examples:
+              simple_message:
+                summary: Простое текстовое сообщение
+                value:
+                  chat_id: 123456789
+                  text: "Напоминание: завтра сплав по Волге!"
+                  parse_mode: "Markdown"
+              message_with_buttons:
+                summary: Сообщение с кнопками
+                value:
+                  chat_id: 123456789
+                  text: "Подтвердите участие в событии:"
+                  reply_markup:
+                    inline_keyboard:
+                      - - text: "✅ Подтверждаю"
+                          callback_data: "confirm_participation_550e8400"
+                        - text: "❌ Отказываюсь"
+                          callback_data: "decline_participation_550e8400"
+      responses:
+        '200':
+          description: Сообщение отправлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelegramMessageResponse'
+        '400':
+          description: Некорректные параметры сообщения
+        '403':
+          description: Бот заблокирован пользователем
+
+  /api/v1/telegram/user/link:
+    post:
+      tags: [User Management]
+      summary: Связать Telegram аккаунт с пользователем
+      description: Связывает Telegram аккаунт с существующим пользователем системы
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkTelegramRequest'
+      responses:
+        '200':
+          description: Аккаунт успешно связан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkTelegramResponse'
+        '400':
+          description: Некорректные данные
+        '409':
+          description: Telegram аккаунт уже связан
+
+  /api/v1/telegram/user/unlink:
+    post:
+      tags: [User Management]
+      summary: Отвязать Telegram аккаунт
+      description: Отвязывает Telegram аккаунт от пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnlinkTelegramRequest'
+      responses:
+        '200':
+          description: Аккаунт успешно отвязан
+        '404':
+          description: Связь не найдена
+
+  /api/v1/telegram/subscriptions:
+    get:
+      tags: [Notifications]
+      summary: Получить подписки пользователя
+      description: Возвращает список подписок пользователя на уведомления
+      parameters:
+        - name: telegram_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Telegram ID пользователя
+      responses:
+        '200':
+          description: Список подписок
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionsResponse'
+
+    post:
+      tags: [Notifications]
+      summary: Создать подписку на уведомления
+      description: Создает подписку пользователя на определенный тип уведомлений
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionRequest'
+      responses:
+        '201':
+          description: Подписка создана
+        '409':
+          description: Подписка уже существует
+
+components:
+  schemas:
+    TelegramUpdate:
+      type: object
+      properties:
+        update_id:
+          type: integer
+          description: Уникальный идентификатор обновления
+        message:
+          $ref: '#/components/schemas/TelegramMessage'
+        edited_message:
+          $ref: '#/components/schemas/TelegramMessage'
+        callback_query:
+          $ref: '#/components/schemas/TelegramCallbackQuery'
+        inline_query:
+          $ref: '#/components/schemas/TelegramInlineQuery'
+      required:
+        - update_id
+
+    TelegramMessage:
+      type: object
+      properties:
+        message_id:
+          type: integer
+          description: Уникальный идентификатор сообщения
+        from:
+          $ref: '#/components/schemas/TelegramUser'
+        date:
+          type: integer
+          description: Дата отправки сообщения (Unix timestamp)
+        chat:
+          $ref: '#/components/schemas/TelegramChat'
+        text:
+          type: string
+          description: Текст сообщения
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelegramMessageEntity'
+          description: Специальные сущности в тексте
+        reply_to_message:
+          $ref: '#/components/schemas/TelegramMessage'
+      required:
+        - message_id
+        - date
+        - chat
+
+    TelegramUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор пользователя
+        is_bot:
+          type: boolean
+          description: True, если это бот
+        first_name:
+          type: string
+          description: Имя пользователя
+        last_name:
+          type: string
+          description: Фамилия пользователя
+        username:
+          type: string
+          description: Username пользователя
+        language_code:
+          type: string
+          description: Код языка пользователя
+      required:
+        - id
+        - is_bot
+        - first_name
+
+    TelegramChat:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор чата
+        type:
+          type: string
+          enum: [private, group, supergroup, channel]
+          description: Тип чата
+        title:
+          type: string
+          description: Название чата (для групп и каналов)
+        username:
+          type: string
+          description: Username чата
+        first_name:
+          type: string
+          description: Имя (для приватных чатов)
+        last_name:
+          type: string
+          description: Фамилия (для приватных чатов)
+      required:
+        - id
+        - type
+
+    TelegramCallbackQuery:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор запроса
+        from:
+          $ref: '#/components/schemas/TelegramUser'
+        message:
+          $ref: '#/components/schemas/TelegramMessage'
+        inline_message_id:
+          type: string
+          description: Идентификатор inline сообщения
+        data:
+          type: string
+          description: Данные, связанные с callback кнопкой
+        game_short_name:
+          type: string
+          description: Короткое имя игры
+      required:
+        - id
+        - from
+
+    TelegramInlineQuery:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор запроса
+        from:
+          $ref: '#/components/schemas/TelegramUser'
+        query:
+          type: string
+          description: Текст запроса
+        offset:
+          type: string
+          description: Смещение результатов
+      required:
+        - id
+        - from
+        - query
+        - offset
+
+    TelegramMessageEntity:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [mention, hashtag, cashtag, bot_command, url, email, phone_number, bold, italic, underline, strikethrough, code, pre, text_link, text_mention]
+          description: Тип сущности
+        offset:
+          type: integer
+          description: Смещение в тексте в UTF-16 code units
+        length:
+          type: integer
+          description: Длина сущности в UTF-16 code units
+        url:
+          type: string
+          description: URL (для text_link)
+        user:
+          $ref: '#/components/schemas/TelegramUser'
+        language:
+          type: string
+          description: Язык программирования (для pre с кодом)
+      required:
+        - type
+        - offset
+        - length
+
+    TelegramWebhookResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          description: Успешность обработки
+        description:
+          type: string
+          description: Описание результата
+      required:
+        - ok
+
+    SendMessageRequest:
+      type: object
+      properties:
+        chat_id:
+          oneOf:
+            - type: integer
+            - type: string
+          description: Уникальный идентификатор целевого чата или username
+        text:
+          type: string
+          description: Текст отправляемого сообщения
+          maxLength: 4096
+        parse_mode:
+          type: string
+          enum: [Markdown, MarkdownV2, HTML]
+          description: Режим парсинга текста
+        disable_web_page_preview:
+          type: boolean
+          description: Отключает предпросмотр ссылок
+        disable_notification:
+          type: boolean
+          description: Отправляет сообщение без звука
+        reply_to_message_id:
+          type: integer
+          description: ID сообщения для ответа
+        allow_sending_without_reply:
+          type: boolean
+          description: Разрешает отправку, даже если сообщение для ответа не найдено
+        reply_markup:
+          $ref: '#/components/schemas/TelegramInlineKeyboardMarkup'
+      required:
+        - chat_id
+        - text
+
+    TelegramInlineKeyboardMarkup:
+      type: object
+      properties:
+        inline_keyboard:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/TelegramInlineKeyboardButton'
+          description: Массив массивов кнопок
+      required:
+        - inline_keyboard
+
+    TelegramInlineKeyboardButton:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Текст кнопки
+        url:
+          type: string
+          description: HTTP или tg:// URL для открытия
+        callback_data:
+          type: string
+          description: Данные для отправки в callback запросе
+          maxLength: 64
+        web_app:
+          type: object
+          description: Web App для запуска
+        switch_inline_query:
+          type: string
+          description: Запрос для inline режима
+        switch_inline_query_current_chat:
+          type: string
+          description: Inline запрос в текущем чате
+        pay:
+          type: boolean
+          description: Кнопка для оплаты
+      required:
+        - text
+
+    TelegramMessageResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          description: Успешность отправки
+        result:
+          $ref: '#/components/schemas/TelegramMessage'
+        error_code:
+          type: integer
+          description: Код ошибки
+        description:
+          type: string
+          description: Описание ошибки
+      required:
+        - ok
+
+    LinkTelegramRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: ID пользователя в системе AquaStream
+        telegram_id:
+          type: integer
+          description: Telegram ID пользователя
+        verification_code:
+          type: string
+          description: Код подтверждения
+      required:
+        - user_id
+        - telegram_id
+        - verification_code
+
+    LinkTelegramResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Успешность связывания
+        user_id:
+          type: string
+          format: uuid
+          description: ID пользователя
+        telegram_id:
+          type: integer
+          description: Telegram ID
+        linked_at:
+          type: string
+          format: date-time
+          description: Время связывания
+      required:
+        - success
+        - user_id
+        - telegram_id
+
+    UnlinkTelegramRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: ID пользователя в системе AquaStream
+      required:
+        - user_id
+
+    SubscriptionsResponse:
+      type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelegramSubscription'
+        total:
+          type: integer
+          description: Общее количество подписок
+      required:
+        - subscriptions
+        - total
+
+    TelegramSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID подписки
+        type:
+          type: string
+          enum: [event_reminders, booking_updates, payment_notifications, general_news]
+          description: Тип подписки
+        event_id:
+          type: string
+          format: uuid
+          description: ID конкретного события (если применимо)
+        enabled:
+          type: boolean
+          description: Активность подписки
+        created_at:
+          type: string
+          format: date-time
+          description: Время создания
+      required:
+        - id
+        - type
+        - enabled
+        - created_at
+
+    CreateSubscriptionRequest:
+      type: object
+      properties:
+        telegram_id:
+          type: integer
+          description: Telegram ID пользователя
+        type:
+          type: string
+          enum: [event_reminders, booking_updates, payment_notifications, general_news]
+          description: Тип подписки
+        event_id:
+          type: string
+          format: uuid
+          description: ID события (для подписки на конкретное событие)
+      required:
+        - telegram_id
+        - type

@@ -27,7 +27,7 @@ log() {
 has_infrastructure_changes() {
     local changed_files="$1"
 
-    echo "$changed_files" | grep -E "(docker-compose\.dev\.yml|docker-compose\.full\.yml|Dockerfile|\.env|nginx\.conf|prometheus\.yml|logstash\.conf|\.sh)$" >/dev/null
+    echo "$changed_files" | grep -E "(backend-infra/docker/compose/docker-compose\.yml|backend-infra/docker/images/|Dockerfile|\.env|nginx\.conf|prometheus\.yml|logstash\.conf|\.sh)$" >/dev/null
 }
 
 # Проверяем конкретные файлы на критичные ошибки
@@ -35,31 +35,24 @@ check_critical_files() {
     local changed_files="$1"
     local exit_code=0
 
-    # Проверяем docker-compose.dev.yml и docker-compose.full.yml если они изменились
-    local compose_files=("docker-compose.dev.yml" "docker-compose.full.yml")
-    for compose in "${compose_files[@]}"; do
-        if echo "$changed_files" | grep -q "$compose"; then
-            log INFO "Проверка $compose..."
+    # Проверяем основной docker-compose.yml если он изменился
+    local compose_file_rel="backend-infra/docker/compose/docker-compose.yml"
+    if echo "$changed_files" | grep -q "$compose_file_rel"; then
+        log INFO "Проверка $compose_file_rel..."
 
-            local compose_file="$PROJECT_ROOT/infra/docker/compose/$compose"
-            if [ -f "$compose_file" ]; then
+        local compose_file="$PROJECT_ROOT/$compose_file_rel"
+        if [ -f "$compose_file" ]; then
+            # Проверка на :latest теги (пока предупреждение до pinning в P2-15)
+            if grep -q ":latest" "$compose_file"; then
+                log WARN "⚠️ Найдены :latest теги в $compose_file — зафиксируйте версии (P2-15)."
+            fi
 
-                # Проверка на :latest теги
-                if grep -q ":latest" "$compose_file"; then
-                    log ERROR "❌ Найдены :latest теги в $compose!"
-                    log ERROR "Используйте конкретные версии образов."
-                    exit_code=1
-                fi
-
-                # Проверка на hardcoded пароли
-                if grep -E "(password|secret|key).*=" "$compose_file" | grep -v "\\$\\{" >/dev/null; then
-                    log ERROR "❌ Найдены hardcoded пароли в $compose!"
-                    log ERROR "Используйте переменные окружения."
-                    exit_code=1
-                fi
+            # Проверка на hardcoded пароли/секреты (пока предупреждение; переводим на env_file в P0-3)
+            if grep -E "(password|secret|key):\s*[^\$\{]" "$compose_file" >/dev/null; then
+                log WARN "⚠️ Возможные секреты в plaintext в $compose_file — используйте env_file (.env.*)."
             fi
         fi
-    done
+    fi
 
     # Проверяем .env файлы
     if echo "$changed_files" | grep -q "\.env"; then

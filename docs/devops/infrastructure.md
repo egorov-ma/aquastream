@@ -1,2 +1,2 @@
 # Инфраструктура
-- [Developer Guide](../modules/infra/DEVELOPER.md)
+- [Developer Guide](../modules/backend-infra/DEVELOPER.md)

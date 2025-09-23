@@ -1,2 +1,2 @@
 # Деплой
-- [Releases](../modules/infra/RELEASES.md)
+- [Releases](../modules/backend-infra/RELEASES.md)

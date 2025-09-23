@@ -93,6 +93,9 @@ subprojects {
     }
 }
 
+// Apply Gradle Versions Plugin to all subprojects for comprehensive updates report
+subprojects { apply plugin: 'com.github.ben-manes.versions' }
+
 // Enable dependency locking for reproducible builds
 subprojects {
     dependencyLocking {
@@ -105,19 +108,75 @@ subprojects {
 
 // Root-level docs tasks that proxy to Makefile (must be after plugins block)
 tasks.register('docsSetup', Exec) {
-    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-setup'
+    commandLine 'make', '-f', 'backend-infra/make/Makefile', 'docs-setup'
 }
 
 tasks.register('docsServe', Exec) {
     dependsOn 'docsSetup'
-    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-serve'
+    commandLine 'make', '-f', 'backend-infra/make/Makefile', 'docs-serve'
 }
 
 tasks.register('docsBuild', Exec) {
     dependsOn 'docsSetup'
-    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-build'
+    commandLine 'make', '-f', 'backend-infra/make/Makefile', 'docs-build'
 }
 
 tasks.register('docsLint', Exec) {
-    commandLine 'make', '-f', 'infra/make/Makefile', 'docs-lint'
+    commandLine 'make', '-f', 'backend-infra/make/Makefile', 'docs-lint'
 }
+
+// ------------------------------
+// Must-have maintenance tasks
+// ------------------------------
+
+// Aggregated dependency updates across all modules
+tasks.register('dependencyUpdatesAll') {
+    group = 'help'
+    description = 'Runs Gradle Versions Plugin dependencyUpdates in all subprojects.'
+    // Depend on each subproject's dependencyUpdates task
+    dependsOn subprojects.collect { it.tasks.named('dependencyUpdates') }
+}
+
+// Validate module structure matches conventions (api vs library)
+tasks.register('validateModuleStructure') {
+    group = 'verification'
+    description = 'Ensures Boot plugin and jar/bootJar states match api/library conventions.'
+    doLast {
+        def issues = []
+        subprojects.each { p ->
+            boolean isApi = p.name.endsWith('-api') || p.name == 'backend-gateway'
+            boolean hasBoot = p.plugins.hasPlugin('org.springframework.boot')
+            def jarTask = p.tasks.findByName('jar')
+            def bootJarTask = p.tasks.findByName('bootJar')
+
+            if (isApi) {
+                if (!hasBoot) {
+                    issues << "[${p.path}] api module should apply Spring Boot plugin"
+                }
+                if (jarTask?.enabled) {
+                    issues << "[${p.path}] api module should have jar disabled"
+                }
+                if (!(bootJarTask?.enabled)) {
+                    issues << "[${p.path}] api module should have bootJar enabled"
+                }
+            } else {
+                if (hasBoot) {
+                    issues << "[${p.path}] library module must not apply Spring Boot plugin"
+                }
+                if (bootJarTask?.enabled) {
+                    issues << "[${p.path}] library module must not enable bootJar"
+                }
+                if (jarTask && !jarTask.enabled) {
+                    issues << "[${p.path}] library module should have jar enabled"
+                }
+            }
+        }
+        if (!issues.isEmpty()) {
+            issues.each { logger.error(it) }
+            throw new GradleException("Module structure validation failed with ${issues.size()} issue(s)")
+        }
+    }
+}
+
+// Run structure validation as part of root check
+tasks.named('check') { dependsOn tasks.named('validateModuleStructure') }

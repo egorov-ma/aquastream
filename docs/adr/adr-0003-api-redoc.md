@@ -9,7 +9,7 @@ summary: Генерация ReDoc HTML из OpenAPI, линтинг Spectral и 
 - Дата: 2025-09-22
 
 ## Контекст
-Контракты могут храниться в `**/api/**` и `contracts/`. Нужна автогенерация страниц и проверка в CI.
+Контракты могут храниться в `**/api/**` и `api-contracts/`. Нужна автогенерация страниц и проверка в CI.
 
 ## Решение
 - Генератор: `tools/generate_api_docs.py` → `docs/api/specs/**` и `docs/api/redoc/**`, индекс `docs/api/index.md`.

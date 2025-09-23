@@ -110,7 +110,7 @@
 - Файл: `.github/workflows/ci-architecture.yml`
   - `build`: `./gradlew build -x test`
   - `archunit`: `./gradlew test --tests "*LayerRulesTest"`
-  - `deps-and-security`: `dependencyUpdates`, `dependencyCheckAnalyze`, запуск скриптов из `scripts/`
+  - `deps-and-security`: `validateModuleStructure`, `dependencyUpdatesAll`, `dependencyCheckAnalyze`
 
 ## Testcontainers (интеграционные тесты)
 - BOM уже подключён на уровне корня; в `subprojects` добавлен `testImplementation 'org.testcontainers:junit-jupiter'`.
@@ -121,7 +121,7 @@
 - Плагин: Gradle Versions Plugin (`com.github.ben-manes.versions`)
 - Запуск отчёта:
   - `./gradlew dependencyUpdates -Drevision=release`
-  - или `scripts/check-outdated-deps.sh`
+  - или `./gradlew dependencyUpdatesAll -Drevision=release`
 - Отчёты: `build/dependencyUpdates/` (plain, json, html)
 
 ## Гайд по добавлению модулей

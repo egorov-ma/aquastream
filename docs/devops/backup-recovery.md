@@ -1,2 +1,2 @@
 # Бэкап и восстановление
-- [Backup README](../modules/infra/backup/README.md)
+- [Backup README](../modules/backend-infra/backup/README.md)

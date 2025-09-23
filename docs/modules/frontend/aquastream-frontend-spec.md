@@ -151,7 +151,7 @@ AquaStream — агрегатор коммерческих мероприяти�
 ## 17. Docker/Infra
 - **dev:** порт **3100**, `NEXT_PUBLIC_USE_MOCKS=true`, MSW включён; volume с кодом.
 - **prod:** порт **3000**, `NEXT_PUBLIC_USE_MOCKS=false`, сборка `output: 'standalone'`.
-- `/infra/docker/compose/docker-compose.yml`: сервисы `frontend-dev` (profile=dev) и `frontend` (profile=prod).
+- `/backend-infra/docker/compose/docker-compose.yml`: сервисы `frontend-dev` (profile=dev) и `frontend` (profile=prod).
 
 Запуск c моками локально (без Docker):
 

@@ -1,0 +1,455 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Payment Webhook API
+  description: API для обработки webhook уведомлений от платежных провайдеров
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:3000
+    description: Frontend server (webhook endpoint)
+  - url: https://aquastream.org
+    description: Production server
+
+tags:
+  - name: Tinkoff
+    description: Webhook от Тинькофф
+  - name: Sberbank
+    description: Webhook от Сбербанка
+  - name: YooKassa
+    description: Webhook от ЮKassa
+  - name: Generic
+    description: Универсальные webhook
+
+paths:
+  /api/webhooks/payment/tinkoff:
+    post:
+      tags: [Tinkoff]
+      summary: Webhook от Тинькофф
+      description: Обработка уведомлений о статусе платежей от Тинькофф
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TinkoffWebhookRequest'
+            examples:
+              payment_confirmed:
+                summary: Платеж подтвержден
+                value:
+                  TerminalKey: "1234567890123DEMO"
+                  OrderId: "ORDER_12345"
+                  Success: true
+                  Status: "CONFIRMED"
+                  PaymentId: 12345678
+                  ErrorCode: "0"
+                  Amount: 150000
+                  CardId: 123456
+                  Pan: "430000******0777"
+                  ExpDate: "1122"
+                  Token: "TinkoffBankTest"
+              payment_rejected:
+                summary: Платеж отклонен
+                value:
+                  TerminalKey: "1234567890123DEMO"
+                  OrderId: "ORDER_12345"
+                  Success: false
+                  Status: "REJECTED"
+                  PaymentId: 12345678
+                  ErrorCode: "106"
+                  Message: "Недостаточно средств"
+                  Token: "TinkoffBankTest"
+      responses:
+        '200':
+          description: Webhook успешно обработан
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+        '400':
+          description: Некорректные данные webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookErrorResponse'
+        '401':
+          description: Неверная подпись запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookErrorResponse'
+
+  /api/webhooks/payment/sberbank:
+    post:
+      tags: [Sberbank]
+      summary: Webhook от Сбербанка
+      description: Обработка уведомлений о статусе платежей от Сбербанка
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SberbankWebhookRequest'
+      responses:
+        '200':
+          description: Webhook успешно обработан
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+
+  /api/webhooks/payment/yookassa:
+    post:
+      tags: [YooKassa]
+      summary: Webhook от ЮKassa
+      description: Обработка уведомлений о статусе платежей от ЮKassa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YooKassaWebhookRequest'
+            examples:
+              payment_succeeded:
+                summary: Платеж успешен
+                value:
+                  type: "notification"
+                  event: "payment.succeeded"
+                  object:
+                    id: "2411e065-000f-5000-a000-17674ccdfd7e"
+                    status: "succeeded"
+                    amount:
+                      value: "1500.00"
+                      currency: "RUB"
+                    income_amount:
+                      value: "1455.00"
+                      currency: "RUB"
+                    description: "Оплата события 'Сплав по Волге'"
+                    recipient:
+                      account_id: "100500"
+                      gateway_id: "100700"
+                    payment_method:
+                      type: "bank_card"
+                      id: "2411e065-000f-5000-a000-17674ccdfd7e"
+                      saved: false
+                      title: "Bank card *0777"
+                      card:
+                        first6: "430000"
+                        last4: "0777"
+                        expiry_month: "11"
+                        expiry_year: "22"
+                        card_type: "Visa"
+                    captured_at: "2024-01-15T10:05:00.000Z"
+                    created_at: "2024-01-15T10:00:00.000Z"
+                    test: false
+                    refunded_amount:
+                      value: "0.00"
+                      currency: "RUB"
+                    paid: true
+                    refundable: true
+                    metadata:
+                      event_id: "550e8400-e29b-41d4-a716-446655440000"
+                      user_id: "12345"
+      responses:
+        '200':
+          description: Webhook успешно обработан
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+
+  /api/webhooks/payment/{provider}:
+    post:
+      tags: [Generic]
+      summary: Универсальный webhook endpoint
+      description: Обработка webhook от различных платежных провайдеров
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [tinkoff, sberbank, yookassa, paypal, stripe]
+          description: Идентификатор платежного провайдера
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Данные webhook (формат зависит от провайдера)
+      responses:
+        '200':
+          description: Webhook успешно обработан
+        '404':
+          description: Неподдерживаемый провайдер
+        '400':
+          description: Некорректные данные
+
+components:
+  schemas:
+    TinkoffWebhookRequest:
+      type: object
+      properties:
+        TerminalKey:
+          type: string
+          description: Идентификатор терминала
+          example: "1234567890123DEMO"
+        OrderId:
+          type: string
+          description: Номер заказа в системе продавца
+          example: "ORDER_12345"
+        Success:
+          type: boolean
+          description: Успешность операции
+        Status:
+          type: string
+          enum: [NEW, FORM_SHOWED, DEADLINE_EXPIRED, CANCELED, PREAUTHORIZING, AUTHORIZING, AUTHORIZED, CONFIRMING, CONFIRMED, REVERSING, PARTIAL_REVERSED, REVERSED, REFUNDING, PARTIAL_REFUNDED, REFUNDED, REJECTED]
+          description: Статус платежа
+        PaymentId:
+          type: integer
+          description: Уникальный идентификатор транзакции в системе Тинькофф
+        ErrorCode:
+          type: string
+          description: Код ошибки (0 - успех)
+        Message:
+          type: string
+          description: Описание ошибки
+        Details:
+          type: string
+          description: Подробное описание ошибки
+        Amount:
+          type: integer
+          description: Сумма в копейках
+        CardId:
+          type: integer
+          description: Идентификатор карты
+        Pan:
+          type: string
+          description: Маскированный номер карты
+          example: "430000******0777"
+        ExpDate:
+          type: string
+          description: Срок действия карты (MMYY)
+          example: "1122"
+        Token:
+          type: string
+          description: Подпись запроса
+      required:
+        - TerminalKey
+        - OrderId
+        - Success
+        - Status
+        - PaymentId
+        - Token
+
+    SberbankWebhookRequest:
+      type: object
+      properties:
+        mdOrder:
+          type: string
+          description: Номер заказа в платежной системе
+        orderNumber:
+          type: string
+          description: Номер заказа в магазине
+        operation:
+          type: string
+          enum: [deposited, approved, declined, refunded]
+          description: Тип операции
+        status:
+          type: integer
+          description: Статус заказа (0-успех, 1-неуспех)
+        checksum:
+          type: string
+          description: Контрольная сумма
+        amount:
+          type: integer
+          description: Сумма платежа в минимальных единицах валюты
+        currency:
+          type: string
+          description: Код валюты
+          example: "643"
+        approvalCode:
+          type: string
+          description: Код авторизации
+        clientId:
+          type: string
+          description: Номер карты/счета плательщика (маскированный)
+        bindingId:
+          type: string
+          description: Идентификатор связки
+        date:
+          type: string
+          format: date-time
+          description: Дата и время проведения операции
+      required:
+        - mdOrder
+        - orderNumber
+        - operation
+        - status
+        - checksum
+
+    YooKassaWebhookRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [notification]
+          description: Тип уведомления
+        event:
+          type: string
+          enum: [payment.succeeded, payment.waiting_for_capture, payment.canceled, refund.succeeded]
+          description: Событие, на которое пришло уведомление
+        object:
+          oneOf:
+            - $ref: '#/components/schemas/YooKassaPayment'
+            - $ref: '#/components/schemas/YooKassaRefund'
+          description: Объект платежа или возврата
+      required:
+        - type
+        - event
+        - object
+
+    YooKassaPayment:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор платежа
+        status:
+          type: string
+          enum: [pending, waiting_for_capture, succeeded, canceled]
+          description: Статус платежа
+        amount:
+          $ref: '#/components/schemas/YooKassaAmount'
+        income_amount:
+          $ref: '#/components/schemas/YooKassaAmount'
+        description:
+          type: string
+          description: Описание транзакции
+        recipient:
+          type: object
+          properties:
+            account_id:
+              type: string
+            gateway_id:
+              type: string
+        payment_method:
+          $ref: '#/components/schemas/YooKassaPaymentMethod'
+        captured_at:
+          type: string
+          format: date-time
+          description: Время подтверждения платежа
+        created_at:
+          type: string
+          format: date-time
+          description: Время создания платежа
+        test:
+          type: boolean
+          description: Признак тестового платежа
+        refunded_amount:
+          $ref: '#/components/schemas/YooKassaAmount'
+        paid:
+          type: boolean
+          description: Признак оплаченного платежа
+        refundable:
+          type: boolean
+          description: Возможность провести возврат
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Дополнительные данные
+
+    YooKassaRefund:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор возврата
+        payment_id:
+          type: string
+          description: Идентификатор платежа
+        status:
+          type: string
+          enum: [pending, succeeded, canceled]
+          description: Статус возврата
+        amount:
+          $ref: '#/components/schemas/YooKassaAmount'
+        created_at:
+          type: string
+          format: date-time
+        description:
+          type: string
+          description: Комментарий к операции возврата
+
+    YooKassaAmount:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Сумма платежа
+          example: "1500.00"
+        currency:
+          type: string
+          description: Трёхбуквенный код валюты
+          example: "RUB"
+      required:
+        - value
+        - currency
+
+    YooKassaPaymentMethod:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [bank_card, yoo_money, sberbank, qiwi, webmoney, alfabank, apple_pay, google_pay]
+          description: Способ оплаты
+        id:
+          type: string
+          description: Идентификатор способа оплаты
+        saved:
+          type: boolean
+          description: Признак сохраненного способа оплаты
+        title:
+          type: string
+          description: Название способа оплаты
+        card:
+          type: object
+          properties:
+            first6:
+              type: string
+              description: Первые 6 цифр номера карты
+            last4:
+              type: string
+              description: Последние 4 цифры номера карты
+            expiry_month:
+              type: string
+              description: Месяц истечения срока действия карты
+            expiry_year:
+              type: string
+              description: Год истечения срока действия карты
+            card_type:
+              type: string
+              description: Тип карты
+              example: "Visa"
+
+    WebhookErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Описание ошибки
+        timestamp:
+          type: string
+          format: date-time
+          description: Время возникновения ошибки
+      required:
+        - error
+        - message
+        - timestamp

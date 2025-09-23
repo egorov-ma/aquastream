@@ -1,2 +1,2 @@
 # Thin proxy to keep commands available from repo root
-include infra/make/Makefile
+include backend-infra/make/Makefile

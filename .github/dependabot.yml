@@ -31,7 +31,7 @@ updates:
       include: "scope"
 
   - package-ecosystem: "docker"
-    directory: "/infra/docker/images"
+    directory: "/backend-infra/docker/images"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5

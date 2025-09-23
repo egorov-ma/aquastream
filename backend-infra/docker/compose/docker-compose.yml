@@ -1,0 +1,159 @@
+version: "3.9"
+
+# Имя проекта фиксируем для стабильного имени сети/ресурсов
+name: aquastream
+
+networks:
+  aquastream-net:
+    name: aquastream-net
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aquastream-postgres
+    profiles: [dev, stage, prod]
+    env_file:
+      - ${ENV_FILE:-.env}
+    command: ["postgres", "-c", "max_connections=200"]
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-schemas.sql:/docker-entrypoint-initdb.d/00-init-schemas.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aquastream} -d ${POSTGRES_DB:-aquastream}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [aquastream-net]
+
+  redis:
+    image: redis:7-alpine
+    container_name: aquastream-redis
+    profiles: [dev, stage, prod]
+    env_file:
+      - ${ENV_FILE:-.env}
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "PING"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [aquastream-net]
+
+  minio:
+    image: minio/minio:latest
+    container_name: aquastream-minio
+    profiles: [dev, stage, prod]
+    command: ["server", "/data", "--console-address", ":9001"]
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [aquastream-net]
+
+  backend-gateway:
+    image: aquastream/backend-gateway:latest
+    container_name: aquastream-backend-gateway
+    profiles: [dev, stage, prod]
+    depends_on:
+      - redis
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "8080:8080"
+    networks: [aquastream-net]
+
+  backend-user:
+    image: aquastream/backend-user:latest
+    container_name: aquastream-backend-user
+    profiles: [dev, stage, prod]
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "8101:8101"
+    networks: [aquastream-net]
+
+  backend-event:
+    image: aquastream/backend-event:latest
+    container_name: aquastream-backend-event
+    profiles: [dev, stage, prod]
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "8102:8102"
+    networks: [aquastream-net]
+
+  backend-crew:
+    image: aquastream/backend-crew:latest
+    container_name: aquastream-backend-crew
+    profiles: [dev, stage, prod]
+    depends_on:
+      - postgres
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "8103:8103"
+    networks: [aquastream-net]
+
+  backend-payment:
+    image: aquastream/backend-payment:latest
+    container_name: aquastream-backend-payment
+    profiles: [dev, stage, prod]
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "8104:8104"
+    networks: [aquastream-net]
+
+  backend-notification:
+    image: aquastream/backend-notification:latest
+    container_name: aquastream-backend-notification
+    profiles: [dev, stage, prod]
+    depends_on:
+      - redis
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "8105:8105"
+    networks: [aquastream-net]
+
+  backend-media:
+    image: aquastream/backend-media:latest
+    container_name: aquastream-backend-media
+    profiles: [dev, stage, prod]
+    depends_on:
+      - minio
+    env_file:
+      - ${ENV_FILE:-.env}
+    ports:
+      - "8106:8106"
+    networks: [aquastream-net]
+
+

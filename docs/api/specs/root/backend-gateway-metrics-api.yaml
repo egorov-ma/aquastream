@@ -1,0 +1,450 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Gateway Metrics API
+  description: API для мониторинга метрик производительности Gateway и микросервисов
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Metrics
+    description: Метрики производительности
+  - name: Statistics
+    description: Статистика использования
+  - name: Monitoring
+    description: Мониторинг системы
+
+paths:
+  /api/v1/admin/metrics/series:
+    get:
+      tags: [Metrics]
+      summary: Получить временные ряды метрик
+      description: Возвращает метрики производительности из Redis за указанный период
+      parameters:
+        - name: metric
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [request_count, response_time, error_rate, throughput]
+          description: Тип метрики
+        - name: service
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Имя сервиса (если не указано - все сервисы)
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Начало периода (по умолчанию - последний час)
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Конец периода (по умолчанию - текущее время)
+        - name: granularity
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [minute, hour, day]
+            default: minute
+          description: Гранулярность данных
+      responses:
+        '200':
+          description: Временные ряды метрик
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsSeriesResponse'
+              examples:
+                request_count:
+                  summary: Количество запросов
+                  value:
+                    metric: "request_count"
+                    service: "user-service"
+                    granularity: "minute"
+                    period:
+                      from: "2024-01-15T10:00:00Z"
+                      to: "2024-01-15T11:00:00Z"
+                    data:
+                      - timestamp: "2024-01-15T10:00:00Z"
+                        value: 45
+                      - timestamp: "2024-01-15T10:01:00Z"
+                        value: 52
+                response_time:
+                  summary: Время ответа
+                  value:
+                    metric: "response_time"
+                    service: "event-service"
+                    granularity: "minute"
+                    period:
+                      from: "2024-01-15T10:00:00Z"
+                      to: "2024-01-15T11:00:00Z"
+                    data:
+                      - timestamp: "2024-01-15T10:00:00Z"
+                        value: 125.5
+                        min: 45
+                        max: 320
+                        p95: 280
+        '400':
+          description: Некорректные параметры запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/metrics/summary:
+    get:
+      tags: [Statistics]
+      summary: Сводная статистика
+      description: Возвращает агрегированную статистику по всем сервисам
+      parameters:
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [last_hour, last_day, last_week]
+            default: last_hour
+          description: Период для агрегации
+      responses:
+        '200':
+          description: Сводная статистика
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsSummaryResponse'
+
+  /api/v1/admin/metrics/alerts:
+    get:
+      tags: [Monitoring]
+      summary: Активные алерты
+      description: Возвращает список активных алертов по метрикам
+      responses:
+        '200':
+          description: Список активных алертов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertsResponse'
+
+  /api/v1/admin/metrics/health-score:
+    get:
+      tags: [Monitoring]
+      summary: Общий индекс здоровья системы
+      description: Возвращает агрегированный индекс здоровья на основе всех метрик
+      responses:
+        '200':
+          description: Индекс здоровья системы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthScoreResponse'
+
+  /api/v1/admin/metrics/top-endpoints:
+    get:
+      tags: [Statistics]
+      summary: Топ эндпоинтов по нагрузке
+      description: Возвращает наиболее нагруженные эндпоинты
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Количество эндпоинтов в результате
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [request_count, error_rate, avg_response_time]
+            default: request_count
+          description: Критерий сортировки
+      responses:
+        '200':
+          description: Топ эндпоинтов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopEndpointsResponse'
+
+components:
+  schemas:
+    MetricsSeriesResponse:
+      type: object
+      properties:
+        metric:
+          type: string
+          description: Тип метрики
+        service:
+          type: string
+          description: Имя сервиса
+        granularity:
+          type: string
+          description: Гранулярность данных
+        period:
+          $ref: '#/components/schemas/TimePeriod'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricDataPoint'
+      required:
+        - metric
+        - granularity
+        - period
+        - data
+
+    MetricDataPoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Временная метка
+        value:
+          type: number
+          description: Значение метрики
+        min:
+          type: number
+          description: Минимальное значение (для агрегированных метрик)
+        max:
+          type: number
+          description: Максимальное значение (для агрегированных метрик)
+        p95:
+          type: number
+          description: 95-й перцентиль (для метрик времени ответа)
+        count:
+          type: integer
+          description: Количество измерений в точке
+      required:
+        - timestamp
+        - value
+
+    TimePeriod:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date-time
+          description: Начало периода
+        to:
+          type: string
+          format: date-time
+          description: Конец периода
+      required:
+        - from
+        - to
+
+    MetricsSummaryResponse:
+      type: object
+      properties:
+        period:
+          type: string
+          description: Период агрегации
+        timestamp:
+          type: string
+          format: date-time
+          description: Время создания отчета
+        services:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ServiceMetricsSummary'
+        total:
+          $ref: '#/components/schemas/ServiceMetricsSummary'
+      required:
+        - period
+        - timestamp
+        - services
+        - total
+
+    ServiceMetricsSummary:
+      type: object
+      properties:
+        requestCount:
+          type: integer
+          description: Общее количество запросов
+        avgResponseTime:
+          type: number
+          description: Среднее время ответа в мс
+        errorRate:
+          type: number
+          description: Процент ошибок (0-100)
+        throughput:
+          type: number
+          description: Пропускная способность (запросов в секунду)
+        uptime:
+          type: number
+          description: Время работы в процентах (0-100)
+
+    AlertsResponse:
+      type: object
+      properties:
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alert'
+        total:
+          type: integer
+          description: Общее количество алертов
+      required:
+        - alerts
+        - total
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор алерта
+        level:
+          type: string
+          enum: [WARNING, CRITICAL, ERROR]
+          description: Уровень важности
+        metric:
+          type: string
+          description: Метрика, вызвавшая алерт
+        service:
+          type: string
+          description: Затронутый сервис
+        message:
+          type: string
+          description: Описание проблемы
+        threshold:
+          type: number
+          description: Пороговое значение
+        currentValue:
+          type: number
+          description: Текущее значение метрики
+        triggeredAt:
+          type: string
+          format: date-time
+          description: Время срабатывания алерта
+        status:
+          type: string
+          enum: [ACTIVE, ACKNOWLEDGED, RESOLVED]
+          description: Статус алерта
+      required:
+        - id
+        - level
+        - metric
+        - message
+        - triggeredAt
+        - status
+
+    HealthScoreResponse:
+      type: object
+      properties:
+        overallScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Общий индекс здоровья системы (0-100)
+        timestamp:
+          type: string
+          format: date-time
+          description: Время расчета
+        components:
+          type: object
+          properties:
+            availability:
+              type: number
+              description: Доступность сервисов (0-100)
+            performance:
+              type: number
+              description: Производительность (0-100)
+            reliability:
+              type: number
+              description: Надежность (0-100)
+        services:
+          type: object
+          additionalProperties:
+            type: number
+          description: Индекс здоровья каждого сервиса
+        trend:
+          type: string
+          enum: [IMPROVING, STABLE, DEGRADING]
+          description: Тренд изменения индекса
+      required:
+        - overallScore
+        - timestamp
+        - components
+
+    TopEndpointsResponse:
+      type: object
+      properties:
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/EndpointStats'
+        period:
+          type: string
+          description: Период анализа
+        sortBy:
+          type: string
+          description: Критерий сортировки
+      required:
+        - endpoints
+
+    EndpointStats:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Путь эндпоинта
+        method:
+          type: string
+          description: HTTP метод
+        service:
+          type: string
+          description: Сервис-владелец
+        requestCount:
+          type: integer
+          description: Количество запросов
+        avgResponseTime:
+          type: number
+          description: Среднее время ответа в мс
+        errorRate:
+          type: number
+          description: Процент ошибок
+        throughput:
+          type: number
+          description: Пропускная способность
+      required:
+        - path
+        - method
+        - service
+        - requestCount
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Описание ошибки
+        timestamp:
+          type: string
+          format: date-time
+          description: Время возникновения ошибки
+      required:
+        - error
+        - message
+        - timestamp
