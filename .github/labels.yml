@@ -7,3 +7,70 @@
 - name: docs-changed
   color: 0e8a16
   description: В PR есть изменения в документации
+# Used by Dependabot PRs
+- name: dependencies
+  color: 0366d6
+  description: Обновления зависимостей
+
+# Standard issue labels
+- name: bug
+  color: d73a4a
+  description: Ошибка / дефект
+- name: enhancement
+  color: a2eeef
+  description: Запрос улучшения / фича
+- name: documentation
+  color: 0075ca
+  description: Задачи по документации
+- name: question
+  color: d876e3
+  description: Вопрос / уточнение
+- name: help wanted
+  color: 008672
+  description: Нужна помощь / поиск контрибьютора
+- name: good first issue
+  color: 7057ff
+  description: Подходит для первого вклада
+- name: duplicate
+  color: cfd3d7
+  description: Дубликат существующей задачи
+- name: invalid
+  color: e4e669
+  description: Некорректная задача / не воспроизводится
+- name: wontfix
+  color: ffffff
+  description: Не планируется исправлять
+
+# Project labels
+- name: ci
+  color: fbca04
+  description: CI/CD и автоматизация
+- name: infra
+  color: 0052cc
+  description: Инфраструктура / DevOps
+- name: security
+  color: ee0701
+  description: Безопасность
+- name: performance
+  color: c2e0c6
+  description: Производительность
+- name: refactor
+  color: 1d76db
+  description: Рефакторинг
+- name: tests
+  color: 5319e7
+  description: Тесты
+- name: blocked
+  color: b60205
+  description: Заблокировано внешними зависимостями
+- name: breaking-change
+  color: d93f0b
+  description: Ломающие изменения
+
+# Areas
+- name: backend
+  color: 0e8a16
+  description: Изменения в backend модулях
+- name: frontend
+  color: 1d76db
+  description: Изменения во фронтенде

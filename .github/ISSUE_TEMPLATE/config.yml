@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/egorov-ma/aquastream
+    about: Прочитайте документацию в каталоге /docs перед созданием issue.
+  # Security vulnerabilities: please use the repository's Security tab (Private Vulnerability Reporting) or follow SECURITY.md.

@@ -1,0 +1,15 @@
+docs-changed:
+  - changed-files:
+      - any-glob-to-any-file: ["docs/**", "**/*.md", "mkdocs.yml"]
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: [".github/workflows/**"]
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file: ["backend-*/**", "backend-common/**"]
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: ["frontend/**"]
