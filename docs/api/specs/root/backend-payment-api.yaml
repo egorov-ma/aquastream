@@ -1,0 +1,632 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Payment API
+  description: Микросервис обработки платежей, чеков и финансовых операций
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8103
+    description: Development server
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Payments
+    description: Инициализация и обработка платежей
+  - name: Receipts
+    description: Управление чеками и модерация
+  - name: Webhooks
+    description: Обработка webhooks от платежных систем
+
+paths:
+  /api/v1/payments/{bookingId}/init:
+    post:
+      tags:
+        - Payments
+      summary: Инициализация платежа
+      description: Создание платежа для бронирования
+      operationId: initializePayment
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInitRequest'
+      responses:
+        '200':
+          description: Платеж инициализирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInitResponse'
+        '400':
+          description: Неверные данные
+        '404':
+          description: Бронирование не найдено
+        '409':
+          description: Платеж уже существует
+
+  /api/v1/payments/{paymentId}/status:
+    get:
+      tags:
+        - Payments
+      summary: Статус платежа
+      description: Получение текущего статуса платежа
+      operationId: getPaymentStatus
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Статус платежа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatusResponse'
+        '404':
+          description: Платеж не найден
+
+  /api/v1/payments/{paymentId}/cancel:
+    post:
+      tags:
+        - Payments
+      summary: Отмена платежа
+      description: Отмена платежа и возврат средств (если применимо)
+      operationId: cancelPayment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelPaymentRequest'
+      responses:
+        '200':
+          description: Платеж отменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatusResponse'
+        '400':
+          description: Невозможно отменить
+        '404':
+          description: Платеж не найден
+
+  /api/v1/payments/{paymentId}/receipt:
+    post:
+      tags:
+        - Receipts
+      summary: Загрузка чека
+      description: Загрузка фотографии чека для подтверждения оплаты
+      operationId: submitReceipt
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReceiptSubmissionRequest'
+      responses:
+        '200':
+          description: Чек загружен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptSubmissionResponse'
+        '400':
+          description: Неверный формат файла
+        '404':
+          description: Платеж не найден
+
+    get:
+      tags:
+        - Receipts
+      summary: Информация о чеке
+      description: Получение информации о загруженном чеке
+      operationId: getReceiptInfo
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Информация о чеке
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReceiptDto'
+        '404':
+          description: Чек не найден
+
+  /api/v1/payments/{paymentId}/receipt/moderate:
+    post:
+      tags:
+        - Receipts
+      summary: Модерация чека
+      description: Подтверждение или отклонение чека модератором
+      operationId: moderateReceipt
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerationRequest'
+      responses:
+        '200':
+          description: Модерация завершена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModerationResponse'
+        '400':
+          description: Неверные данные модерации
+        '403':
+          description: Недостаточно прав (только для модераторов)
+        '404':
+          description: Чек не найден
+
+  /api/v1/payments/user/{userId}:
+    get:
+      tags:
+        - Payments
+      summary: История платежей пользователя
+      description: Список всех платежей пользователя с фильтрами
+      operationId: getUserPayments
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Фильтр по статусу
+          schema:
+            $ref: '#/components/schemas/PaymentStatus'
+        - name: dateFrom
+          in: query
+          description: Начало периода
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          description: Конец периода
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: История платежей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentPageResponse'
+
+  /api/v1/payments/webhooks/provider:
+    post:
+      tags:
+        - Webhooks
+      summary: Webhook от платежного провайдера
+      description: Обработка уведомлений от внешних платежных систем
+      operationId: handleProviderWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookRequest'
+      responses:
+        '200':
+          description: Webhook обработан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+        '400':
+          description: Неверный формат webhook
+        '401':
+          description: Неверная подпись
+
+  /api/v1/payments/admin/stats:
+    get:
+      tags:
+        - Payments
+      summary: Статистика платежей
+      description: Административная статистика для отчетности
+      operationId: getPaymentStats
+      parameters:
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: groupBy
+          in: query
+          description: Группировка статистики
+          schema:
+            type: string
+            enum: [day, week, month]
+            default: day
+      responses:
+        '200':
+          description: Статистика платежей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatsResponse'
+        '403':
+          description: Недостаточно прав (только для администраторов)
+
+components:
+  schemas:
+    PaymentStatus:
+      type: string
+      enum: [PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED, REFUNDED]
+
+    PaymentMethod:
+      type: string
+      enum: [CARD, BANK_TRANSFER, CASH, SBP]
+
+    ReceiptStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+
+    PaymentInitRequest:
+      type: object
+      required:
+        - amount
+        - currency
+        - method
+      properties:
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          example: 3500.00
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          example: "RUB"
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        description:
+          type: string
+          example: "Оплата за участие в сплаве по реке Белая"
+        returnUrl:
+          type: string
+          format: uri
+          example: "https://aquastream.org/bookings/confirm"
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    PaymentInitResponse:
+      type: object
+      properties:
+        paymentId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        paymentUrl:
+          type: string
+          format: uri
+          description: URL для перенаправления пользователя на оплату
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    PaymentStatusResponse:
+      type: object
+      properties:
+        paymentId:
+          type: string
+          format: uuid
+        bookingId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        failureReason:
+          type: string
+        refundAmount:
+          type: number
+          format: decimal
+
+    CancelPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: "Отмена по просьбе клиента"
+        refundAmount:
+          type: number
+          format: decimal
+          description: Сумма к возврату (если не указана, возвращается полная сумма)
+
+    ReceiptSubmissionRequest:
+      type: object
+      required:
+        - receiptImage
+      properties:
+        receiptImage:
+          type: string
+          format: binary
+          description: Фотография чека
+        amount:
+          type: number
+          format: decimal
+          description: Сумма в чеке
+        paymentDate:
+          type: string
+          format: date-time
+          description: Дата оплаты по чеку
+        description:
+          type: string
+          description: Дополнительная информация
+
+    ReceiptSubmissionResponse:
+      type: object
+      properties:
+        receiptId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ReceiptStatus'
+        uploadedAt:
+          type: string
+          format: date-time
+        message:
+          type: string
+          example: "Чек загружен и ожидает модерации"
+
+    PaymentReceiptDto:
+      type: object
+      properties:
+        receiptId:
+          type: string
+          format: uuid
+        paymentId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ReceiptStatus'
+        imageUrl:
+          type: string
+          format: uri
+        amount:
+          type: number
+          format: decimal
+        paymentDate:
+          type: string
+          format: date-time
+        uploadedAt:
+          type: string
+          format: date-time
+        moderatedAt:
+          type: string
+          format: date-time
+        moderatorComment:
+          type: string
+
+    ModerationRequest:
+      type: object
+      required:
+        - decision
+      properties:
+        decision:
+          type: string
+          enum: [APPROVE, REJECT]
+        comment:
+          type: string
+          example: "Чек соответствует сумме платежа"
+
+    ModerationResponse:
+      type: object
+      properties:
+        receiptId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ReceiptStatus'
+        moderatedAt:
+          type: string
+          format: date-time
+        moderatorComment:
+          type: string
+        message:
+          type: string
+
+    PaymentPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentStatusResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    WebhookRequest:
+      type: object
+      required:
+        - eventType
+        - paymentId
+        - signature
+      properties:
+        eventType:
+          type: string
+          enum: [PAYMENT_COMPLETED, PAYMENT_FAILED, PAYMENT_CANCELLED, REFUND_COMPLETED]
+        paymentId:
+          type: string
+        externalPaymentId:
+          type: string
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        signature:
+          type: string
+          description: Подпись для верификации
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    WebhookResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        processedAt:
+          type: string
+          format: date-time
+
+    PaymentStatsResponse:
+      type: object
+      properties:
+        period:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+        totalAmount:
+          type: number
+          format: decimal
+        totalCount:
+          type: integer
+        successRate:
+          type: number
+          format: percentage
+          example: 0.95
+        averageAmount:
+          type: number
+          format: decimal
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        byMethod:
+          type: object
+          additionalProperties:
+            type: integer
+        dailyStats:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              amount:
+                type: number
+                format: decimal
+              count:
+                type: integer
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+
+    webhookSignature:
+      type: apiKey
+      in: header
+      name: X-Webhook-Signature
+
+security:
+  - cookieAuth: []

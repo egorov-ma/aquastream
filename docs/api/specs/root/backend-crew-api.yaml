@@ -1,0 +1,872 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Crew API
+  description: Микросервис управления экипажами, командами и участниками мероприятий
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8105
+    description: Development server
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Crews
+    description: Управление экипажами
+  - name: Members
+    description: Участники экипажей
+  - name: Assignments
+    description: Назначения и роли
+  - name: Equipment
+    description: Оборудование экипажей
+
+paths:
+  /api/v1/crews:
+    get:
+      tags:
+        - Crews
+      summary: Список экипажей
+      description: Получение списка экипажей с фильтрами
+      operationId: getCrews
+      parameters:
+        - name: eventId
+          in: query
+          description: Фильтр по событию
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Статус экипажа
+          schema:
+            $ref: '#/components/schemas/CrewStatus'
+        - name: search
+          in: query
+          description: Поиск по названию
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список экипажей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewPageResponse'
+
+    post:
+      tags:
+        - Crews
+      summary: Создание экипажа
+      description: Создание нового экипажа для мероприятия
+      operationId: createCrew
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCrewRequest'
+      responses:
+        '201':
+          description: Экипаж создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+
+  /api/v1/crews/{crewId}:
+    get:
+      tags:
+        - Crews
+      summary: Детали экипажа
+      description: Получение подробной информации об экипаже
+      operationId: getCrewById
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Детали экипажа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewDetailResponse'
+        '404':
+          description: Экипаж не найден
+
+    put:
+      tags:
+        - Crews
+      summary: Обновление экипажа
+      description: Обновление информации об экипаже
+      operationId: updateCrew
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCrewRequest'
+      responses:
+        '200':
+          description: Экипаж обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Экипаж не найден
+
+    delete:
+      tags:
+        - Crews
+      summary: Удаление экипажа
+      description: Удаление экипажа (только если нет участников)
+      operationId: deleteCrew
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Экипаж удален
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Экипаж не найден
+        '409':
+          description: В экипаже есть участники
+
+  /api/v1/crews/{crewId}/members:
+    get:
+      tags:
+        - Members
+      summary: Участники экипажа
+      description: Список всех участников экипажа
+      operationId: getCrewMembers
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: role
+          in: query
+          description: Фильтр по роли
+          schema:
+            $ref: '#/components/schemas/CrewRole'
+      responses:
+        '200':
+          description: Участники экипажа
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CrewMemberResponse'
+        '404':
+          description: Экипаж не найден
+
+    post:
+      tags:
+        - Members
+      summary: Добавление участника
+      description: Добавление участника в экипаж
+      operationId: addCrewMember
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCrewMemberRequest'
+      responses:
+        '201':
+          description: Участник добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewMemberResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Экипаж не найден
+        '409':
+          description: Участник уже в экипаже
+
+  /api/v1/crews/{crewId}/members/{memberId}:
+    put:
+      tags:
+        - Members
+      summary: Обновление роли участника
+      description: Изменение роли участника в экипаже
+      operationId: updateCrewMember
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCrewMemberRequest'
+      responses:
+        '200':
+          description: Роль обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewMemberResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Участник не найден
+
+    delete:
+      tags:
+        - Members
+      summary: Удаление участника
+      description: Исключение участника из экипажа
+      operationId: removeCrewMember
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Участник исключен
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Участник не найден
+
+  /api/v1/crews/{crewId}/assignments:
+    get:
+      tags:
+        - Assignments
+      summary: Назначения экипажа
+      description: Список всех назначений и задач экипажа
+      operationId: getCrewAssignments
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Фильтр по статусу
+          schema:
+            $ref: '#/components/schemas/AssignmentStatus'
+      responses:
+        '200':
+          description: Назначения экипажа
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssignmentResponse'
+
+    post:
+      tags:
+        - Assignments
+      summary: Создание назначения
+      description: Создание нового назначения для экипажа
+      operationId: createAssignment
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssignmentRequest'
+      responses:
+        '201':
+          description: Назначение создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+
+  /api/v1/crews/{crewId}/assignments/{assignmentId}:
+    put:
+      tags:
+        - Assignments
+      summary: Обновление назначения
+      description: Обновление статуса или деталей назначения
+      operationId: updateAssignment
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssignmentRequest'
+      responses:
+        '200':
+          description: Назначение обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Назначение не найдено
+
+  /api/v1/crews/{crewId}/equipment:
+    get:
+      tags:
+        - Equipment
+      summary: Оборудование экипажа
+      description: Список оборудования, закрепленного за экипажем
+      operationId: getCrewEquipment
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: category
+          in: query
+          description: Фильтр по категории
+          schema:
+            $ref: '#/components/schemas/EquipmentCategory'
+      responses:
+        '200':
+          description: Оборудование экипажа
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EquipmentResponse'
+
+    post:
+      tags:
+        - Equipment
+      summary: Назначение оборудования
+      description: Закрепление оборудования за экипажем
+      operationId: assignEquipment
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignEquipmentRequest'
+      responses:
+        '201':
+          description: Оборудование назначено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+        '409':
+          description: Оборудование уже назначено
+
+  /api/v1/crews/{crewId}/equipment/{equipmentId}:
+    delete:
+      tags:
+        - Equipment
+      summary: Освобождение оборудования
+      description: Освобождение оборудования от экипажа
+      operationId: unassignEquipment
+      parameters:
+        - name: crewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: equipmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Оборудование освобождено
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Оборудование не найдено
+
+  /api/v1/user/{userId}/crews:
+    get:
+      tags:
+        - Members
+      summary: Экипажи пользователя
+      description: Список всех экипажей, в которых состоит пользователь
+      operationId: getUserCrews
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Фильтр по статусу экипажа
+          schema:
+            $ref: '#/components/schemas/CrewStatus'
+      responses:
+        '200':
+          description: Экипажи пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserCrewResponse'
+
+components:
+  schemas:
+    CrewStatus:
+      type: string
+      enum: [FORMING, ACTIVE, COMPLETED, CANCELLED]
+
+    CrewRole:
+      type: string
+      enum: [CAPTAIN, GUIDE, NAVIGATOR, SAFETY_OFFICER, MEMBER]
+
+    AssignmentStatus:
+      type: string
+      enum: [PENDING, IN_PROGRESS, COMPLETED, CANCELLED]
+
+    EquipmentCategory:
+      type: string
+      enum: [WATERCRAFT, SAFETY, NAVIGATION, CAMPING, FIRST_AID]
+
+    CreateCrewRequest:
+      type: object
+      required:
+        - eventId
+        - name
+        - maxSize
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 100
+          example: "Экипаж Адреналин"
+        description:
+          type: string
+          maxLength: 500
+        maxSize:
+          type: integer
+          minimum: 2
+          maximum: 20
+          example: 8
+        requirements:
+          type: string
+          description: Требования к участникам
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+
+    UpdateCrewRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        maxSize:
+          type: integer
+          minimum: 2
+          maximum: 20
+        requirements:
+          type: string
+        status:
+          $ref: '#/components/schemas/CrewStatus'
+        tags:
+          type: array
+          items:
+            type: string
+
+    CrewResponse:
+      type: object
+      properties:
+        crewId:
+          type: string
+          format: uuid
+        eventId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/CrewStatus'
+        currentSize:
+          type: integer
+        maxSize:
+          type: integer
+        requirements:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        captain:
+          $ref: '#/components/schemas/CrewMemberSummary'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CrewDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/CrewResponse'
+        - type: object
+          properties:
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/CrewMemberResponse'
+            assignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/AssignmentResponse'
+            equipment:
+              type: array
+              items:
+                $ref: '#/components/schemas/EquipmentResponse'
+
+    CrewPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    AddCrewMemberRequest:
+      type: object
+      required:
+        - userId
+        - role
+      properties:
+        userId:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/CrewRole'
+        notes:
+          type: string
+          maxLength: 200
+
+    UpdateCrewMemberRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/CrewRole'
+        notes:
+          type: string
+          maxLength: 200
+
+    CrewMemberSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+    CrewMemberResponse:
+      type: object
+      properties:
+        memberId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/CrewMemberSummary'
+        role:
+          $ref: '#/components/schemas/CrewRole'
+        notes:
+          type: string
+        joinedAt:
+          type: string
+          format: date-time
+        experience:
+          type: object
+          properties:
+            totalTrips:
+              type: integer
+            skillLevel:
+              type: string
+              enum: [BEGINNER, INTERMEDIATE, ADVANCED, EXPERT]
+
+    UserCrewResponse:
+      type: object
+      properties:
+        crewId:
+          type: string
+          format: uuid
+        eventId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/CrewRole'
+        status:
+          $ref: '#/components/schemas/CrewStatus'
+        eventTitle:
+          type: string
+        eventDate:
+          type: string
+          format: date-time
+
+    CreateAssignmentRequest:
+      type: object
+      required:
+        - title
+        - assignedTo
+        - dueDate
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          example: "Проверка спасательного оборудования"
+        description:
+          type: string
+          maxLength: 500
+        assignedTo:
+          type: string
+          format: uuid
+          description: ID участника экипажа
+        dueDate:
+          type: string
+          format: date-time
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          default: MEDIUM
+
+    UpdateAssignmentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        assignedTo:
+          type: string
+          format: uuid
+        dueDate:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/AssignmentStatus'
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        completedAt:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          maxLength: 1000
+
+    AssignmentResponse:
+      type: object
+      properties:
+        assignmentId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        assignedTo:
+          $ref: '#/components/schemas/CrewMemberSummary'
+        status:
+          $ref: '#/components/schemas/AssignmentStatus'
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        dueDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        notes:
+          type: string
+
+    AssignEquipmentRequest:
+      type: object
+      required:
+        - equipmentId
+      properties:
+        equipmentId:
+          type: string
+          format: uuid
+        notes:
+          type: string
+          maxLength: 200
+        assignedUntil:
+          type: string
+          format: date-time
+
+    EquipmentResponse:
+      type: object
+      properties:
+        equipmentId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        category:
+          $ref: '#/components/schemas/EquipmentCategory'
+        model:
+          type: string
+        serialNumber:
+          type: string
+        condition:
+          type: string
+          enum: [EXCELLENT, GOOD, FAIR, POOR, OUT_OF_ORDER]
+        assignedAt:
+          type: string
+          format: date-time
+        assignedUntil:
+          type: string
+          format: date-time
+        notes:
+          type: string
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+
+security:
+  - cookieAuth: []

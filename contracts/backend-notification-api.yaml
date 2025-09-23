@@ -1,0 +1,951 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Notification API
+  description: Микросервис управления уведомлениями, email, SMS и push-сообщениями
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8106
+    description: Development server
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Notifications
+    description: Управление уведомлениями
+  - name: Templates
+    description: Шаблоны уведомлений
+  - name: Preferences
+    description: Настройки уведомлений
+  - name: Push
+    description: Push-уведомления
+  - name: Email
+    description: Email-уведомления
+  - name: SMS
+    description: SMS-уведомления
+
+paths:
+  /api/v1/notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Список уведомлений пользователя
+      description: Получение уведомлений с фильтрами и пагинацией
+      operationId: getUserNotifications
+      parameters:
+        - name: type
+          in: query
+          description: Тип уведомления
+          schema:
+            $ref: '#/components/schemas/NotificationType'
+        - name: status
+          in: query
+          description: Статус уведомления
+          schema:
+            $ref: '#/components/schemas/NotificationStatus'
+        - name: channel
+          in: query
+          description: Канал доставки
+          schema:
+            $ref: '#/components/schemas/NotificationChannel'
+        - name: read
+          in: query
+          description: Фильтр прочитанности
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список уведомлений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPageResponse'
+
+    post:
+      tags:
+        - Notifications
+      summary: Создание уведомления
+      description: Отправка уведомления пользователю или группе
+      operationId: sendNotification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendNotificationRequest'
+      responses:
+        '201':
+          description: Уведомление отправлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+
+  /api/v1/notifications/{notificationId}:
+    get:
+      tags:
+        - Notifications
+      summary: Детали уведомления
+      description: Получение подробной информации об уведомлении
+      operationId: getNotificationById
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Детали уведомления
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationDetailResponse'
+        '404':
+          description: Уведомление не найдено
+
+    put:
+      tags:
+        - Notifications
+      summary: Отметить как прочитанное
+      description: Изменение статуса уведомления на прочитанное
+      operationId: markNotificationAsRead
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Статус обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '404':
+          description: Уведомление не найдено
+
+    delete:
+      tags:
+        - Notifications
+      summary: Удаление уведомления
+      description: Удаление уведомления из списка пользователя
+      operationId: deleteNotification
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Уведомление удалено
+        '404':
+          description: Уведомление не найдено
+
+  /api/v1/notifications/bulk/mark-read:
+    put:
+      tags:
+        - Notifications
+      summary: Отметить все как прочитанные
+      description: Массовое изменение статуса уведомлений
+      operationId: markAllNotificationsAsRead
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMarkReadRequest'
+      responses:
+        '200':
+          description: Статусы обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkOperationResponse'
+
+  /api/v1/notifications/stats:
+    get:
+      tags:
+        - Notifications
+      summary: Статистика уведомлений
+      description: Статистика уведомлений пользователя
+      operationId: getNotificationStats
+      responses:
+        '200':
+          description: Статистика уведомлений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationStatsResponse'
+
+  /api/v1/notifications/preferences:
+    get:
+      tags:
+        - Preferences
+      summary: Настройки уведомлений
+      description: Получение настроек уведомлений пользователя
+      operationId: getNotificationPreferences
+      responses:
+        '200':
+          description: Настройки уведомлений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferencesResponse'
+
+    put:
+      tags:
+        - Preferences
+      summary: Обновление настроек
+      description: Обновление настроек уведомлений пользователя
+      operationId: updateNotificationPreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+      responses:
+        '200':
+          description: Настройки обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferencesResponse'
+        '400':
+          description: Неверные данные
+
+  /api/v1/notifications/push/subscribe:
+    post:
+      tags:
+        - Push
+      summary: Подписка на push-уведомления
+      description: Регистрация устройства для push-уведомлений
+      operationId: subscribeToPush
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushSubscribeRequest'
+      responses:
+        '201':
+          description: Подписка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushSubscriptionResponse'
+        '400':
+          description: Неверные данные
+
+  /api/v1/notifications/push/unsubscribe:
+    post:
+      tags:
+        - Push
+      summary: Отписка от push-уведомлений
+      description: Удаление подписки на push-уведомления
+      operationId: unsubscribeFromPush
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushUnsubscribeRequest'
+      responses:
+        '204':
+          description: Подписка удалена
+        '404':
+          description: Подписка не найдена
+
+  /api/v1/notifications/push/test:
+    post:
+      tags:
+        - Push
+      summary: Тестовое push-уведомление
+      description: Отправка тестового push-уведомления
+      operationId: sendTestPushNotification
+      responses:
+        '200':
+          description: Тестовое уведомление отправлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestNotificationResponse'
+
+  /api/v1/notifications/email/verify:
+    post:
+      tags:
+        - Email
+      summary: Отправка кода подтверждения email
+      description: Отправка кода для подтверждения email адреса
+      operationId: sendEmailVerification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+      responses:
+        '200':
+          description: Код отправлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResponse'
+        '400':
+          description: Неверный email
+        '429':
+          description: Слишком много запросов
+
+  /api/v1/notifications/sms/verify:
+    post:
+      tags:
+        - SMS
+      summary: Отправка кода подтверждения SMS
+      description: Отправка SMS с кодом подтверждения
+      operationId: sendSmsVerification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsVerificationRequest'
+      responses:
+        '200':
+          description: SMS отправлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResponse'
+        '400':
+          description: Неверный номер телефона
+        '429':
+          description: Слишком много запросов
+
+  /api/v1/notifications/templates:
+    get:
+      tags:
+        - Templates
+      summary: Список шаблонов уведомлений
+      description: Получение доступных шаблонов (только для администраторов)
+      operationId: getNotificationTemplates
+      parameters:
+        - name: type
+          in: query
+          description: Тип шаблона
+          schema:
+            $ref: '#/components/schemas/NotificationType'
+        - name: channel
+          in: query
+          description: Канал доставки
+          schema:
+            $ref: '#/components/schemas/NotificationChannel'
+      responses:
+        '200':
+          description: Список шаблонов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationTemplateResponse'
+        '403':
+          description: Недостаточно прав
+
+    post:
+      tags:
+        - Templates
+      summary: Создание шаблона
+      description: Создание нового шаблона уведомления
+      operationId: createNotificationTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTemplateRequest'
+      responses:
+        '201':
+          description: Шаблон создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplateResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+
+  /api/v1/notifications/templates/{templateId}:
+    put:
+      tags:
+        - Templates
+      summary: Обновление шаблона
+      description: Обновление существующего шаблона
+      operationId: updateNotificationTemplate
+      parameters:
+        - name: templateId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTemplateRequest'
+      responses:
+        '200':
+          description: Шаблон обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplateResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Шаблон не найден
+
+    delete:
+      tags:
+        - Templates
+      summary: Удаление шаблона
+      description: Удаление шаблона уведомления
+      operationId: deleteNotificationTemplate
+      parameters:
+        - name: templateId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Шаблон удален
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Шаблон не найден
+
+components:
+  schemas:
+    NotificationType:
+      type: string
+      enum: [BOOKING_CONFIRMED, BOOKING_CANCELLED, PAYMENT_RECEIVED, EVENT_REMINDER,
+             EVENT_CANCELLED, CREW_ASSIGNMENT, SYSTEM_MAINTENANCE, PROMOTIONAL]
+
+    NotificationChannel:
+      type: string
+      enum: [PUSH, EMAIL, SMS, IN_APP]
+
+    NotificationStatus:
+      type: string
+      enum: [PENDING, SENT, DELIVERED, FAILED, CANCELLED]
+
+    NotificationPriority:
+      type: string
+      enum: [LOW, NORMAL, HIGH, URGENT]
+
+    SendNotificationRequest:
+      type: object
+      required:
+        - type
+        - channels
+        - recipients
+        - content
+      properties:
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationChannel'
+          minItems: 1
+        recipients:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+        content:
+          $ref: '#/components/schemas/NotificationContent'
+        priority:
+          $ref: '#/components/schemas/NotificationPriority'
+        scheduledAt:
+          type: string
+          format: date-time
+          description: Время отправки (если не указано, отправляется немедленно)
+        templateId:
+          type: string
+          format: uuid
+          description: ID шаблона для использования
+        templateData:
+          type: object
+          additionalProperties:
+            type: string
+          description: Данные для подстановки в шаблон
+
+    NotificationContent:
+      type: object
+      required:
+        - title
+        - body
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          example: "Бронирование подтверждено"
+        body:
+          type: string
+          maxLength: 1000
+          example: "Ваше бронирование на сплав по реке Белая подтверждено"
+        actionUrl:
+          type: string
+          format: uri
+          description: URL для действия по уведомлению
+        actionText:
+          type: string
+          maxLength: 50
+          description: Текст кнопки действия
+        imageUrl:
+          type: string
+          format: uri
+          description: URL изображения для уведомления
+
+    NotificationResponse:
+      type: object
+      properties:
+        notificationId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        status:
+          $ref: '#/components/schemas/NotificationStatus'
+        priority:
+          $ref: '#/components/schemas/NotificationPriority'
+        content:
+          $ref: '#/components/schemas/NotificationContent'
+        read:
+          type: boolean
+        readAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        scheduledAt:
+          type: string
+          format: date-time
+        sentAt:
+          type: string
+          format: date-time
+        deliveredAt:
+          type: string
+          format: date-time
+
+    NotificationDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/NotificationResponse'
+        - type: object
+          properties:
+            channels:
+              type: array
+              items:
+                type: object
+                properties:
+                  channel:
+                    $ref: '#/components/schemas/NotificationChannel'
+                  status:
+                    $ref: '#/components/schemas/NotificationStatus'
+                  sentAt:
+                    type: string
+                    format: date-time
+                  deliveredAt:
+                    type: string
+                    format: date-time
+                  errorMessage:
+                    type: string
+            metadata:
+              type: object
+              additionalProperties:
+                type: string
+
+    NotificationPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+        unreadCount:
+          type: integer
+
+    BulkMarkReadRequest:
+      type: object
+      properties:
+        notificationIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Список ID уведомлений (если не указан, отмечаются все)
+        type:
+          $ref: '#/components/schemas/NotificationType'
+          description: Отметить все уведомления указанного типа
+
+    BulkOperationResponse:
+      type: object
+      properties:
+        processedCount:
+          type: integer
+        successCount:
+          type: integer
+        failedCount:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              notificationId:
+                type: string
+                format: uuid
+              error:
+                type: string
+
+    NotificationStatsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        unread:
+          type: integer
+        byType:
+          type: object
+          additionalProperties:
+            type: integer
+        byChannel:
+          type: object
+          additionalProperties:
+            type: integer
+        recentActivity:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              sent:
+                type: integer
+              read:
+                type: integer
+
+    NotificationPreferencesResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        channels:
+          type: object
+          properties:
+            push:
+              type: boolean
+            email:
+              type: boolean
+            sms:
+              type: boolean
+            inApp:
+              type: boolean
+        types:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              enabled:
+                type: boolean
+              channels:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationChannel'
+        quietHours:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            startTime:
+              type: string
+              pattern: '^([01]?[0-9]|2[0-3]):[0-5][0-9]$'
+              example: "22:00"
+            endTime:
+              type: string
+              pattern: '^([01]?[0-9]|2[0-3]):[0-5][0-9]$'
+              example: "08:00"
+            timezone:
+              type: string
+              example: "Europe/Moscow"
+
+    UpdatePreferencesRequest:
+      type: object
+      properties:
+        channels:
+          type: object
+          properties:
+            push:
+              type: boolean
+            email:
+              type: boolean
+            sms:
+              type: boolean
+            inApp:
+              type: boolean
+        types:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              enabled:
+                type: boolean
+              channels:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationChannel'
+        quietHours:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            startTime:
+              type: string
+              pattern: '^([01]?[0-9]|2[0-3]):[0-5][0-9]$'
+            endTime:
+              type: string
+              pattern: '^([01]?[0-9]|2[0-3]):[0-5][0-9]$'
+            timezone:
+              type: string
+
+    PushSubscribeRequest:
+      type: object
+      required:
+        - endpoint
+        - keys
+      properties:
+        endpoint:
+          type: string
+          format: uri
+        keys:
+          type: object
+          properties:
+            p256dh:
+              type: string
+            auth:
+              type: string
+        deviceInfo:
+          type: object
+          properties:
+            userAgent:
+              type: string
+            platform:
+              type: string
+            deviceId:
+              type: string
+
+    PushSubscriptionResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+        endpoint:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+
+    PushUnsubscribeRequest:
+      type: object
+      required:
+        - endpoint
+      properties:
+        endpoint:
+          type: string
+          format: uri
+
+    TestNotificationResponse:
+      type: object
+      properties:
+        sent:
+          type: boolean
+        message:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+
+    EmailVerificationRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+
+    SmsVerificationRequest:
+      type: object
+      required:
+        - phoneNumber
+      properties:
+        phoneNumber:
+          type: string
+          pattern: '^\+[1-9]\d{10,14}$'
+          example: "+79001234567"
+
+    VerificationResponse:
+      type: object
+      properties:
+        sent:
+          type: boolean
+        message:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        resendAvailableAt:
+          type: string
+          format: date-time
+
+    CreateTemplateRequest:
+      type: object
+      required:
+        - name
+        - type
+        - channel
+        - subject
+        - body
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        channel:
+          $ref: '#/components/schemas/NotificationChannel'
+        subject:
+          type: string
+          maxLength: 200
+          description: Заголовок шаблона (поддерживает переменные)
+        body:
+          type: string
+          maxLength: 5000
+          description: Тело шаблона (поддерживает переменные и HTML для email)
+        variables:
+          type: array
+          items:
+            type: string
+          description: Список доступных переменных для подстановки
+
+    UpdateTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        subject:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          maxLength: 5000
+        variables:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+
+    NotificationTemplateResponse:
+      type: object
+      properties:
+        templateId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        channel:
+          $ref: '#/components/schemas/NotificationChannel'
+        subject:
+          type: string
+        body:
+          type: string
+        variables:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        usageCount:
+          type: integer
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+
+security:
+  - cookieAuth: []

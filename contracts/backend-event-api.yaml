@@ -1,0 +1,780 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Event API
+  description: Микросервис управления событиями, организаторами, бронированиями, избранным и листом ожидания
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8102
+    description: Development server
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Events
+    description: Управление событиями и поиск
+  - name: Organizers
+    description: Профили организаторов
+  - name: Bookings
+    description: Система бронирования
+  - name: Favorites
+    description: Избранные события
+  - name: Waitlist
+    description: Лист ожидания
+
+paths:
+  /api/v1/events:
+    get:
+      tags:
+        - Events
+      summary: Глобальный поиск событий
+      description: Поиск событий с фильтрами и пагинацией
+      operationId: searchEvents
+      parameters:
+        - name: search
+          in: query
+          description: Полнотекстовый поиск
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Тип события
+          schema:
+            $ref: '#/components/schemas/EventType'
+        - name: status
+          in: query
+          description: Статус события
+          schema:
+            $ref: '#/components/schemas/EventStatus'
+        - name: minPrice
+          in: query
+          description: Минимальная цена
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          description: Максимальная цена
+          schema:
+            type: number
+        - name: dateFrom
+          in: query
+          description: Начало временного диапазона
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          description: Конец временного диапазона
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Номер страницы
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список событий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventPageResponse'
+
+    post:
+      tags:
+        - Events
+      summary: Создание нового события
+      description: Создание события организатором (статус DRAFT)
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+      responses:
+        '201':
+          description: Событие создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав (только для организаторов)
+
+  /api/v1/events/{id}:
+    get:
+      tags:
+        - Events
+      summary: Детальная информация о событии
+      operationId: getEventById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Детали события
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: Событие не найдено
+
+    put:
+      tags:
+        - Events
+      summary: Обновление события
+      description: Обновление события (только DRAFT статус)
+      operationId: updateEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventRequest'
+      responses:
+        '200':
+          description: Событие обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          description: Неверные данные
+        '403':
+          description: Недостаточно прав
+        '409':
+          description: Событие уже опубликовано
+
+  /api/v1/events/{id}/publish:
+    post:
+      tags:
+        - Events
+      summary: Публикация события
+      description: Перевод события из DRAFT в PUBLISHED
+      operationId: publishEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Событие опубликовано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '403':
+          description: Недостаточно прав
+        '409':
+          description: Событие уже опубликовано
+
+  /api/v1/organizers:
+    get:
+      tags:
+        - Organizers
+      summary: Список организаторов
+      description: Поиск организаторов с пагинацией
+      operationId: getOrganizers
+      parameters:
+        - name: search
+          in: query
+          description: Поиск по названию
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список организаторов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizerPageResponse'
+
+  /api/v1/organizers/{slug}:
+    get:
+      tags:
+        - Organizers
+      summary: Профиль организатора
+      description: Детальная информация об организаторе с командой и FAQ
+      operationId: getOrganizerBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Профиль организатора
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizerResponse'
+        '404':
+          description: Организатор не найден
+
+  /api/v1/bookings:
+    get:
+      tags:
+        - Bookings
+      summary: Бронирования пользователя
+      description: Список бронирований с фильтрами
+      operationId: getUserBookings
+      parameters:
+        - name: status
+          in: query
+          description: Статус бронирования
+          schema:
+            $ref: '#/components/schemas/BookingStatus'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список бронирований
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingPageResponse'
+
+    post:
+      tags:
+        - Bookings
+      summary: Создание бронирования
+      description: Бронирование места на событие
+      operationId: createBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      responses:
+        '201':
+          description: Бронирование создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '400':
+          description: Неверные данные
+        '409':
+          description: Нет доступных мест
+
+  /api/v1/bookings/{id}/confirm:
+    put:
+      tags:
+        - Bookings
+      summary: Подтверждение бронирования
+      description: Подтверждение бронирования (только для бесплатных событий)
+      operationId: confirmBooking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Бронирование подтверждено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '400':
+          description: Невозможно подтвердить
+        '404':
+          description: Бронирование не найдено
+
+  /api/v1/bookings/{id}/cancel:
+    put:
+      tags:
+        - Bookings
+      summary: Отмена бронирования
+      operationId: cancelBooking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Бронирование отменено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '404':
+          description: Бронирование не найдено
+
+  /api/v1/events/{eventId}/favorite:
+    post:
+      tags:
+        - Favorites
+      summary: Добавить в избранное
+      operationId: addToFavorites
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Добавлено в избранное
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteResponse'
+
+    delete:
+      tags:
+        - Favorites
+      summary: Удалить из избранного
+      operationId: removeFromFavorites
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Удалено из избранного
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteResponse'
+
+  /api/v1/profile/favorites:
+    get:
+      tags:
+        - Favorites
+      summary: Список избранных событий
+      operationId: getFavoriteEvents
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Избранные события
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventPageResponse'
+
+  /api/v1/events/{eventId}/waitlist:
+    post:
+      tags:
+        - Waitlist
+      summary: Присоединиться к листу ожидания
+      operationId: joinWaitlist
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Добавлен в лист ожидания
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistResponse'
+
+    delete:
+      tags:
+        - Waitlist
+      summary: Покинуть лист ожидания
+      operationId: leaveWaitlist
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Удален из листа ожидания
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistResponse'
+
+  /api/v1/events/waitlist:
+    get:
+      tags:
+        - Waitlist
+      summary: Все листы ожидания пользователя
+      operationId: getUserWaitlists
+      responses:
+        '200':
+          description: Листы ожидания
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WaitlistResponse'
+
+components:
+  schemas:
+    EventType:
+      type: string
+      enum: [RAFTING, HIKING, BANQUET, WORKSHOP]
+
+    EventStatus:
+      type: string
+      enum: [DRAFT, PUBLISHED, CANCELLED, COMPLETED]
+
+    BookingStatus:
+      type: string
+      enum: [PENDING, CONFIRMED, CANCELLED, COMPLETED]
+
+    Location:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "Республика Адыгея, река Белая"
+        coordinates:
+          type: array
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+          example: [44.0, 40.0]
+
+    CreateEventRequest:
+      type: object
+      required:
+        - type
+        - title
+        - dateStart
+        - dateEnd
+        - location
+        - price
+        - capacity
+      properties:
+        type:
+          $ref: '#/components/schemas/EventType'
+        title:
+          type: string
+          example: "Сплав по реке Белая"
+        description:
+          type: string
+        dateStart:
+          type: string
+          format: date-time
+          example: "2025-08-25T09:00:00Z"
+        dateEnd:
+          type: string
+          format: date-time
+          example: "2025-08-25T18:00:00Z"
+        location:
+          $ref: '#/components/schemas/Location'
+        price:
+          type: number
+          format: decimal
+          example: 3500.00
+        capacity:
+          type: integer
+          minimum: 1
+          example: 20
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["rafting", "adventure", "weekend"]
+
+    UpdateEventRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        dateStart:
+          type: string
+          format: date-time
+        dateEnd:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/Location'
+        price:
+          type: number
+          format: decimal
+        capacity:
+          type: integer
+          minimum: 1
+        tags:
+          type: array
+          items:
+            type: string
+
+    EventResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/EventType'
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        dateStart:
+          type: string
+          format: date-time
+        dateEnd:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/Location'
+        price:
+          type: number
+          format: decimal
+        capacity:
+          type: integer
+        available:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+        organizer:
+          $ref: '#/components/schemas/OrganizerSummary'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EventPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    OrganizerSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+
+    OrganizerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        website:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        team:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamMember'
+        faq:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItem'
+
+    OrganizerPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    TeamMember:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        bio:
+          type: string
+
+    FaqItem:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+
+    CreateBookingRequest:
+      type: object
+      required:
+        - eventId
+      properties:
+        eventId:
+          type: string
+          format: uuid
+
+    BookingResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        event:
+          $ref: '#/components/schemas/EventResponse'
+        status:
+          $ref: '#/components/schemas/BookingStatus'
+        createdAt:
+          type: string
+          format: date-time
+        confirmedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    BookingPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    FavoriteResponse:
+      type: object
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        isFavorite:
+          type: boolean
+        favoritesCount:
+          type: integer
+
+    WaitlistResponse:
+      type: object
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        position:
+          type: integer
+        addedAt:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+
+security:
+  - cookieAuth: []

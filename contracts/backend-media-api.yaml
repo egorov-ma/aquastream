@@ -1,0 +1,705 @@
+openapi: 3.0.3
+info:
+  title: AquaStream Media API
+  description: Микросервис управления медиа-файлами, изображениями и документами
+  version: 1.0.0
+  contact:
+    name: AquaStream Team
+servers:
+  - url: http://localhost:8104
+    description: Development server
+  - url: https://api.aquastream.org
+    description: Production server
+
+tags:
+  - name: Images
+    description: Управление изображениями
+  - name: Documents
+    description: Управление документами
+  - name: Admin
+    description: Административные функции
+
+paths:
+  /api/v1/images/upload:
+    post:
+      tags:
+        - Images
+      summary: Загрузка изображения
+      description: Загрузка изображения с автоматическим ресайзом и оптимизацией
+      operationId: uploadImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImageUploadRequest'
+      responses:
+        '201':
+          description: Изображение загружено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+        '400':
+          description: Неверный формат файла
+        '413':
+          description: Файл слишком большой
+
+  /api/v1/images/{imageId}:
+    get:
+      tags:
+        - Images
+      summary: Получение изображения
+      description: Получение изображения по ID с возможностью ресайза
+      operationId: getImage
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: width
+          in: query
+          description: Ширина изображения
+          schema:
+            type: integer
+            minimum: 50
+            maximum: 2048
+        - name: height
+          in: query
+          description: Высота изображения
+          schema:
+            type: integer
+            minimum: 50
+            maximum: 2048
+        - name: quality
+          in: query
+          description: Качество JPEG (10-100)
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 100
+            default: 85
+      responses:
+        '200':
+          description: Изображение
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Изображение не найдено
+
+    delete:
+      tags:
+        - Images
+      summary: Удаление изображения
+      description: Удаление изображения (только владелец или админ)
+      operationId: deleteImage
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Изображение удалено
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Изображение не найдено
+
+  /api/v1/images/{imageId}/metadata:
+    get:
+      tags:
+        - Images
+      summary: Метаданные изображения
+      description: Получение информации об изображении
+      operationId: getImageMetadata
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Метаданные изображения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageMetadata'
+        '404':
+          description: Изображение не найдено
+
+  /api/v1/images/gallery:
+    get:
+      tags:
+        - Images
+      summary: Галерея изображений пользователя
+      description: Список всех изображений пользователя с пагинацией
+      operationId: getUserGallery
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: sortBy
+          in: query
+          description: Сортировка
+          schema:
+            type: string
+            enum: [uploadedAt, fileName, fileSize]
+            default: uploadedAt
+        - name: sortDirection
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Галерея изображений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagePageResponse'
+
+  /api/v1/documents/upload:
+    post:
+      tags:
+        - Documents
+      summary: Загрузка документа
+      description: Загрузка документа (PDF, DOC, DOCX и др.)
+      operationId: uploadDocument
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DocumentUploadRequest'
+      responses:
+        '201':
+          description: Документ загружен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentUploadResponse'
+        '400':
+          description: Неверный формат файла
+        '413':
+          description: Файл слишком большой
+
+  /api/v1/documents/{documentId}:
+    get:
+      tags:
+        - Documents
+      summary: Скачивание документа
+      description: Получение документа по ID
+      operationId: getDocument
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: download
+          in: query
+          description: Принудительно скачать файл
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Документ
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/msword:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Документ не найден
+
+    delete:
+      tags:
+        - Documents
+      summary: Удаление документа
+      description: Удаление документа (только владелец или админ)
+      operationId: deleteDocument
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Документ удален
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Документ не найден
+
+  /api/v1/documents/{documentId}/metadata:
+    get:
+      tags:
+        - Documents
+      summary: Метаданные документа
+      description: Получение информации о документе
+      operationId: getDocumentMetadata
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Метаданные документа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadata'
+        '404':
+          description: Документ не найден
+
+  /api/v1/documents/library:
+    get:
+      tags:
+        - Documents
+      summary: Библиотека документов пользователя
+      description: Список всех документов пользователя
+      operationId: getUserLibrary
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: fileType
+          in: query
+          description: Фильтр по типу файла
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Поиск по имени файла
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Библиотека документов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentPageResponse'
+
+  /api/v1/admin/media/stats:
+    get:
+      tags:
+        - Admin
+      summary: Статистика медиа-файлов
+      description: Общая статистика по загруженным файлам
+      operationId: getMediaStats
+      parameters:
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Статистика медиа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaStatsResponse'
+        '403':
+          description: Недостаточно прав (только для администраторов)
+
+  /api/v1/admin/media/cleanup:
+    post:
+      tags:
+        - Admin
+      summary: Очистка неиспользуемых файлов
+      description: Удаление файлов, которые не связаны ни с какими сущностями
+      operationId: cleanupOrphanedFiles
+      parameters:
+        - name: olderThanDays
+          in: query
+          description: Удалить файлы старше N дней
+          schema:
+            type: integer
+            minimum: 1
+            default: 30
+        - name: dryRun
+          in: query
+          description: Предварительный просмотр без удаления
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Результат очистки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CleanupResponse'
+        '403':
+          description: Недостаточно прав (только для администраторов)
+
+components:
+  schemas:
+    ImageUploadRequest:
+      type: object
+      required:
+        - image
+      properties:
+        image:
+          type: string
+          format: binary
+          description: Файл изображения
+        description:
+          type: string
+          maxLength: 500
+          description: Описание изображения
+        alt:
+          type: string
+          maxLength: 200
+          description: Alt-текст для доступности
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+          description: Теги для категоризации
+
+    ImageUploadResponse:
+      type: object
+      properties:
+        imageId:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+        originalFileName:
+          type: string
+        mimeType:
+          type: string
+        fileSize:
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+        url:
+          type: string
+          format: uri
+        thumbnailUrl:
+          type: string
+          format: uri
+        uploadedAt:
+          type: string
+          format: date-time
+
+    ImageMetadata:
+      type: object
+      properties:
+        imageId:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+        originalFileName:
+          type: string
+        mimeType:
+          type: string
+        fileSize:
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+        description:
+          type: string
+        alt:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        uploadedBy:
+          type: string
+          format: uuid
+        uploadedAt:
+          type: string
+          format: date-time
+        lastAccessed:
+          type: string
+          format: date-time
+        downloadCount:
+          type: integer
+
+    ImagePageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageMetadata'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    DocumentUploadRequest:
+      type: object
+      required:
+        - document
+      properties:
+        document:
+          type: string
+          format: binary
+          description: Файл документа
+        description:
+          type: string
+          maxLength: 500
+          description: Описание документа
+        category:
+          type: string
+          enum: [CONTRACT, INVOICE, REPORT, MANUAL, OTHER]
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+
+    DocumentUploadResponse:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+        originalFileName:
+          type: string
+        mimeType:
+          type: string
+        fileSize:
+          type: integer
+        category:
+          type: string
+        url:
+          type: string
+          format: uri
+        uploadedAt:
+          type: string
+          format: date-time
+
+    DocumentMetadata:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+        originalFileName:
+          type: string
+        mimeType:
+          type: string
+        fileSize:
+          type: integer
+        description:
+          type: string
+        category:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        uploadedBy:
+          type: string
+          format: uuid
+        uploadedAt:
+          type: string
+          format: date-time
+        lastAccessed:
+          type: string
+          format: date-time
+        downloadCount:
+          type: integer
+
+    DocumentPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentMetadata'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    MediaStatsResponse:
+      type: object
+      properties:
+        period:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+        images:
+          type: object
+          properties:
+            totalCount:
+              type: integer
+            totalSize:
+              type: integer
+            averageSize:
+              type: integer
+            byFormat:
+              type: object
+              additionalProperties:
+                type: integer
+        documents:
+          type: object
+          properties:
+            totalCount:
+              type: integer
+            totalSize:
+              type: integer
+            averageSize:
+              type: integer
+            byFormat:
+              type: object
+              additionalProperties:
+                type: integer
+        storage:
+          type: object
+          properties:
+            totalUsed:
+              type: integer
+            totalAvailable:
+              type: integer
+            usagePercentage:
+              type: number
+              format: percentage
+        topUsers:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                format: uuid
+              fileCount:
+                type: integer
+              totalSize:
+                type: integer
+
+    CleanupResponse:
+      type: object
+      properties:
+        dryRun:
+          type: boolean
+        orphanedFiles:
+          type: array
+          items:
+            type: object
+            properties:
+              fileId:
+                type: string
+                format: uuid
+              fileName:
+                type: string
+              fileSize:
+                type: integer
+              uploadedAt:
+                type: string
+                format: date-time
+        totalFilesToDelete:
+          type: integer
+        totalSizeToFree:
+          type: integer
+        deletedFiles:
+          type: integer
+        freedSpace:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              fileId:
+                type: string
+                format: uuid
+              error:
+                type: string
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+
+security:
+  - cookieAuth: []
