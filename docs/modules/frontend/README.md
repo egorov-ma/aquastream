@@ -1,9 +1,7 @@
 ---
-title: Frontend — DevEx
-summary: Практичный гид по запуску и разработке фронтенда AquaStream: скрипты, ENV, тесты, отладка.
----
-
-## AquaStream Frontend — DevEx README
+title: "Frontend — DevEx"
+summary: "Практичный гид по запуску и разработке фронтенда AquaStream: скрипты, ENV, тесты, отладка."
+---## AquaStream Frontend — DevEx README
 
 Этот документ — быстрый и практичный гид по запуску, разработке и отладке фронтенда AquaStream.
 

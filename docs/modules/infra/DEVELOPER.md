@@ -28,7 +28,7 @@
 ### Клонирование и первый запуск
 ```bash
 # Клонируем репозиторий
-git clone https://github.com/your-org/aquastream.git
+git clone https://github.com/egorov-ma/aquastream.git
 cd aquastream
 
 # Запускаем dev окружение
@@ -514,25 +514,33 @@ docker run --rm \
 
 ### GitHub Actions Workflows
 
-#### 1. CI Matrix (`ci-matrix.yml`)
-**Триггеры:** Push to main/develop, Pull Requests
-```yaml
-Strategy:
-  - Backend CI (Java 21, Gradle)
-  - Frontend CI (Node.js 18, pnpm)
-  - Integration Tests
-  - Security Scans
-  - Dependency Checks
-```
-
-#### 2. Backend CI (`backend-ci.yml`)
-**Триггеры:** Changes in `backend-*/**`, `common/**`
+#### 1. Backend CI (`backend-ci.yml`)
+**Триггеры:** Push to main, Pull Requests (backend changes)
 ```bash
 Steps:
-1. Setup Java 21 + Node.js
-2. Gradle build (all modules)
+1. Setup Java 21
+2. Gradle build (all backend modules)
 3. Unit tests
 4. Upload artifacts
+```
+
+#### 2. Frontend CI (`frontend-ci.yml`)
+**Триггеры:** Push to main, Pull Requests (frontend changes)
+```bash
+Steps:
+1. Setup Node.js 22 + pnpm
+2. Install dependencies
+3. Lint, typecheck, build
+```
+
+#### 3. Docs CI (`docs-ci.yml`)
+**Триггеры:** Push to main, Pull Requests (docs changes)
+```bash
+Steps:
+1. Setup Python
+2. Install MkDocs dependencies
+3. Build documentation
+4. Upload site artifact
 ```
 
 #### 3. Service CI (`ci-service.yml`)
@@ -699,13 +707,13 @@ GitHub Actions автоматически:
 #### 4. Проверка релиза
 ```bash
 # Проверьте статус workflow
-https://github.com/your-org/aquastream/actions
+https://github.com/egorov-ma/aquastream/actions
 
 # Проверьте созданный релиз
-https://github.com/your-org/aquastream/releases
+https://github.com/egorov-ma/aquastream/releases
 
 # Проверьте Docker образы
-https://github.com/your-org/aquastream/pkgs/container/aquastream-backend-notification
+https://github.com/egorov-ma/aquastream/pkgs/container/aquastream-backend-notification
 ```
 
 ### Hotfix процесс
@@ -1278,10 +1286,10 @@ gateway:
 - **Security**: security@aquastream.org
 
 ### Полезные ссылки
-- [GitHub Repository](https://github.com/your-org/aquastream)
-- [Issue Tracker](https://github.com/your-org/aquastream/issues)
-- [CI/CD Dashboard](https://github.com/your-org/aquastream/actions)
-- [Release Notes](https://github.com/your-org/aquastream/releases)
+- [GitHub Repository](https://github.com/egorov-ma/aquastream)
+- [Issue Tracker](https://github.com/egorov-ma/aquastream/issues)
+- [CI/CD Dashboard](https://github.com/egorov-ma/aquastream/actions)
+- [Release Notes](https://github.com/egorov-ma/aquastream/releases)
 
 ### Документация
 - [API Documentation](https://api.aquastream.ru/swagger-ui.html)

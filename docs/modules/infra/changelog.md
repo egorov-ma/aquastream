@@ -1,8 +1,7 @@
 ---
-title: Changelog — Infra
-summary: История изменений инфраструктуры AquaStream по Keep a Changelog и SemVer.
+title: "Changelog — Infra"
+summary: "История изменений инфраструктуры AquaStream по Keep a Changelog и SemVer."
 ---
-
 # Changelog — Infra
 
 Все заметные изменения в инфраструктуре документируются здесь. Формат — Keep a Changelog, версияция — SemVer.

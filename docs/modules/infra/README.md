@@ -1,8 +1,8 @@
-# <Service Name>
+# Infra — Overview
 
 ---
-title: <Service Name>
-summary: Краткое описание сервиса (2–3 предложения): назначение, границы, SLA.
+title: Infra — Overview
+summary: Документация по инфраструктуре AquaStream: окружения, CI/CD, бэкапы, релизы.
 ---
 
 ## Контекст

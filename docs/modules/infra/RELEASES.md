@@ -60,7 +60,7 @@ Releases are automatically triggered when pushing SemVer tags:
 # Create and push a new tag
 git tag v1.2.3
 git push origin v1.2.3
-```
+```text
 
 This triggers the GitHub Actions release workflow:
 
@@ -104,7 +104,7 @@ Add new version entry at the top of the changelog:
 ### Fixed  
 - Memory leak in Redis connection pooling
 - Race condition in rate limiting service
-```
+```text
 
 #### 4. Create and Push Tag
 

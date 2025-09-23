@@ -1,28 +1,32 @@
 # AquaStream — портал документации
 
 ---
-title: AquaStream Docs Portal
-summary: Портал Doc as Code со сквозными разделами и навигацией по модулям.
-tags: [overview]
+title: AquaStream — портал документации
+summary: Стартовая страница портала документации AquaStream.
 ---
 
-Портал Doc as Code: сквозные разделы и ссылки на документацию модулей.
+Микросервисная платформа для организации сплавов.
 
-## Start here
-- Overview → overview.md
-- Architecture → architecture/index.md
-- Ops → ops/index.md
-- QA → qa/index.md
-- Glossary → glossary.md
-- ADR → adr/index.md
-- Styleguides → styleguides/markdown_style.md
-- Roadmap → roadmap.md
-- API → api/index.md
-- Contributor Guide → contributor-guide.md
-- FAQ → faq.md
+## Быстрый старт для разработчиков
 
-## Быстрые ссылки
-- Архитектура: docs/architecture/index.md
-- ADR: docs/adr/index.md
-- Глоссарий: docs/glossary.md
-- Сервисы: раздел Services в навигации
+- [Обзор проекта](overview.md)
+- [Руководство по сборке](getting-started/build-guide.md)
+- [Локальная разработка](getting-started/local-development.md)
+- [Git Hooks для качества](devops/git-hooks.md)
+- [Политика безопасности](devops/policies/security.md)
+
+## Архитектура и дизайн
+
+- [Обзор архитектуры](architecture/overview.md)
+- [API документация](api/index.md)
+- [ADR записи](adr/index.md)
+
+## CI/CD статус
+
+![Backend CI](https://github.com/egorov-ma/aquastream/actions/workflows/backend-ci.yml/badge.svg)
+![Frontend CI](https://github.com/egorov-ma/aquastream/actions/workflows/frontend-ci.yml/badge.svg)
+![Docs CI](https://github.com/egorov-ma/aquastream/actions/workflows/docs-ci.yml/badge.svg)
+
+## Навигация
+
+Разделы портала перечислены в меню слева.

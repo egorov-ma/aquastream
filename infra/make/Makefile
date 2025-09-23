@@ -65,65 +65,70 @@ liq-user-update:
 # Docs as Code helpers
 # ------------------------------
 docs-setup:
-	python3 -m venv .venv-docs && \
+	cd $(REPO_ROOT)/docs/docs-tools && python3 -m venv .venv-docs && \
 	. .venv-docs/bin/activate && \
 	pip install --upgrade pip && \
-	pip install -r $(REPO_ROOT)/requirements-docs.txt
+	pip install -r requirements-docs.txt
 
 docs-serve:
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
-	. .venv-docs/bin/activate && mkdocs serve
+	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && mkdocs serve'
 
 docs-build:
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
-	. .venv-docs/bin/activate && mkdocs build
+	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && mkdocs build'
 
 docs-lint:
-	@echo "[docs] markdownlint" && npx --yes markdownlint-cli2 "**/*.md" --config .markdownlint.jsonc || true; \
-	 echo "[docs] cspell" && npx --yes cspell "**/*.md" --no-progress --show-context || true; \
-	 echo "[docs] vale" && vale "**/*.md" || true; \
-	 echo "[docs] lychee" && lychee --config lychee.toml "**/*.md" || true
+	@echo "[docs] markdownlint" && cd $(REPO_ROOT)/docs/docs-tools && npx --yes markdownlint-cli2 .. || true; \
+	 echo "[docs] cspell" && cd $(REPO_ROOT)/docs/docs-tools && npx --yes cspell "../**/*.md" "../../../**/docs/**/*.md" --no-progress --show-context || true; \
+		 echo "[docs] vale" && VBIN=$$( [ -x /opt/homebrew/bin/vale ] && echo /opt/homebrew/bin/vale || ( [ -x /usr/local/bin/vale ] && echo /usr/local/bin/vale || echo vale ) ); \
+		   cd $(REPO_ROOT)/docs/docs-tools && $$VBIN .. || true; \
+		 echo "[docs] lychee" && LYCHEE=$$( [ -x /opt/homebrew/bin/lychee ] && echo /opt/homebrew/bin/lychee || ( [ -x /usr/local/bin/lychee ] && echo /usr/local/bin/lychee || echo lychee ) ); \
+		   cd $(REPO_ROOT)/docs/docs-tools && $$LYCHEE --config lychee.toml .. || true
 
 docs-check-links:
-	@echo "[docs] lychee (links only)" && lychee --config lychee.toml "**/*.md" || true
+	@echo "[docs] lychee (links only)" && cd $(REPO_ROOT)/docs/docs-tools && lychee --config lychee.toml "../**/*.md" || true
 
 docs-inventory:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json || \
-	python3 $(REPO_ROOT)/tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json
+	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	python tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json || \
+	python3 tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json
 
 docs-map:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/map_docs.py || python3 $(REPO_ROOT)/tools/map_docs.py
+	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	python tools/map_docs.py || python3 tools/map_docs.py
 
 .PHONY: docs-apply-map
 docs-apply-map:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/apply_move_plan.py || python3 $(REPO_ROOT)/tools/apply_move_plan.py
+	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	python tools/apply_move_plan.py || python3 tools/apply_move_plan.py
 
 docs-normalize-report:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/normalize_md.py || python3 $(REPO_ROOT)/tools/normalize_md.py
+	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	python tools/normalize_md.py || python3 tools/normalize_md.py
 
 docs-sync-modules:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/sync_module_docs.py || python3 $(REPO_ROOT)/tools/sync_module_docs.py
+	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/centralize_md.py' || python3 tools/centralize_md.py
 
 docs-api:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/generate_api_docs.py || python3 $(REPO_ROOT)/tools/generate_api_docs.py
+	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/generate_api_docs.py' || python3 tools/generate_api_docs.py
 
 docs-diagrams:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/generate_diagrams.py || python3 $(REPO_ROOT)/tools/generate_diagrams.py
+	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/generate_diagrams.py' || python3 tools/generate_diagrams.py
 
 .PHONY: docs-quality-report
 docs-quality-report:
-	. .venv-docs/bin/activate || true; \
-	python $(REPO_ROOT)/tools/check_docs_quality.py || python3 $(REPO_ROOT)/tools/check_docs_quality.py
+	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	python tools/check_docs_quality.py || python3 tools/check_docs_quality.py
+
+.PHONY: docs-fix-frontmatter
+docs-fix-frontmatter:
+	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	python tools/quote_front_matter.py || python3 tools/quote_front_matter.py; \
+	echo "Re-run Vale"; /opt/homebrew/bin/vale --config=.vale.ini --minAlertLevel=error .. || true
 
 

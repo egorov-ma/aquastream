@@ -1,9 +1,7 @@
 ---
-title: Backend Common
-summary: Общая библиотека AquaStream: автоконфигурации, метрики, ratelimit, service discovery и утилиты.
----
-
-# AquaStream Backend Common
+title: "Backend Common"
+summary: "Общая библиотека AquaStream: автоконфигурации, метрики, ratelimit, service discovery и утилиты."
+---# AquaStream Backend Common
 
 Общая библиотека, содержащая разделяемую функциональность для всех микросервисов AquaStream.
 

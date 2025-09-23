@@ -1,9 +1,7 @@
 ---
-title: Backend Gateway
-summary: Единая входная точка на Spring Cloud Gateway: JWT, rate limiting, безопасность и маршрутизация.
----
-
-# AquaStream Backend Gateway
+title: "Backend Gateway"
+summary: "Единая входная точка на Spring Cloud Gateway: JWT, rate limiting, безопасность и маршрутизация."
+---# AquaStream Backend Gateway
 
 Единая входная точка для всех микросервисов AquaStream на основе Spring Cloud Gateway с поддержкой JWT аутентификации, 
 лимитирования запросов и централизованного администрирования.
