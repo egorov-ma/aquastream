@@ -8,6 +8,9 @@ plugins {
     id 'com.google.protobuf' version '0.9.4' apply false
     id 'org.owasp.dependencycheck' version '10.0.4' apply false
     id 'com.github.ben-manes.versions' version '0.51.0'
+    // Convention plugins from included build-logic
+    id 'com.aquastream.java-library-conventions' apply false
+    id 'com.aquastream.spring-boot-api-conventions' apply false
 }
 
 // Enforce dependency resolution across all projects
@@ -80,106 +83,13 @@ allprojects {
     }
 }
 
-subprojects {
-    apply plugin: com.aquastream.JavaLibraryConventionsPlugin
-    apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'org.owasp.dependencycheck'
-    
-    java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    
-    tasks.withType(JavaCompile) {
-        options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked', '-parameters']
-        options.deprecation = true
-        options.encoding = 'UTF-8'
-    }
-    
-    // Отключаем donation message от OpenAPI Generator
-    System.setProperty('org.openapitools.codegen.suppressDonationMessage', 'true')
-
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-            mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
-            mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonVersion}"
-        }
-    }
-
-    dependencies {
-        testImplementation platform("org.junit:junit-bom:${junitVersion}")
-        testImplementation 'org.junit.jupiter:junit-jupiter'
-        testImplementation 'org.testcontainers:junit-jupiter'
-        compileOnly "org.projectlombok:lombok:${lombokVersion}"
-        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    }
-
-    test {
-        useJUnitPlatform()
-        testLogging {
-            events "passed", "skipped", "failed"
-            showStandardStreams = false
-        }
-        reports {
-            html.required = true
-            junitXml.required = true
-        }
-        maxParallelForks = (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
-    }
-
-    // Optional integration test profile (available if sources exist)
-    sourceSets {
-        integrationTest {
-            java.srcDir file('src/integrationTest/java')
-            resources.srcDir file('src/integrationTest/resources')
-            compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-            runtimeClasspath += output + compileClasspath
-        }
-    }
-
-    configurations {
-        integrationTestImplementation.extendsFrom testImplementation
-        integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-    }
-
-    tasks.register('integrationTest', Test) {
-        description = 'Runs integration tests.'
-        group = 'verification'
-        testClassesDirs = sourceSets.integrationTest.output.classesDirs
-        classpath = sourceSets.integrationTest.runtimeClasspath
-        useJUnitPlatform()
-        testLogging {
-            events "passed", "skipped", "failed"
-            showStandardStreams = false
-        }
-        reports {
-            html.required = true
-            junitXml.required = true
-        }
-        maxParallelForks = (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
-        shouldRunAfter test
-    }
-
-    tasks.named('check') { dependsOn tasks.named('integrationTest') }
-
-    dependencyCheck {
-        formats = ['SARIF', 'HTML']
-        outputDirectory = "${buildDir}/reports"
-        failBuildOnCVSS = 7.0
-        suppressionFile = rootProject.file('owasp-suppression.xml')
-        nvd {
-            apiKey = System.getenv('NVD_API_KEY')
-        }
-        skip = System.getenv('NVD_API_KEY') == null
-    }
-}
+// Apply common Java conventions to all subprojects via build-logic
+subprojects { apply plugin: 'com.aquastream.java-library-conventions' }
 
 // Apply Spring Boot plugin only to API modules
 subprojects {
     if (project.name.endsWith('-api') || project.name == 'backend-gateway') {
-        apply plugin: com.aquastream.SpringBootApiConventionsPlugin
+        apply plugin: 'com.aquastream.spring-boot-api-conventions'
     }
 }
 
@@ -191,26 +101,7 @@ subprojects {
     }
 }
 
-// Standardize jar/bootJar across modules
-configure(subprojects.findAll { it.name.endsWith('-db') || it.name.endsWith('-service') }) {
-    // Library modules should produce plain JARs
-    tasks.named('jar') {
-        enabled = true
-        archiveClassifier = ''
-    }
-    // If Spring Boot plugin is applied, disable bootJar for libraries
-    plugins.withId('org.springframework.boot') {
-        tasks.named('bootJar') { enabled = false }
-    }
-}
-
-configure(subprojects.findAll { it.name.endsWith('-api') }) {
-    // Executable modules should produce bootJar when Spring Boot is applied
-    plugins.withId('org.springframework.boot') {
-        tasks.named('jar') { enabled = false }
-        tasks.named('bootJar') { enabled = true }
-    }
-}
+// jar/bootJar behavior is handled by conventions; no extra tuning needed here
 
 // Root-level docs tasks that proxy to Makefile (must be after plugins block)
 tasks.register('docsSetup', Exec) {
