@@ -20,8 +20,6 @@ services:
     env_file:
       - ${ENV_FILE:-.env}
     command: ["postgres", "-c", "max_connections=200"]
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init-schemas.sql:/docker-entrypoint-initdb.d/00-init-schemas.sql:ro
@@ -30,6 +28,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 768m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   redis:
@@ -39,8 +45,6 @@ services:
     env_file:
       - ${ENV_FILE:-.env}
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redisdata:/data
     healthcheck:
@@ -48,18 +52,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 256m
+    cpus: "0.50"
     networks: [aquastream-net]
 
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2024-06-13T22-53-53Z
     container_name: aquastream-minio
     profiles: [dev, stage, prod]
     command: ["server", "/data", "--console-address", ":9001"]
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "${MINIO_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
       - miniodata:/data
     healthcheck:
@@ -67,22 +76,41 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   backend-gateway:
-    image: aquastream/backend-gateway:latest
+    image: aquastream/backend-gateway:dev
     container_name: aquastream-backend-gateway
     profiles: [dev, stage, prod]
     depends_on:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   backend-user:
-    image: aquastream/backend-user:latest
+    image: aquastream/backend-user:dev
     container_name: aquastream-backend-user
     profiles: [dev, stage, prod]
     depends_on:
@@ -90,12 +118,23 @@ services:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "8101:8101"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8101/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   backend-event:
-    image: aquastream/backend-event:latest
+    image: aquastream/backend-event:dev
     container_name: aquastream-backend-event
     profiles: [dev, stage, prod]
     depends_on:
@@ -103,24 +142,46 @@ services:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "8102:8102"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8102/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   backend-crew:
-    image: aquastream/backend-crew:latest
+    image: aquastream/backend-crew:dev
     container_name: aquastream-backend-crew
     profiles: [dev, stage, prod]
     depends_on:
       - postgres
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "8103:8103"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8103/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   backend-payment:
-    image: aquastream/backend-payment:latest
+    image: aquastream/backend-payment:dev
     container_name: aquastream-backend-payment
     profiles: [dev, stage, prod]
     depends_on:
@@ -128,32 +189,65 @@ services:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "8104:8104"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8104/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   backend-notification:
-    image: aquastream/backend-notification:latest
+    image: aquastream/backend-notification:dev
     container_name: aquastream-backend-notification
     profiles: [dev, stage, prod]
     depends_on:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "8105:8105"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8105/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
   backend-media:
-    image: aquastream/backend-media:latest
+    image: aquastream/backend-media:dev
     container_name: aquastream-backend-media
     profiles: [dev, stage, prod]
     depends_on:
       - minio
     env_file:
       - ${ENV_FILE:-.env}
-    ports:
-      - "8106:8106"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8106/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    mem_limit: 512m
+    cpus: "0.75"
     networks: [aquastream-net]
 
 

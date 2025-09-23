@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  postgres:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  redis:
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+
+  minio:
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+
+  backend-gateway:
+    ports:
+      - "8080:8080"
+
+  backend-user:
+    ports:
+      - "8101:8101"
+
+  backend-event:
+    ports:
+      - "8102:8102"
+
+  backend-crew:
+    ports:
+      - "8103:8103"
+
+  backend-payment:
+    ports:
+      - "8104:8104"
+
+  backend-notification:
+    ports:
+      - "8105:8105"
+
+  backend-media:
+    ports:
+      - "8106:8106"

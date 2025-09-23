@@ -6,8 +6,7 @@ RUN groupadd -g 1000 app && useradd -r -u 1000 -g app app \
 
 WORKDIR /app
 
-# Copy boot jar built by Gradle
-ARG JAR_FILE=build/libs/backend-gateway-*.jar
+ARG JAR_FILE=backend-event/backend-event-service/build/libs/backend-event-service-*.jar
 COPY ${JAR_FILE} app.jar
 
 RUN chown -R app:app /app
@@ -16,7 +15,7 @@ USER app
 ENV JAVA_TOOL_OPTIONS "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
+  CMD curl -f http://localhost:8102/actuator/health || exit 1
 
-EXPOSE 8080
+EXPOSE 8102
 ENTRYPOINT ["java","-jar","/app/app.jar"]

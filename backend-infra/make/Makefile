@@ -6,19 +6,33 @@ DC := docker compose -f $(ROOT_DIR)/docker/compose/docker-compose.yml
 .PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-check-links docs-inventory docs-map docs-normalize-report docs-sync-modules docs-api docs-diagrams
 
 up-dev:
-	ENV_FILE=.env.dev $(DC) --profile dev up -d
+	ENV_FILE=.env.dev docker compose \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.yml \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml \
+	  --profile dev up -d
 
 up-stage:
-	ENV_FILE=.env.stage $(DC) --profile stage up -d
+	ENV_FILE=.env.stage docker compose \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.yml \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.stage.yml \
+	  --profile stage up -d
 
 up-prod:
 	ENV_FILE=.env.prod $(DC) --profile prod up -d
 
 down:
-	$(DC) down -v
+	docker compose \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.yml \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.stage.yml \
+	  down -v
 
 logs:
-	$(DC) logs -f
+	docker compose \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.yml \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.stage.yml \
+	  logs -f
 
 backup:
 	bash $(ROOT_DIR)/backup/backup.sh
