@@ -1,6 +1,0 @@
-site_name: Backend User Service Docs
-docs_dir: docs
-nav:
-  - Overview: README.md
-  - Runbook: runbook.md
-  - Changelog: changelog.md
