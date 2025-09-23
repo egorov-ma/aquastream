@@ -37,10 +37,10 @@
   },
   {
     "path": "backend-common/docs/README.md",
-    "h1": "AquaStream Backend Common",
+    "h1": "",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "5208",
+    "size_bytes": "5210",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -145,10 +145,10 @@
   },
   {
     "path": "backend-gateway/docs/README.md",
-    "h1": "AquaStream Backend Gateway",
+    "h1": "",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "1482",
+    "size_bytes": "1484",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -704,18 +704,18 @@
   {
     "path": "docs/index.md",
     "h1": "",
-    "h2_first": "Start here",
+    "h2_first": "Быстрый старт",
     "lang": "mixed",
-    "size_bytes": "900",
+    "size_bytes": "435",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
     "path": "docs/modules/backend-common/README.md",
-    "h1": "AquaStream Backend Common",
+    "h1": "",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "5208",
+    "size_bytes": "5210",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -793,10 +793,10 @@
   },
   {
     "path": "docs/modules/backend-gateway/README.md",
-    "h1": "AquaStream Backend Gateway",
+    "h1": "",
     "h2_first": "Описание",
     "lang": "mixed",
-    "size_bytes": "1482",
+    "size_bytes": "1484",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -929,9 +929,9 @@
   {
     "path": "docs/modules/frontend/README.md",
     "h1": "",
-    "h2_first": "AquaStream Frontend — DevEx README",
+    "h2_first": "",
     "lang": "mixed",
-    "size_bytes": "1568",
+    "size_bytes": "1570",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1021,7 +1021,7 @@
     "h1": "AquaStream Backend - Developer Guide",
     "h2_first": "📋 Оглавление",
     "lang": "mixed",
-    "size_bytes": "34492",
+    "size_bytes": "34886",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1030,7 +1030,7 @@
     "h1": "",
     "h2_first": "Контекст",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "923",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1039,25 +1039,25 @@
     "h1": "AquaStream Release Process",
     "h2_first": "Semantic Versioning (SemVer)",
     "lang": "en",
-    "size_bytes": "9916",
-    "last_commit_date": "N/A",
-    "last_author": "N/A"
+    "size_bytes": "9924",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
   },
   {
     "path": "docs/modules/infra/aquastream-backend-spec-complete.md",
     "h1": "AquaStream Backend - Техническая спецификация",
     "h2_first": "Оглавление",
     "lang": "mixed",
-    "size_bytes": "27196",
+    "size_bytes": "27438",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
     "path": "docs/modules/infra/changelog.md",
-    "h1": "Changelog — Infra",
-    "h2_first": "[Unreleased]",
+    "h1": "",
+    "h2_first": "Release History",
     "lang": "mixed",
-    "size_bytes": "2027",
+    "size_bytes": "2029",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1066,7 +1066,7 @@
     "h1": "",
     "h2_first": "Мониторинг",
     "lang": "mixed",
-    "size_bytes": "653",
+    "size_bytes": "652",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1111,7 +1111,7 @@
     "h1": "Компонент X",
     "h2_first": "Обязательные требования",
     "lang": "mixed",
-    "size_bytes": "2388",
+    "size_bytes": "2394",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1120,7 +1120,7 @@
     "h1": "Политика версионирования документации",
     "h2_first": "",
     "lang": "mixed",
-    "size_bytes": "714",
+    "size_bytes": "1052",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1136,9 +1136,9 @@
   {
     "path": "frontend/docs/README.md",
     "h1": "",
-    "h2_first": "AquaStream Frontend — DevEx README",
+    "h2_first": "",
     "lang": "mixed",
-    "size_bytes": "1568",
+    "size_bytes": "1570",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1219,7 +1219,7 @@
     "h1": "Бэкапы PostgreSQL (per-schema)",
     "h2_first": "Что делает `backup.sh`",
     "lang": "mixed",
-    "size_bytes": "2990",
+    "size_bytes": "2994",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1246,8 +1246,8 @@
     "h1": "AquaStream Backend - Developer Guide",
     "h2_first": "📋 Оглавление",
     "lang": "mixed",
-    "size_bytes": "34492",
-    "last_commit_date": "2025-09-17",
+    "size_bytes": "34886",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
@@ -1255,7 +1255,7 @@
     "h1": "",
     "h2_first": "Контекст",
     "lang": "mixed",
-    "size_bytes": "911",
+    "size_bytes": "923",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1264,7 +1264,7 @@
     "h1": "AquaStream Release Process",
     "h2_first": "Semantic Versioning (SemVer)",
     "lang": "en",
-    "size_bytes": "9916",
+    "size_bytes": "9924",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1273,16 +1273,16 @@
     "h1": "AquaStream Backend - Техническая спецификация",
     "h2_first": "Оглавление",
     "lang": "mixed",
-    "size_bytes": "27196",
-    "last_commit_date": "2025-09-17",
+    "size_bytes": "27438",
+    "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
   {
     "path": "infra/docs/changelog.md",
-    "h1": "Changelog — Infra",
-    "h2_first": "[Unreleased]",
+    "h1": "",
+    "h2_first": "Release History",
     "lang": "mixed",
-    "size_bytes": "2027",
+    "size_bytes": "2029",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   },
@@ -1291,7 +1291,7 @@
     "h1": "",
     "h2_first": "Мониторинг",
     "lang": "mixed",
-    "size_bytes": "653",
+    "size_bytes": "652",
     "last_commit_date": "2025-09-22",
     "last_author": "egorovma"
   }
