@@ -12,18 +12,16 @@ on:
     branches: [main, develop]
     paths:
       - 'backend-*/**'
-      - 'common/**'
+      - 'backend-common/**'
       - 'build.gradle'
       - 'gradle/**'
-      - 'infra/docker/images/Dockerfile.backend'
   pull_request:
     branches: [main, develop]
     paths:
       - 'backend-*/**'
-      - 'common/**'
+      - 'backend-common/**'
       - 'build.gradle'
       - 'gradle/**'
-      - 'infra/docker/images/Dockerfile.backend'
 
 jobs:
   build:
@@ -32,17 +30,26 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
-      - name: Set up Java and Node.js
-        uses: ./.github/actions/setup-java-node
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@56b90f209b02bf6d1deae490e9ef18b21a389cd4 # v1
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@d9c87d481d55275bb5441eef3fe0e46805f9ef70 # v3
 
       - name: Build JARs
         run: ./gradlew build
 
       - name: Upload backend build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: backend-build
           path: "**/build/libs/*.jar"
-
