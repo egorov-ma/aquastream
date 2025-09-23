@@ -17,8 +17,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-api'
     implementation 'ch.qos.logback:logback-classic'
     implementation "net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}"
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-    testImplementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+    testImplementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
 
     // JUnit Jupiter already provided via root 'subprojects' dependency management
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
