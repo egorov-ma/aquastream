@@ -1,0 +1,118 @@
+site_name: AquaStream Docs
+site_dir: ../../build/docs
+repo_url: https://github.com/egorov-ma/aquastream
+docs_dir: ../
+nav:
+  - Home: index.md
+  - Getting started:
+      - Overview: getting-started/overview.md
+      - Quick start: getting-started/quick-start.md
+      - Local development: getting-started/local-development.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Microservices: architecture/microservices.md
+      - Database design: architecture/database-design.md
+      - Security: architecture/security.md
+      - Common library: architecture/common-library.md
+      - Build system: architecture/build-system.md
+  - Backend:
+      - Overview: backend/overview.md
+      - Authentication: backend/authentication.md
+      - Error handling: backend/error-handling.md
+      - Gateway:
+          - API: backend/gateway/api.md
+          - Operations: backend/gateway/operations.md
+          - Changelog: backend/gateway/changelog.md
+      - User:
+          - API: backend/user/api.md
+          - Business logic: backend/user/business-logic.md
+          - Operations: backend/user/operations.md
+          - Changelog: backend/user/changelog.md
+      - Event:
+          - API: backend/event/api.md
+          - Business logic: backend/event/business-logic.md
+          - Operations: backend/event/operations.md
+          - Changelog: backend/event/changelog.md
+      - Payment:
+          - API: backend/payment/api.md
+          - Business logic: backend/payment/business-logic.md
+          - Operations: backend/payment/operations.md
+          - Changelog: backend/payment/changelog.md
+      - Notification:
+          - API: backend/notification/api.md
+          - Business logic: backend/notification/business-logic.md
+          - Operations: backend/notification/operations.md
+          - Changelog: backend/notification/changelog.md
+      - Crew:
+          - API: backend/crew/api.md
+          - Business logic: backend/crew/business-logic.md
+          - Operations: backend/crew/operations.md
+          - Changelog: backend/crew/changelog.md
+      - Media:
+          - API: backend/media/api.md
+          - Business logic: backend/media/business-logic.md
+          - Operations: backend/media/operations.md
+          - Changelog: backend/media/changelog.md
+  - Frontend:
+      - Overview: frontend/overview.md
+      - Routing: frontend/routing.md
+      - Components: frontend/components.md
+      - State management: frontend/state-management.md
+      - Development guide: frontend/development-guide.md
+  - Business:
+      - User roles: business/user-roles.md
+      - Booking flow: business/booking-flow.md
+      - Payment methods: business/payment-methods.md
+      - Crew management: business/crew-management.md
+  - DevOps:
+      - Infrastructure: devops/infrastructure.md
+      - CI/CD: devops/ci-cd.md
+      - Issue management: devops/issue-management.md
+      - Git hooks: devops/git-hooks.md
+      - Environment setup: devops/environment-setup.md
+      - Deployment: devops/deployment.md
+      - Monitoring: devops/monitoring.md
+      - Backup & recovery: devops/backup-recovery.md
+      - Policies:
+          - Security Policy: devops/policies/security.md
+          - Code of Conduct: devops/policies/code-of-conduct.md
+          - Support: devops/policies/support.md
+  - Styleguides:
+      - Code style: styleguides/code-style.md
+      - API design: styleguides/api-design.md
+      - Database conventions: styleguides/database-conventions.md
+      - Git workflow: styleguides/git-workflow.md
+      - Documentation style: styleguides/documentation-style.md
+      - UI/UX guidelines: styleguides/ui-ux-guidelines.md
+  - Roadmap:
+      - Current release: roadmap/current-release.md
+      - Planned features: roadmap/planned-features.md
+      - Technical debt: roadmap/technical-debt.md
+      - Long-term vision: roadmap/long-term-vision.md
+  - Reference:
+      - Environment variables: reference/environment-variables.md
+      - Configuration: reference/configuration.md
+      - Troubleshooting: reference/troubleshooting.md
+  - Glossary: glossary.md
+theme:
+  name: material
+  features:
+    - content.action.edit
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - attr_list
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed
+  - pymdownx.tilde
+  - pymdownx.caret
+plugins:
+  - search
+  - mermaid2
+  - redirects

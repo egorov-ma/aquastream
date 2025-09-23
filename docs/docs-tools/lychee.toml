@@ -1,0 +1,20 @@
+# lychee link checker config
+exclude_path = [
+  '(^|/)node_modules(/|$)',
+  '(^|/)build(/|$)',
+  '(^|/)dist(/|$)',
+  '(^|/)\.next(/|$)',
+  '(^|/)\.cache(/|$)'
+]
+max_concurrency = 10
+accept = ["200..399"]
+retry_wait_time = 2
+user_agent = "aquastream-docs-lychee"
+exclude = [
+  '^https?://localhost(:[0-9]+)?(/.*)?$',
+  '^https?://127\.0\.0\.1(:[0-9]+)?(/.*)?$',
+  '^https?://api\.aquastream\.ru/.*$',
+  '^https?://(www\.)?securepayments\.sberbank\.ru/.*$',
+  '^https?://securepay\.tinkoff\.ru/.*$',
+  '^https?://api\.yookassa\.ru/.*$'
+]

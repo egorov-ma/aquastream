@@ -1,0 +1,8 @@
+extends: substitution
+message: "Используйте '%s' вместо '%s'"
+ignorecase: true
+level: warning
+swap:
+  # Документация
+  doc-as-code: Doc as Code
+  docs-as-code: Doc as Code

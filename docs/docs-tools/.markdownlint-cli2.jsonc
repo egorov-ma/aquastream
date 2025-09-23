@@ -1,0 +1,14 @@
+{
+  "config": ".markdownlint.jsonc",
+  "globs": [
+    "docs/**/*.md",
+    "**/docs/**/*.md"
+  ],
+  "ignores": [
+    "**/node_modules/**",
+    "site/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/.venv-docs/**"
+  ]
+}
