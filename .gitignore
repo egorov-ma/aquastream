@@ -96,7 +96,11 @@ docker-compose.override.yml
 # Project specific
 run
 .claude/
-.venv-docs/
+docs/docs-tools/.venv-docs/
+docs/docs-tools/node_modules/
+
+# Git hooks
+!.githooks/
 
 # Gradle wrapper (keep)
 !gradle/wrapper/gradle-wrapper.jar

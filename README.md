@@ -1,13 +1,15 @@
 # AquaStream
 
-Микросервисная платформа для организации сплавов.
+Микросервисная платформа для организации событий.
 
 ## Документация
 
-- Портал: [docs/index.md](docs/index.md)
-- ADR индекс: [docs/adr/index.md](docs/adr/index.md)
-- Локальный предпросмотр: `make docs-setup` (один раз) → `make docs-serve`
+📖 **Портал документации**: [docs/index.md](docs/index.md)
 
-## CI статус
+Локальный предпросмотр: `make docs-setup` → `make docs-serve`
 
-![CI Matrix](https://github.com/egorov-ma/aquastream/actions/workflows/ci-matrix.yml/badge.svg)
+## Status
+
+![Backend CI](https://github.com/egorov-ma/aquastream/actions/workflows/backend-ci.yml/badge.svg)
+![Frontend CI](https://github.com/egorov-ma/aquastream/actions/workflows/frontend-ci.yml/badge.svg)
+![Docs CI](https://github.com/egorov-ma/aquastream/actions/workflows/docs-ci.yml/badge.svg)
