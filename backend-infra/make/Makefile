@@ -181,6 +181,15 @@ docs-api:
 docs-diagrams:
 	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/generate_diagrams.py' || python3 tools/generate_diagrams.py
 
+.PHONY: deps-lock
+deps-lock:
+	@bash -lc 'set -euo pipefail; cd $(REPO_ROOT); \
+	  MODULES=$$(sed -n "s/^include[[:space:]]*'\([^']\+\)'.*/\1/p" settings.gradle); \
+	  TASKS=":dependencies"; \
+	  for m in $$MODULES; do TASKS="$$TASKS :$$m:dependencies"; done; \
+	  echo "[lock] Writing dependency locks for projects..."; \
+	  ./gradlew --no-daemon --write-locks $$TASKS'
+
 .PHONY: docs-quality-report
 docs-quality-report:
 	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \

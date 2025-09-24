@@ -26,16 +26,59 @@ on:
       - 'gradle/**'
 
 jobs:
-  build:
-    name: Backend Build
+  lock-check:
+    name: Lock Check
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@f9c9c575b8b21b6485636a91ffecd10e558c62f6 # v1
+        uses: gradle/actions/wrapper-validation@17cfe6cc08f38d82544c52a1b3428b192a6329a0 # v3.5.0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v3
+
+      - name: Generate locks for all projects (no build)
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODULES=$(sed -n "s/^include[[:space:]]*'\([^']\+\)'.*/\1/p" settings.gradle)
+          TASKS=":dependencies"
+          for m in $MODULES; do TASKS="$TASKS :$m:dependencies"; done
+          echo "[lock-check] Running: ./gradlew --write-locks $TASKS"
+          ./gradlew --no-daemon --write-locks $TASKS
+
+      - name: Verify lockfiles unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHANGES=$(git status --porcelain | grep -E "gradle\.lockfile" || true)
+          if [[ -n "$CHANGES" ]]; then
+            echo "::error::Dependency lockfiles out of sync. Run 'make deps-lock' (or './gradlew --write-locks') and commit changes." 
+            echo "$CHANGES"
+            exit 1
+          fi
+
+  build:
+    name: Backend Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [ lock-check ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@17cfe6cc08f38d82544c52a1b3428b192a6329a0 # v3.5.0
 
       - name: Set up JDK 21
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v4

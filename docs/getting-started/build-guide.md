@@ -52,7 +52,7 @@
 - `gradle.properties` настраивает: параллельность, кэширование, daemon, configuration cache, JVM параметры.
 - Configuration cache: включён, с предупреждением о совместимости gradle-git-properties plugin
 - Dependency locking: все модули используют strict lock-файлы для воспроизводимых сборок
-- Форс совместимости: `commons-compress:1.26.2` (из-за Gradle 8.5 + Spring Boot 3.3.5)
+- Форс совместимости: `commons-compress:1.28.0` (из-за Gradle 8.5 + Spring Boot 3.3.5)
 
 ## Команды сборки и тестов
 - Полная сборка всех модулей:
@@ -65,8 +65,8 @@
   - `./gradlew test`
   - Отчёты: `build/reports/tests/test/index.html` и JUnit XML
 - Dependency locking:
-  - Сгенерировать lock-файлы: `./gradlew dependencies --write-locks`
-  - Обновить lock-файлы всех модулей: `for dir in */; do cd "$dir" && ./gradlew dependencies --write-locks && cd ..; done`
+  - Рекомендуется: `make deps-lock` (генерирует lock-файлы для всех модулей без сборки)
+  - Альтернатива: `./gradlew dependencies --write-locks` (для корня и/или отдельных модулей)
   - Commit'ить изменения lock-файлов в VCS
 - Configuration cache:
   - Проверка совместимости: `./gradlew build --configuration-cache`
@@ -107,10 +107,8 @@
   - Применяет Spring Boot к исполняемым модулям; включает `bootJar`, отключает `jar`.
 
 ## CI
-- Файл: `.github/workflows/ci-architecture.yml`
-  - `build`: `./gradlew build -x test`
-  - `archunit`: `./gradlew test --tests "*LayerRulesTest"`
-  - `deps-and-security`: `validateModuleStructure`, `dependencyUpdatesAll`, `dependencyCheckAnalyze`
+- Важное: в `Backend CI` есть job `Lock Check`, который проверяет, что lock-файлы синхронизированы.
+  - Если lock-файлы устарели, job упадёт с подсказкой запустить `make deps-lock` и закоммитить изменения.
 
 ## Testcontainers (интеграционные тесты)
 - BOM уже подключён на уровне корня; в `subprojects` добавлен `testImplementation 'org.testcontainers:junit-jupiter'`.
