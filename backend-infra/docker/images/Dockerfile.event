@@ -12,7 +12,7 @@ COPY ${JAR_FILE} app.jar
 RUN chown -R app:app /app
 USER app
 
-ENV JAVA_TOOL_OPTIONS "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:8102/actuator/health || exit 1
