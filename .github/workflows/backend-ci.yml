@@ -29,6 +29,7 @@ jobs:
   changes:
     name: Detect build file changes
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch'
     outputs:
       lock: ${{ steps.filter.outputs.lock }}
     steps:
@@ -113,6 +114,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v3
 
+      - name: Mark build start
+        run: echo "BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Build JARs
         run: ./gradlew build
 
@@ -127,8 +131,10 @@ jobs:
         run: |
           echo "### Backend CI — результат" >> "$GITHUB_STEP_SUMMARY"
           echo "- Сборка Gradle: успешно" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -n "${BUILD_START:-}" ]]; then
+            NOW=$(date +%s); DUR=$((NOW-BUILD_START)); printf "- Время сборки: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
           COUNT=$(find . -type f -path "*/build/libs/*.jar" | wc -l | tr -d ' ')
           echo "- Количество JAR: $COUNT" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Топ-5 JAR по размеру:" >> "$GITHUB_STEP_SUMMARY"
-          find . -type f -path "*/build/libs/*.jar" -printf '%p\t%s\n' | sort -k2,2nr | head -n 5 | awk -F '\t' '{printf "  - %s (%0.1f MiB)\n", $1, $2/1024/1024}' >> "$GITHUB_STEP_SUMMARY"
+          echo "- JAR файлы (по размеру):" >> "$GITHUB_STEP_SUMMARY"
+          find . -type f -path "*/build/libs/*.jar" -printf '%s\t%p\n' | sort -nr | awk -F '\t' '{printf "  - %s (%0.1f MiB)\n", $2, $1/1024/1024}' >> "$GITHUB_STEP_SUMMARY"
           echo "- Загружен артефакт: backend-build (JAR)" >> "$GITHUB_STEP_SUMMARY"

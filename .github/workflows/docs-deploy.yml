@@ -65,6 +65,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Mark deploy start
+        run: echo "DEPLOY_START=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
@@ -76,3 +79,4 @@ jobs:
           echo "- Сайт опубликован на GitHub Pages" >> "$GITHUB_STEP_SUMMARY"
           echo "- URL: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Commit: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -n "${DEPLOY_START:-}" ]]; then NOW=$(date +%s); DUR=$((NOW-DEPLOY_START)); printf "- Время деплоя: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi

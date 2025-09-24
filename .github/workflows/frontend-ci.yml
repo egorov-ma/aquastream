@@ -43,6 +43,9 @@ jobs:
         with:
           version: 10
 
+      - name: Mark build start
+        run: echo "FE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -60,6 +63,7 @@ jobs:
         run: |
           echo "### Frontend CI — итоги" >> "$GITHUB_STEP_SUMMARY"
           echo "- Lint / Typecheck / Build: успешно" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -n "${FE_BUILD_START:-}" ]]; then NOW=$(date +%s); DUR=$((NOW-FE_BUILD_START)); printf "- Время сборки: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
           if [[ -d .next ]]; then
             SIZE=$(du -sh .next | awk '{print $1}')
             echo "- Размер .next: $SIZE" >> "$GITHUB_STEP_SUMMARY"
