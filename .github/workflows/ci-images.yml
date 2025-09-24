@@ -1,4 +1,4 @@
-name: CI - Docker Images
+name: Docker Images CI
 
 on:
   pull_request:
@@ -12,7 +12,6 @@ on:
       - '.github/workflows/ci-images.yml'
   push:
     branches: [ main ]
-    tags: [ 'v*' ]
     paths:
       - 'backend-*/**'
       - 'backend-infra/docker/**'
@@ -20,6 +19,8 @@ on:
       - 'settings.gradle'
       - 'gradle/**'
       - '.github/workflows/ci-images.yml'
+  release:
+    types: [ published ]
 
 permissions:
   contents: read
@@ -62,7 +63,7 @@ jobs:
             backend-gateway/build/libs/*.jar
 
   images:
-    name: Build${{ github.event_name == 'pull_request' && ' (no push)' || '' }} - ${{ matrix.service }}
+    name: "Build${{ github.event_name == 'pull_request' && ' (no push)' || '' }} - ${{ matrix.service }}"
     runs-on: ubuntu-latest
     timeout-minutes: 45
     needs: [ build-jars ]
@@ -97,6 +98,9 @@ jobs:
           TAGS=("${IMAGE}:sha-${SHORT_SHA}")
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             VERSION_TAG="${GITHUB_REF#refs/tags/}"
+            TAGS+=("${IMAGE}:${VERSION_TAG}" "${IMAGE}:latest")
+          elif [[ "${{ github.event_name }}" == "release" ]]; then
+            VERSION_TAG="${{ github.event.release.tag_name }}"
             TAGS+=("${IMAGE}:${VERSION_TAG}" "${IMAGE}:latest")
           fi
           # JAR path mapping per service
@@ -171,12 +175,11 @@ jobs:
         shell: bash
         run: |
           echo "### Docker Image Summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Service: \
-${{ matrix.service }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Image:   \
-${{ steps.meta.outputs.image }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Service: ${{ matrix.service }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image:   ${{ steps.meta.outputs.image }}" >> "$GITHUB_STEP_SUMMARY"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "- Built (no push): ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "- Pushed tags: ${{ steps.meta.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Pushed tags:" >> "$GITHUB_STEP_SUMMARY"
+            echo "${{ steps.meta.outputs.tags }}" | while IFS= read -r t; do echo "  - $t" >> "$GITHUB_STEP_SUMMARY"; done
           fi
