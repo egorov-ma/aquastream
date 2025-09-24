@@ -26,10 +26,32 @@ on:
       - 'gradle/**'
 
 jobs:
+  changes:
+    name: Detect build file changes
+    runs-on: ubuntu-latest
+    outputs:
+      lock: ${{ steps.filter.outputs.lock }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+        with:
+          fetch-depth: 0
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            lock:
+              - 'build.gradle'
+              - 'settings.gradle'
+              - 'gradle/**'
+              - '**/build.gradle'
+              - 'version.properties'
+
   lock-check:
     name: Lock Check
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs: [ changes ]
+    if: needs.changes.outputs.lock == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
@@ -72,7 +94,8 @@ jobs:
     name: Backend Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [ lock-check ]
+    needs: [ changes, lock-check ]
+    if: ${{ always() && (needs.lock-check.result == 'success' || needs.lock-check.result == 'skipped') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4

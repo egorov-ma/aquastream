@@ -183,12 +183,13 @@ docs-diagrams:
 
 .PHONY: deps-lock
 deps-lock:
-	@bash -lc 'set -euo pipefail; cd $(REPO_ROOT); \
-	  MODULES=$$(sed -n "s/^include[[:space:]]*'\([^']\+\)'.*/\1/p" settings.gradle); \
-	  TASKS=":dependencies"; \
-	  for m in $$MODULES; do TASKS="$$TASKS :$$m:dependencies"; done; \
-	  echo "[lock] Writing dependency locks for projects..."; \
-	  ./gradlew --no-daemon --write-locks $$TASKS'
+	@set -euo pipefail; \
+	cd $(REPO_ROOT); \
+	MODULES=$$(grep -E "^include '" settings.gradle | sed -E "s/^include '([^']+)'.*/\1/"); \
+	TASKS=":dependencies"; \
+	for m in $$MODULES; do TASKS="$$TASKS :$$m:dependencies"; done; \
+	echo "[lock] Running: ./gradlew --no-daemon --write-locks $$TASKS"; \
+	./gradlew --no-daemon --write-locks $$TASKS
 
 .PHONY: docs-quality-report
 docs-quality-report:
