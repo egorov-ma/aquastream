@@ -1,0 +1,182 @@
+name: CI - Docker Images
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'backend-*/**'
+      - 'backend-infra/docker/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle/**'
+      - '.github/workflows/ci-images.yml'
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+    paths:
+      - 'backend-*/**'
+      - 'backend-infra/docker/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle/**'
+      - '.github/workflows/ci-images.yml'
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-jars:
+    name: Build backend JARs (once)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v3
+
+      - name: Assemble backend JARs
+        run: ./gradlew -x test assemble
+
+      - name: Upload backend JARs artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: backend-jars
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            backend-*/**/build/libs/*.jar
+            backend-gateway/build/libs/*.jar
+
+  images:
+    name: Build${{ github.event_name == 'pull_request' && ' (no push)' || '' }} - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [ build-jars ]
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [ gateway, user, event, crew, payment, notification, media ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+
+      - name: Download JAR artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: backend-jars
+          path: .
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@988b5a0280414f521ccc9c5be407edaa921a481c # v3
+
+      - name: Compute metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER_RAW="${{ github.repository_owner }}"
+          OWNER_LOWER="$(echo -n "$OWNER_RAW" | tr '[:upper:]' '[:lower:]')"
+          SERVICE="${{ matrix.service }}"
+          IMAGE="ghcr.io/${OWNER_LOWER}/aquastream-backend-${SERVICE}"
+          SHORT_SHA="$(git rev-parse --short=7 HEAD)"
+          TAGS=("${IMAGE}:sha-${SHORT_SHA}")
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            VERSION_TAG="${GITHUB_REF#refs/tags/}"
+            TAGS+=("${IMAGE}:${VERSION_TAG}" "${IMAGE}:latest")
+          fi
+          # JAR path mapping per service
+          case "$SERVICE" in
+            gateway)     JAR_FILE="backend-gateway/build/libs/backend-gateway-*.jar" ; DF="backend-infra/docker/images/Dockerfile.gateway" ;;
+            user)        JAR_FILE="backend-user/backend-user-api/build/libs/backend-user-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.user" ;;
+            event)       JAR_FILE="backend-event/backend-event-api/build/libs/backend-event-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.event" ;;
+            crew)        JAR_FILE="backend-crew/backend-crew-api/build/libs/backend-crew-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.crew" ;;
+            payment)     JAR_FILE="backend-payment/backend-payment-api/build/libs/backend-payment-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.payment" ;;
+            notification)JAR_FILE="backend-notification/backend-notification-api/build/libs/backend-notification-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.notification" ;;
+            media)       JAR_FILE="backend-media/backend-media-api/build/libs/backend-media-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.media" ;;
+            *) echo "::error::Unknown service: $SERVICE"; exit 1;;
+          esac
+          printf 'image=%s\n' "$IMAGE" >> "$GITHUB_OUTPUT"
+          {
+            echo 'tags<<TAGS'
+            printf '%s\n' "${TAGS[@]}"
+            echo 'TAGS'
+          } >> "$GITHUB_OUTPUT"
+          printf 'jar_file=%s\n' "$JAR_FILE" >> "$GITHUB_OUTPUT"
+          printf 'dockerfile=%s\n' "$DF" >> "$GITHUB_OUTPUT"
+          printf 'short_sha=%s\n' "$SHORT_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image (PR, no push)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6
+        with:
+          context: .
+          file: ${{ steps.meta.outputs.dockerfile }}
+          platforms: linux/amd64
+          build-args: |
+            JAR_FILE=${{ steps.meta.outputs.jar_file }}
+          load: true
+          tags: ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trivy Scan (PR only)
+        if: github.event_name == 'pull_request'
+        uses: aquasecurity/trivy-action@6e7f28df9ca90c2a018c9d40b3f2f8adcea79629 # 0.28.0
+        with:
+          image-ref: ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}
+          format: 'table'
+          vuln-type: 'os,library'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'
+
+      - name: Build and Push image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6
+        with:
+          context: .
+          file: ${{ steps.meta.outputs.dockerfile }}
+          platforms: linux/amd64
+          build-args: |
+            JAR_FILE=${{ steps.meta.outputs.jar_file }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Docker Image Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Service: \
+${{ matrix.service }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image:   \
+${{ steps.meta.outputs.image }}" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "- Built (no push): ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- Pushed tags: ${{ steps.meta.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
+          fi

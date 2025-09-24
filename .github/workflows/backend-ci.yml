@@ -14,6 +14,7 @@ on:
       - 'backend-*/**'
       - 'backend-common/**'
       - 'build.gradle'
+      - 'settings.gradle'
       - 'gradle/**'
   pull_request:
     branches: [main, develop]
@@ -21,6 +22,7 @@ on:
       - 'backend-*/**'
       - 'backend-common/**'
       - 'build.gradle'
+      - 'settings.gradle'
       - 'gradle/**'
 
 jobs:
