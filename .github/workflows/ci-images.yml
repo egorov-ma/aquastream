@@ -148,7 +148,7 @@ jobs:
 
       - name: Trivy Scan (PR only)
         if: github.event_name == 'pull_request'
-        uses: aquasecurity/trivy-action@v0.28.0
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}
           format: 'table'
