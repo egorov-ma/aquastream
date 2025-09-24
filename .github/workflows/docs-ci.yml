@@ -32,6 +32,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
 
+      - name: Enable problem matcher (warnings/errors)
+        run: echo "::add-matcher::.github/matchers/generic.json"
+
       - name: Setup Python
         id: setup-python
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v5

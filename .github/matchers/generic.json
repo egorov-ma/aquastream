@@ -1,0 +1,30 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "generic-colon",
+      "pattern": [
+        {
+          "regexp": "^(.+?):(\\d+):\\s*(warning|error)\\s*:\\s*(.+)$",
+          "file": 1,
+          "line": 2,
+          "severity": 3,
+          "message": 4
+        }
+      ]
+    },
+    {
+      "owner": "generic-colon-col",
+      "pattern": [
+        {
+          "regexp": "^(.+?):(\\d+):(\\d+):\\s*(warning|error)\\s*:\\s*(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      ]
+    }
+  ]
+}
+

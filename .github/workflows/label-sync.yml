@@ -1,4 +1,4 @@
-name: Sync Labels
+name: Labels Sync
 
 on:
   push:
