@@ -1,12 +1,12 @@
 FROM eclipse-temurin:21-jre
 
-RUN groupadd -g 1000 app && useradd -r -u 1000 -g app app \
-    && apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && id -u app >/dev/null 2>&1 || useradd -r -m -s /usr/sbin/nologin app
 
 WORKDIR /app
 
-ARG JAR_FILE=backend-event/backend-event-service/build/libs/backend-event-service-*.jar
+ARG JAR_FILE=build/libs/backend-event-api-*.jar
 COPY ${JAR_FILE} app.jar
 
 RUN chown -R app:app /app

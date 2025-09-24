@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     ports:
@@ -15,29 +13,64 @@ services:
       - "${MINIO_CONSOLE_PORT:-9001}:9001"
 
   backend-gateway:
+    build:
+      context: ../../..
+      dockerfile: backend-infra/docker/images/Dockerfile.gateway
+      args:
+        JAR_FILE: backend-gateway/build/libs/backend-gateway-*.jar
     ports:
       - "8080:8080"
 
   backend-user:
+    build:
+      context: ../../..
+      dockerfile: backend-infra/docker/images/Dockerfile.user
+      args:
+        JAR_FILE: backend-user/backend-user-api/build/libs/backend-user-api-*.jar
     ports:
       - "8101:8101"
 
   backend-event:
+    build:
+      context: ../../..
+      dockerfile: backend-infra/docker/images/Dockerfile.event
+      args:
+        JAR_FILE: backend-event/backend-event-api/build/libs/backend-event-api-*.jar
     ports:
       - "8102:8102"
 
   backend-crew:
+    build:
+      context: ../../..
+      dockerfile: backend-infra/docker/images/Dockerfile.crew
+      args:
+        JAR_FILE: backend-crew/backend-crew-api/build/libs/backend-crew-api-*.jar
     ports:
       - "8103:8103"
 
   backend-payment:
+    build:
+      context: ../../..
+      dockerfile: backend-infra/docker/images/Dockerfile.payment
+      args:
+        JAR_FILE: backend-payment/backend-payment-api/build/libs/backend-payment-api-*.jar
     ports:
       - "8104:8104"
 
   backend-notification:
+    build:
+      context: ../../..
+      dockerfile: backend-infra/docker/images/Dockerfile.notification
+      args:
+        JAR_FILE: backend-notification/backend-notification-api/build/libs/backend-notification-api-*.jar
     ports:
       - "8105:8105"
 
   backend-media:
+    build:
+      context: ../../..
+      dockerfile: backend-infra/docker/images/Dockerfile.media
+      args:
+        JAR_FILE: backend-media/backend-media-api/build/libs/backend-media-api-*.jar
     ports:
       - "8106:8106"

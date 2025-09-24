@@ -2,23 +2,29 @@ SHELL := /bin/bash
 ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 REPO_ROOT := $(abspath $(ROOT_DIR)/..)
 DC := docker compose -f $(ROOT_DIR)/docker/compose/docker-compose.yml
+ENV_FILE ?= .env.dev
 
 .PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-check-links docs-inventory docs-map docs-normalize-report docs-sync-modules docs-api docs-diagrams
 
 up-dev:
-	ENV_FILE=.env.dev docker compose \
+	@echo "[dev] Building backend jars (assemble)"
+	@cd $(REPO_ROOT) && ./gradlew -x test assemble
+	@echo "[dev] Bringing up dev stack"
+	ENV_FILE=.env.dev docker compose --env-file $(ROOT_DIR)/docker/compose/.env.dev \
 	  -f $(ROOT_DIR)/docker/compose/docker-compose.yml \
 	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml \
-	  --profile dev up -d
+	  --profile dev up -d --build
 
 up-stage:
-	ENV_FILE=.env.stage docker compose \
+	ENV_FILE=.env.stage docker compose --env-file $(ROOT_DIR)/docker/compose/.env.stage \
 	  -f $(ROOT_DIR)/docker/compose/docker-compose.yml \
 	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.stage.yml \
 	  --profile stage up -d
 
 up-prod:
-	ENV_FILE=.env.prod $(DC) --profile prod up -d
+	ENV_FILE=.env.prod docker compose --env-file $(ROOT_DIR)/docker/compose/.env.prod \
+	  -f $(ROOT_DIR)/docker/compose/docker-compose.yml \
+	  --profile prod up -d
 
 down:
 	docker compose \
@@ -33,6 +39,39 @@ logs:
 	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml \
 	  -f $(ROOT_DIR)/docker/compose/docker-compose.override.stage.yml \
 	  logs -f
+
+.PHONY: minio-bootstrap
+minio-bootstrap:
+	# Re-run MinIO bootstrap job (buckets/policies)
+	@echo "[infra] MinIO bootstrap using $(ENV_FILE)"
+	@FILES="-f $(ROOT_DIR)/docker/compose/docker-compose.yml"; \
+	  if [ "$(ENV_FILE)" = ".env.dev" ] && [ -f "$(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml" ]; then \
+	    FILES="$$FILES -f $(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml"; \
+	  fi; \
+	  if [ "$(ENV_FILE)" = ".env.stage" ] && [ -f "$(ROOT_DIR)/docker/compose/docker-compose.override.stage.yml" ]; then \
+	    FILES="$$FILES -f $(ROOT_DIR)/docker/compose/docker-compose.override.stage.yml"; \
+	  fi; \
+	  ENV_FILE=$(ENV_FILE) docker compose --env-file $(ROOT_DIR)/docker/compose/$(ENV_FILE) $$FILES run --rm minio-setup
+
+.PHONY: minio-buckets
+minio-buckets:
+	@bash -lc 'set -a; source $(ROOT_DIR)/docker/compose/$(ENV_FILE); set +a; \
+	  export MC_HOST_minio="http://$$MINIO_ROOT_USER:$$MINIO_ROOT_PASSWORD@minio:9000"; \
+	  docker run --rm --network aquastream-net -e MC_HOST_minio minio/mc ls minio'
+
+.PHONY: minio-put-test
+minio-put-test:
+	@bash -lc 'set -a; source $(ROOT_DIR)/docker/compose/$(ENV_FILE); set +a; \
+	  export MC_HOST_minio="http://$$MINIO_ROOT_USER:$$MINIO_ROOT_PASSWORD@minio:9000"; \
+	  FILE_PATH="$${FILE:-/tmp/minio-test.txt}"; BUCKET="$${BUCKET:-aquastream-media}"; \
+	  echo "hello $$RANDOM" > "$$FILE_PATH"; \
+	  docker run --rm --network aquastream-net -e MC_HOST_minio -v "$$FILE_PATH:/data/file:ro" minio/mc cp /data/file minio/$$BUCKET/$$(basename "$$FILE_PATH")'
+
+.PHONY: minio-get-test
+minio-get-test:
+	@bash -lc 'FILE_PATH="$${FILE:-/tmp/minio-test.txt}"; BUCKET="$${BUCKET:-aquastream-media}"; \
+	  OBJ="$${OBJ:-$$(basename "$$FILE_PATH")}"; \
+	  curl -I "http://localhost:9000/$$BUCKET/$$OBJ" || true'
 
 backup:
 	bash $(ROOT_DIR)/backup/backup.sh
@@ -105,7 +144,15 @@ docs-lint:
 		   cd $(REPO_ROOT)/docs/docs-tools && $$LYCHEE --config lychee.toml .. || true
 
 docs-check-links:
-	@echo "[docs] lychee (links only)" && cd $(REPO_ROOT)/docs/docs-tools && lychee --config lychee.toml "../**/*.md" || true
+	@echo "[docs] link check"
+	@cd $(REPO_ROOT)/docs/docs-tools && \
+	  if command -v lychee >/dev/null 2>&1; then \
+	    echo "[docs] using lychee"; \
+	    lychee --config lychee.toml "../**/*.md"; \
+	  else \
+	    echo "[docs] using Python fallback (local links only)"; \
+	    python3 tools/check_links.py --base $(REPO_ROOT) --globs "../**/*.md"; \
+	  fi
 
 docs-inventory:
 	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
@@ -144,5 +191,3 @@ docs-fix-frontmatter:
 	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
 	python tools/quote_front_matter.py || python3 tools/quote_front_matter.py; \
 	echo "Re-run Vale"; /opt/homebrew/bin/vale --config=.vale.ini --minAlertLevel=error .. || true
-
-

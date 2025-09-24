@@ -1,13 +1,13 @@
 FROM eclipse-temurin:21-jre
 
-RUN groupadd -g 1000 app && useradd -r -u 1000 -g app app \
-    && apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && id -u app >/dev/null 2>&1 || useradd -r -m -s /usr/sbin/nologin app
 
 WORKDIR /app
 
 # Copy boot jar built by Gradle
-ARG JAR_FILE=backend-notification/backend-notification-api/build/libs/backend-notification-api-*.jar
+ARG JAR_FILE=build/libs/backend-notification-api-*.jar
 COPY ${JAR_FILE} app.jar
 
 RUN chown -R app:app /app
