@@ -77,13 +77,13 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
 
       - name: Download JAR artifacts
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        uses: actions/download-artifact@v4
         with:
           name: backend-jars
           path: .
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@988b5a0280414f521ccc9c5be407edaa921a481c # v3
+        uses: docker/setup-buildx-action@v3
 
       - name: Compute metadata
         id: meta
@@ -126,7 +126,7 @@ jobs:
 
       - name: Login to GHCR
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -134,7 +134,7 @@ jobs:
 
       - name: Build image (PR, no push)
         if: github.event_name == 'pull_request'
-        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ steps.meta.outputs.dockerfile }}
@@ -148,7 +148,7 @@ jobs:
 
       - name: Trivy Scan (PR only)
         if: github.event_name == 'pull_request'
-        uses: aquasecurity/trivy-action@6e7f28df9ca90c2a018c9d40b3f2f8adcea79629 # 0.28.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}
           format: 'table'
@@ -159,7 +159,7 @@ jobs:
 
       - name: Build and Push image
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ steps.meta.outputs.dockerfile }}
