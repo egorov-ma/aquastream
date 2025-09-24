@@ -3,6 +3,9 @@ name: PR Labeler
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
+    paths:
+      - '.github/labeler.yml'
+      - '.github/workflows/labeler.yml'
 
 permissions:
   contents: read

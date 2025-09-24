@@ -7,6 +7,7 @@ on:
       - 'docs/docs-tools/mkdocs.yml'
       - 'docs/docs-tools/requirements-docs.txt'
       - 'docs/docs-tools/tools/**'
+      - '.github/workflows/docs-ci.yml'
   push:
     branches: [ main ]
     paths:
@@ -14,6 +15,7 @@ on:
       - 'docs/docs-tools/mkdocs.yml'
       - 'docs/docs-tools/requirements-docs.txt'
       - 'docs/docs-tools/tools/**'
+      - '.github/workflows/docs-ci.yml'
   workflow_dispatch:
 
 permissions:
