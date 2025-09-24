@@ -9,7 +9,7 @@
 - Каждый 1-й день месяца — `monthly_<schema>_YYYY-MM.dump`.
 - Ротация: хранит 7 daily, 4 weekly, 3 monthly.
 
-Файлы складываются в `infra/backup/artifacts/`.
+Файлы складываются в `backend-infra/backup/artifacts/`.
 
 ## Что делает `restore.sh`
 - Восстанавливает:
@@ -22,23 +22,23 @@
 2. Поднимите инфраструктуру (хватает `postgres`):
    
    ```bash
-   make up-stage  # использует infra/docker/compose/docker-compose.yml
+   make up-stage  # использует backend-infra/docker/compose/docker-compose.yml
    ```
 
 ## Резервное копирование
 ```bash
-bash infra/backup/backup.sh
+bash backend-infra/backup/backup.sh
 ```
-Результат: дампы в `infra/backup/artifacts`.
+Результат: дампы в `backend-infra/backup/artifacts`.
 
 ## Восстановление
 - Конкретная схема:
   ```bash
-  bash infra/backup/restore.sh event infra/backup/artifacts/event_20250101.dump
+  bash backend-infra/backup/restore.sh event backend-infra/backup/artifacts/event_20250101.dump
   ```
 - Восстановить всё из общего файла:
   ```bash
-  bash infra/backup/restore.sh all infra/backup/artifacts/all_20250101.dump
+  bash backend-infra/backup/restore.sh all backend-infra/backup/artifacts/all_20250101.dump
   ```
   (Если делаете общий файл самостоятельно.)
 

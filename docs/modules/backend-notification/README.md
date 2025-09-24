@@ -745,7 +745,7 @@ RATE_LIMIT_ENABLED=true
 ```yaml
 services:
   notification:
-    image: aquastream/backend-notification:latest
+    image: aquastream/backend-notification:vX.Y.Z
     ports:
       - "8105:8105"
     environment:

@@ -35,7 +35,7 @@ cd aquastream
 make up-dev
 
 # Или без Make:
-docker compose -f infra/docker/compose/docker-compose.yml --profile dev up -d
+docker compose -f backend-infra/docker/compose/docker-compose.yml --profile dev up -d
 
 # Проверяем что все работает
 make smoke
@@ -148,47 +148,21 @@ docker-compose --version
 ```
 
 ### 3. Настройка переменных окружения
-Создайте файл `.env` в корне проекта:
+Env‑файлы находятся рядом с Compose в `backend-infra/docker/compose/` и разделены по средам.
 
 ```bash
-# .env файл (создайте в корне проекта)
-cp .env.example .env
+cd backend-infra/docker/compose
+
+# Создайте файлы окружений из примеров
+cp .env.dev.example   .env.dev
+cp .env.stage.example .env.stage
+cp .env.prod.example  .env.prod
+
+# При необходимости отредактируйте значения (пароли, ключи и т. п.)
 ```
 
-**Базовый .env для разработки:**
-```bash
-# PostgreSQL
-POSTGRES_DB=aquastream
-POSTGRES_USER=aquastream
-POSTGRES_PASSWORD=postgres
-POSTGRES_PORT=5432
-
-# Redis
-REDIS_PASSWORD=redis
-REDIS_PORT=6379
-
-# MinIO
-MINIO_ROOT_USER=minio
-MINIO_ROOT_PASSWORD=minio123
-MINIO_PORT=9000
-MINIO_CONSOLE_PORT=9001
-
-# JWT
-JWT_SECRET=your-super-secret-jwt-key-256-bits-long
-
-# Telegram Bot (опционально для разработки)
-TELEGRAM_BOT_TOKEN=your_bot_token_here
-
-# YooKassa (опционально для разработки)
-YOOKASSA_SHOP_ID=your_shop_id
-YOOKASSA_SECRET_KEY=your_secret_key
-
-# Spring Profiles
-SPRING_PROFILES_ACTIVE=dev
-
-# CORS
-GATEWAY_CORS_ALLOWED_ORIGINS=http://localhost:3000
-```
+Ключевые переменные для dev уже заданы в примере `.env.dev.example`. Для Stage/Prod
+требуется указать реальные секреты.
 
 ## 🚀 Запуск проекта {#запуск-проекта}
 
@@ -216,22 +190,27 @@ make ps
 make smoke
 ```
 
+Примечания:
+- `make up-dev` сначала собирает JAR‑файлы и локальные Docker‑образы сервисов,
+  затем поднимает стек (base + override.dev) с использованием `.env.dev`.
+- Для Stage/Prod используются соответствующие `.env.stage` / `.env.prod`.
+
 ### Через Docker Compose напрямую {#docker-compose}
 ```bash
 # Development
-docker compose -f infra/docker/compose/docker-compose.yml --profile dev up -d
+docker compose -f backend-infra/docker/compose/docker-compose.yml --profile dev up -d
 
 # Staging
-docker compose -f infra/docker/compose/docker-compose.yml --profile stage up -d
+docker compose -f backend-infra/docker/compose/docker-compose.yml --profile stage up -d
 
 # Production
-docker compose -f infra/docker/compose/docker-compose.yml --profile prod up -d
+docker compose -f backend-infra/docker/compose/docker-compose.yml --profile prod up -d
 
 # Остановка
-docker compose -f infra/docker/compose/docker-compose.yml down -v
+docker compose -f backend-infra/docker/compose/docker-compose.yml down -v
 
 # Логи
-docker compose -f infra/docker/compose/docker-compose.yml logs -f
+docker compose -f backend-infra/docker/compose/docker-compose.yml logs -f
 ```
 
 ### Локальная разработка (без Docker) {#local-dev}
@@ -239,7 +218,7 @@ docker compose -f infra/docker/compose/docker-compose.yml logs -f
 #### 1. Запуск инфраструктуры
 ```bash
 # Только инфраструктурные сервисы
-docker compose -f infra/docker/compose/docker-compose.yml up postgres redis minio -d
+docker compose -f backend-infra/docker/compose/docker-compose.yml up postgres redis minio -d
 ```
 
 #### 2. Запуск сервисов в IDE
@@ -317,6 +296,28 @@ S3_ACCESS_KEY=minio              # Access Key
 S3_SECRET_KEY=minio123           # Secret Key
 MINIO_ROOT_USER=minio            # Root пользователь MinIO
 MINIO_ROOT_PASSWORD=minio123     # Root пароль MinIO
+```
+
+#### MinIO bootstrap (создание бакетов)
+- Управляется переменными в env‑файле:
+  - `MINIO_BOOTSTRAP_BUCKETS` — список бакетов через пробел/запятую (dev по умолчанию: `aquastream-media aquastream-payment`).
+  - `MINIO_BUCKET_PUBLIC` — включить публичное скачивание (dev/prod можно `true`).
+
+Команды:
+```bash
+# Однократная инициализация/повторный запуск (dev)
+make minio-bootstrap
+
+# Список бакетов
+make minio-buckets
+
+# Тестовая загрузка файла и проверка HTTP-доступа
+make minio-put-test           # загрузит /tmp/minio-test.txt в aquastream-media
+make minio-get-test           # проверит доступ к объекту через http://localhost:9000
+
+# Для stage/prod добавьте ENV_FILE
+make minio-bootstrap ENV_FILE=.env.stage
+make minio-buckets  ENV_FILE=.env.stage
 ```
 
 #### Spring Configuration
@@ -431,12 +432,12 @@ psql -h localhost -p 5432 -U aquastream -d aquastream
 make backup
 
 # Или напрямую
-bash infra/backup/backup.sh
+bash backend-infra/backup/backup.sh
 ```
 
 **Что происходит при бэкапе:**
 1. Создаются дампы для каждой схемы: `user`, `event`, `crew`, `payment`, `notification`, `media`
-2. Файлы сохраняются в `infra/backup/artifacts/`
+2. Файлы сохраняются в `backend-infra/backup/artifacts/`
 3. Формат файлов: `{schema}_{YYYYMMDD}.dump`
 4. Еженедельные копии (воскресенье): `weekly_{schema}_{YYYY-WW}.dump`
 5. Ежемесячные копии (1 число): `monthly_{schema}_{YYYY-MM}.dump`
@@ -454,17 +455,17 @@ bash infra/backup/backup.sh
 make restore SCHEMA=<schema> FILE=<path>
 
 # Примеры
-make restore SCHEMA=user FILE=infra/backup/artifacts/user_20250818.dump
-make restore SCHEMA=event FILE=infra/backup/artifacts/weekly_event_2025-33.dump
+make restore SCHEMA=user FILE=backend-infra/backup/artifacts/user_20250818.dump
+make restore SCHEMA=event FILE=backend-infra/backup/artifacts/weekly_event_2025-33.dump
 
 # Или напрямую
-bash infra/backup/restore.sh user infra/backup/artifacts/user_20250818.dump
+bash backend-infra/backup/restore.sh user backend-infra/backup/artifacts/user_20250818.dump
 ```
 
 #### Восстановление всех схем
 ```bash
 # Если у вас полный дамп
-make restore SCHEMA=all FILE=infra/backup/artifacts/full_backup.dump
+make restore SCHEMA=all FILE=backend-infra/backup/artifacts/full_backup.dump
 ```
 
 #### Восстановление в другую БД
@@ -475,7 +476,7 @@ POSTGRES_USER=test_user
 POSTGRES_PASSWORD=test_pass
 
 # Затем восстановите
-make restore SCHEMA=user FILE=infra/backup/artifacts/user_20250818.dump
+make restore SCHEMA=user FILE=backend-infra/backup/artifacts/user_20250818.dump
 ```
 
 ### Ручное создание бэкапов
@@ -549,7 +550,7 @@ Steps:
 Parameters:
 - service_name: backend-notification
 - image_name: aquastream-backend-notification  
-- dockerfile: infra/docker/images/Dockerfile.notification
+- dockerfile: backend-infra/docker/images/Dockerfile.notification
 
 Steps:
 1. Gradle build + tests
@@ -635,7 +636,7 @@ Images:
 ./gradlew :backend-notification:backend-notification-api:bootJar
 
 docker build \
-  -f infra/docker/images/Dockerfile.notification \
+  -f backend-infra/docker/images/Dockerfile.notification \
   --build-arg JAR_FILE=backend-notification/backend-notification-api/build/libs/backend-notification-api-*.jar \
   -t aquastream-backend-notification:test .
 
@@ -751,7 +752,7 @@ make down && make up-prod
 #### Откат базы данных
 ```bash
 # Если есть бэкап перед релизом
-make restore SCHEMA=all FILE=infra/backup/artifacts/pre_release_v1.2.3.dump
+make restore SCHEMA=all FILE=backend-infra/backup/artifacts/pre_release_v1.2.3.dump
 ```
 
 ## 📊 Мониторинг и отладка {#мониторинг-и-отладка}

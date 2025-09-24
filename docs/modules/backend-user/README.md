@@ -754,7 +754,7 @@ PII_MASKING_ENABLED=true
 ```yaml
 services:
   user:
-    image: aquastream/backend-user:latest
+    image: aquastream/backend-user:vX.Y.Z
     ports:
       - "8101:8101"
     environment:

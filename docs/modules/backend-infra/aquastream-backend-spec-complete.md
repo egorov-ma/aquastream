@@ -617,16 +617,16 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD}
     
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2024-06-13T22-53-53Z
     command: server /data --console-address ":9001"
     
   backend-gateway:
-    image: aquastream/backend-gateway:latest
+    image: aquastream/backend-gateway:vX.Y.Z
     ports: ["8080:8080"]
     depends_on: [redis]
     
   backend-user:
-    image: aquastream/backend-user:latest
+    image: aquastream/backend-user:vX.Y.Z
     ports: ["8101:8101"]
     depends_on: [postgres, redis]
     

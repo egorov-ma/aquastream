@@ -397,7 +397,7 @@ WHERE status = 'UPLOADING'
 ```yaml
 services:
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2024-06-13T22-53-53Z
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin

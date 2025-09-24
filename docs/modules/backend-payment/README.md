@@ -581,7 +581,7 @@ YOOKASSA_SECRET_KEY=secret_key
 ```yaml
 services:
   payment:
-    image: aquastream/backend-payment:latest
+    image: aquastream/backend-payment:vX.Y.Z
     ports:
       - "8084:8084"
     environment:

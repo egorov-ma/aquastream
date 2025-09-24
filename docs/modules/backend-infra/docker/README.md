@@ -31,6 +31,12 @@
 - Интеграции: `TELEGRAM_BOT_TOKEN`, `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`.
 - Профили Spring: `SPRING_PROFILES_ACTIVE`.
 
+### MinIO bootstrap
+Автосоздание бакетов выполняет сервис `minio-setup` (MinIO client `mc`, образ `bitnami/minio-client`).
+- Список бакетов: `MINIO_BOOTSTRAP_BUCKETS` (через запятую или пробел, по умолчанию `aquastream-media`).
+- Доступ: `MINIO_BUCKET_PUBLIC=true` включает анонимное скачивание (удобно для dev).
+Переменные добавлены в `.env.*.example`.
+
 ## Инициализация схем БД
 При первом старте Postgres применяется `init-schemas.sql` для создания схем: `user`, `event`, `crew`, `payment`, `notification`, `media`.
 
@@ -55,3 +61,7 @@ curl -s http://localhost:8080/actuator/health | jq
 - `docker-compose.override.stage.yml`: публикует только порт `gateway` (8080); БД/Redis/MinIO и остальные сервисы без внешних портов.
 
 Базовый `docker-compose.yml` не публикует порты, содержит политики перезапуска, ротацию логов, ресурсные лимиты и healthcheck’и.
+
+## Образы
+- Для каждого сервиса есть Dockerfile: `backend-infra/docker/images/Dockerfile.<service>`.
+- В dev окружении (через `make up-dev`) образы собираются локально и используются Compose‑ом.

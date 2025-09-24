@@ -25,4 +25,4 @@ Monorepo-плагин MkDocs создавал конфигурационные �
 ## Ссылки
 - `tools/sync_module_docs.py`
 - `mkdocs.yml`
-- `infra/make/Makefile`
+- `backend-infra/make/Makefile`
