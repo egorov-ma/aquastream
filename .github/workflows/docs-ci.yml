@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "### Docs CI — сборка документации" >> "$GITHUB_STEP_SUMMARY"
           echo "- Сайт успешно собран (MkDocs --strict)" >> "$GITHUB_STEP_SUMMARY"
-          if [[ -n "${DOCS_BUILD_START:-}" ]]; then NOW=$(date +%s); DUR=$((NOW-DOCS_BUILD_START)); printf "- Время сборки: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
+          if [[ -n "${DOCS_BUILD_START:-}" ]]; then NOW=$(date +%s); DUR=$((NOW-DOCS_BUILD_START)); printf -- "- Время сборки: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
           if [[ -d build/docs ]]; then
             SIZE=$(du -sh build/docs | awk '{print $1}')
             PAGES=$(find build/docs -type f -name '*.html' | wc -l | tr -d ' ')

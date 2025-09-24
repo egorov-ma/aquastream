@@ -132,7 +132,7 @@ jobs:
           echo "### Backend CI — результат" >> "$GITHUB_STEP_SUMMARY"
           echo "- Сборка Gradle: успешно" >> "$GITHUB_STEP_SUMMARY"
           if [[ -n "${BUILD_START:-}" ]]; then
-            NOW=$(date +%s); DUR=$((NOW-BUILD_START)); printf "- Время сборки: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
+            NOW=$(date +%s); DUR=$((NOW-BUILD_START)); printf -- "- Время сборки: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
           COUNT=$(find . -type f -path "*/build/libs/*.jar" | wc -l | tr -d ' ')
           echo "- Количество JAR: $COUNT" >> "$GITHUB_STEP_SUMMARY"
           echo "- JAR файлы (по размеру):" >> "$GITHUB_STEP_SUMMARY"

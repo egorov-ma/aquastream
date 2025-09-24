@@ -79,4 +79,4 @@ jobs:
           echo "- Сайт опубликован на GitHub Pages" >> "$GITHUB_STEP_SUMMARY"
           echo "- URL: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Commit: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
-          if [[ -n "${DEPLOY_START:-}" ]]; then NOW=$(date +%s); DUR=$((NOW-DEPLOY_START)); printf "- Время деплоя: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
+          if [[ -n "${DEPLOY_START:-}" ]]; then NOW=$(date +%s); DUR=$((NOW-DEPLOY_START)); printf -- "- Время деплоя: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
