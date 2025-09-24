@@ -134,6 +134,7 @@ jobs:
 
       - name: Build image (PR, no push)
         if: github.event_name == 'pull_request'
+        id: build_pr
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -159,6 +160,7 @@ jobs:
 
       - name: Build and Push image
         if: github.event_name != 'pull_request'
+        id: build_push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -174,12 +176,27 @@ jobs:
       - name: Summary
         shell: bash
         run: |
-          echo "### Docker Image Summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Service: ${{ matrix.service }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Image:   ${{ steps.meta.outputs.image }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Итог по образу" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Сервис: ${{ matrix.service }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Образ:  ${{ steps.meta.outputs.image }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "- Built (no push): ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}" >> "$GITHUB_STEP_SUMMARY"
+            IMG_TAG="${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}"
+            SIZE_BYTES=$(docker image inspect "$IMG_TAG" --format '{{.Size}}' 2>/dev/null || echo 0)
+            if [[ "$SIZE_BYTES" != "0" ]]; then
+              SIZE_HUMAN=$(awk -v b="$SIZE_BYTES" 'BEGIN{printf "%.1f MiB", b/1024/1024}')
+              echo "- Размер локального образа: $SIZE_HUMAN" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            echo "- Собран (без публикации): $IMG_TAG" >> "$GITHUB_STEP_SUMMARY"
+            DIGEST="${{ steps.build_pr.outputs.digest }}"
+            if [[ -n "$DIGEST" ]]; then
+              echo "- Digest: $DIGEST" >> "$GITHUB_STEP_SUMMARY"
+            fi
           else
-            echo "- Pushed tags:" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Опубликованные теги:" >> "$GITHUB_STEP_SUMMARY"
             echo "${{ steps.meta.outputs.tags }}" | while IFS= read -r t; do echo "  - $t" >> "$GITHUB_STEP_SUMMARY"; done
+            DIGEST="${{ steps.build_push.outputs.digest }}"
+            if [[ -n "$DIGEST" ]]; then
+              echo "- Digest: $DIGEST" >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi

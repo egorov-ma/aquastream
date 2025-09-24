@@ -21,3 +21,9 @@ jobs:
         with:
           sync-labels: true
           configuration-path: .github/labeler.yml
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### PR Labeler — итог" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Применены метки согласно .github/labeler.yml" >> "$GITHUB_STEP_SUMMARY"

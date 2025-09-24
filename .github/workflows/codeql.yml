@@ -36,3 +36,11 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@192325c86100d080feab897ff886c34abd4c83a3 # v3
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### CodeQL — анализ завершён" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Языки: Java, JavaScript/TypeScript, Python" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Отчёты и алерты: Security → Code scanning alerts" >> "$GITHUB_STEP_SUMMARY"
+          echo "  https://github.com/${{ github.repository }}/security/code-scanning" >> "$GITHUB_STEP_SUMMARY"

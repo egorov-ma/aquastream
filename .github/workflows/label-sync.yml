@@ -27,3 +27,9 @@ jobs:
         with:
           yaml-file: .github/labels.yml
           skip-delete: false
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Labels — синхронизация" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Набор меток обновлён по .github/labels.yml" >> "$GITHUB_STEP_SUMMARY"

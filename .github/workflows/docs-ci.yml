@@ -59,3 +59,16 @@ jobs:
         with:
           name: site
           path: ./build/docs
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Docs CI — сборка документации" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Сайт успешно собран (MkDocs --strict)" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -d build/docs ]]; then
+            SIZE=$(du -sh build/docs | awk '{print $1}')
+            PAGES=$(find build/docs -type f -name '*.html' | wc -l | tr -d ' ')
+            echo "- Размер: $SIZE" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Кол-во страниц (HTML): $PAGES" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "- Артефакт: site" >> "$GITHUB_STEP_SUMMARY"

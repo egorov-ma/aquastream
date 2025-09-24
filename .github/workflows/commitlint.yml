@@ -34,3 +34,13 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo "${{ github.event.pull_request.title }}" | npx commitlint --config .githooks/commitlint.config.js
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### commitlint — проверка завершена" >> "$GITHUB_STEP_SUMMARY"
+          CNT=$(git rev-list --count HEAD~20..HEAD 2>/dev/null || echo 0)
+          echo "- Проверено коммитов (до 20): $CNT" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "- Проверен заголовок PR" >> "$GITHUB_STEP_SUMMARY"
+          fi

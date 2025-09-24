@@ -49,3 +49,9 @@ jobs:
           tag_name: ${{ steps.meta.outputs.tag_name }}
           generate_release_notes: true
           draft: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.draft == 'true' }}
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Release — создан релиз" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Тег: ${{ steps.meta.outputs.tag_name }}" >> "$GITHUB_STEP_SUMMARY"

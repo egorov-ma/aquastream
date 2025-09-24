@@ -54,3 +54,16 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Frontend CI — итоги" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Lint / Typecheck / Build: успешно" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -d .next ]]; then
+            SIZE=$(du -sh .next | awk '{print $1}')
+            echo "- Размер .next: $SIZE" >> "$GITHUB_STEP_SUMMARY"
+          elif [[ -d dist ]]; then
+            SIZE=$(du -sh dist | awk '{print $1}')
+            echo "- Размер dist: $SIZE" >> "$GITHUB_STEP_SUMMARY"
+          fi

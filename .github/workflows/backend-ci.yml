@@ -121,3 +121,14 @@ jobs:
         with:
           name: backend-build
           path: "**/build/libs/*.jar"
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Backend CI — результат" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Сборка Gradle: успешно" >> "$GITHUB_STEP_SUMMARY"
+          COUNT=$(find . -type f -path "*/build/libs/*.jar" | wc -l | tr -d ' ')
+          echo "- Количество JAR: $COUNT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Топ-5 JAR по размеру:" >> "$GITHUB_STEP_SUMMARY"
+          find . -type f -path "*/build/libs/*.jar" -printf '%p\t%s\n' | sort -k2,2nr | head -n 5 | awk -F '\t' '{printf "  - %s (%0.1f MiB)\n", $1, $2/1024/1024}' >> "$GITHUB_STEP_SUMMARY"
+          echo "- Загружен артефакт: backend-build (JAR)" >> "$GITHUB_STEP_SUMMARY"
