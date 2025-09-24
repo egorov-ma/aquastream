@@ -1,4 +1,5 @@
 // Critical fix for Gradle 8.5 + Spring Boot 3.3.5 commons-compress compatibility
+import org.gradle.api.artifacts.dsl.LockMode
 
 plugins {
     id 'java'
@@ -15,7 +16,7 @@ plugins {
 
 // Enforce dependency resolution across all projects
 allprojects {
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy {
             force "org.apache.commons:commons-compress:1.28.0"
         }
@@ -100,7 +101,8 @@ subprojects { apply plugin: 'com.github.ben-manes.versions' }
 subprojects {
     dependencyLocking {
         lockAllConfigurations()
-        lockMode = org.gradle.api.artifacts.dsl.LockMode.STRICT
+        // Use LockMode.STRICT without fully qualified name
+        lockMode = LockMode.STRICT
     }
 }
 
@@ -141,6 +143,8 @@ tasks.register('dependencyUpdatesAll') {
 tasks.register('validateModuleStructure') {
     group = 'verification'
     description = 'Ensures Boot plugin and jar/bootJar states match api/library conventions.'
+    // This task inspects project/task state at execution time; mark as not CC-compatible
+    notCompatibleWithConfigurationCache('Inspects Project/task state during execution')
     doLast {
         def issues = []
         subprojects.each { p ->
@@ -172,7 +176,7 @@ tasks.register('validateModuleStructure') {
             }
         }
         if (!issues.isEmpty()) {
-            issues.each { logger.error(it) }
+            issues.each { msg -> logger.error(String.valueOf(msg)) }
             throw new GradleException("Module structure validation failed with ${issues.size()} issue(s)")
         }
     }
