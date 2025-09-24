@@ -20,6 +20,22 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
         with:
           fetch-depth: 0
+
+      - name: Determine commit range
+        id: range
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "from=${{ github.event.before }}" >> "$GITHUB_OUTPUT"
+            echo "to=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "from=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
+            echo "to=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "from=$(git rev-parse HEAD~20)" >> "$GITHUB_OUTPUT"
+            echo "to=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
       - name: Setup Node
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v4
         with:
@@ -29,7 +45,7 @@ jobs:
           npm i -g @commitlint/config-conventional @commitlint/cli
       - name: Lint commit messages
         run: |
-          npx commitlint --config .githooks/commitlint.config.js --from=$(git rev-parse HEAD~20) --to=HEAD --verbose
+          npx commitlint --config .githooks/commitlint.config.js --from=${{ steps.range.outputs.from }} --to=${{ steps.range.outputs.to }} --verbose
       - name: Lint PR title (if PR)
         if: ${{ github.event_name == 'pull_request' }}
         run: |
