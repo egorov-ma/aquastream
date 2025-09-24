@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/labeler.yml'
       - '.github/workflows/labeler.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
