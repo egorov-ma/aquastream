@@ -1,5 +1,9 @@
 package org.aquastream.common.domain;
 
+/**
+ * Status of a booking lifecycle.
+ * PENDING -> CONFIRMED -> COMPLETED or EXPIRED/CANCELLED/NO_SHOW
+ */
 public enum BookingStatus {
     PENDING,
     CONFIRMED,
@@ -8,5 +12,4 @@ public enum BookingStatus {
     CANCELLED,
     NO_SHOW
 }
-
 

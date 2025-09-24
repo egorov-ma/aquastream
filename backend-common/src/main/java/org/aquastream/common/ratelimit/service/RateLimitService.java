@@ -6,14 +6,13 @@ import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
 import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.aquastream.common.ratelimit.config.RateLimitProperties;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Supplier;
 
 /**
  * Service for managing rate limits using Bucket4j
@@ -89,7 +88,8 @@ public class RateLimitService {
      */
     private Bucket getBucket(String bucketKey, String limitKey) {
         BucketConfiguration configuration = getBucketConfiguration(limitKey);
-        return proxyManager.builder().build(bucketKey.getBytes(), configuration);
+        // Newer Bucket4j API expects Supplier<BucketConfiguration>
+        return proxyManager.builder().build(bucketKey.getBytes(), () -> configuration);
     }
 
     /**
@@ -126,6 +126,7 @@ public class RateLimitService {
     /**
      * Result of a rate limit check
      */
+    @Getter
     public static class RateLimitResult {
         private final boolean allowed;
         private final long retryAfterSeconds;
@@ -149,16 +150,5 @@ public class RateLimitService {
             return new RateLimitResult(false, retryAfterSeconds, remainingTokens);
         }
 
-        public boolean isAllowed() {
-            return allowed;
-        }
-
-        public long getRetryAfterSeconds() {
-            return retryAfterSeconds;
-        }
-
-        public long getRemainingTokens() {
-            return remainingTokens;
-        }
     }
 }

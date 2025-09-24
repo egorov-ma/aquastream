@@ -33,6 +33,7 @@ public class MetricsScheduler {
     private final AtomicLong totalMetricsFlushed = new AtomicLong(0);
 
     @EventListener(ApplicationReadyEvent.class)
+    @SuppressWarnings("unused")
     public void onApplicationReady() {
         if (properties.isEnabled()) {
             started.set(true);
@@ -91,6 +92,7 @@ public class MetricsScheduler {
      * Health check for metrics system
      */
     @Scheduled(fixedRateString = "#{@metricsProperties.flushInterval.toMillis() * 5}")
+    @SuppressWarnings("unused")
     public void healthCheck() {
         if (!started.get() || !properties.isEnabled()) {
             return;
@@ -144,7 +146,14 @@ public class MetricsScheduler {
     }
 
     /**
-     * Statistics record for the scheduler
+     * Statistics record for the scheduler.
+     *
+     * @param started               whether the scheduler has been started
+     * @param flushCount            number of flush operations performed
+     * @param lastFlushTime         epoch millis of the last successful flush
+     * @param totalMetricsFlushed   total metrics flushed since start
+     * @param serviceName           logical service name for metrics
+     * @param enabled               whether metrics collection is enabled
      */
     public record MetricsSchedulerStats(
             boolean started,
