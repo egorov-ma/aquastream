@@ -19,6 +19,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Maps exceptions to RFC 7807 API responses consistently across services.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -125,7 +128,7 @@ public class GlobalExceptionHandler {
         } else {
             // WebFlux или иные реализации WebRequest
             String desc = request.getDescription(false); // формата "uri=/path"
-            if (desc != null && desc.startsWith("uri=")) {
+            if (desc.startsWith("uri=")) {
                 pd.setInstance(desc.substring(4));
             }
             String corr = MDC.get(DomainConstants.LOG_CORRELATION_ID);
@@ -145,5 +148,3 @@ public class GlobalExceptionHandler {
         return headers;
     }
 }
-
-

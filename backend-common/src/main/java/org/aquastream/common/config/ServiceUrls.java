@@ -78,6 +78,9 @@ public class ServiceUrls {
          */
         private boolean healthCheckEnabled = true;
         
+        /**
+         * Creates empty service config (properties will be bound by Spring).
+         */
         public ServiceConfig() {}
         
         public ServiceConfig(String baseUrl) {

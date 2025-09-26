@@ -6,6 +6,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 
 import java.io.IOException;
 
@@ -15,11 +16,17 @@ import java.io.IOException;
  */
 public class CorrelationIdRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
+    /**
+     * Creates interceptor that propagates correlation ID header to outbound requests.
+     */
+    public CorrelationIdRestTemplateInterceptor() {
+    }
+
     @Override
-    public ClientHttpResponse intercept(
-            HttpRequest request, 
-            byte[] body, 
-            ClientHttpRequestExecution execution) throws IOException {
+    public @NonNull ClientHttpResponse intercept(
+            @NonNull HttpRequest request,
+            @NonNull byte[] body,
+            @NonNull ClientHttpRequestExecution execution) throws IOException {
         
         // Get correlation ID from MDC (set by CorrelationIdFilter)
         String correlationId = MDC.get(DomainConstants.LOG_CORRELATION_ID);

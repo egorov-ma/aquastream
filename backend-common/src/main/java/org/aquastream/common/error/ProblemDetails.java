@@ -2,15 +2,23 @@ package org.aquastream.common.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * RFC 7807 compatible problem details representation for API error responses.
+ */
+@Setter
+@Getter
 @JsonInclude(Include.NON_NULL)
 public final class ProblemDetails {
 
+    /** Media type for problem details JSON. */
     public static final String MEDIA_TYPE = "application/problem+json";
 
     private URI type;
@@ -24,128 +32,39 @@ public final class ProblemDetails {
     private List<FieldError> errors;
     private Map<String, Object> extensions;
 
+    /**
+     * Creates a problem details instance with current timestamp.
+     */
     public ProblemDetails() {
         this.timestamp = Instant.now();
     }
 
-    public URI getType() {
-        return type;
-    }
-
-    public void setType(URI type) {
-        this.type = type;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
-    public String getInstance() {
-        return instance;
-    }
-
-    public void setInstance(String instance) {
-        this.instance = instance;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getCorrelationId() {
-        return correlationId;
-    }
-
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public List<FieldError> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<FieldError> errors) {
-        this.errors = errors;
-    }
-
-    public Map<String, Object> getExtensions() {
-        return extensions;
-    }
-
-    public void setExtensions(Map<String, Object> extensions) {
-        this.extensions = extensions;
-    }
-
+    /**
+     * Field-level validation error descriptor.
+     */
+    @Setter
+    @Getter
     @JsonInclude(Include.NON_NULL)
     public static final class FieldError {
         private String field;
         private String message;
         private String code;
 
+        /** Default constructor for deserialization frameworks. */
         public FieldError() {}
 
+        /**
+         * Construct a field error.
+         * @param field   the invalid field name
+         * @param message user-facing description of the problem
+         * @param code    machine-readable error code
+         */
         public FieldError(String field, String message, String code) {
             this.field = field;
             this.message = message;
             this.code = code;
         }
 
-        public String getField() {
-            return field;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
     }
 }
-
 
