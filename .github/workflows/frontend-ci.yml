@@ -44,7 +44,7 @@ jobs:
       - name: Install pnpm 10
         run: |
           npm install -g pnpm@10.14.0
-          echo "$(npm root -g)/../bin" >> "$GITHUB_PATH"
+          echo "$(npm bin -g)" >> "$GITHUB_PATH"
 
       - name: Mark build start
         run: echo "FE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
