@@ -41,11 +41,11 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: Ensure corepack enabled
-        run: corepack enable
-
-      - name: Install pnpm 10
-        run: corepack prepare pnpm@10.14.0 --activate
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+          run_install: false
 
       - name: Mark build start
         run: echo "FE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
