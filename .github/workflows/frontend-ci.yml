@@ -38,9 +38,13 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v4
         with:
           node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install pnpm 10
-        run: npm install -g pnpm@10.14.0
+        run: |
+          npm install -g pnpm@10.14.0
+          echo "$(npm root -g)/../bin" >> "$GITHUB_PATH"
 
       - name: Mark build start
         run: echo "FE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
