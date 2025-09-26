@@ -41,11 +41,8 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.14.0
-          run_install: false
+      - name: Install pnpm 10
+        run: npm install -g pnpm@10.14.0
 
       - name: Mark build start
         run: echo "FE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
