@@ -38,13 +38,23 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v4
         with:
           node-version: 22
-          cache: 'pnpm'
-          cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: Install pnpm 10
-        run: |
-          npm install -g pnpm@10.14.0
-          echo "$(npm bin -g)" >> "$GITHUB_PATH"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+          run_install: false
+
+      - name: Resolve pnpm store path
+        id: pnpm-store
+        run: echo "store-dir=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.store-dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-store-
 
       - name: Mark build start
         run: echo "FE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
