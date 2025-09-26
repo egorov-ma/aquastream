@@ -140,6 +140,14 @@ jobs:
             NOW=$(date +%s); DUR=$((NOW-BUILD_START)); printf -- "- Время сборки: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
           COUNT=$(find . -type f -path "*/build/libs/*.jar" | wc -l | tr -d ' ')
           echo "- Количество JAR: $COUNT" >> "$GITHUB_STEP_SUMMARY"
-          echo "- JAR файлы (по размеру):" >> "$GITHUB_STEP_SUMMARY"
-          find . -type f -path "*/build/libs/*.jar" -printf '%s\t%p\n' | sort -nr | awk -F '\t' '{printf "  - %s (%0.1f MiB)\n", $2, $1/1024/1024}' >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$COUNT" -gt 0 ]]; then
+            TOTAL_BYTES=$(find . -type f -path "*/build/libs/*.jar" -printf '%s\n' | awk '{s+=$1} END {print s+0}')
+            TOTAL_MIB=$(awk -v b="$TOTAL_BYTES" 'BEGIN {printf "%.1f", b/1024/1024}')
+            echo "- Суммарный размер JAR: ${TOTAL_MIB} MiB" >> "$GITHUB_STEP_SUMMARY"
+            LARGEST=$(find . -type f -path "*/build/libs/*.jar" -printf '%s\t%p\n' | sort -nr | head -1)
+            L_SIZE=${LARGEST%%$'\t'*}
+            L_PATH=${LARGEST#*$'\t'}
+            L_MIB=$(awk -v b="$L_SIZE" 'BEGIN {printf "%.1f", b/1024/1024}')
+            echo "- Крупнейший JAR: $L_PATH (${L_MIB} MiB)" >> "$GITHUB_STEP_SUMMARY"
+          fi
           echo "- Загружен артефакт: backend-build (JAR)" >> "$GITHUB_STEP_SUMMARY"
