@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/org-dashboard/SiteHeader";
 import { SectionCards } from "@/components/org-dashboard/SectionCards";
 import { DataTable } from "@/components/org-dashboard/DataTable";
 import { ChartArea } from "@/components/org-dashboard/ChartArea";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, Sidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { useRole } from "@/shared/client-auth";
@@ -19,7 +19,9 @@ export default function OrganizerDashboardPage() {
   const role = useRole();
   return (
     <SidebarProvider>
-      <aside className="hidden md:block w-[280px] border rounded-md p-3"><AppSidebar /></aside>
+      <Sidebar data-test-id="dashboard-sidebar" aria-label="Навигация по панели организатора">
+        <AppSidebar />
+      </Sidebar>
       <SidebarInset>
         <section data-test-id="page-organizer-dashboard" className="grid gap-4 min-h-[70vh]">
           <SiteHeader />
@@ -46,5 +48,4 @@ export default function OrganizerDashboardPage() {
     </SidebarProvider>
   );
 }
-
 
