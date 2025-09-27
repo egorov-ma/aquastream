@@ -8,7 +8,8 @@
     "lh": "start-server-and-test 'NEXT_PUBLIC_USE_MOCKS=true PORT=3101 pnpm dev' http://localhost:3101 'lighthouse http://localhost:3101 --quiet --output json --output-path ./lighthouse.report.json'",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "tsc --project tsconfig.tests.json --pretty false && node --test ./.tmp/tests/tests/unit/**/*.test.js"
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.30.8",

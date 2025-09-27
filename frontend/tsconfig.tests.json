@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "./.tmp/tests",
+    "rootDir": "./",
+    "types": ["node"],
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["lib/**/*.ts", "tests/unit/**/*.ts"],
+  "exclude": ["node_modules", ".next"]
+}

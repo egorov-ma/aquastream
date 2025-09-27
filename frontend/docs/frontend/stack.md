@@ -14,6 +14,7 @@
 - Tailwind tokens are provided through `:root` variables; the config adds matching color aliases, extended shadows, and a plugin that restores the `size-*` utility that existed in Tailwind v4.
 - `next.config.mjs` exports plain JS (TypeScript config is unsupported on Next 14). Sentry wrapping is preserved.
 - PostCSS configuration returns a string/object map rather than module imports (Next 14 requires this shape).
+- Utility `cn` wraps `tailwind-merge` with плейсхолдерами для `size-*`, `data-[...]`, `group-data[...]` классов; поведение зафиксировано тестами (`tests/unit/cn.test.js`).
 
 ## Update Procedure
 1. **Package updates**: adjust `package.json` (keep Next 14 / React 18 / Tailwind 3 lines unless a new major stable release is planned). Run `pnpm install --lockfile-only` followed by `pnpm install`.
