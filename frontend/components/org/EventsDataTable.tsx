@@ -12,12 +12,21 @@ import {
   type ColumnFiltersState,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DataTableShell } from "@/components/ui/data-table-shell";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableEmpty } from "@/components/ui/table";
+import { ToolbarGroup, ToolbarSpacer } from "@/components/ui/toolbar";
+import { EmptyState } from "@/components/ui/states";
 
 export type EventRow = {
   id: string;
@@ -88,86 +97,104 @@ export function EventsDataTable({ rows }: { rows: EventRow[] }) {
   });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Фильтр по названию..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(e) => table.getColumn("title")?.setFilterValue(e.target.value)}
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Колонки <ChevronDown />
+    <DataTableShell
+      title="События"
+      description="Работа с расписанием и местами"
+      toolbar={(
+        <>
+          <ToolbarGroup className="w-full max-w-sm">
+            <Input
+              placeholder="Фильтр по названию"
+              value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+              onChange={(e) => table.getColumn("title")?.setFilterValue(e.target.value)}
+            />
+          </ToolbarGroup>
+          <ToolbarSpacer />
+          <ToolbarGroup>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Колонки <ChevronDown className="ml-1 size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </ToolbarGroup>
+        </>
+      )}
+      footer={(
+        <>
+          <span className="text-sm text-muted-foreground">
+            Найдено: {table.getFilteredRowModel().rows.length}
+          </span>
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Назад
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Далее
+            </Button>
+          </div>
+        </>
+      )}
+    >
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((hg) => (
+            <TableRow key={hg.id}>
+              {hg.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : typeof header.column.columnDef.header === "function"
+                      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (header.column.columnDef.header as (ctx: any) => React.ReactNode)({ column: header.column })
+                      : (header.column.columnDef.header as React.ReactNode)}
+                </TableHead>
               ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="overflow-hidden rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id}>
-                {hg.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : typeof header.column.columnDef.header === "function"
-                        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          (header.column.columnDef.header as (ctx: any) => React.ReactNode)({ column: header.column })
-                        : (header.column.columnDef.header as React.ReactNode)}
-                  </TableHead>
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>{cell.getValue() as React.ReactNode}</TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{cell.getValue() as React.ReactNode}</TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={eventColumns.length} className="h-24 text-center">
-                  Нет данных
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
-          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-            Назад
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Далее
-          </Button>
-        </div>
-      </div>
-    </div>
+            ))
+          ) : (
+            <TableEmpty colSpan={eventColumns.length}>
+              <EmptyState title="Нет событий" />
+            </TableEmpty>
+          )}
+        </TableBody>
+      </Table>
+    </DataTableShell>
   );
 }
-
-

@@ -79,4 +79,30 @@ const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.HTMLAttribu
 );
 TableCaption.displayName = "TableCaption";
 
-export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };
+type TableEmptyProps = React.TdHTMLAttributes<HTMLTableCellElement> & {
+  colSpan?: number;
+};
+
+const TableEmpty = ({ colSpan = 1, className, children = "Нет данных", ...props }: TableEmptyProps) => (
+  <TableRow>
+    <TableCell
+      colSpan={colSpan}
+      className={cn("h-24 text-center text-muted-foreground", className)}
+      {...props}
+    >
+      {children}
+    </TableCell>
+  </TableRow>
+);
+
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+  TableEmpty,
+};

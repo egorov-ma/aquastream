@@ -1,23 +1,33 @@
 "use client";
+
 import * as React from "react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+
 import { Button } from "@/components/ui/button";
+import { Toolbar, ToolbarGroup, ToolbarSpacer } from "@/components/ui/toolbar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function SiteHeader() {
+  const today = React.useMemo(
+    () => new Intl.DateTimeFormat("ru-RU", { dateStyle: "long" }).format(new Date()),
+    [],
+  );
+
   return (
-    <header className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
+    <Toolbar border={false} className="px-0">
+      <ToolbarGroup>
         <SidebarTrigger />
-        <h1 className="text-xl font-semibold">Панель организатора</h1>
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground hidden md:inline">Сегодня: {new Date().toLocaleDateString()}</span>
+        <span className="text-sm font-medium text-muted-foreground">Навигация</span>
+      </ToolbarGroup>
+      <ToolbarSpacer />
+      <ToolbarGroup>
+        <span className="hidden text-sm text-muted-foreground md:inline">Сегодня: {today}</span>
         <form action="/api/auth/logout" method="post">
-          <Button type="submit" variant="outline" size="sm">Выйти</Button>
+          <Button type="submit" variant="outline" size="sm">
+            Выйти
+          </Button>
         </form>
-      </div>
-    </header>
+      </ToolbarGroup>
+    </Toolbar>
   );
 }
-
 

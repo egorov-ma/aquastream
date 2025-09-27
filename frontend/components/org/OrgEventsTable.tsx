@@ -1,10 +1,24 @@
 "use client";
 
 import * as React from "react";
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DataTableShell } from "@/components/ui/data-table-shell";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableEmpty,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ToolbarGroup } from "@/components/ui/toolbar";
+import { EmptyState } from "@/components/ui/states";
 
 export type OrgEventRow = {
   id: string;
@@ -40,78 +54,116 @@ export function OrgEventsTable({ rows }: { rows: OrgEventRow[] }) {
   const total = filtered.length;
 
   return (
-    <div className="grid gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск..." className="h-11 text-base md:h-9 md:text-sm" />
-      </div>
+    <DataTableShell
+      title="События организатора"
+      description="Сводка расписания и продажи мест"
+      toolbar={
+        <ToolbarGroup className="w-full max-w-sm">
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск" />
+        </ToolbarGroup>
+      }
+    >
       <Table>
-      <TableCaption>Список событий организатора.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead
-            className="w-[220px]"
-            aria-sort={sort?.key === "title" ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
-          >
-            <Button variant="link" size="sm" className="p-0 h-auto" aria-label="Сортировать по названию"
-              onClick={() => setSort((s) => ({ key: "title", dir: s?.key === "title" && s.dir === "asc" ? "desc" : "asc" }))}
-            >Событие</Button>
-          </TableHead>
-          <TableHead>Период</TableHead>
-          <TableHead
-            aria-sort={sort?.key === "location" ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
-          >
-            <Button variant="link" size="sm" className="p-0 h-auto" aria-label="Сортировать по локации"
-              onClick={() => setSort((s) => ({ key: "location", dir: s?.key === "location" && s.dir === "asc" ? "desc" : "asc" }))}
-            >Локация</Button>
-          </TableHead>
-          <TableHead className="text-right"
-            aria-sort={sort?.key === "price" ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
-          >
-            <Button variant="link" size="sm" className="p-0 h-auto" aria-label="Сортировать по цене"
-              onClick={() => setSort((s) => ({ key: "price", dir: s?.key === "price" && s.dir === "asc" ? "desc" : "asc" }))}
-            >Цена</Button>
-          </TableHead>
-          <TableHead className="text-right">Места</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filtered.map((ev) => {
-          const start = fmt.format(new Date(ev.dateStart));
-          const end = ev.dateEnd ? fmt.format(new Date(ev.dateEnd)) : null;
-          const price = ev.price ?? 0;
-          const cap = ev.capacity ?? 0;
-          const avail = ev.available ?? 0;
-          const taken = Math.max(0, cap - avail);
-          return (
-            <TableRow key={ev.id}>
-              <TableCell className="font-medium">
-                <Link href={`/events/${ev.id}`} className="hover:underline">{ev.title}</Link>
-              </TableCell>
-              <TableCell>
-                {start}
-                {end ? (
-                  <>
-                    <span className="mx-1 text-destructive">—</span>
-                    {end}
-                  </>
-                ) : null}
-              </TableCell>
-              <TableCell>{ev.location ?? "—"}</TableCell>
-              <TableCell className="text-right">{price} ₽</TableCell>
-              <TableCell className="text-right">{taken} / {cap}</TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={4}>Всего событий</TableCell>
-          <TableCell className="text-right">{total}</TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
-    </div>
+        <TableCaption>Список событий организатора.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead
+              className="w-[220px]"
+              aria-sort={sort?.key === "title" ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+            >
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0"
+                aria-label="Сортировать по названию"
+                onClick={() =>
+                  setSort((s) => ({ key: "title", dir: s?.key === "title" && s.dir === "asc" ? "desc" : "asc" }))
+                }
+              >
+                Событие
+              </Button>
+            </TableHead>
+            <TableHead>Период</TableHead>
+            <TableHead
+              aria-sort={sort?.key === "location" ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+            >
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0"
+                aria-label="Сортировать по локации"
+                onClick={() =>
+                  setSort((s) => ({ key: "location", dir: s?.key === "location" && s.dir === "asc" ? "desc" : "asc" }))
+                }
+              >
+                Локация
+              </Button>
+            </TableHead>
+            <TableHead
+              className="text-right"
+              aria-sort={sort?.key === "price" ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+            >
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0"
+                aria-label="Сортировать по цене"
+                onClick={() =>
+                  setSort((s) => ({ key: "price", dir: s?.key === "price" && s.dir === "asc" ? "desc" : "asc" }))
+                }
+              >
+                Цена
+              </Button>
+            </TableHead>
+            <TableHead className="text-right">Места</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.length ? (
+            filtered.map((ev) => {
+              const start = fmt.format(new Date(ev.dateStart));
+              const end = ev.dateEnd ? fmt.format(new Date(ev.dateEnd)) : null;
+              const price = ev.price ?? 0;
+              const cap = ev.capacity ?? 0;
+              const avail = ev.available ?? 0;
+              const taken = Math.max(0, cap - avail);
+              return (
+                <TableRow key={ev.id}>
+                  <TableCell className="font-medium">
+                    <Link href={`/events/${ev.id}`} className="hover:underline">
+                      {ev.title}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    {start}
+                    {end ? (
+                      <>
+                        <span className="mx-1 text-destructive">—</span>
+                        {end}
+                      </>
+                    ) : null}
+                  </TableCell>
+                  <TableCell>{ev.location ?? "—"}</TableCell>
+                  <TableCell className="text-right">{price} ₽</TableCell>
+                  <TableCell className="text-right">
+                    {taken} / {cap}
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          ) : (
+            <TableEmpty colSpan={5}>
+              <EmptyState title="Нет событий" />
+            </TableEmpty>
+          )}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={4}>Всего событий</TableCell>
+            <TableCell className="text-right">{total}</TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </DataTableShell>
   );
 }
-
-
