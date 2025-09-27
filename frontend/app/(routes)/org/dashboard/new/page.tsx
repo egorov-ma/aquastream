@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EditorJs, EditorPreview } from "@/components/ui/editorjs";
+import { Section } from "@/components/ui/section";
 import { InfoIcon, UsersIcon, MapPinIcon, CalendarIcon, ImageIcon, TagIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -49,7 +50,7 @@ export default function NewEventPage() {
   };
 
   return (
-    <section className="grid gap-8" data-test-id="page-org-new">
+    <Section gap="xl" data-test-id="page-org-new">
       <div className="text-center">
         <h1 className="mb-2 text-3xl font-semibold tracking-tight">Создание события</h1>
         <p className="text-muted-foreground">Заполните форму ниже, чтобы опубликовать событие</p>
@@ -180,8 +181,6 @@ export default function NewEventPage() {
           <Button type="submit">Создать событие</Button>
         </div>
       </form>
-    </section>
+    </Section>
   );
 }
-
-

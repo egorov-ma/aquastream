@@ -1,12 +1,12 @@
 import { RecoveryFlow } from "@/components/auth/RecoveryFlow";
+import { Section } from "@/components/ui/section";
 
 export default function RecoveryPage() {
   return (
-    <section data-test-id="page-auth-recovery" className="grid gap-4">
+    <Section data-test-id="page-auth-recovery" width="normal" gap="md">
       <h1 className="text-xl font-semibold">Восстановление доступа</h1>
       <RecoveryFlow />
-    </section>
+    </Section>
   );
 }
-
 

@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Image from "next/image";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Section } from "@/components/ui/section";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 
 type QueueItem = { id: string; proofUrl?: string; amount: number; eventId: string; status: string };
@@ -31,7 +33,7 @@ export default function ModerationPage() {
   };
 
   return (
-    <section className="grid gap-4" data-test-id="page-organizer-moderation">
+    <Section data-test-id="page-organizer-moderation" gap="lg">
       <h1 className="text-lg font-semibold">Модерация оплат</h1>
       <div className="rounded-md border">
         <Table>
@@ -81,8 +83,6 @@ export default function ModerationPage() {
           </TableBody>
         </Table>
       </div>
-    </section>
+    </Section>
   );
 }
-
-

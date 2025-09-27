@@ -1,5 +1,6 @@
-import { LoginForm } from "@/components/login-form";
 import type { Metadata } from "next";
+import { LoginForm } from "@/components/login-form";
+import { Center } from "@/components/ui/center";
 
 export const metadata: Metadata = {
   title: "Вход — AquaStream",
@@ -9,12 +10,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <LoginForm />
-      </div>
-    </div>
+    <Center maxWidth="sm">
+      <LoginForm />
+    </Center>
   );
 }
-
 

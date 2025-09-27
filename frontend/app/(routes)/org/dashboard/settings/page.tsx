@@ -7,10 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Section } from "@/components/ui/section";
 
 export default function SettingsPage() {
   return (
-    <section className="grid gap-4" data-test-id="page-org-settings">
+    <Section data-test-id="page-org-settings" gap="lg">
       <h1 className="text-xl font-semibold">Настройки организатора</h1>
       <Tabs defaultValue="brand">
         <TabsList>
@@ -64,7 +65,7 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </section>
+    </Section>
   );
 }
 
@@ -166,5 +167,4 @@ function FaqEditor() {
     </div>
   );
 }
-
 

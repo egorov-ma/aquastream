@@ -7,6 +7,7 @@ import { SectionCards } from "@/components/org-dashboard/SectionCards";
 import { DataTable } from "@/components/org-dashboard/DataTable";
 import { ChartArea } from "@/components/org-dashboard/ChartArea";
 import { SidebarProvider, SidebarInset, Sidebar } from "@/components/ui/sidebar";
+import { Section } from "@/components/ui/section";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { useRole } from "@/shared/client-auth";
@@ -23,7 +24,7 @@ export default function OrganizerDashboardPage() {
         <AppSidebar />
       </Sidebar>
       <SidebarInset>
-        <section data-test-id="page-organizer-dashboard" className="grid gap-4 min-h-[70vh]">
+        <Section data-test-id="page-organizer-dashboard" gap="lg" className="min-h-[70vh]">
           <SiteHeader />
           <PageHeader
             title="Панель организатора"
@@ -43,9 +44,8 @@ export default function OrganizerDashboardPage() {
           <SectionCards />
           <ChartArea />
           <DataTable />
-        </section>
+        </Section>
       </SidebarInset>
     </SidebarProvider>
   );
 }
-

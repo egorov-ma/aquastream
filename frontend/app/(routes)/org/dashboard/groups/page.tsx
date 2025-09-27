@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Section } from "@/components/ui/section";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 
@@ -39,7 +40,7 @@ export default function GroupsPage() {
   };
 
   return (
-    <section className="grid gap-4" data-test-id="page-organizer-groups">
+    <Section gap="lg" data-test-id="page-organizer-groups">
       <div className="flex items-end gap-3">
         <div className="grid gap-2">
           <Label>Событие</Label>
@@ -94,7 +95,7 @@ export default function GroupsPage() {
           </Card>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
@@ -176,5 +177,3 @@ function DangerDeleteButton({ eventId, groupId, onDeleted }: { eventId: string; 
   };
   return <Button variant="destructive" onClick={remove}>Удалить группу</Button>;
 }
-
-
