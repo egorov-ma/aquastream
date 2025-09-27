@@ -16,6 +16,7 @@
 - PostCSS configuration returns a string/object map rather than module imports (Next 14 requires this shape).
 - Utility `cn` wraps `tailwind-merge` with плейсхолдерами для `size-*`, `data-[...]`, `group-data[...]` классов; поведение зафиксировано тестами (`tests/unit/cn.test.js`).
 - Общие UI-примитивы включают `Section`, `Stack`, `PageHeader`, `Toolbar`, а также оболочку для таблиц `DataTableShell` и хелпер `TableEmpty`; для состояний используются компоненты `LoadingState`, `EmptyState`, `ErrorState` (см. `docs/frontend/shadcn-components.md`).
+- Smoke-тест Playwright (`tests/e2e/auth-login.smoke.spec.ts`) проверяет ключевые элементы формы логина; инструкция — `docs/frontend/testing.md`, запуск идёт в CI.
 
 ## Update Procedure
 1. **Package updates**: adjust `package.json` (keep Next 14 / React 18 / Tailwind 3 lines unless a new major stable release is planned). Run `pnpm install --lockfile-only` followed by `pnpm install`.

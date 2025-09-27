@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test:unit": "tsc --project tsconfig.tests.json --pretty false && node --test ./.tmp/tests/tests/unit/**/*.test.js"
+    "test:unit": "tsc --project tsconfig.tests.json --pretty false && node --test ./.tmp/tests/tests/unit/**/*.test.js",
+    "test:e2e": "playwright test tests/e2e/auth-login.smoke.spec.ts"
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.30.8",

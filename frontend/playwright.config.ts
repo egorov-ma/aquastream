@@ -6,13 +6,17 @@ export default defineConfig({
   retries: 0,
   reporter: [['list']],
   webServer: {
-    command: 'NEXT_PUBLIC_USE_MOCKS=true NEXT_PUBLIC_API_BASE_URL=http://localhost:3101 PORT=3101 pnpm dev',
-    url: 'http://localhost:3101',
+    command: 'NEXT_PUBLIC_USE_MOCKS=true NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:3101 PORT=3101 pnpm exec next dev --hostname 127.0.0.1 --port 3101',
+    url: 'http://127.0.0.1:3101',
     reuseExistingServer: true,
     timeout: 120_000,
+    env: {
+      HOST: '127.0.0.1',
+      HOSTNAME: '127.0.0.1',
+    },
   },
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3101',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3101',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -21,5 +25,3 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
   ],
 });
-
-

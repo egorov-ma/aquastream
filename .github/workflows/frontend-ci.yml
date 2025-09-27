@@ -24,6 +24,8 @@ jobs:
   ci:
     name: Lint / Typecheck / Build
     runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: 0
     defaults:
       run:
         working-directory: frontend
@@ -67,6 +69,12 @@ jobs:
 
       - name: Typecheck
         run: pnpm exec tsc --noEmit
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright visual smoke
+        run: pnpm test:e2e
 
       - name: Build
         run: pnpm build
