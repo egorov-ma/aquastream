@@ -13,14 +13,14 @@ pages: dict[str, list[str]] = {
     'getting-started/local-development.md': [
         '# Локальная разработка',
         '',
-        '- Инфраструктура и запуск: [Developer Guide](../modules/infra/DEVELOPER.md)'
+        '- Инфраструктура и запуск: [Developer Guide](../modules/backend-infra/DEVELOPER.md)'
     ],
 
     # Architecture
     'architecture/overview.md': [
         '# Архитектура',
         '',
-        '- Полная спецификация бекенда: [Backend Spec](../modules/infra/aquastream-backend-spec-complete.md)'
+        '- Полная спецификация бекенда: [Backend Spec](../modules/backend-infra/aquastream-backend-spec-complete.md)'
     ],
     'architecture/microservices.md': [
         '# Микросервисы',
@@ -45,7 +45,7 @@ pages: dict[str, list[str]] = {
     'architecture/build-system.md': [
         '# Сборочная система',
         '',
-        '- Gradle/Make: [Build Guide](../getting-started/build-guide.md), CI: [CI README](../modules/infra/CI-README.md)'
+        '- Gradle/Make: [Build Guide](../getting-started/build-guide.md), CI: [CI README](../modules/backend-infra/CI-README.md)'
     ],
 
     # Backend overview
@@ -126,13 +126,13 @@ pages: dict[str, list[str]] = {
     'business/crew-management.md': ['# Управление группами', ''],
 
     # DevOps
-    'devops/infrastructure.md': ['# Инфраструктура', '- [Developer Guide](../modules/infra/DEVELOPER.md)'],
-    'devops/ci-cd.md': ['# CI/CD', '- [CI README](../modules/infra/CI-README.md)'],
+    'devops/infrastructure.md': ['# Инфраструктура', '- [Developer Guide](../modules/backend-infra/DEVELOPER.md)'],
+    'devops/ci-cd.md': ['# CI/CD', '- [CI README](../modules/backend-infra/CI-README.md)'],
     'devops/git-hooks.md': ['# Git hooks', '- [pre-commit](../.pre-commit-config.yaml)'],
     'devops/environment-setup.md': ['# Окружения', ''],
-    'devops/deployment.md': ['# Деплой', '- [Releases](../modules/infra/RELEASES.md)'],
+    'devops/deployment.md': ['# Деплой', '- [Releases](../modules/backend-infra/RELEASES.md)'],
     'devops/monitoring.md': ['# Мониторинг', ''],
-    'devops/backup-recovery.md': ['# Бэкап и восстановление', '- [Backup README](../modules/infra/backup/README.md)'],
+    'devops/backup-recovery.md': ['# Бэкап и восстановление', '- [Backup README](../modules/backend-infra/backup/README.md)'],
 
     # Styleguides
     'styleguides/code-style.md': ['# Стандарты кода', ''],
@@ -149,7 +149,7 @@ pages: dict[str, list[str]] = {
     'roadmap/long-term-vision.md': ['# Долгосрочное видение', ''],
 
     # Reference
-    'reference/environment-variables.md': ['# Переменные окружения', '- См. раздел в [Developer Guide](../modules/infra/DEVELOPER.md)'],
+    'reference/environment-variables.md': ['# Переменные окружения', '- См. раздел в [Developer Guide](../modules/backend-infra/DEVELOPER.md)'],
     'reference/configuration.md': ['# Конфигурация', ''],
     'reference/troubleshooting.md': ['# Troubleshooting', '- См. runbook конкретных сервисов'],
 }

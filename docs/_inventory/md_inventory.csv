@@ -111,13 +111,13 @@ docs/modules/frontend/frontend-hardening-unification.md,,"Доведение ф�
 docs/modules/frontend/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
 docs/modules/frontend/tailwind-shadcn-unification.md,,План унификации стилей: Tailwind CSS v4 + shadcn/ui,mixed,15461,2025-09-22,egorovma
 docs/modules/frontend/todos-fe.md,Frontend TODOs,,en,3841,2025-09-22,egorovma
-docs/modules/infra/CI-README.md,CI/CD (GitHub Actions),Workflows,mixed,961,2025-09-22,egorovma
-docs/modules/infra/DEVELOPER.md,AquaStream Backend - Developer Guide,📋 Оглавление,mixed,34886,2025-09-22,egorovma
-docs/modules/infra/README.md,,Контекст,mixed,923,2025-09-22,egorovma
-docs/modules/infra/RELEASES.md,AquaStream Release Process,Semantic Versioning (SemVer),en,9924,2025-09-22,egorovma
-docs/modules/infra/aquastream-backend-spec-complete.md,AquaStream Backend - Техническая спецификация,Оглавление,mixed,27438,2025-09-22,egorovma
-docs/modules/infra/changelog.md,,Release History,mixed,2029,2025-09-22,egorovma
-docs/modules/infra/runbook.md,,Мониторинг,mixed,652,2025-09-22,egorovma
+docs/modules/backend-infra/CI-README.md,CI/CD (GitHub Actions),Workflows,mixed,961,2025-09-22,egorovma
+docs/modules/backend-infra/DEVELOPER.md,AquaStream Backend - Developer Guide,📋 Оглавление,mixed,34886,2025-09-22,egorovma
+docs/modules/backend-infra/README.md,,Контекст,mixed,923,2025-09-22,egorovma
+docs/modules/backend-infra/RELEASES.md,AquaStream Release Process,Semantic Versioning (SemVer),en,9924,2025-09-22,egorovma
+docs/modules/backend-infra/aquastream-backend-spec-complete.md,AquaStream Backend - Техническая спецификация,Оглавление,mixed,27438,2025-09-22,egorovma
+docs/modules/backend-infra/changelog.md,,Release History,mixed,2029,2025-09-22,egorovma
+docs/modules/backend-infra/runbook.md,,Мониторинг,mixed,652,2025-09-22,egorovma
 docs/ops/index.md,,,mixed,323,2025-09-22,egorovma
 docs/overview.md,,,mixed,706,2025-09-22,egorovma
 docs/qa/index.md,,,mixed,287,2025-09-22,egorovma
@@ -134,12 +134,5 @@ frontend/docs/frontend-hardening-unification.md,,"Доведение фронт�
 frontend/docs/runbook.md,,Мониторинг,mixed,653,2025-09-22,egorovma
 frontend/docs/tailwind-shadcn-unification.md,,План унификации стилей: Tailwind CSS v4 + shadcn/ui,mixed,15461,2025-08-16,egorovma
 frontend/docs/todos-fe.md,Frontend TODOs,,en,3841,2025-08-10,egorovma
-infra/backup/docs/README.md,Бэкапы PostgreSQL (per-schema),Что делает `backup.sh`,mixed,2994,2025-09-22,egorovma
-infra/docker/docs/README.md,Docker Compose (dev|stage|prod),Профили,mixed,1936,2025-09-22,egorovma
-infra/docs/CI-README.md,CI/CD (GitHub Actions),Workflows,mixed,961,2025-08-10,egorovma
-infra/docs/DEVELOPER.md,AquaStream Backend - Developer Guide,📋 Оглавление,mixed,34886,2025-09-22,egorovma
-infra/docs/README.md,,Контекст,mixed,923,2025-09-22,egorovma
-infra/docs/RELEASES.md,AquaStream Release Process,Semantic Versioning (SemVer),en,9924,2025-09-22,egorovma
-infra/docs/aquastream-backend-spec-complete.md,AquaStream Backend - Техническая спецификация,Оглавление,mixed,27438,2025-09-22,egorovma
-infra/docs/changelog.md,,Release History,mixed,2029,2025-09-22,egorovma
-infra/docs/runbook.md,,Мониторинг,mixed,652,2025-09-22,egorovma
+docs/modules/backend-infra/backup/README.md,Бэкапы PostgreSQL (per-schema),Что делает `backup.sh`,mixed,2994,2025-09-22,egorovma
+docs/modules/backend-infra/docker/README.md,Docker Compose (dev|stage|prod),Профили,mixed,1936,2025-09-22,egorovma

@@ -18,10 +18,7 @@ SAFE_PREFIXES = (
     'backend-payment/README.md',
     'backend-user/README.md',
     'frontend/README.md',
-    'infra/CHANGELOG.md',
-    'infra/RELEASES.md',
-    'infra/backup/README.md',
-    'infra/docker/compose/README.md',
+    'docs/modules/backend-infra/',
 )
 
 

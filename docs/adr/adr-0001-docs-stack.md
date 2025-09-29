@@ -12,7 +12,7 @@ tags: [adr]
 - Дата: 2025-09-22
 
 ## Контекст
-Монорепозиторий с Java Spring (backend-*), Next.js (frontend), инфраструктура в `infra/`. Нужен единый портал доков и процесс Doc as Code (Git, PR, CI, автосборка).
+Монорепозиторий с Java Spring (backend-*), Next.js (frontend), инфраструктура в `backend-infra/`. Нужен единый портал доков и процесс Doc as Code (Git, PR, CI, автосборка).
 
 ## Решение
 - Формат: Markdown.
