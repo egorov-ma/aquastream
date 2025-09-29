@@ -113,3 +113,6 @@ docs/docs-tools/node_modules/
 
 # Gradle wrapper (keep)
 !gradle/wrapper/gradle-wrapper.jar
+
+# Generated reports
+backend-infra/reports/

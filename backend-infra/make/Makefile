@@ -4,6 +4,11 @@ REPO_ROOT := $(abspath $(ROOT_DIR)/..)
 DC := docker compose -f $(ROOT_DIR)/docker/compose/docker-compose.yml
 ENV_FILE ?= .env.dev
 
+SERVICES := backend-gateway backend-user backend-event backend-crew backend-payment backend-notification backend-media
+IMAGES := aquastream/backend-gateway aquastream/backend-user aquastream/backend-event aquastream/backend-crew aquastream/backend-payment aquastream/backend-notification aquastream/backend-media
+COMPOSE_DEV_FILES := -f $(ROOT_DIR)/docker/compose/docker-compose.yml -f $(ROOT_DIR)/docker/compose/docker-compose.override.dev.yml
+DEV_COMPOSE := docker compose --env-file $(ROOT_DIR)/docker/compose/$(ENV_FILE) $(COMPOSE_DEV_FILES)
+
 .PHONY: up-dev up-stage up-prod down logs backup restore docs-setup docs-serve docs-build docs-lint docs-check-links docs-inventory docs-map docs-normalize-report docs-sync-modules docs-api docs-diagrams
 
 up-dev:
@@ -66,6 +71,43 @@ minio-put-test:
 	  FILE_PATH="$${FILE:-/tmp/minio-test.txt}"; BUCKET="$${BUCKET:-aquastream-media}"; \
 	  echo "hello $$RANDOM" > "$$FILE_PATH"; \
 	  docker run --rm --network aquastream-net -e MC_HOST_minio -v "$$FILE_PATH:/data/file:ro" minio/mc cp /data/file minio/$$BUCKET/$$(basename "$$FILE_PATH")'
+
+.PHONY: build-images
+build-images:
+	@echo "[build] Building backend images using $(ENV_FILE)"
+	@$(DEV_COMPOSE) build $(SERVICES)
+
+.PHONY: push-images
+push-images:
+	@echo "[push] Pushing backend images using $(ENV_FILE)"
+	@$(DEV_COMPOSE) push $(SERVICES)
+
+.PHONY: scan
+scan:
+	@echo "[scan] Trivy scan for local images"
+	@mkdir -p backend-infra/reports/scan
+	@for image in $(IMAGES); do \
+		 name=$${image##*/}; \
+		 out=backend-infra/reports/scan/$$name.txt; \
+		 echo "- scanning $$image:dev"; \
+		 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasecurity/trivy:0.49.1 image $$image:dev --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --format table --output $$out; \
+	 done
+
+.PHONY: sbom
+sbom:
+	@echo "[sbom] Generating SBOM via Syft"
+	@mkdir -p backend-infra/reports/sbom
+	@for image in $(IMAGES); do \
+		 name=$${image##*/}; \
+		 out=backend-infra/reports/sbom/$$name.spdx.json; \
+		 echo "- $$image:dev -> $$out"; \
+		 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/anchore/syft:v1.6.0 $$image:dev -o spdx-json > $$out; \
+	 done
+
+.PHONY: up-dev-observability
+up-dev-observability:
+	@echo "[dev] Starting observability stack (prometheus/grafana/loki/promtail)"
+	@$(DEV_COMPOSE) up -d prometheus grafana loki promtail
 
 .PHONY: minio-get-test
 minio-get-test:

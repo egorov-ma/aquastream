@@ -60,6 +60,18 @@ curl http://localhost:8080/actuator/health
 - `cap_drop: [ALL]` + `no-new-privileges:true` исключают эскалацию привилегий.
 - Лимит открытых файлов (`ulimits.nofile`) увеличен до 65536.
 
+### Быстрые команды infra
+```bash
+make build-images         # локальная сборка backend-образов
+make push-images          # пуш собранных образов (требует авторизации)
+make scan                 # Trivy scan локальных образов
+make sbom                 # Syft SBOM в backend-infra/reports/sbom
+make up-dev-observability # запустить Prometheus/Grafana/Loki/Promtail
+make minio-bootstrap      # инициализировать бакеты MinIO
+```
+
+SBOM сохраняются в `backend-infra/reports/sbom`, отчёты Trivy — в `backend-infra/reports/scan`.
+
 ## 🏗️ Архитектура {#architecture}
 
 ### Микросервисная архитектура

@@ -78,6 +78,14 @@ Grafana provisioning и конфиги находятся в `backend-infra/dock
 - `cap_drop: [ALL]` и `no-new-privileges:true` исключают эскалацию привилегий.
 - `ulimits.nofile` поднят до 65536 для корректной работы под нагрузкой.
 
+### Make цели (DX)
+- `make build-images` — локальная сборка backend-образов (dev override).
+- `make push-images` — пуш собранных образов (использует теги `:dev`).
+- `make scan` — Trivy scan для образов.
+- `make sbom` — генерация SBOM (Syft) в `backend-infra/reports/sbom`.
+- `make up-dev-observability` — поднять только Prometheus/Grafana/Loki/Promtail.
+- `make minio-bootstrap` — переинициализация бакетов/политик MinIO.
+
 ## Образы
 - Для каждого сервиса есть Dockerfile: `backend-infra/docker/images/Dockerfile.<service>`.
 - В dev окружении (через `make up-dev`) образы собираются локально и используются Compose‑ом.
