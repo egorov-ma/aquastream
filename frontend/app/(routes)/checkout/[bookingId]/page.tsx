@@ -1,10 +1,12 @@
 import { PaymentWidget } from "@/components/checkout/PaymentWidget";
 import { QrSection } from "@/components/checkout/QrSection";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/ui/page-header";
+import { Section } from "@/components/ui/section";
 import { resolveApiOrigin } from "@/lib/server/resolve-api-origin";
 
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'default-no-store';
+export const dynamic = "force-dynamic";
+export const fetchCache = "default-no-store";
 
 export default async function CheckoutPage({
   params,
@@ -13,38 +15,49 @@ export default async function CheckoutPage({
 }) {
   const { bookingId } = params;
   const origin = resolveApiOrigin();
-  const res = await fetch(`${origin}/api/bookings/${bookingId}`, { cache: 'no-store' });
+  const res = await fetch(`${origin}/api/bookings/${bookingId}`, { cache: "no-store" });
   const booking = res.ok ? await res.json() : null;
+
   return (
-    <section data-test-id="page-checkout">
-      <h1 className="text-xl font-semibold">Оплата брони #{bookingId}</h1>
+    <Section data-test-id="page-checkout" gap="md">
+      <PageHeader>
+        <PageHeaderHeading>Оплата брони #{bookingId}</PageHeaderHeading>
+        <PageHeaderDescription>
+          Выберите удобный способ оплаты или загрузите подтверждение перевода.
+        </PageHeaderDescription>
+      </PageHeader>
       {booking ? (
-        <div className="mt-4 grid gap-2">
-          <div className="text-sm text-muted-foreground">Событие: {booking.event.title}</div>
-          <div className="text-sm text-muted-foreground">Сумма к оплате: {booking.amount} ₽</div>
-          <div className="text-sm">Статус: {booking.status}</div>
-          <div className="my-3 h-px w-full bg-border" />
+        <div className="grid gap-4">
+          <div className="grid gap-2 text-sm text-muted-foreground">
+            <span>Событие: {booking.event.title}</span>
+            <span>Сумма к оплате: {booking.amount} ₽</span>
+            <span className="text-foreground">Статус: {booking.status}</span>
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <h2 className="font-medium">Оплата виджетом</h2>
+            <div className="space-y-2">
+              <h2 className="text-base font-medium">Оплата виджетом</h2>
               <PaymentSection bookingId={bookingId} />
             </div>
-            <div>
-              <h2 className="font-medium">Оплата по QR (пруф)</h2>
+            <div className="space-y-2">
+              <h2 className="text-base font-medium">Оплата по QR (пруф)</h2>
               <QrSection bookingId={bookingId} />
             </div>
           </div>
         </div>
-      ) : <CheckoutFallback />}
-    </section>
+      ) : (
+        <CheckoutFallback />
+      )}
+    </Section>
   );
 }
 
 function CheckoutFallback() {
   return (
-    <div className="mt-4 grid gap-3">
+    <div className="grid gap-3">
       <Alert variant="destructive">
-        <AlertDescription>Не удалось загрузить данные брони. Повторите попытку позже.</AlertDescription>
+        <AlertDescription>
+          Не удалось загрузить данные брони. Повторите попытку позже.
+        </AlertDescription>
       </Alert>
       <div className="grid gap-2">
         <div className="text-sm text-muted-foreground">Загрузка информации…</div>
@@ -59,9 +72,5 @@ function CheckoutFallback() {
 }
 
 function PaymentSection({ bookingId }: { bookingId: string }) {
-  return (
-    <div>
-      <PaymentWidget bookingId={bookingId} />
-    </div>
-  );
+  return <PaymentWidget bookingId={bookingId} />;
 }

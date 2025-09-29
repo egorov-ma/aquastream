@@ -1,6 +1,9 @@
 export const revalidate = 60;
 export const metadata = { title: "События организатора" };
+
 import { OrgEventsTable, type OrgEventRow } from "@/components/org/OrgEventsTable";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/ui/page-header";
+import { Section } from "@/components/ui/section";
 import { getOrganizerEventsCached } from "@/shared/data";
 
 async function fetchEvents(slug: string): Promise<OrgEventRow[]> {
@@ -11,15 +14,18 @@ async function fetchEvents(slug: string): Promise<OrgEventRow[]> {
 export default async function OrganizerEventsPage({
   params,
 }: {
-  params: Promise<{ orgSlug: string }>;
+  params: { orgSlug: string };
 }) {
-  const { orgSlug } = await params;
+  const { orgSlug } = params;
   const items = await fetchEvents(orgSlug);
+
   return (
-    <section data-test-id="page-org-events" className="space-y-3">
+    <Section data-test-id="page-org-events" gap="md">
+      <PageHeader>
+        <PageHeaderHeading>События организатора</PageHeaderHeading>
+        <PageHeaderDescription>Всего событий: {items.length}</PageHeaderDescription>
+      </PageHeader>
       <OrgEventsTable rows={items} />
-    </section>
+    </Section>
   );
 }
-
-

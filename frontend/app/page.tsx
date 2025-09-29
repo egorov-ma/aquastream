@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { OrganizerGridSkeleton } from "@/components/organizers/OrganizerGridSkeleton";
 import { HomeCatalog } from "@/components/home/HomeCatalog";
 import type { ApiResponse } from "@/components/home/HomeCatalog";
+import { PageHeader, PageHeaderHeading, PageHeaderDescription } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
 
 const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
@@ -24,8 +25,11 @@ export default async function HomePage() {
   }
   return (
     <Section data-test-id="page-home" width="5xl" gap="md">
-      <h1 className="text-2xl font-semibold [contain:content]">Каталог организаторов</h1>
-      <Suspense fallback={<OrganizerGridSkeleton /> }>
+      <PageHeader>
+        <PageHeaderHeading>Каталог организаторов</PageHeaderHeading>
+        <PageHeaderDescription>Находите партнёров и события AquaStream.</PageHeaderDescription>
+      </PageHeader>
+      <Suspense fallback={<OrganizerGridSkeleton />}>
         <HomeCatalog initialData={initialData} initialPage={1} initialQ="" />
       </Suspense>
     </Section>

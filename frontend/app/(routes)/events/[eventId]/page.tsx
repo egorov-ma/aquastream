@@ -1,6 +1,8 @@
 import { WaitlistSection as ClientWaitlistSection } from "@/components/events/WaitlistSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/ui/page-header";
+import { Section } from "@/components/ui/section";
 import { resolveApiOrigin } from "@/lib/server/resolve-api-origin";
 
 export const dynamic = 'force-dynamic';
@@ -22,9 +24,11 @@ export default async function EventPage({
   const wait = waitRes && waitRes.ok ? await waitRes.json() : { items: [] };
   const joined = Array.isArray(wait.items) ? (wait.items as { userId: string }[]).some((i) => i.userId === "u_user1") : false;
   return (
-    <section data-test-id="page-event">
-      <h1 className="text-xl font-semibold">Событие #{eventId}</h1>
-      <p className="mt-2 text-muted-foreground">Карточка события (заглушка)</p>
+    <Section data-test-id="page-event" gap="md">
+      <PageHeader>
+        <PageHeaderHeading>Событие #{eventId}</PageHeaderHeading>
+        <PageHeaderDescription>Карточка события (заглушка)</PageHeaderDescription>
+      </PageHeader>
       {summary && (
         <Card className="mt-4">
           <CardContent className="grid gap-2 text-sm pt-0">
@@ -39,6 +43,6 @@ export default async function EventPage({
       <form action={async () => { 'use server'; const { createBookingAndGo } = await import('./actions'); await createBookingAndGo(eventId); }}>
         <Button type="submit" className="mt-4">Записаться</Button>
       </form>
-    </section>
+    </Section>
   );
 }

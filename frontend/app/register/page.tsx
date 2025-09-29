@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Center } from "@/components/ui/center";
-import { Stack } from "@/components/ui/stack";
+import { PageHeader, PageHeaderHeading, PageHeaderDescription } from "@/components/ui/page-header";
 
 export const metadata: Metadata = {
   title: "Регистрация — AquaStream",
@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <Center maxWidth="sm">
-      <Stack gap="sm" align="center" className="text-center">
-        <h1 className="text-xl font-semibold">Регистрация</h1>
-        <p className="text-sm text-muted-foreground">Регистрация выполняется на стороне OAuth2 провайдера.</p>
-      </Stack>
+      <PageHeader className="w-full text-center">
+        <PageHeaderHeading className="mx-auto">Регистрация</PageHeaderHeading>
+        <PageHeaderDescription>Регистрация выполняется на стороне OAuth2 провайдера.</PageHeaderDescription>
+      </PageHeader>
     </Center>
   );
 }

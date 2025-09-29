@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Section } from "@/components/ui/section";
 import * as React from "react";
 
 export function WaitlistSection({ eventId, initialCount, initialJoined }: { eventId: string; initialCount: number; initialJoined: boolean }) {
@@ -45,7 +46,7 @@ export function WaitlistSection({ eventId, initialCount, initialJoined }: { even
   };
 
   return (
-    <section className="mt-4" data-test-id="waitlist-section">
+    <Section className="mt-4" data-test-id="waitlist-section" gap="sm">
       <Card className="[contain:content]">
         <CardContent className="flex items-center justify-between p-3">
           <div>
@@ -58,7 +59,7 @@ export function WaitlistSection({ eventId, initialCount, initialJoined }: { even
           </Button>
         </CardContent>
       </Card>
-    </section>
+    </Section>
   );
 }
 

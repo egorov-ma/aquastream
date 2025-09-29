@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
@@ -41,7 +42,11 @@ export default function GroupsPage() {
 
   return (
     <Section gap="lg" data-test-id="page-organizer-groups">
-      <div className="flex items-end gap-3">
+      <PageHeader>
+        <PageHeaderHeading>Группы события</PageHeaderHeading>
+        <PageHeaderDescription>Управляйте экипажами, лодками и палатками.</PageHeaderDescription>
+      </PageHeader>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
         <div className="grid gap-2">
           <Label>Событие</Label>
           <Input value={eventId} onChange={(e) => setEventId(e.target.value)} placeholder="ID события" />

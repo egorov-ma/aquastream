@@ -4,8 +4,8 @@ export const fetchCache = 'default-no-store';
 import type { Metadata } from "next";
 import { ProfileForm } from "@/components/dashboard/ProfileForm";
 import { Button } from "@/components/ui/button";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading, PageHeaderActions } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
-import { Stack } from "@/components/ui/stack";
 
 export const metadata: Metadata = {
   title: "Личный кабинет — AquaStream",
@@ -16,21 +16,15 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <Section data-test-id="page-dashboard" width="3xl" gap="lg">
-      <Stack gap="xs">
-        <h1 className="text-xl font-semibold">Личный кабинет</h1>
-        <Stack
-          direction="row"
-          gap="sm"
-          align="center"
-          justify="between"
-          className="gap-y-2"
-        >
-          <p className="text-muted-foreground">Профиль и верификация Telegram</p>
+      <PageHeader>
+        <PageHeaderHeading>Личный кабинет</PageHeaderHeading>
+        <PageHeaderDescription>Профиль и верификация Telegram.</PageHeaderDescription>
+        <PageHeaderActions>
           <form action="/api/auth/logout" method="post">
             <Button type="submit" variant="outline" size="sm">Выйти</Button>
           </form>
-        </Stack>
-      </Stack>
+        </PageHeaderActions>
+      </PageHeader>
       <ProfileForm />
     </Section>
   );

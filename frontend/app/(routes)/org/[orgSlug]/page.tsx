@@ -1,43 +1,48 @@
 export const revalidate = 60;
 export const metadata = { title: "Организатор" };
-import { getOrganizerCached, getOrganizerEventsCached } from "@/shared/data";
+
 import { EventCard } from "@/components/org/EventCard";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/ui/page-header";
+import { Section } from "@/components/ui/section";
 import type { EventRow } from "@/components/org/EventsDataTable";
+import { getOrganizerCached, getOrganizerEventsCached } from "@/shared/data";
 
 export default async function OrganizerHomePage({
   params,
 }: {
-  params: Promise<{ orgSlug: string }>;
+  params: { orgSlug: string };
 }) {
-  const { orgSlug } = await params;
+  const { orgSlug } = params;
   const org = await getOrganizerCached(orgSlug);
-  // Подтягиваем ближайшие события (первые 2) через кэш‑хелпер
-  const list: EventRow[] = await getOrganizerEventsCached(orgSlug) as unknown as EventRow[];
+  const list = (await getOrganizerEventsCached(orgSlug)) as unknown as EventRow[];
   const top2 = list.slice(0, 2);
+
   return (
-    <section data-test-id="page-org" className="space-y-4">
-      <h1 className="text-xl font-semibold">Организатор: {org.name}</h1>
-      <p className="mt-2 text-muted-foreground">{org.description ?? "Главная организатора"}</p>
+    <Section data-test-id="page-org" gap="md">
+      <PageHeader>
+        <PageHeaderHeading>{org.name}</PageHeaderHeading>
+        <PageHeaderDescription>
+          {org.description ?? "Главная страница организатора"}
+        </PageHeaderDescription>
+      </PageHeader>
       {top2.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2">
-          {top2.map((e) => (
+          {top2.map((event) => (
             <EventCard
-              key={e.id}
-              id={e.id}
-              title={e.title}
-              dateStart={e.dateStart}
-              dateEnd={e.dateEnd ?? null}
-              location={e.location ?? null}
-              capacity={e.capacity ?? null}
-              available={e.available ?? null}
-              difficulty={e.difficulty ?? null}
-              features={e.features ?? []}
+              key={event.id}
+              id={event.id}
+              title={event.title}
+              dateStart={event.dateStart}
+              dateEnd={event.dateEnd ?? null}
+              location={event.location ?? null}
+              capacity={event.capacity ?? null}
+              available={event.available ?? null}
+              difficulty={event.difficulty ?? null}
+              features={event.features ?? []}
             />
           ))}
         </div>
       )}
-    </section>
+    </Section>
   );
 }
-
-

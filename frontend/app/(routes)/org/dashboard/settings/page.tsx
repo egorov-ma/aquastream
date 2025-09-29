@@ -7,12 +7,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
 
 export default function SettingsPage() {
   return (
     <Section data-test-id="page-org-settings" gap="lg">
-      <h1 className="text-xl font-semibold">Настройки организатора</h1>
+      <PageHeader>
+        <PageHeaderHeading>Настройки организатора</PageHeaderHeading>
+        <PageHeaderDescription>Управляйте брендом, командой и FAQ.</PageHeaderDescription>
+      </PageHeader>
       <Tabs defaultValue="brand">
         <TabsList>
           <TabsTrigger value="brand">Brand</TabsTrigger>

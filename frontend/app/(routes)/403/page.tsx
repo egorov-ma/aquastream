@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
 import { Stack } from "@/components/ui/stack";
 
@@ -14,10 +15,10 @@ export default function ForbiddenPage() {
       padding="xl"
       gap="md"
     >
-      <Stack gap="sm" align="center" className="text-center">
-        <h1 className="text-2xl font-semibold">Доступ запрещён</h1>
-        <p className="text-muted-foreground">У вас нет прав для просмотра этой страницы.</p>
-      </Stack>
+      <PageHeader className="text-center">
+        <PageHeaderHeading className="mx-auto">Доступ запрещён</PageHeaderHeading>
+        <PageHeaderDescription>У вас нет прав для просмотра этой страницы.</PageHeaderDescription>
+      </PageHeader>
       <Stack direction="row" gap="xs" align="center" justify="center" wrap="wrap">
         <Button asChild variant="outline" size="sm"><Link href="/">На главную</Link></Button>
         <Button asChild variant="outline" size="sm"><Link href="/login">Войти</Link></Button>
