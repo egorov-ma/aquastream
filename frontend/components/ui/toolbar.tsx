@@ -1,42 +1,91 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
-type ToolbarProps = React.HTMLAttributes<HTMLDivElement> & {
-  justify?: "between" | "start" | "end" | "center";
-  border?: boolean;
-};
+import { cn } from "@/lib/utils"
 
-export function Toolbar({ className, justify = "between", border = true, ...props }: ToolbarProps) {
-  const justifyClass =
-    justify === "between"
-      ? "justify-between"
-      : justify === "start"
-      ? "justify-start"
-      : justify === "end"
-      ? "justify-end"
-      : "justify-center";
+const toolbarVariants = cva("flex items-center py-2 sm:py-3", {
+  variants: {
+    justify: {
+      start: "justify-start",
+      center: "justify-center",
+      end: "justify-end",
+      between: "justify-between",
+    },
+    gap: {
+      sm: "gap-1 sm:gap-2",
+      md: "gap-2 sm:gap-3",
+      lg: "gap-3 sm:gap-4",
+    },
+    border: {
+      true: "border-b",
+      false: "",
+    },
+  },
+  defaultVariants: {
+    justify: "between",
+    gap: "md",
+    border: true,
+  },
+})
 
-  return (
+interface ToolbarProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof toolbarVariants> {}
+
+const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
+  ({ className, justify, gap, border = true, ...props }, ref) => (
     <div
+      ref={ref}
       data-slot="toolbar"
-      className={cn(
-        "flex items-center gap-2 sm:gap-3 py-2 sm:py-3",
-        border && "border-b",
-        justifyClass,
-        className
-      )}
+      className={cn(toolbarVariants({ justify, gap, border }), className)}
       {...props}
     />
-  );
-}
+  )
+)
+Toolbar.displayName = "Toolbar"
 
-export function ToolbarGroup({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex items-center gap-2 sm:gap-3", className)} {...props} />;
-}
+const toolbarGroupVariants = cva("flex items-center", {
+  variants: {
+    gap: {
+      sm: "gap-1 sm:gap-2",
+      md: "gap-2 sm:gap-3",
+      lg: "gap-3 sm:gap-4",
+    },
+  },
+  defaultVariants: {
+    gap: "md",
+  },
+})
 
-export function ToolbarSpacer({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex-1", className)} {...props} />;
+interface ToolbarGroupProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof toolbarGroupVariants> {}
+
+const ToolbarGroup = React.forwardRef<HTMLDivElement, ToolbarGroupProps>(
+  ({ className, gap, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(toolbarGroupVariants({ gap }), className)}
+      {...props}
+    />
+  )
+)
+ToolbarGroup.displayName = "ToolbarGroup"
+
+const ToolbarSpacer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("flex-1", className)} {...props} />
+  )
+)
+ToolbarSpacer.displayName = "ToolbarSpacer"
+
+export {
+  Toolbar,
+  toolbarVariants,
+  ToolbarGroup,
+  toolbarGroupVariants,
+  ToolbarSpacer,
 }
 

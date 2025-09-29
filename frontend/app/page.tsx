@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const initialData = { items: defaultOrganizers.slice(0, 6), total: defaultOrganizers.length };
   return (
-    <Section data-test-id="page-home" width="wide" gap="md">
+    <Section data-test-id="page-home" width="5xl" gap="md">
       <h1 className="text-2xl font-semibold [contain:content]">Каталог организаторов</h1>
       <Suspense fallback={<OrganizerGridSkeleton /> }>
         <HomeCatalog initialData={initialData} initialPage={1} initialQ="" />

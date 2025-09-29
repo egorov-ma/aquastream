@@ -10,7 +10,7 @@ export default function ForbiddenPage() {
     <Section
       data-test-id="page-403"
       align="center"
-      width="narrow"
+      width="sm"
       padding="xl"
       gap="md"
     >

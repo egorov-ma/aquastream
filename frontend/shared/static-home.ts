@@ -8,6 +8,21 @@ export const defaultOrganizers = [
   { id: "org-7", slug: "lake-club", name: "Lake Club" },
   { id: "org-8", slug: "sea-riders", name: "Sea Riders" },
   { id: "org-9", slug: "aqua-racing", name: "Aqua Racing" },
+  { id: "org-10", slug: "water-masters", name: "Water Masters" },
+  { id: "org-11", slug: "rapid-zone", name: "Rapid Zone" },
+  { id: "org-12", slug: "wave-hunters", name: "Wave Hunters" },
+  { id: "org-13", slug: "deep-blue", name: "Deep Blue Adventures" },
+  { id: "org-14", slug: "float-team", name: "Float Team" },
+  { id: "org-15", slug: "surf-rebels", name: "Surf Rebels" },
+  { id: "org-16", slug: "ocean-spirits", name: "Ocean Spirits" },
+  { id: "org-17", slug: "aqua-explorers", name: "Aqua Explorers" },
+  { id: "org-18", slug: "wild-waters", name: "Wild Waters Co" },
+  { id: "org-19", slug: "crystal-current", name: "Crystal Current" },
+  { id: "org-20", slug: "blue-horizon", name: "Blue Horizon" },
+  { id: "org-21", slug: "nordic-paddlers", name: "Nordic Paddlers" },
+  { id: "org-22", slug: "emerald-bay", name: "Emerald Bay Club" },
+  { id: "org-23", slug: "aqua-adventures", name: "Aqua Adventures SPB" },
+  { id: "org-24", slug: "stream-riders", name: "Stream Riders" },
 ];
 
 

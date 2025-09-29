@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <Section data-test-id="page-dashboard" width="normal" gap="lg">
+    <Section data-test-id="page-dashboard" width="3xl" gap="lg">
       <Stack gap="xs">
         <h1 className="text-xl font-semibold">Личный кабинет</h1>
         <Stack

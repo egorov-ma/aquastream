@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Section } from "@/components/ui/section";
+import { PageHeader, PageHeaderHeading, PageHeaderDescription, PageHeaderContent } from "@/components/ui/page-header";
 import { DataTableShell } from "@/components/ui/data-table-shell";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableEmpty } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
@@ -60,12 +61,12 @@ export default function ModerationPage() {
 
   return (
     <Section data-test-id="page-organizer-moderation" gap="lg">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Модерация оплат</h1>
-          <p className="text-sm text-muted-foreground mt-1">Проверка подтверждений переводов</p>
-        </div>
-      </div>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageHeaderHeading>Модерация оплат</PageHeaderHeading>
+          <PageHeaderDescription>Проверка подтверждений переводов</PageHeaderDescription>
+        </PageHeaderContent>
+      </PageHeader>
       <DataTableShell title="Очередь оплат">
         <Table>
           <TableHeader>

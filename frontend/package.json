@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:mocks": "NEXT_PUBLIC_USE_MOCKS=true next dev",
     "build": "next build",
     "lh": "start-server-and-test 'NEXT_PUBLIC_USE_MOCKS=true PORT=3101 pnpm dev' http://localhost:3101 'lighthouse http://localhost:3101 --quiet --output json --output-path ./lighthouse.report.json'",
     "start": "next start",

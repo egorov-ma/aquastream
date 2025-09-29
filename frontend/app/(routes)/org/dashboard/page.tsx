@@ -11,6 +11,7 @@ import { Section } from "@/components/ui/section";
 import Link from "next/link";
 import { useRole } from "@/shared/client-auth";
 import { Button } from "@/components/ui/button";
+import { PageHeader, PageHeaderHeading, PageHeaderDescription, PageHeaderContent, PageHeaderActions } from "@/components/ui/page-header";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "default-no-store";
@@ -25,12 +26,12 @@ export default function OrganizerDashboardPage() {
       <SidebarInset>
         <Section data-test-id="page-organizer-dashboard" gap="lg" className="min-h-[70vh]">
           <SiteHeader />
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">Панель организатора</h1>
-              <p className="text-sm text-muted-foreground mt-1">Обзор метрик и управление событиями</p>
-            </div>
-            <div className="flex items-center gap-2">
+          <PageHeader>
+            <PageHeaderContent>
+              <PageHeaderHeading>Панель организатора</PageHeaderHeading>
+              <PageHeaderDescription>Обзор метрик и управление событиями</PageHeaderDescription>
+            </PageHeaderContent>
+            <PageHeaderActions>
               <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/settings">Настройки</Link></Button>
               <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/groups">Группы</Link></Button>
               <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/moderation">Модерация оплат</Link></Button>
@@ -38,8 +39,8 @@ export default function OrganizerDashboardPage() {
                 <Button asChild variant="outline" size="sm"><Link href="/admin">Админ</Link></Button>
               ) : null}
               <Button asChild variant="outline" size="sm"><Link href="/org/dashboard/new">Новое событие</Link></Button>
-            </div>
-          </div>
+            </PageHeaderActions>
+          </PageHeader>
           <SectionCards />
           <ChartArea />
           <DataTable />

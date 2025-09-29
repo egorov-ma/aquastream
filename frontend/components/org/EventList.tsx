@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { EventCard } from "@/components/org/EventCard";
 import { EventFilters, useEventFilters } from "@/components/org/EventFilters";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { ErrorState } from "@/components/ui/states";
 
 type Item = {
   id: string;
@@ -18,6 +19,7 @@ type Item = {
 export function EventList({ slug }: { slug: string }) {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters, resetFilters] = useEventFilters();
   const [page, setPage] = useState(1);
   const pageSize = 5;
@@ -33,15 +35,21 @@ export function EventList({ slug }: { slug: string }) {
 
     async function load() {
       setLoading(true);
+      setError(null);
       try {
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error(`Failed to load events (${res.status})`);
         const json: { items: Item[] } = await res.json();
-        if (isMounted) setItems(json.items);
+        if (isMounted) {
+          setItems(json.items);
+          setError(null);
+        }
       } catch (error) {
         if (!isMounted) return;
         if (error instanceof Error && error.name === "AbortError") return;
         console.error("Failed to fetch organizer events", error);
+        setError(error instanceof Error ? error.message : "Unknown error");
+        setItems([]);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -89,6 +97,16 @@ export function EventList({ slug }: { slug: string }) {
   const canPrev = page > 1;
   const canNext = page < totalPages;
   const pageItems = visibleItems.slice((page - 1) * pageSize, page * pageSize);
+
+  if (error) return (
+    <div className="space-y-3">
+      <EventFilters value={filters} onChange={setFilters} onReset={resetFilters} />
+      <ErrorState
+        message="Не удалось загрузить события организатора"
+        description={error}
+      />
+    </div>
+  );
 
   if (loading) return (
     <div className="space-y-3">
@@ -155,4 +173,3 @@ export function EventList({ slug }: { slug: string }) {
     </div>
   );
 }
-
