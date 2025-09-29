@@ -2,7 +2,7 @@
 
 ## Обзор API контрактов
 
-Проект AquaStream использует **Design-First подход** с OpenAPI 3.0.3 спецификациями в папке `api-contracts/`.
+Проект AquaStream использует **Design-First подход** с OpenAPI 3.0.3 спецификациями в папке `docs/api/specs/root/`.
 
 ### Архитектура API
 
@@ -167,7 +167,7 @@ components:
 
 ```bash
 # 1. Создать/изменить спецификацию
-vi api-contracts/new-service-api.yaml
+vi docs/api/specs/root/new-service-api.yaml
 
 # 2. Сгенерировать документацию
 make docs-api
@@ -181,7 +181,7 @@ make docs-serve
 
 ```bash
 # Проверка синтаксиса OpenAPI
-npx @stoplight/spectral-cli lint api-contracts/*.yaml
+npx @stoplight/spectral-cli lint docs/api/specs/root/*.yaml
 
 # Проверка ссылок в документации
 make docs-check-links

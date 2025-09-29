@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List, Tuple, Optional
 
 REPO = Path(__file__).resolve().parents[3]
-SOURCES_HINTS = ['api', 'api-contracts']
+SOURCES_HINTS = ['api', 'docs/api/specs/root']
 SPEC_EXTS = ('.yaml', '.yml', '.json')
 DEST_SPECS = REPO / 'docs' / 'api' / 'specs'
 DEST_REDOC = REPO / 'docs' / 'api' / 'redoc'

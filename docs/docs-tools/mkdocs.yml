@@ -4,95 +4,123 @@ repo_url: https://github.com/egorov-ma/aquastream
 docs_dir: ../
 nav:
   - Home: index.md
-  - Getting started:
-      - Overview: getting-started/overview.md
-      - Quick start: getting-started/quick-start.md
-      - Local development: getting-started/local-development.md
-  - Architecture:
-      - Overview: architecture/overview.md
-      - Microservices: architecture/microservices.md
-      - Database design: architecture/database-design.md
-      - Security: architecture/security.md
-      - Common library: architecture/common-library.md
-      - Build system: architecture/build-system.md
+  - Quick Start: quickstart.md
+  - Architecture: architecture.md
+  - Glossary: glossary.md
   - Backend:
-      - Overview: backend/overview.md
-      - Authentication: backend/authentication.md
-      - Error handling: backend/error-handling.md
+      - Overview: backend/README.md
+      - Common:
+          - Authentication: backend/common/authentication.md
+          - Error Handling: backend/common/error-handling.md
+          - Database: backend/common/database.md
+          - Security: backend/common/security.md
       - Gateway:
+          - Overview: backend/gateway/README.md
           - API: backend/gateway/api.md
           - Operations: backend/gateway/operations.md
           - Changelog: backend/gateway/changelog.md
-      - User:
+      - User Service:
+          - Overview: backend/user/README.md
           - API: backend/user/api.md
-          - Business logic: backend/user/business-logic.md
+          - Business Logic: backend/user/business-logic.md
           - Operations: backend/user/operations.md
           - Changelog: backend/user/changelog.md
-      - Event:
+      - Event Service:
+          - Overview: backend/event/README.md
           - API: backend/event/api.md
-          - Business logic: backend/event/business-logic.md
+          - Business Logic: backend/event/business-logic.md
           - Operations: backend/event/operations.md
           - Changelog: backend/event/changelog.md
-      - Payment:
+      - Payment Service:
+          - Overview: backend/payment/README.md
           - API: backend/payment/api.md
-          - Business logic: backend/payment/business-logic.md
+          - Business Logic: backend/payment/business-logic.md
           - Operations: backend/payment/operations.md
           - Changelog: backend/payment/changelog.md
-      - Notification:
+      - Notification Service:
+          - Overview: backend/notification/README.md
           - API: backend/notification/api.md
-          - Business logic: backend/notification/business-logic.md
+          - Business Logic: backend/notification/business-logic.md
           - Operations: backend/notification/operations.md
           - Changelog: backend/notification/changelog.md
-      - Crew:
+      - Crew Service:
+          - Overview: backend/crew/README.md
           - API: backend/crew/api.md
-          - Business logic: backend/crew/business-logic.md
+          - Business Logic: backend/crew/business-logic.md
           - Operations: backend/crew/operations.md
           - Changelog: backend/crew/changelog.md
-      - Media:
+      - Media Service:
+          - Overview: backend/media/README.md
           - API: backend/media/api.md
-          - Business logic: backend/media/business-logic.md
+          - Business Logic: backend/media/business-logic.md
           - Operations: backend/media/operations.md
           - Changelog: backend/media/changelog.md
   - Frontend:
-      - Overview: frontend/overview.md
-      - Routing: frontend/routing.md
+      - Overview: frontend/README.md
+      - Setup: frontend/setup.md
       - Components: frontend/components.md
-      - State management: frontend/state-management.md
-      - Development guide: frontend/development-guide.md
-  - Business:
-      - User roles: business/user-roles.md
-      - Booking flow: business/booking-flow.md
-      - Payment methods: business/payment-methods.md
-      - Crew management: business/crew-management.md
-  - DevOps:
-      - Infrastructure: devops/infrastructure.md
-      - CI/CD: devops/ci-cd.md
-      - Issue management: devops/issue-management.md
-      - Git hooks: devops/git-hooks.md
-      - Environment setup: devops/environment-setup.md
-      - Deployment: devops/deployment.md
-      - Monitoring: devops/monitoring.md
-      - Backup & recovery: devops/backup-recovery.md
+      - Routing: frontend/routing.md
+      - State Management: frontend/state-management.md
+      - API Integration: frontend/api-integration.md
+      - Deployment: frontend/deployment.md
+      - Changelog: frontend/changelog.md
+
+  - QA & Testing:
+      - Overview: qa/README.md
+      - Test Strategy: qa/test-strategy.md
+      - Test Plans:
+          - Backend Testing: qa/test-plans/backend-testing.md
+          - Frontend Testing: qa/test-plans/frontend-testing.md
+          - Integration Testing: qa/test-plans/integration-testing.md
+          - E2E Testing: qa/test-plans/e2e-testing.md
+      - Automation:
+          - Unit Tests: qa/automation/unit-tests.md
+          - API Tests: qa/automation/api-tests.md
+          - UI Tests: qa/automation/ui-tests.md
+      - Manual Testing:
+          - Test Cases: qa/manual-testing/test-cases.md
+          - Regression Suite: qa/manual-testing/regression-suite.md
+          - Exploratory Testing: qa/manual-testing/exploratory-testing.md
+      - Performance:
+          - Load Testing: qa/performance/load-testing.md
+          - Performance Benchmarks: qa/performance/performance-benchmarks.md
+      - Security Testing: qa/security-testing.md
+      - Bug Management: qa/bug-management.md
+
+  - API Documentation:
+      - Overview: api/index.md
+
+  - Operations:
+      - Overview: operations/README.md
+      - Infrastructure: operations/infrastructure.md
+      - Deployment: operations/deployment.md
+      - CI/CD: operations/ci-cd.md
+      - Monitoring: operations/monitoring.md
+      - Backup & Recovery: operations/backup-recovery.md
+      - Runbooks:
+          - Incident Response: operations/runbooks/incident-response.md
+          - Service Restart: operations/runbooks/service-restart.md
+          - Database Maintenance: operations/runbooks/database-maintenance.md
       - Policies:
-          - Security Policy: devops/policies/security.md
-          - Code of Conduct: devops/policies/code-of-conduct.md
-          - Support: devops/policies/support.md
-  - Styleguides:
-      - Code style: styleguides/code-style.md
-      - API design: styleguides/api-design.md
-      - Database conventions: styleguides/database-conventions.md
-      - Git workflow: styleguides/git-workflow.md
-      - Documentation style: styleguides/documentation-style.md
-      - UI/UX guidelines: styleguides/ui-ux-guidelines.md
-  - Roadmap:
-      - Current release: roadmap/current-release.md
-      - Planned features: roadmap/planned-features.md
-      - Technical debt: roadmap/technical-debt.md
-      - Long-term vision: roadmap/long-term-vision.md
-  - Reference:
-      - Environment variables: reference/environment-variables.md
-      - Configuration: reference/configuration.md
-      - Troubleshooting: reference/troubleshooting.md
+          - Security Policy: operations/policies/security.md
+          - Code of Conduct: operations/policies/code-of-conduct.md
+          - Support: operations/policies/support.md
+
+  - Business:
+      - Requirements: business/requirements.md
+      - User Journeys: business/user-journeys.md
+      - Processes: business/processes.md
+      - Roadmap: business/roadmap.md
+
+  - Development:
+      - Setup: development/setup.md
+      - Workflows: development/workflows.md
+      - Testing: development/testing.md
+      - Style Guides: development/style-guides.md
+      - Troubleshooting: development/troubleshooting.md
+
+  - Decisions:
+      - Overview: decisions/index.md
   - Glossary: glossary.md
 theme:
   name: material
