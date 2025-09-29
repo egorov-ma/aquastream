@@ -516,76 +516,84 @@ docker run --rm \
 ### GitHub Actions Workflows
 
 #### 1. Backend CI (`backend-ci.yml`)
-**Триггеры:** Push to main, Pull Requests (backend changes)
+**Триггеры:** `push`/`pull_request` для `backend-*/**`, `backend-common/**`, Gradle конфигураций.
 ```bash
-Steps:
-1. Setup Java 21
-2. Gradle build (all backend modules)
-3. Unit tests
-4. Upload artifacts
+Главные шаги:
+1. Валидация Gradle Wrapper
+2. Gradle build + test (JDK 21)
+3. Генерация lock-файлов при изменениях
+4. Загрузка JAR артефактов
 ```
 
-#### 2. Frontend CI (`frontend-ci.yml`)
-**Триггеры:** Push to main, Pull Requests (frontend changes)
+#### 2. Docker Images CI (`ci-images.yml`)
+**Триггеры:** PR/Push (main) по backend/infrastructure, `release` events, ручной запуск.
 ```bash
-Steps:
+Главные шаги:
+1. Отдельный job `build-jars` (Gradle assemble, артефакт с JAR)
+2. Матричный buildx по сервисам (gateway, user, event, crew, payment, notification, media)
+3. PR: локальный build + Trivy scan (без push)
+4. Push/Release: login в GHCR, публикация тегов `sha-*`, `v*`, `latest`
+5. Summary с итоговыми образами и длительностью
+```
+
+#### 3. Frontend CI (`frontend-ci.yml`)
+**Триггеры:** `push`/`pull_request` для `frontend/**`.
+```bash
+Главные шаги:
 1. Setup Node.js 22 + pnpm
-2. Install dependencies
-3. Lint, typecheck, build
+2. Установка зависимостей с кэшем
+3. pnpm lint, typecheck, build
 ```
 
-#### 3. Docs CI (`docs-ci.yml`)
-**Триггеры:** Push to main, Pull Requests (docs changes)
+#### 4. Docs CI (`docs-ci.yml`)
+**Триггеры:** `push` (main) и `pull_request` по `docs/**` + tooling.
 ```bash
-Steps:
-1. Setup Python
-2. Install MkDocs dependencies
-3. Build documentation
-4. Upload site artifact
+Главные шаги:
+1. Setup Python 3.11
+2. Кэш pip по `requirements-docs.txt`
+3. MkDocs build --strict
+4. Артефакт `site`
 ```
 
-#### 3. Service CI (`ci-service.yml`)
-**Reusable workflow для отдельных сервисов**
+#### 5. Docs Deploy (`docs-deploy.yml`)
+**Триггеры:** `push` в `main` по документации.
 ```bash
-Parameters:
-- service_name: backend-notification
-- image_name: aquastream-backend-notification  
-- dockerfile: backend-infra/docker/images/Dockerfile.notification
-
-Steps:
-1. Gradle build + tests
-2. Liquibase dry-run
-3. Docker build + push
-4. Tag images (vX.Y.Z or latest)
+Главные шаги:
+1. MkDocs build (аналогично Docs CI)
+2. Upload Pages artifact
+3. Deploy на GitHub Pages (environment `github-pages`)
 ```
 
-#### 4. Release (`release.yml`)
-**Триггеры:** Git tags `v*`
+#### 6. CodeQL (`codeql.yml`)
+**Триггеры:** `push`, `pull_request`, недельный cron.
 ```bash
-Services:
-- backend-gateway ✅
-- backend-notification ✅
-- backend-user (disabled)
-- backend-event (disabled)
-- backend-crew (disabled)
-- backend-payment (disabled)
-- backend-media (disabled)
-
-Steps:
-1. Build & test each service
-2. Create Docker images
-3. Push to GHCR
-4. Create GitHub Release
+Главные шаги:
+1. Инициализация CodeQL для `java,javascript,python`
+2. Автоматический анализ и загрузка отчётов в Security → Code scanning
 ```
 
-#### 5. Deploy (`deploy.yml`)
-**Триггеры:** Manual (workflow_dispatch)
+#### 7. Commitlint (`commitlint.yml`)
+**Триггеры:** `push`, `pull_request`, ручной запуск.
 ```bash
-Environments: staging, production
-Steps:
-1. Workflow lint
-2. Docker buildx
-3. Environment-specific deployment
+Главные шаги:
+1. Определение диапазона коммитов
+2. Проверка Conventional Commits для коммитов и заголовка PR
+3. Summary с количеством проверенных коммитов
+```
+
+#### 8. Label automation (`labeler.yml`, `label-sync.yml`)
+```bash
+- `labeler.yml`: `pull_request_target`, автоматически вешает метки по `.github/labeler.yml`.
+- `label-sync.yml`: `push` в `main` или ручной запуск для синхронизации набора меток.
+```
+
+#### 9. Release (`release.yml`)
+**Триггеры:** теги `v*` или `workflow_dispatch`.
+```bash
+Главные шаги:
+1. Определение тега (в том числе из input при ручном запуске)
+2. Создание GitHub Release с auto-generated notes
+3. Workflow служит триггером для `ci-images.yml` (event `release`) → публикация образов в GHCR
 ```
 
 ### CI/CD конфигурация

@@ -5,24 +5,28 @@
 
 Состав
 - Backend CI: сборка и тесты Gradle для `backend-*` модулей.
+- Docker Images CI: buildx + Trivy, публикация образов в GHCR по матрице сервисов.
 - Frontend CI: линт, typecheck и билд фронтенда (`frontend/`).
 - CodeQL: статический анализ безопасности для Java/Kotlin, JavaScript/TypeScript и Python.
 - Dependabot: автоматические PR с обновлениями зависимостей и actions.
-- Labeler: автоматическая простановка меток по изменённым путям.
+- Labeler/Label sync: автоматическая простановка и синхронизация меток.
 - Release: создание GitHub Release по тэгам `v*`.
 - Docs-as-Code: сборка документации на PR и деплой на GitHub Pages с ветки `main`.
 
 Файлы workflow
 - `.github/workflows/backend-ci.yml`: сборка backend (JDK 21, Gradle cache).
+- `.github/workflows/ci-images.yml`: матричная сборка/публикация Docker образов и Trivy scan на PR.
 - `.github/workflows/frontend-ci.yml`: Node 22 + pnpm, lint/typecheck/build.
 - `.github/workflows/codeql.yml`: анализ кода (расписание + PR/Push) для Java/Kotlin, JS/TS и Python.
-- `.github/workflows/labeler.yml`: метки на PR по `.github/labeler.yml`.
-- `.github/workflows/release.yml`: релиз при пуше тэгов `v*`.
+- `.github/workflows/commitlint.yml`: проверка Conventional Commits.
+- `.github/workflows/labeler.yml` и `label-sync.yml`: автоматизация меток.
+- `.github/workflows/release.yml`: релиз при пуше тэгов `v*` или ручном запуске.
 - `.github/workflows/docs-ci.yml`: сборка документации (MkDocs) на PR/Push, артефакт `site`.
 - `.github/workflows/docs-deploy.yml`: деплой документации на GitHub Pages при пуше в `main`.
 
 Триггеры
 - Backend/Frontend CI: `push` и `pull_request` с фильтрами путей.
+- Docker Images CI: `pull_request` (без push), `push` в `main`, `release`, `workflow_dispatch`.
 - CodeQL: `push`, `pull_request`, по расписанию (раз в неделю).
 - Release: `push` тэгов `v*`.
 - Labeler: `pull_request_target` (синхронизация меток на PR).
