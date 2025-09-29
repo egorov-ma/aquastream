@@ -1,0 +1,1550 @@
+[
+  {
+    "path": "README.md",
+    "h1": "AquaStream",
+    "h2_first": "Документация",
+    "lang": "mixed",
+    "size_bytes": "8085",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "backend-infra/README.md",
+    "h1": "Backend Infrastructure",
+    "h2_first": "Структура каталога",
+    "lang": "mixed",
+    "size_bytes": "2256",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/docs-structure.md",
+    "h1": "AquaStream Documentation Structure",
+    "h2_first": "Корневая структура",
+    "lang": "mixed",
+    "size_bytes": "10459",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/docs-tools/README.md",
+    "h1": "Documentation Tools",
+    "h2_first": "Структура",
+    "lang": "mixed",
+    "size_bytes": "2836",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/docs-tools/_reports/docs-quality-report.md",
+    "h1": "Docs Quality Report",
+    "h2_first": "Coverage",
+    "lang": "en",
+    "size_bytes": "130",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/docs-tools/_reports/docs-training-notes.md",
+    "h1": "Docs Training Notes",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "308",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/docs-tools/_reports/markdown_normalization_report.md",
+    "h1": "Markdown Normalization Report",
+    "h2_first": "",
+    "lang": "en",
+    "size_bytes": "71",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/docs-tools/_reports/migration-report.md",
+    "h1": "Migration Report",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "278",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/docs-tools/_reports/navigation-scenarios.md",
+    "h1": "Navigation Scenarios Report",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "1192",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/docs-tools/docs/api/index.md",
+    "h1": "",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "324",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/templates/README.md",
+    "h1": "Шаблоны документации",
+    "h2_first": "Доступные шаблоны",
+    "lang": "mixed",
+    "size_bytes": "3880",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/templates/adr-template.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "4027",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/templates/architecture.md",
+    "h1": "Масштабирование через Docker Compose",
+    "h2_first": "Обзор",
+    "lang": "mixed",
+    "size_bytes": "13222",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/templates/backend-service-readme.md",
+    "h1": "Сборка всех модулей",
+    "h2_first": "Назначение",
+    "lang": "mixed",
+    "size_bytes": "6713",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/templates/frontend-component.md",
+    "h1": "Запуск тестов компонента",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "7647",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/templates/operations-runbook.md",
+    "h1": "Просмотр логов сервиса",
+    "h2_first": "Общая информация",
+    "lang": "mixed",
+    "size_bytes": "9328",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/templates/qa-test-plan.md",
+    "h1": "Запуск unit тестов",
+    "h2_first": "Цель тестирования",
+    "lang": "mixed",
+    "size_bytes": "6126",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/templates/roadmap.md",
+    "h1": "",
+    "h2_first": "Обзор",
+    "lang": "mixed",
+    "size_bytes": "7281",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/README.md",
+    "h1": "Документация требующая рефакторинга",
+    "h2_first": "⚠️ Статус: В процессе рефакторинга",
+    "lang": "mixed",
+    "size_bytes": "3884",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/architecture/build-system.md",
+    "h1": "Сборочная система",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "192",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/architecture/common-library.md",
+    "h1": "Общая библиотека",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "201",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/architecture/database-design.md",
+    "h1": "Дизайн БД",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "116",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/architecture/index.md",
+    "h1": "",
+    "h2_first": "Связанные материалы",
+    "lang": "mixed",
+    "size_bytes": "436",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/architecture/microservices.md",
+    "h1": "Микросервисы",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "156",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/architecture/overview.md",
+    "h1": "Архитектура",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "159",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/architecture/security.md",
+    "h1": "Безопасность",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "128",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/business/booking-flow.md",
+    "h1": "Процесс бронирования",
+    "h2_first": "Обзор",
+    "lang": "mixed",
+    "size_bytes": "1187",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/business/crew-management.md",
+    "h1": "Управление группами",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "41",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/business/payment-methods.md",
+    "h1": "Способы оплаты",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "31",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/business/user-roles.md",
+    "h1": "Роли и права",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "26",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/contributing.md",
+    "h1": "CONTRIBUTING",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "831",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/contributor-guide.md",
+    "h1": "endpoints...",
+    "h2_first": "Быстрый старт",
+    "lang": "mixed",
+    "size_bytes": "6036",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/faq.md",
+    "h1": "",
+    "h2_first": "Предпросмотр не поднимается",
+    "lang": "mixed",
+    "size_bytes": "666",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-common/README.md",
+    "h1": "",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "5210",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-common/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-common/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-crew/README.md",
+    "h1": "AquaStream Backend Crew Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "12822",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-crew/backend-crew-service/README.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "911",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-crew/backend-crew-service/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-crew/backend-crew-service/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-event/README.md",
+    "h1": "AquaStream Backend Event Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "17040",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-event/backend-event-service/README.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "911",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-event/backend-event-service/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-event/backend-event-service/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-gateway/README.md",
+    "h1": "",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "1484",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-gateway/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-gateway/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/CI-README.md",
+    "h1": "CI/CD (GitHub Actions)",
+    "h2_first": "Workflows",
+    "lang": "mixed",
+    "size_bytes": "2269",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/DEVELOPER.md",
+    "h1": "AquaStream Backend - Developer Guide",
+    "h2_first": "📋 Оглавление",
+    "lang": "mixed",
+    "size_bytes": "40608",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/README.md",
+    "h1": "Backend Infra Overview",
+    "h2_first": "Быстрый старт",
+    "lang": "mixed",
+    "size_bytes": "2272",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/RELEASES.md",
+    "h1": "AquaStream Release Process",
+    "h2_first": "Semantic Versioning (SemVer)",
+    "lang": "en",
+    "size_bytes": "9924",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/aquastream-backend-spec-complete.md",
+    "h1": "AquaStream Backend - Техническая спецификация",
+    "h2_first": "Оглавление",
+    "lang": "mixed",
+    "size_bytes": "27461",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/backup/README.md",
+    "h1": "Бэкапы PostgreSQL (per-schema)",
+    "h2_first": "Что делает `backup.sh`",
+    "lang": "mixed",
+    "size_bytes": "3146",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/changelog.md",
+    "h1": "Changelog — Infra",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "2030",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/docker/README.md",
+    "h1": "Docker Compose (dev|stage|prod)",
+    "h2_first": "Профили",
+    "lang": "mixed",
+    "size_bytes": "5435",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-infra/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "652",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-media/README.md",
+    "h1": "AquaStream Backend Media Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "21541",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-media/backend-media-service/README.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "911",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-media/backend-media-service/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-media/backend-media-service/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-notification/README.md",
+    "h1": "AquaStream Backend Notification Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "26000",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-notification/backend-notification-service/README.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "911",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-notification/backend-notification-service/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-notification/backend-notification-service/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-payment/README.md",
+    "h1": "AquaStream Backend Payment Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "21282",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-payment/backend-payment-service/README.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "911",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-payment/backend-payment-service/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-payment/backend-payment-service/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-user/README.md",
+    "h1": "AquaStream Backend User Service",
+    "h2_first": "Описание",
+    "lang": "mixed",
+    "size_bytes": "25814",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-user/backend-user-service/README.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "911",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-user/backend-user-service/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/backend-user/backend-user-service/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/README.md",
+    "h1": "",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "1570",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/aquastream-frontend-spec.md",
+    "h1": "AquaStream — бизнес‑постановка v1.1 (MVP)",
+    "h2_first": "1. Назначение и контекст",
+    "lang": "mixed",
+    "size_bytes": "21273",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/changelog.md",
+    "h1": "",
+    "h2_first": "[Unreleased]",
+    "lang": "mixed",
+    "size_bytes": "515",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/claude-ready-brief.md",
+    "h1": "",
+    "h2_first": "AquaStream Frontend — Claude‑ready бриф (v1)",
+    "lang": "mixed",
+    "size_bytes": "16492",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/frontend-finalization-checklist.md",
+    "h1": "",
+    "h2_first": "Финализация фронтенда: унификация, качество, контроль",
+    "lang": "mixed",
+    "size_bytes": "7788",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/frontend-hardening-unification.md",
+    "h1": "",
+    "h2_first": "Доведение фронтенда до идеала: унификация, бест‑практики, очистка",
+    "lang": "mixed",
+    "size_bytes": "9694",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/runbook.md",
+    "h1": "",
+    "h2_first": "Мониторинг",
+    "lang": "mixed",
+    "size_bytes": "653",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/tailwind-shadcn-unification.md",
+    "h1": "",
+    "h2_first": "План унификации стилей: Tailwind CSS v4 + shadcn/ui",
+    "lang": "mixed",
+    "size_bytes": "15461",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/modules/frontend/todos-fe.md",
+    "h1": "Frontend TODOs",
+    "h2_first": "",
+    "lang": "en",
+    "size_bytes": "3841",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/ops/index.md",
+    "h1": "",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "323",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/overview.md",
+    "h1": "",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "706",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/reference/configuration.md",
+    "h1": "Конфигурация",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "28",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/reference/environment-variables.md",
+    "h1": "Переменные окружения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "123",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/reference/troubleshooting.md",
+    "h1": "Troubleshooting",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "72",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/roadmap.md",
+    "h1": "",
+    "h2_first": "Ближайшие",
+    "lang": "mixed",
+    "size_bytes": "266",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/roadmap/current-release.md",
+    "h1": "Текущий релиз",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "72",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/roadmap/long-term-vision.md",
+    "h1": "Долгосрочное видение",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "43",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/roadmap/planned-features.md",
+    "h1": "Запланированные функции",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "49",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/roadmap/technical-debt.md",
+    "h1": "Технический долг",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "35",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/api-design.md",
+    "h1": "Проектирование API",
+    "h2_first": "Обзор API контрактов",
+    "lang": "mixed",
+    "size_bytes": "9328",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/code-style.md",
+    "h1": "Стандарты кода",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "31",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/database-conventions.md",
+    "h1": "Соглашения по БД",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "34",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/documentation-style.md",
+    "h1": "Стиль документации",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "76",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/git-workflow.md",
+    "h1": "Git workflow",
+    "h2_first": "",
+    "lang": "en",
+    "size_bytes": "16",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/markdown_style.md",
+    "h1": "Компонент X",
+    "h2_first": "Обязательные требования",
+    "lang": "mixed",
+    "size_bytes": "2394",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/ui-ux-guidelines.md",
+    "h1": "UI/UX принципы",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "26",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/_internal/to_refactoring/styleguides/versioning.md",
+    "h1": "Политика версионирования документации",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "1052",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/api/index.md",
+    "h1": "",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "2209",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/architecture.md",
+    "h1": "",
+    "h2_first": "Обзор",
+    "lang": "mixed",
+    "size_bytes": "7352",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/README.md",
+    "h1": "",
+    "h2_first": "Архитектура",
+    "lang": "mixed",
+    "size_bytes": "2848",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/common/authentication.md",
+    "h1": "Глобальная аутентификация",
+    "h2_first": "Цель",
+    "lang": "mixed",
+    "size_bytes": "1211",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/common/error-handling.md",
+    "h1": "Обработка ошибок",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "94",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/crew/api.md",
+    "h1": "Crew API",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "93",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/crew/business-logic.md",
+    "h1": "Crew — бизнес-логика",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "38",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/crew/changelog.md",
+    "h1": "Crew — изменения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "117",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/crew/operations.md",
+    "h1": "Crew — операции",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "109",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/event/api.md",
+    "h1": "Event API",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "96",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/event/business-logic.md",
+    "h1": "Event — бизнес-логика",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "39",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/event/changelog.md",
+    "h1": "Event — изменения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "120",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/event/operations.md",
+    "h1": "Event — операции",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "112",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/gateway/api.md",
+    "h1": "Gateway API",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "78",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/gateway/changelog.md",
+    "h1": "Gateway — изменения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "102",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/gateway/operations.md",
+    "h1": "Gateway — операции",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "94",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/media/api.md",
+    "h1": "Media API",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "96",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/media/business-logic.md",
+    "h1": "Media — бизнес-логика",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "39",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/media/changelog.md",
+    "h1": "Media — изменения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "120",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/media/operations.md",
+    "h1": "Media — операции",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "112",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/notification/api.md",
+    "h1": "Notification API",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "117",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/notification/business-logic.md",
+    "h1": "Notification — бизнес-логика",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "46",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/notification/changelog.md",
+    "h1": "Notification — изменения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "141",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/notification/operations.md",
+    "h1": "Notification — операции",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "133",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/payment/api.md",
+    "h1": "Payment API",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "102",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/payment/business-logic.md",
+    "h1": "Payment — бизнес-логика",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "41",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/payment/changelog.md",
+    "h1": "Payment — изменения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "126",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/payment/operations.md",
+    "h1": "Payment — операции",
+    "h2_first": "Диагностика",
+    "lang": "mixed",
+    "size_bytes": "712",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/user/README.md",
+    "h1": "",
+    "h2_first": "Назначение",
+    "lang": "mixed",
+    "size_bytes": "2134",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/user/api.md",
+    "h1": "User API",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "93",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/user/business-logic.md",
+    "h1": "User — бизнес-логика",
+    "h2_first": "Домены",
+    "lang": "mixed",
+    "size_bytes": "541",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/user/changelog.md",
+    "h1": "User — изменения",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "117",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/backend/user/operations.md",
+    "h1": "User — операции",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "109",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/decisions/adr-0001-docs-stack.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "1623",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/decisions/adr-0002-sync-module-docs.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "1285",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/decisions/adr-0003-api-redoc.md",
+    "h1": "",
+    "h2_first": "Контекст",
+    "lang": "mixed",
+    "size_bytes": "1279",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/decisions/index.md",
+    "h1": "",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "774",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/development/build-guide.md",
+    "h1": "Руководство по сборке",
+    "h2_first": "Docs",
+    "lang": "mixed",
+    "size_bytes": "11496",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/development/local-development.md",
+    "h1": "Локальная разработка",
+    "h2_first": "Инфраструктура и запуск",
+    "lang": "mixed",
+    "size_bytes": "600",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/development/overview.md",
+    "h1": "Обзор",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "357",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/development/quick-start.md",
+    "h1": "Быстрый старт",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "140",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/development/setup.md",
+    "h1": "Development Setup",
+    "h2_first": "Требования",
+    "lang": "mixed",
+    "size_bytes": "1399",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/frontend/README.md",
+    "h1": "Frontend Overview",
+    "h2_first": "Технологический стек",
+    "lang": "mixed",
+    "size_bytes": "1277",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/frontend/components.md",
+    "h1": "Компоненты",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "98",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/design-playbook.md",
+    "h1": "Frontend Design Playbook",
+    "h2_first": "Назначение",
+    "lang": "mixed",
+    "size_bytes": "8790",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/design-tokens.md",
+    "h1": "Frontend Design Tokens",
+    "h2_first": "Типографика",
+    "lang": "mixed",
+    "size_bytes": "789",
+    "last_commit_date": "2025-09-27",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/development-guide.md",
+    "h1": "Руководство по разработке",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "118",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/layout-primitives.md",
+    "h1": "Layout Primitives",
+    "h2_first": "Section",
+    "lang": "mixed",
+    "size_bytes": "1372",
+    "last_commit_date": "2025-09-28",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/overview.md",
+    "h1": "Frontend — обзор",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "68",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/process.md",
+    "h1": "Frontend Process & Governance",
+    "h2_first": "PR-гигиена",
+    "lang": "mixed",
+    "size_bytes": "2499",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/routing.md",
+    "h1": "Маршрутизация",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "30",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/shadcn-components.md",
+    "h1": "Shadcn UI Coverage",
+    "h2_first": "Layout & Structure",
+    "lang": "mixed",
+    "size_bytes": "2852",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/stack.md",
+    "h1": "Frontend Stack (Stable Baseline)",
+    "h2_first": "Core Versions",
+    "lang": "mixed",
+    "size_bytes": "3108",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/state-management.md",
+    "h1": "Управление состоянием",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "45",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/testing.md",
+    "h1": "Frontend Testing Guide",
+    "h2_first": "Команды",
+    "lang": "mixed",
+    "size_bytes": "1651",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/frontend/tooling.md",
+    "h1": "Frontend Tooling",
+    "h2_first": "Поддержка современных CSS-селекторов",
+    "lang": "mixed",
+    "size_bytes": "4956",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/index.md",
+    "h1": "",
+    "h2_first": "Быстрый старт для разработчиков",
+    "lang": "mixed",
+    "size_bytes": "1322",
+    "last_commit_date": "2025-09-23",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/README.md",
+    "h1": "Operations Overview",
+    "h2_first": "Обзор",
+    "lang": "mixed",
+    "size_bytes": "1353",
+    "last_commit_date": "N/A",
+    "last_author": "N/A"
+  },
+  {
+    "path": "docs/operations/ci-cd.md",
+    "h1": "CI/CD",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "5729",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/dependency-locking.md",
+    "h1": "Dependency Locking",
+    "h2_first": "Настройка",
+    "lang": "mixed",
+    "size_bytes": "4023",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/deployment.md",
+    "h1": "Деплой",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "66",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/environment-setup.md",
+    "h1": "Окружения",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "22",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/git-hooks.md",
+    "h1": "Git Hooks",
+    "h2_first": "Структура",
+    "lang": "mixed",
+    "size_bytes": "4102",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/infrastructure.md",
+    "h1": "Инфраструктура",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "90",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/issue-management.md",
+    "h1": "Issue management",
+    "h2_first": "Зачем нужны templates",
+    "lang": "mixed",
+    "size_bytes": "2863",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/monitoring.md",
+    "h1": "Мониторинг",
+    "h2_first": "",
+    "lang": "ru",
+    "size_bytes": "24",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/policies/code-of-conduct.md",
+    "h1": "Code of Conduct",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "798",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/policies/security.md",
+    "h1": "Security Policy",
+    "h2_first": "Reporting a Vulnerability",
+    "lang": "mixed",
+    "size_bytes": "2888",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/policies/support.md",
+    "h1": "Support",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "315",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/operations/version-management.md",
+    "h1": "Управление версиями",
+    "h2_first": "Обзор",
+    "lang": "mixed",
+    "size_bytes": "5546",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/qa/README.md",
+    "h1": "",
+    "h2_first": "Стратегия тестирования",
+    "lang": "mixed",
+    "size_bytes": "3954",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/qa/index.md",
+    "h1": "",
+    "h2_first": "",
+    "lang": "mixed",
+    "size_bytes": "287",
+    "last_commit_date": "2025-09-22",
+    "last_author": "egorovma"
+  },
+  {
+    "path": "docs/quickstart.md",
+    "h1": "Запуск PostgreSQL, Redis, Kafka через Docker Compose",
+    "h2_first": "Требования",
+    "lang": "mixed",
+    "size_bytes": "2494",
+    "last_commit_date": "2025-09-29",
+    "last_author": "egorovma"
+  }
+]

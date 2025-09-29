@@ -101,8 +101,12 @@ docker-compose.override.yml
 # Project specific
 run
 .claude/
-docs/docs-tools/.venv-docs/
-docs/docs-tools/node_modules/
+
+# Documentation tools
+docs/_internal/docs-tools/.venv-docs/
+docs/_internal/docs-tools/node_modules/
+.venv-docs/
+**/.venv-docs/
 
 # MCP (Model Context Protocol)
 .mcp.json

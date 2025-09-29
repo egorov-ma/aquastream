@@ -1,0 +1,106 @@
+site_name: AquaStream Docs (Internal Config)
+site_dir: ../../build/docs
+repo_url: https://github.com/egorov-ma/aquastream
+docs_dir: ../
+nav:
+  - Главная: index.md
+  - Быстрый старт:
+      - Обзор: development/overview.md
+      - Быстрый старт: development/quick-start.md
+      - Сборка: development/build-guide.md
+      - Локальная разработка: development/local-development.md
+      - Установка окружения: development/setup.md
+  - Архитектура: architecture.md
+  - Backend:
+      - Обзор: backend/README.md
+      - Common:
+          - Аутентификация: backend/common/authentication.md
+          - Обработка ошибок: backend/common/error-handling.md
+      - Gateway:
+          - API: backend/gateway/api.md
+          - Операции: backend/gateway/operations.md
+          - Changelog: backend/gateway/changelog.md
+      - User:
+          - README: backend/user/README.md
+          - API: backend/user/api.md
+          - Бизнес-логика: backend/user/business-logic.md
+          - Операции: backend/user/operations.md
+          - Changelog: backend/user/changelog.md
+      - Event:
+          - API: backend/event/api.md
+          - Бизнес-логика: backend/event/business-logic.md
+          - Операции: backend/event/operations.md
+          - Changelog: backend/event/changelog.md
+      - Crew:
+          - API: backend/crew/api.md
+          - Бизнес-логика: backend/crew/business-logic.md
+          - Операции: backend/crew/operations.md
+          - Changelog: backend/crew/changelog.md
+      - Payment:
+          - API: backend/payment/api.md
+          - Бизнес-логика: backend/payment/business-logic.md
+          - Операции: backend/payment/operations.md
+          - Changelog: backend/payment/changelog.md
+      - Notification:
+          - API: backend/notification/api.md
+          - Бизнес-логика: backend/notification/business-logic.md
+          - Операции: backend/notification/operations.md
+          - Changelog: backend/notification/changelog.md
+      - Media:
+          - API: backend/media/api.md
+          - Бизнес-логика: backend/media/business-logic.md
+          - Операции: backend/media/operations.md
+          - Changelog: backend/media/changelog.md
+  - Frontend:
+      - Обзор: frontend/README.md
+      - Архитектура: frontend/overview.md
+      - Маршрутизация: frontend/routing.md
+      - Состояние: frontend/state-management.md
+      - Компоненты: frontend/components.md
+      - Stack: frontend/stack.md
+      - Разработка: frontend/development-guide.md
+      - Тестирование: frontend/testing.md
+      - Инструменты: frontend/tooling.md
+  - QA & Testing:
+      - Индекс: qa/index.md
+  - Operations:
+      - Обзор: operations/README.md
+      - Инфраструктура: operations/infrastructure.md
+      - Развертывание: operations/deployment.md
+      - CI/CD: operations/ci-cd.md
+      - Мониторинг: operations/monitoring.md
+      - Политики:
+          - Security: operations/policies/security.md
+          - Support: operations/policies/support.md
+          - Code of Conduct: operations/policies/code-of-conduct.md
+  - Development:
+      - Обзор: development/overview.md
+      - Версионирование: operations/version-management.md
+      - Git Hooks: operations/git-hooks.md
+  - API:
+      - Обзор: api/index.md
+  - Decisions:
+      - Индекс: decisions/index.md
+theme:
+  name: material
+  features:
+    - content.action.edit
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - attr_list
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed
+  - pymdownx.tilde
+  - pymdownx.caret
+plugins:
+  - search
+  - mermaid2
+  - redirects
+

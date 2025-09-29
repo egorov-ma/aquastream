@@ -9,17 +9,18 @@ summary: Стартовая страница портала документац
 
 ## Быстрый старт для разработчиков
 
-- [Обзор проекта](overview.md)
-- [Руководство по сборке](getting-started/build-guide.md)
-- [Локальная разработка](getting-started/local-development.md)
-- [Git Hooks для качества](devops/git-hooks.md)
-- [Политика безопасности](devops/policies/security.md)
+- [Обзор](development/overview.md)
+- [Быстрый старт](development/quick-start.md)
+- [Сборка](development/build-guide.md)
+- [Локальная разработка](development/local-development.md)
+- [Git Hooks для качества](operations/git-hooks.md)
+- [Политика безопасности](operations/policies/security.md)
 
 ## Архитектура и дизайн
 
-- [Обзор архитектуры](architecture/overview.md)
+- [Архитектура](architecture.md)
 - [API документация](api/index.md)
-- [ADR записи](adr/index.md)
+- [ADR записи](decisions/index.md)
 
 ## CI/CD статус
 
