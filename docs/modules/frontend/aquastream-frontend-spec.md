@@ -275,11 +275,8 @@ flowchart TD
 - SSR/RSC инициализация: `frontend/instrumentation.ts` (MSW Node `server.listen()`), включается при `NEXT_PUBLIC_USE_MOCKS=true`.
 - Браузер: `src/mocks/browser.ts` + `components/msw-provider.tsx` (ленивый старт, `onUnhandledRequest: 'bypass'`).
 - Хэндлеры: `src/mocks/handlers.ts` (any‑origin), а также dev API‑роуты `app/api/**`.
-- Запуск с моками:
-
-```bash
-NEXT_PUBLIC_USE_MOCKS=true NEXT_PUBLIC_API_BASE_URL=http://localhost:3101 PORT=3101 pnpm dev
-```
+- Запуск с моками: `pnpm dev:mocks` (внутри проставляет `NEXT_PUBLIC_USE_MOCKS=true`; при необходимости можно дополнять `NEXT_PUBLIC_API_BASE_URL`).
+- Режим без моков: `pnpm dev`. В этом случае запросы уходят на реальный API, и fallback-данные (например, список организаторов на главной) не подставляются — страница остаётся пустой, пока не ответит бэкенд.
 
 - Основные мок‑эндпоинты:
   - Организатор: `/organizers`, `/organizers/:slug`, `/organizers/:slug/events`
