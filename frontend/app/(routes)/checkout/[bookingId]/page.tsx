@@ -1,13 +1,19 @@
+import { PaymentWidget } from "@/components/checkout/PaymentWidget";
+import { QrSection } from "@/components/checkout/QrSection";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { resolveApiOrigin } from "@/lib/server/resolve-api-origin";
+
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'default-no-store';
 
 export default async function CheckoutPage({
   params,
 }: {
-  params: Promise<{ bookingId: string }>;
+  params: { bookingId: string };
 }) {
-  const { bookingId } = await params;
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/bookings/${bookingId}`, { cache: 'no-store' });
+  const { bookingId } = params;
+  const origin = resolveApiOrigin();
+  const res = await fetch(`${origin}/api/bookings/${bookingId}`, { cache: 'no-store' });
   const booking = res.ok ? await res.json() : null;
   return (
     <section data-test-id="page-checkout">
@@ -35,7 +41,6 @@ export default async function CheckoutPage({
 }
 
 function CheckoutFallback() {
-  // В SSR узнаём об ошибке только по res.ok; покажем Alert и Skeleton
   return (
     <div className="mt-4 grid gap-3">
       <Alert variant="destructive">
@@ -53,10 +58,6 @@ function CheckoutFallback() {
   );
 }
 
-import { PaymentWidget } from "@/components/checkout/PaymentWidget";
-import { QrSection } from "@/components/checkout/QrSection";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-
 function PaymentSection({ bookingId }: { bookingId: string }) {
   return (
     <div>
@@ -64,5 +65,3 @@ function PaymentSection({ bookingId }: { bookingId: string }) {
     </div>
   );
 }
-
-

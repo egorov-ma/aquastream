@@ -1,9 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { resolveApiOrigin } from "@/lib/server/resolve-api-origin";
 
 export async function createBookingAndGo(eventId: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/bookings`, {
+  const origin = resolveApiOrigin();
+  const res = await fetch(`${origin}/api/bookings`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ eventId }),
@@ -12,5 +14,4 @@ export async function createBookingAndGo(eventId: string) {
   const { id } = await res.json();
   redirect(`/checkout/${id}`);
 }
-
 

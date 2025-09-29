@@ -1,3 +1,8 @@
+import { WaitlistSection as ClientWaitlistSection } from "@/components/events/WaitlistSection";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { resolveApiOrigin } from "@/lib/server/resolve-api-origin";
+
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'default-no-store';
 export const metadata = { title: 'Событие' };
@@ -5,14 +10,13 @@ export const metadata = { title: 'Событие' };
 export default async function EventPage({
   params,
 }: {
-  params: Promise<{ eventId: string }>;
+  params: { eventId: string };
 }) {
-  const { eventId } = await params;
-  // summary по группам
-  const origin = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  const { eventId } = params;
+  const origin = resolveApiOrigin();
   const [summaryRes, waitRes] = await Promise.all([
-    fetch(new URL(`/api/organizer/events/${eventId}/groups?summary=1`, origin), { cache: "no-store" }).catch(() => null),
-    fetch(new URL(`/api/events/${eventId}/waitlist`, origin), { cache: "no-store" }).catch(() => null),
+    fetch(`${origin}/api/organizer/events/${eventId}/groups?summary=1`, { cache: "no-store" }).catch(() => null),
+    fetch(`${origin}/api/events/${eventId}/waitlist`, { cache: "no-store" }).catch(() => null),
   ]);
   const summary = summaryRes && summaryRes.ok ? await summaryRes.json() : null;
   const wait = waitRes && waitRes.ok ? await waitRes.json() : { items: [] };
@@ -38,9 +42,3 @@ export default async function EventPage({
     </section>
   );
 }
-
-import { WaitlistSection as ClientWaitlistSection } from "@/components/events/WaitlistSection";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-
-
