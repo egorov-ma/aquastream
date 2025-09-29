@@ -111,6 +111,18 @@ services:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
@@ -135,6 +147,18 @@ services:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8101/actuator/health"]
       interval: 10s
@@ -159,6 +183,18 @@ services:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8102/actuator/health"]
       interval: 10s
@@ -182,6 +218,18 @@ services:
       - postgres
     env_file:
       - ${ENV_FILE:-.env}
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8103/actuator/health"]
       interval: 10s
@@ -207,6 +255,18 @@ services:
       - minio
     env_file:
       - ${ENV_FILE:-.env}
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8104/actuator/health"]
       interval: 10s
@@ -230,6 +290,18 @@ services:
       - redis
     env_file:
       - ${ENV_FILE:-.env}
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8105/actuator/health"]
       interval: 10s
@@ -253,6 +325,18 @@ services:
       - minio
     env_file:
       - ${ENV_FILE:-.env}
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8106/actuator/health"]
       interval: 10s

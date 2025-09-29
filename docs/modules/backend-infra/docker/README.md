@@ -72,6 +72,12 @@ curl -s http://localhost:8080/actuator/health | jq
 
 Grafana provisioning и конфиги находятся в `backend-infra/docker/compose/`.
 
+### Политики безопасности контейнеров
+- Все backend-сервисы работают под пользователем `1000:1000` (без root).
+- Файловая система контейнера read-only, доступ на запись только через `tmpfs /tmp` и подключённые volume.
+- `cap_drop: [ALL]` и `no-new-privileges:true` исключают эскалацию привилегий.
+- `ulimits.nofile` поднят до 65536 для корректной работы под нагрузкой.
+
 ## Образы
 - Для каждого сервиса есть Dockerfile: `backend-infra/docker/images/Dockerfile.<service>`.
 - В dev окружении (через `make up-dev`) образы собираются локально и используются Compose‑ом.
