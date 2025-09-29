@@ -277,6 +277,12 @@ REDIS_HOST=redis              # Хост Redis (для Docker)
 JWT_SECRET=your-256-bit-secret # JWT подпись (обязательно 256+ бит)
 ```
 
+#### Observability
+```bash
+GRAFANA_ADMIN_USER=admin      # Пользователь Grafana (dev)
+GRAFANA_ADMIN_PASSWORD=admin  # Пароль Grafana (dev, меняйте для shared стендов)
+```
+
 #### External APIs
 ```bash
 # Telegram Bot
@@ -338,6 +344,7 @@ GATEWAY_CORS_ALLOWED_ORIGINS=http://localhost:3000  # Разрешенные ori
 - Подробное логирование
 - Все Actuator endpoint'ы доступны
 - CORS разрешен для localhost
+- Prometheus/Grafana/Loki/Promtail доступны для диагностики (см. раздел Observability)
 
 #### Staging (`stage`)
 - PostgreSQL база данных
@@ -352,6 +359,21 @@ GATEWAY_CORS_ALLOWED_ORIGINS=http://localhost:3000  # Разрешенные ori
 - Минимальное логирование
 - Только health check endpoint'ы
 - Полная безопасность
+
+## 📈 Observability (dev)
+
+Локальный стек наблюдаемости поднимается автоматически вместе с `make up-dev` (см. `docker-compose.override.dev.yml`).
+
+Компоненты и порты:
+
+- Prometheus — `http://localhost:9090` (конфиг `backend-infra/docker/compose/prometheus.yml`).
+- Grafana — `http://localhost:3001` (логин `${GRAFANA_ADMIN_USER}/${GRAFANA_ADMIN_PASSWORD}`, по умолчанию `admin/admin`).
+- Loki — `http://localhost:3100` (принимает логи от Promtail).
+- Promtail — собирает Docker JSON‑логи и пушит в Loki (`backend-infra/docker/compose/promtail-config.yml`).
+
+Grafana автоматически получает datasources (Prometheus, Loki) и базовый дашборд *Aquastream Overview*.
+
+> Если порты заняты или стек не нужен — удалите соответствующие сервисы из `docker-compose.override.dev.yml` перед запуском.
 
 ## 🗄️ База данных {#база-данных}
 
@@ -438,9 +460,9 @@ bash backend-infra/backup/backup.sh
 **Что происходит при бэкапе:**
 1. Создаются дампы для каждой схемы: `user`, `event`, `crew`, `payment`, `notification`, `media`
 2. Файлы сохраняются в `backend-infra/backup/artifacts/`
-3. Формат файлов: `{schema}_{YYYYMMDD}.dump`
-4. Еженедельные копии (воскресенье): `weekly_{schema}_{YYYY-WW}.dump`
-5. Ежемесячные копии (1 число): `monthly_{schema}_{YYYY-MM}.dump`
+3. Формат файлов: `{schema}_{YYYYMMDD}.dump.gz`
+4. Еженедельные копии (воскресенье): `weekly_{schema}_{YYYY-WW}.dump.gz`
+5. Ежемесячные копии (1 число): `monthly_{schema}_{YYYY-MM}.dump.gz`
 
 #### Политика retention
 - **Ежедневные**: 7 дней
@@ -455,17 +477,17 @@ bash backend-infra/backup/backup.sh
 make restore SCHEMA=<schema> FILE=<path>
 
 # Примеры
-make restore SCHEMA=user FILE=backend-infra/backup/artifacts/user_20250818.dump
-make restore SCHEMA=event FILE=backend-infra/backup/artifacts/weekly_event_2025-33.dump
+make restore SCHEMA=user FILE=backend-infra/backup/artifacts/user_20250818.dump.gz
+make restore SCHEMA=event FILE=backend-infra/backup/artifacts/weekly_event_2025-33.dump.gz
 
 # Или напрямую
-bash backend-infra/backup/restore.sh user backend-infra/backup/artifacts/user_20250818.dump
+bash backend-infra/backup/restore.sh user backend-infra/backup/artifacts/user_20250818.dump.gz
 ```
 
 #### Восстановление всех схем
 ```bash
 # Если у вас полный дамп
-make restore SCHEMA=all FILE=backend-infra/backup/artifacts/full_backup.dump
+make restore SCHEMA=all FILE=backend-infra/backup/artifacts/full_backup.dump.gz
 ```
 
 #### Восстановление в другую БД
@@ -476,7 +498,7 @@ POSTGRES_USER=test_user
 POSTGRES_PASSWORD=test_pass
 
 # Затем восстановите
-make restore SCHEMA=user FILE=backend-infra/backup/artifacts/user_20250818.dump
+make restore SCHEMA=user FILE=backend-infra/backup/artifacts/user_20250818.dump.gz
 ```
 
 ### Ручное создание бэкапов
@@ -488,7 +510,7 @@ docker run --rm \
   -e PGPASSWORD="postgres" \
   -v "$(pwd)/backend-infra/backup/artifacts:/backup" \
   postgres:16-alpine \
-  pg_dump -Fc -h postgres -U aquastream -d aquastream -f /backup/full_$(date +%Y%m%d).dump
+  pg_dump -Fc -h postgres -U aquastream -d aquastream -f /backup/full_$(date +%Y%m%d).dump && gzip -f /backup/full_$(date +%Y%m%d).dump
 ```
 
 #### Дамп конкретной схемы
@@ -498,7 +520,7 @@ docker run --rm \
   -e PGPASSWORD="postgres" \
   -v "$(pwd)/backend-infra/backup/artifacts:/backup" \
   postgres:16-alpine \
-  pg_dump -Fc -h postgres -U aquastream -d aquastream -n user -f /backup/user_manual_$(date +%Y%m%d).dump
+  pg_dump -Fc -h postgres -U aquastream -d aquastream -n user -f /backup/user_manual_$(date +%Y%m%d).dump && gzip -f /backup/user_manual_$(date +%Y%m%d).dump
 ```
 
 #### Дамп только данных (без схемы)
@@ -508,7 +530,7 @@ docker run --rm \
   -e PGPASSWORD="postgres" \
   -v "$(pwd)/backend-infra/backup/artifacts:/backup" \
   postgres:16-alpine \
-  pg_dump -Fc -a -h postgres -U aquastream -d aquastream -n user -f /backup/user_data_$(date +%Y%m%d).dump
+  pg_dump -Fc -a -h postgres -U aquastream -d aquastream -n user -f /backup/user_data_$(date +%Y%m%d).dump && gzip -f /backup/user_data_$(date +%Y%m%d).dump
 ```
 
 ## 🔄 CI/CD процессы {#cicd-процессы}
@@ -762,7 +784,7 @@ make down && make up-prod
 #### Откат базы данных
 ```bash
 # Если есть бэкап перед релизом
-make restore SCHEMA=all FILE=backend-infra/backup/artifacts/pre_release_v1.2.3.dump
+make restore SCHEMA=all FILE=backend-infra/backup/artifacts/pre_release_v1.2.3.dump.gz
 ```
 
 ## 📊 Мониторинг и отладка {#мониторинг-и-отладка}
@@ -1284,7 +1306,7 @@ gateway:
 0 2 * * * /path/to/aquastream/backend-infra/backup/backup.sh >> /var/log/aquastream-backup.log 2>&1
 
 # Еженедельная очистка старых бэкапов  
-0 3 * * 0 find /path/to/aquastream/backend-infra/backup/artifacts -name "*.dump" -mtime +30 -delete
+0 3 * * 0 find /path/to/aquastream/backend-infra/backup/artifacts -name "*.dump.gz" -mtime +30 -delete
 ```
 
 ---

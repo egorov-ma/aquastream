@@ -76,10 +76,10 @@ minio-get-test:
 backup:
 	bash $(ROOT_DIR)/backup/backup.sh
 
-# Usage: make restore SCHEMA=event FILE=backend-infra/backup/artifacts/event_YYYYMMDD.dump
+# Usage: make restore SCHEMA=event FILE=backend-infra/backup/artifacts/event_YYYYMMDD.dump.gz
 restore:
 	@if [ -z "$(SCHEMA)" ] || [ -z "$(FILE)" ]; then \
-		echo "Usage: make restore SCHEMA=<schema|all> FILE=<path-to-dump.dump>"; exit 1; \
+		echo "Usage: make restore SCHEMA=<schema|all> FILE=<path-to-dump.dump[.gz]>"; exit 1; \
 	fi
 	bash $(ROOT_DIR)/backup/restore.sh $(SCHEMA) $(FILE)
 

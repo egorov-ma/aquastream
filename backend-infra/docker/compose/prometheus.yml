@@ -1,0 +1,48 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: 'gateway'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-gateway:8080']
+
+  - job_name: 'user'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-user:8101']
+
+  - job_name: 'event'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-event:8102']
+
+  - job_name: 'crew'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-crew:8103']
+
+  - job_name: 'payment'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-payment:8104']
+
+  - job_name: 'notification'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-notification:8105']
+
+  - job_name: 'media'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-media:8106']
+
+  - job_name: 'gateway_health'
+    metrics_path: /actuator/metrics
+    static_configs:
+      - targets: ['backend-gateway:8080']

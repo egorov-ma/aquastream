@@ -74,3 +74,56 @@ services:
         JAR_FILE: backend-media/backend-media-api/build/libs/backend-media-api-*.jar
     ports:
       - "8106:8106"
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ../compose/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheusdata:/prometheus
+    ports:
+      - "9090:9090"
+    networks: [aquastream-net]
+
+  loki:
+    image: grafana/loki:2.9.5
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ../compose/loki-config.yml:/etc/loki/config.yml:ro
+      - lokidata:/loki
+    ports:
+      - "3100:3100"
+    networks: [aquastream-net]
+
+  promtail:
+    image: grafana/promtail:2.9.5
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ../compose/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - promtailpositions:/tmp/positions
+    depends_on:
+      - loki
+    networks: [aquastream-net]
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ../compose/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+      - loki
+    networks: [aquastream-net]

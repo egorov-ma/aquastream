@@ -4,9 +4,9 @@
 
 ## Что делает `backup.sh`
 - Делает отдельные дампы в формате `custom` (`pg_dump -Fc`) по схемам: `user`, `event`, `crew`, `payment`, `notification`, `media`.
-- Создаёт daily-файлы: `<schema>_YYYYMMDD.dump`.
-- По воскресеньям — дополнительно `weekly_<schema>_YYYY-WW.dump`.
-- Каждый 1-й день месяца — `monthly_<schema>_YYYY-MM.dump`.
+- Создаёт daily-файлы: `<schema>_YYYYMMDD.dump.gz`.
+- По воскресеньям — дополнительно `weekly_<schema>_YYYY-WW.dump.gz`.
+- Каждый 1-й день месяца — `monthly_<schema>_YYYY-MM.dump.gz`.
 - Ротация: хранит 7 daily, 4 weekly, 3 monthly.
 
 Файлы складываются в `backend-infra/backup/artifacts/`.
@@ -29,16 +29,16 @@
 ```bash
 bash backend-infra/backup/backup.sh
 ```
-Результат: дампы в `backend-infra/backup/artifacts`.
+Результат: сжатые `.dump.gz` файлы в `backend-infra/backup/artifacts`.
 
 ## Восстановление
-- Конкретная схема:
+- Конкретная схема (скрипт сам распознаёт `.gz`):
   ```bash
-  bash backend-infra/backup/restore.sh event backend-infra/backup/artifacts/event_20250101.dump
+  bash backend-infra/backup/restore.sh event backend-infra/backup/artifacts/event_20250101.dump.gz
   ```
 - Восстановить всё из общего файла:
   ```bash
-  bash backend-infra/backup/restore.sh all backend-infra/backup/artifacts/all_20250101.dump
+  bash backend-infra/backup/restore.sh all backend-infra/backup/artifacts/all_20250101.dump.gz
   ```
   (Если делаете общий файл самостоятельно.)
 

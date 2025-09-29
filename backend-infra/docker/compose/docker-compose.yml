@@ -9,6 +9,10 @@ volumes:
   pgdata:
   redisdata:
   miniodata:
+  prometheusdata:
+  grafanadata:
+  lokidata:
+  promtailpositions:
 
 services:
   postgres:

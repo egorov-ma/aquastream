@@ -62,6 +62,16 @@ curl -s http://localhost:8080/actuator/health | jq
 
 Базовый `docker-compose.yml` не публикует порты, содержит политики перезапуска, ротацию логов, ресурсные лимиты и healthcheck’и.
 
+### Observability (dev only)
+`docker-compose.override.dev.yml` добавляет стек наблюдаемости:
+
+- **Prometheus** (`http://localhost:9090`) — собирает `/actuator/prometheus` со всех сервисов.
+- **Grafana** (`http://localhost:3001`, логин `${GRAFANA_ADMIN_USER}/${GRAFANA_ADMIN_PASSWORD}`) — готовые datasources и дашборд *Aquastream Overview*.
+- **Loki** (`http://localhost:3100`) — хранение логов контейнеров.
+- **Promtail** — собирает JSON-логи Docker и пушит в Loki.
+
+Grafana provisioning и конфиги находятся в `backend-infra/docker/compose/`.
+
 ## Образы
 - Для каждого сервиса есть Dockerfile: `backend-infra/docker/images/Dockerfile.<service>`.
 - В dev окружении (через `make up-dev`) образы собираются локально и используются Compose‑ом.
