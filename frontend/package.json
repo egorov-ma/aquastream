@@ -62,7 +62,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "isomorphic-dompurify": "^2.26.0",
     "lighthouse": "^12.8.1",
     "lightningcss": "^1.30.1",
