@@ -92,6 +92,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Prepare artifact directories
+        run: |
+          mkdir -p reports/${{ matrix.service }}
+
       - name: Mark image build start
         run: echo "IMG_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
 
@@ -130,9 +134,11 @@ jobs:
             printf '%s\n' "${TAGS[@]}"
             echo 'TAGS'
           } >> "$GITHUB_OUTPUT"
+          PRIMARY_TAG="${IMAGE}:sha-${SHORT_SHA}"
           printf 'jar_file=%s\n' "$JAR_FILE" >> "$GITHUB_OUTPUT"
           printf 'dockerfile=%s\n' "$DF" >> "$GITHUB_OUTPUT"
           printf 'short_sha=%s\n' "$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          printf 'primary_tag=%s\n' "$PRIMARY_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Login to GHCR
         if: github.event_name != 'pull_request'
@@ -161,11 +167,12 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short_sha }}
+          image-ref: ${{ steps.meta.outputs.primary_tag }}
           format: 'table'
           vuln-type: 'os,library'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH,MEDIUM'
+          output: reports/${{ matrix.service }}/trivy.txt
           exit-code: '0'
 
       - name: Build and Push image
@@ -182,6 +189,47 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Generate SBOM (Syft)
+        shell: bash
+        env:
+          IMAGE_REF: ${{ steps.meta.outputs.primary_tag }}
+          SERVICE: ${{ matrix.service }}
+          SHORT_SHA: ${{ steps.meta.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "reports/${SERVICE}"
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            docker pull "$IMAGE_REF"
+          fi
+          # Syft CLI (pinned version)
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            ghcr.io/anchore/syft:v1.6.0 \
+            "$IMAGE_REF" -o spdx-json > "reports/${SERVICE}/sbom-${SHORT_SHA}.spdx.json"
+
+      - name: Trivy Scan (push/release)
+        if: github.event_name != 'pull_request'
+        id: trivy_push
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ steps.meta.outputs.primary_tag }}
+          format: 'table'
+          vuln-type: 'os,library'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+          output: reports/${{ matrix.service }}/trivy.txt
+          exit-code: '1'
+
+      - name: Upload security artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: security-${{ matrix.service }}-${{ steps.meta.outputs.short_sha }}
+          if-no-files-found: ignore
+          retention-days: 14
+          path: reports/${{ matrix.service }}
 
       - name: Summary
         shell: bash
@@ -211,3 +259,16 @@ jobs:
               echo "- Digest: $DIGEST" >> "$GITHUB_STEP_SUMMARY"
             fi
           fi
+          REPORT_DIR="reports/${{ matrix.service }}"
+          if [[ -f "$REPORT_DIR/trivy.txt" ]]; then
+            echo "- Trivy report: $REPORT_DIR/trivy.txt (см. artifacts)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [[ -f "$REPORT_DIR/sbom-${{ steps.meta.outputs.short_sha }}.spdx.json" ]]; then
+            echo "- SBOM: $REPORT_DIR/sbom-${{ steps.meta.outputs.short_sha }}.spdx.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce Trivy policy
+        if: github.event_name != 'pull_request' && steps.trivy_push.outcome == 'failure'
+        run: |
+          echo "High/Critical vulnerabilities detected. See Trivy report." >&2
+          exit 1

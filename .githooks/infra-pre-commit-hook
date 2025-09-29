@@ -11,6 +11,8 @@ CHANGED_FILES="$(git diff --cached --name-only)"
 # Цвета для вывода
 NC="\033[0m"; GREEN="\033[0;32m"; YELLOW="\033[0;33m"; RED="\033[0;31m"
 
+error_flag=0
+
 log() {
     local level="$1"; shift
     local msg="$*"
@@ -27,7 +29,7 @@ log() {
 has_infrastructure_changes() {
     local changed_files="$1"
 
-    echo "$changed_files" | grep -E "(backend-infra/docker/compose/docker-compose\.yml|backend-infra/docker/images/|Dockerfile|\.env|nginx\.conf|prometheus\.yml|logstash\.conf|\.sh)$" >/dev/null
+    echo "$changed_files" | grep -E "^(backend-infra/(docker/(compose/.*|images/.*|scripts/.*)|backup/.*)|\.githooks/infra-pre-commit-hook|Dockerfile.*|.*Dockerfile|.*\.sh|.*\.env)$" >/dev/null
 }
 
 # Проверяем конкретные файлы на критичные ошибки
@@ -35,23 +37,37 @@ check_critical_files() {
     local changed_files="$1"
     local exit_code=0
 
-    # Проверяем основной docker-compose.yml если он изменился
-    local compose_file_rel="backend-infra/docker/compose/docker-compose.yml"
-    if echo "$changed_files" | grep -q "$compose_file_rel"; then
-        log INFO "Проверка $compose_file_rel..."
+    # Проверяем docker-compose файлы
+    local compose_changes
+    compose_changes=$(echo "$changed_files" | grep -E '^backend-infra/docker/compose/.*\.ya?ml$' || true)
+    if [ -n "$compose_changes" ]; then
+        while IFS= read -r rel; do
+            [ -z "$rel" ] && continue
+            local file="$PROJECT_ROOT/$rel"
+            [ ! -f "$file" ] && continue
+            log INFO "Проверка $rel..."
 
-        local compose_file="$PROJECT_ROOT/$compose_file_rel"
-        if [ -f "$compose_file" ]; then
-            # Проверка на :latest теги (пока предупреждение до pinning в P2-15)
-            if grep -q ":latest" "$compose_file"; then
-                log WARN "⚠️ Найдены :latest теги в $compose_file — зафиксируйте версии (P2-15)."
+            if grep -n ":latest" "$file" >/dev/null; then
+                log ERROR "❌ В $rel обнаружен тег :latest — зафиксируйте конкретную версию образа."
+                exit_code=1
             fi
 
-            # Проверка на hardcoded пароли/секреты (пока предупреждение; переводим на env_file в P0-3)
-            if grep -E "(password|secret|key):\s*[^\$\{]" "$compose_file" >/dev/null; then
-                log WARN "⚠️ Возможные секреты в plaintext в $compose_file — используйте env_file (.env.*)."
-            fi
-        fi
+            while IFS= read -r line; do
+                [ -z "$line" ] && continue
+                local num="${line%%:*}"
+                local content="${line#*:}"
+                # Пропускаем комментарии
+                if [[ "${content}" =~ ^[[:space:]]*# ]]; then
+                    continue
+                fi
+                # Разрешаем значения, использующие подстановку ${VAR}
+                if [[ "$content" =~ \$\{ ]]; then
+                    continue
+                fi
+                log ERROR "❌ Возможный секрет в $rel:$num — значение должно браться из env_file (${content// / })."
+                exit_code=1
+            done < <(grep -nEi '\b(password|secret|token|key)\b\s*:' "$file" || true)
+        done <<< "$compose_changes"
     fi
 
     # Проверяем .env файлы
@@ -123,6 +139,36 @@ check_yaml_formatting() {
     fi
 }
 
+run_hadolint() {
+    local changed_files="$1"
+    if ! command -v hadolint >/dev/null 2>&1; then
+        log INFO "ℹ️ hadolint не установлен, пропускаем проверку Dockerfile"
+        return 0
+    fi
+
+    local dockerfiles
+    dockerfiles=$(echo "$changed_files" | grep -E '(Dockerfile(\.[^/]+)?|backend-infra/docker/images/[^/]+)$' || true)
+    if [ -z "$dockerfiles" ]; then
+        return 0
+    fi
+
+    log INFO "Проверка Dockerfile через hadolint..."
+    local hadolint_err=0
+    while IFS= read -r df; do
+        [ -z "$df" ] && continue
+        local path="$PROJECT_ROOT/$df"
+        [ ! -f "$path" ] && continue
+        if ! hadolint "$path"; then
+            log ERROR "❌ hadolint обнаружил проблемы в $df"
+            hadolint_err=1
+        fi
+    done <<< "$dockerfiles"
+
+    if [ $hadolint_err -ne 0 ]; then
+        return 1
+    fi
+}
+
 # Основная логика pre-commit хука
 main() {
     log INFO "🚀 Запуск pre-commit валидации AquaStream"
@@ -144,6 +190,10 @@ main() {
 
     # Проверяем YAML форматирование
     if ! check_yaml_formatting "$CHANGED_FILES"; then
+        exit_code=1
+    fi
+
+    if ! run_hadolint "$CHANGED_FILES"; then
         exit_code=1
     fi
 

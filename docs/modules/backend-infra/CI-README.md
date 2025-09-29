@@ -23,4 +23,8 @@
 - Должен существовать Dockerfile (пример: `backend-gateway/Dockerfile`).
 - Gradle build создаёт fat jar `build/libs/<service>-*.jar`.
 
+## Security & SBOM
+- Trivy (PR: информативный отчёт, Push/Release: фейл по High/Critical) — результаты в артефактах `security-<service>-<sha>`.
+- Syft (SBOM `spdx-json`) формируется для каждого образа и прикладывается в те же артефакты.
+
 Все workflow используют ограниченные `permissions`, `concurrency` и кэш Gradle/pnpm/pip для повторяемости.

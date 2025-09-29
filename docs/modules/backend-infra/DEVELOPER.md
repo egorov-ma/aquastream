@@ -533,7 +533,9 @@ docker run --rm \
 2. Матричный buildx по сервисам (gateway, user, event, crew, payment, notification, media)
 3. PR: локальный build + Trivy scan (без push)
 4. Push/Release: login в GHCR, публикация тегов `sha-*`, `v*`, `latest`
-5. Summary с итоговыми образами и длительностью
+5. Trivy отчёты (артефакт `security-<service>-<sha>`): PR — информативно, main/release — fail по High/Critical
+6. Syft SBOM (`spdx-json`) на каждый образ
+7. Summary с итоговыми образами и длительностью
 ```
 
 #### 3. Frontend CI (`frontend-ci.yml`)

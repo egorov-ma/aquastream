@@ -36,6 +36,16 @@ pre-commit run --config .githooks/docs-pre-commit-config.yaml --all-files
 
 **Назначение**: Custom bash скрипт для валидации инфраструктурных файлов перед коммитом.
 
+**Что проверяет**:
+- `docker-compose` (весь `backend-infra/docker/compose/`): запрет `:latest`, отсутствие секретов в plaintext.
+- Shell-скрипты: `bash -n` + автоустановка `+x`.
+- YAML: синтаксис через `yq` (если установлен).
+- Dockerfile: `hadolint` (если установлен локально).
+
+**Зависимости (опционально, но желательны)**
+- [`yq`](https://mikefarah.gitbook.io/yq/) — проверка YAML.
+- [`hadolint`](https://github.com/hadolint/hadolint) — lint Dockerfile.
+
 **Установка** (если нужен):
 ```bash
 # Скопировать в .git/hooks/

@@ -5,7 +5,7 @@
 
 Состав
 - Backend CI: сборка и тесты Gradle для `backend-*` модулей.
-- Docker Images CI: buildx + Trivy, публикация образов в GHCR по матрице сервисов.
+- Docker Images CI: buildx + Trivy (PR — информативно, main/release — fail по High/Critical) и публикация образов в GHCR по матрице сервисов; Syft генерирует SBOM (`spdx-json`).
 - Frontend CI: линт, typecheck и билд фронтенда (`frontend/`).
 - CodeQL: статический анализ безопасности для Java/Kotlin, JavaScript/TypeScript и Python.
 - Dependabot: автоматические PR с обновлениями зависимостей и actions.
@@ -46,6 +46,7 @@
 - Кэширование Gradle и pnpm для ускорения.
 - Проверка Gradle Wrapper (`gradle/wrapper-validation-action`) в Backend CI.
 - Пинование GitHub Actions по SHA для безопасности (обновления через PR).
+- Артефакты безопасности: `security-<service>-<sha>` (Trivy отчёты + Syft SBOM) сохраняются для каждого образа.
 - При желании автоматизировать обновления pinned SHA для actions, добавьте комментарий с мажорной версией рядом с SHA (формат `# vX`) — Dependabot сможет предлагать обновления внутри мажорной линии.
 - Docs-as-Code: держите всё в `/docs`, сборка в CI, деплой с `main`.
 
