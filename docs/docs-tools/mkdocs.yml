@@ -6,7 +6,6 @@ nav:
   - Home: index.md
   - Quick Start: quickstart.md
   - Architecture: architecture.md
-  - Glossary: glossary.md
   - Backend:
       - Overview: backend/README.md
       - Common:
@@ -121,7 +120,6 @@ nav:
 
   - Decisions:
       - Overview: decisions/index.md
-  - Glossary: glossary.md
 theme:
   name: material
   features:

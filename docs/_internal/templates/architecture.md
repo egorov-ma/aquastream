@@ -384,10 +384,10 @@ make test-contract SERVICE={service-name}
 ## Диаграммы
 
 ### Исходники диаграмм
-Исходные файлы диаграмм находятся в `docs/_diagrams/{module-name}/`
+Исходные файлы диаграмм находятся в `docs/_internal/_diagrams/{module-name}/`
 
 ### Экспортированные схемы
-Готовые изображения в `docs/_media/diagrams/{module-name}/`
+Готовые изображения в `docs/_internal/_media/diagrams/{module-name}/`
 
 ## См. также
 
