@@ -13,7 +13,7 @@ export function LoadingState() {
   );
 }
 
-export function EmptyState({ title = "Нет данных", action }: { title?: string; action?: React.ReactNode }) {
+export function EmptyState({ title = "No data", action }: { title?: string; action?: React.ReactNode }) {
   return (
     <Alert className="text-center">
       <AlertDescription>
@@ -24,14 +24,14 @@ export function EmptyState({ title = "Нет данных", action }: { title?: 
   );
 }
 
-export function ErrorState({ message = "Произошла ошибка", onRetry }: { message?: string; onRetry?: () => void }) {
+export function ErrorState({ message = "An error occurred", onRetry }: { message?: string; onRetry?: () => void }) {
   return (
     <Alert variant="destructive" className="text-center">
       <AlertDescription>
         <div>{message}</div>
         {onRetry ? (
           <div className="mt-3">
-            <Button variant="outline" size="sm" onClick={onRetry}>Повторить</Button>
+            <Button variant="outline" size="sm" onClick={onRetry}>Retry</Button>
           </div>
         ) : null}
       </AlertDescription>

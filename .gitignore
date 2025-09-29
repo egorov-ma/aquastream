@@ -104,6 +104,10 @@ run
 docs/docs-tools/.venv-docs/
 docs/docs-tools/node_modules/
 
+# MCP (Model Context Protocol)
+.mcp.json
+.codex/
+
 # Git hooks
 !.githooks/
 

@@ -83,7 +83,7 @@ type TableEmptyProps = React.TdHTMLAttributes<HTMLTableCellElement> & {
   colSpan?: number;
 };
 
-const TableEmpty = ({ colSpan = 1, className, children = "Нет данных", ...props }: TableEmptyProps) => (
+const TableEmpty = ({ colSpan = 1, className, children = "No data", ...props }: TableEmptyProps) => (
   <TableRow>
     <TableCell
       colSpan={colSpan}
