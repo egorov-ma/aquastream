@@ -22,7 +22,7 @@ def render_plantuml(puml_file: Path) -> bool:
     try:
         cmd = [
             'docker', 'run', '--rm', '-v', f'{puml_file.parent.as_posix()}:/work', '-v', f'{DEST.as_posix()}:/out',
-            'plantuml/plantuml:latest', '-tpng', '-o', '/out', f'/work/{puml_file.name}'
+            'plantuml/plantuml:1.2024.6', '-tpng', '-o', '/out', f'/work/{puml_file.name}'
         ]
         subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(f"[diagram] PUML → {out_png}")

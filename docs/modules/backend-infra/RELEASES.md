@@ -142,13 +142,13 @@ Docker images are automatically tagged based on the release type:
 ### Release Tags (vX.Y.Z)
 ```
 ghcr.io/YOUR_ORG/aquastream-backend-notification:v1.2.3
-ghcr.io/YOUR_ORG/aquastream-backend-notification:latest
+ghcr.io/YOUR_ORG/aquastream-backend-notification:v1.2.3
 ```
 
 ### Development Tags
 ```
 ghcr.io/YOUR_ORG/aquastream-backend-notification:sha-a1b2c3d
-ghcr.io/YOUR_ORG/aquastream-backend-notification:latest
+ghcr.io/YOUR_ORG/aquastream-backend-notification:v1.2.3
 ```
 
 ## Environment Deployment

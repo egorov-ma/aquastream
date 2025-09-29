@@ -649,8 +649,8 @@ JWT_SECRET
 # GitHub Container Registry (GHCR)
 Registry: ghcr.io
 Images: 
-  - ghcr.io/your-org/aquastream-backend-gateway:latest
-  - ghcr.io/your-org/aquastream-backend-notification:latest
+  - ghcr.io/your-org/aquastream-backend-gateway:v1.2.3
+  - ghcr.io/your-org/aquastream-backend-notification:v1.2.3
   - ghcr.io/your-org/aquastream-backend-notification:v1.0.1
 ```
 
@@ -781,7 +781,7 @@ git push origin main
 ```bash
 # В Kubernetes/Docker Compose
 docker tag ghcr.io/your-org/aquastream-backend-notification:v1.2.2 \
-           ghcr.io/your-org/aquastream-backend-notification:latest
+           ghcr.io/your-org/aquastream-backend-notification:v1.2.3
 
 # Перезапуск сервисов
 make down && make up-prod
