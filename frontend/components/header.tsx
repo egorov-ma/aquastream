@@ -76,7 +76,7 @@ export function Header() {
             {orgItems.length ? (
               <>
                 <ToolbarGroup className="hidden flex-1 justify-center md:flex">
-                  <NavigationMenu viewport={false} className="max-w-none">
+                  <NavigationMenu className="max-w-none">
                     <NavigationMenuList className="gap-1">
                       {orgItems.map((item) => {
                         const active = item.match(pathname ?? "");

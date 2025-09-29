@@ -25,16 +25,34 @@ export function EventList({ slug }: { slug: string }) {
   // Загружаем один раз список событий; фильтруем на клиенте (серверная фильтрация вне объёма T09)
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
+    let isMounted = true;
     const base = process.env.NEXT_PUBLIC_API_BASE_URL;
     const url = base
       ? `${base.replace(/\/$/, "")}/organizers/${slug}/events`
       : `/organizers/${slug}/events`;
-    fetch(url, { signal: controller.signal })
-      .then((r) => r.json())
-      .then((json: { items: Item[] }) => setItems(json.items))
-      .finally(() => setLoading(false));
-    return () => controller.abort();
+
+    async function load() {
+      setLoading(true);
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(`Failed to load events (${res.status})`);
+        const json: { items: Item[] } = await res.json();
+        if (isMounted) setItems(json.items);
+      } catch (error) {
+        if (!isMounted) return;
+        if (error instanceof Error && error.name === "AbortError") return;
+        console.error("Failed to fetch organizer events", error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    load();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [slug]);
 
   const visibleItems = useMemo(() => {
@@ -137,5 +155,4 @@ export function EventList({ slug }: { slug: string }) {
     </div>
   );
 }
-
 

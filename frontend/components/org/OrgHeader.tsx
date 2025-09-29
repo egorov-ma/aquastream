@@ -17,16 +17,34 @@ export function OrgHeader({ slug }: { slug: string }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
+    let isMounted = true;
     const base = process.env.NEXT_PUBLIC_API_BASE_URL;
     const url = base
       ? `${base.replace(/\/$/, "")}/organizers/${slug}`
       : `/organizers/${slug}`;
-    fetch(url, { signal: controller.signal })
-      .then((r) => r.json())
-      .then((json: Organizer) => setData(json))
-      .finally(() => setLoading(false));
-    return () => controller.abort();
+
+    async function load() {
+      setLoading(true);
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(`Failed to load organizer (${res.status})`);
+        const json: Organizer = await res.json();
+        if (isMounted) setData(json);
+      } catch (error) {
+        if (!isMounted) return;
+        if (error instanceof Error && error.name === "AbortError") return;
+        console.error("Failed to fetch organizer", error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    load();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [slug]);
 
   const accent = data?.brandColor || "#6366f1"; // fallback Indigo-500
@@ -48,5 +66,4 @@ export function OrgHeader({ slug }: { slug: string }) {
     </div>
   );
 }
-
 

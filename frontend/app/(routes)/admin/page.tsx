@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import { Section } from "@/components/ui/section";
-import { PageHeader } from "@/components/ui/page-header";
 import { DataTableShell } from "@/components/ui/data-table-shell";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableEmpty } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,12 @@ export default function AdminUsersPage() {
 
   return (
     <Section data-test-id="page-admin-users" gap="lg">
-      <PageHeader title="Администрирование" description="Управление ролями пользователей" />
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Администрирование</h1>
+          <p className="text-sm text-muted-foreground mt-1">Управление ролями пользователей</p>
+        </div>
+      </div>
       <DataTableShell title="Пользователи">
         <Table>
           <TableHeader>
