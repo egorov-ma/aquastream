@@ -1,208 +1,59 @@
-# Безопасность
+# Security Utilities
 
 ## Обзор
 
-Многоуровневая система безопасности включает аутентификацию JWT, RBAC авторизацию, rate limiting, security headers и мониторинг уязвимостей.
+`backend-common` предоставляет набор security utilities для защиты API и валидации данных. Включает input validation, password hashing utilities и общие security константы.
 
-## JWT Аутентификация
+## Domain Constants
 
-### Алгоритм подписи
-
-- **Алгоритм**: HS512 (HMAC with SHA-512)
-- **Secret**: Настраивается через `JWT_SECRET` env variable
-- **Ротация ключей**: Рекомендуется каждые 90 дней
-
-### Token Structure
-
-**Access Token**:
-```json
-{
-  "sub": "550e8400-e29b-41d4-a716-446655440000",
-  "username": "user@example.com",
-  "role": "USER",
-  "iat": 1704067200,
-  "exp": 1704070800,
-  "jti": "at-unique-token-id"
-}
-```
-
-**Параметры**:
-- `sub`: User ID
-- `role`: USER | ORGANIZER | ADMIN
-- `exp`: Expiration (1 час)
-- `jti`: Для revoke механизма
-
-### Token Storage
-
-**Frontend**:
-- Access token: `localStorage` (для удобства)
-- Refresh token: `httpOnly cookie` (рекомендуется для production)
-
-**Backend**:
-- Refresh sessions в PostgreSQL (`user.refresh_sessions`)
-- Revoked tokens в Redis (blacklist)
-
-## RBAC (Role-Based Access Control)
-
-### Роли
-
-| Роль | Уровень | Типичные действия |
-|------|---------|-------------------|
-| **Guest** | 0 | Просмотр публичного контента |
-| **User** | 1 | Бронирование, оплата |
-| **Organizer** | 2 | Управление событиями |
-| **Admin** | 3 | Системное управление |
-
-См. [Authentication Guide](authentication.md) для детальных прав.
-
-### Проверка прав
+### Security Headers
 
 ```java
-// В Gateway
-if (isProtectedRoute(path) && !hasValidJWT(request)) {
-    return unauthorized();
-}
+public class DomainConstants {
+    // HTTP Headers
+    public static final String HEADER_REQUEST_ID = "X-Request-Id";
+    public static final String HEADER_USER_ID = "X-User-Id";
+    public static final String HEADER_USER_ROLE = "X-User-Role";
 
-// В Service
-@PreAuthorize("hasRole('ORGANIZER')")
-public Event createEvent(CreateEventRequest request) {
-    // ...
-}
-
-// Или вручную
-if (!"ORGANIZER".equals(role) && !"ADMIN".equals(role)) {
-    throw new ForbiddenException();
+    // MDC Keys
+    public static final String LOG_CORRELATION_ID = "correlationId";
 }
 ```
 
-## Rate Limiting
+Используются для:
+- Трейсинга запросов между сервисами
+- Передачи user context от Gateway к сервисам
+- Структурированного логирования
 
-### Bucket4j (Soft Limits)
-
-**Настройка в Gateway**:
+## Роли (UserRole enum)
 
 ```java
-// Лимиты по endpoint'ам
-@RateLimiter(limit = 10, interval = 60)  // 10 req/min
-POST /api/auth/login
-
-@RateLimiter(limit = 30, interval = 60)  // 30 req/min  
-POST /api/payments/*
-
-@RateLimiter(limit = 100, interval = 60) // 100 req/min
-GET /api/events
-```
-
-### Конфигурация
-
-```yaml
-# application.yml (Gateway)
-rate-limit:
-  enabled: true
-  default-capacity: 100
-  default-refill-tokens: 100
-  default-refill-duration: 60s
-  
-  rules:
-    - path: /api/auth/**
-      capacity: 10
-      refill-tokens: 10
-      refill-duration: 60s
-      
-    - path: /api/payments/**
-      capacity: 30
-      refill-tokens: 30
-      refill-duration: 60s
-```
-
-### Storage
-
-- **Redis**: хранение bucket состояний
-- **Per IP**: для неавторизованных
-- **Per User**: для авторизованных
-
-### Response при превышении
-
-```http
-HTTP/1.1 429 Too Many Requests
-X-RateLimit-Limit: 10
-X-RateLimit-Remaining: 0
-X-RateLimit-Reset: 1704067260
-Retry-After: 60
-
-{
-  "error": "rate_limit_exceeded",
-  "message": "Too many requests. Please try again in 60 seconds."
+public enum UserRole {
+    GUEST,      // Неавторизованный пользователь
+    USER,       // Обычный пользователь
+    ORGANIZER,  // Организатор событий
+    ADMIN       // Администратор
 }
 ```
 
-## Security Headers
-
-### Production Headers
-
-```yaml
-# Настроено в Gateway
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-X-XSS-Protection: 1; mode=block
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-Content-Security-Policy: default-src 'self'
-Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: geolocation=(), microphone=(), camera=()
-```
-
-### CORS
-
-```yaml
-# Gateway CORS configuration
-cors:
-  allowed-origins:
-    - https://aquastream.com
-    - https://app.aquastream.com
-  allowed-methods:
-    - GET
-    - POST
-    - PUT
-    - DELETE
-    - PATCH
-  allowed-headers:
-    - Authorization
-    - Content-Type
-    - X-Request-ID
-  exposed-headers:
-    - X-Total-Count
-    - X-Page-Number
-  max-age: 3600
-  allow-credentials: true
-```
-
-## Password Security
-
-### Hashing
+**Использование**:
 
 ```java
-// BCrypt с strength 12
-BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-String hashedPassword = encoder.encode(rawPassword);
+// В DTO
+private UserRole role = UserRole.USER;
+
+// Проверка прав
+if (role != UserRole.ORGANIZER && role != UserRole.ADMIN) {
+    throw new ForbiddenException("Only organizers can create events");
+}
+
+// С enum ordinal
+if (userRole.ordinal() >= UserRole.ORGANIZER.ordinal()) {
+    // Organizer or higher
+}
 ```
 
-### Требования к паролям
-
-```java
-// Валидация
-@Pattern(
-    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$",
-    message = "Password must be at least 12 characters with uppercase, lowercase, digit and special char"
-)
-private String password;
-```
-
-**Правила**:
-- Минимум 12 символов
-- Хотя бы одна заглавная буква
-- Хотя бы одна строчная буква
-- Хотя бы одна цифра
-- Хотя бы один спецсимвол
+См. [Authentication](../authentication.md) для детальных прав каждой роли
 
 ## Input Validation
 
@@ -281,140 +132,87 @@ secrets:
     file: ./secrets/db_password.txt
 ```
 
-## Security Scanning
+## Password Validation Regex
 
-### OWASP Dependency Check
+Используется для валидации паролей при регистрации и изменении:
 
-```bash
-# Сканирование зависимостей
-./gradlew dependencyCheckAnalyze
-
-# Отчеты: build/reports/dependency-check-report.html
-# SARIF: build/reports/dependency-check-report.sarif
-
-# Suppression file: owasp-suppression.xml
+```java
+@Pattern(
+    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$",
+    message = "Password must be at least 12 characters with uppercase, lowercase, digit and special char"
+)
+private String password;
 ```
 
-### Trivy (Docker Images)
+**Правила**:
+- Минимум 12 символов
+- Хотя бы одна заглавная буква (`A-Z`)
+- Хотя бы одна строчная буква (`a-z`)
+- Хотя бы одна цифра (`\d`)
+- Хотя бы один спецсимвол (`@$!%*?&`)
 
-```bash
-# Локальный scan
-make scan
+## Статусы (Domain Enums)
 
-# Результаты: backend-infra/reports/scan/
+### BookingStatus
 
-# В CI автоматически на PR/push
+```java
+public enum BookingStatus {
+    PENDING,     // Ожидает оплаты
+    CONFIRMED,   // Оплачено и подтверждено
+    COMPLETED,   // Событие прошло
+    EXPIRED,     // Истекло время оплаты
+    CANCELLED,   // Отменено пользователем
+    NO_SHOW      // Не явился на событие
+}
 ```
 
-### CodeQL
+### PaymentStatus
 
-- Автоматически в GitHub Actions
-- Сканирует: Java, JavaScript/TypeScript, Python
-- Schedule: еженедельно
-- Результаты: GitHub Security tab
-
-## Container Security
-
-### Политики безопасности
-
-```yaml
-# docker-compose.yml
-services:
-  backend-user:
-    user: "1000:1000"              # Non-root user
-    read_only: true                # Read-only filesystem
-    tmpfs:
-      - /tmp                       # Writable tmp только
-    cap_drop:
-      - ALL                        # Drop all capabilities
-    security_opt:
-      - no-new-privileges:true     # No privilege escalation
+```java
+public enum PaymentStatus {
+    PENDING,      // Ожидает оплаты
+    PROCESSING,   // Обрабатывается провайдером
+    SUCCEEDED,    // Успешно оплачено
+    FAILED,       // Ошибка оплаты
+    REFUNDED      // Возврат средств
+}
 ```
 
-### Dockerfile Best Practices
-
-```dockerfile
-# Multi-stage build
-FROM eclipse-temurin:21-jdk AS builder
-# ... build ...
-
-FROM eclipse-temurin:21-jre
-# Не используем root
-RUN groupadd -r aquastream && useradd -r -g aquastream aquastream
-USER aquastream
-
-# Read-only rootfs
-VOLUME /tmp
-COPY --from=builder --chown=aquastream:aquastream /app/app.jar app.jar
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
-## Audit Logging
-
-### Audit Log (БД)
-
-```sql
-CREATE TABLE user.audit_log (
-    id UUID PRIMARY KEY,
-    actor_user_id UUID,
-    action VARCHAR(100) NOT NULL,
-    target_type VARCHAR(50),
-    target_id UUID,
-    payload JSONB,
-    ip_address VARCHAR(45),
-    created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### Логируемые действия
-
-- Login/Logout
-- Password change
-- Role change (admin)
-- Создание/удаление событий (organizer)
-- Подтверждение оплат
-- Критичные операции с данными
+Используются в DTO и entity для стандартизации статусов во всех сервисах.
 
 ## Best Practices
 
-### Чек-лист безопасности
+### Input Validation
 
-- [x] JWT с сильным секретом и коротким TTL
-- [x] Password hashing (BCrypt strength 12)
-- [x] HTTPS в production
-- [x] Security headers настроены
-- [x] Rate limiting включен
-- [x] Input validation везде
-- [x] SQL injection защита (JPA)
-- [x] Dependency scanning (OWASP)
-- [x] Container security (non-root, read-only)
-- [x] Audit logging критичных операций
-- [x] Secrets не в Git
+- ✅ Используйте Bean Validation аннотации
+- ✅ Валидируйте на уровне DTO
+- ✅ Используйте `@Valid` в контроллерах
+- ❌ Не доверяйте клиентским данным
 
-### Регулярные проверки
+```java
+@PostMapping("/api/events")
+public EventResponse create(@Valid @RequestBody CreateEventRequest request) {
+    // Bean Validation автоматически проверит request
+}
+```
 
-- **Еженедельно**: CodeQL scan
-- **При каждом PR**: Trivy scan
-- **Ежемесячно**: OWASP dependency check
-- **Ежеквартально**: Penetration testing
-- **Постоянно**: Dependabot alerts
+### SQL Injection
 
-## Incident Response
+- ✅ JPA/Hibernate параметризованные запросы
+- ✅ PreparedStatement для native SQL
+- ❌ НИКОГДА string concatenation в SQL
 
-При обнаружении уязвимости:
+### Secrets
 
-1. Оценить severity (Critical/High/Medium/Low)
-2. Создать private security advisory в GitHub
-3. Разработать fix
-4. Протестировать
-5. Деплой hotfix
-6. Публикация advisory
-
-См. [Incident Response Runbook](../../operations/runbooks/incident-response.md)
+- ✅ Environment variables для секретов
+- ✅ `.env.example` без реальных значений
+- ✅ Разные секреты для dev/stage/prod
+- ❌ Никогда не коммитьте секреты в Git
 
 ## См. также
 
-- [Authentication Guide](authentication.md) - JWT и RBAC
-- [Security Policy](../../operations/policies/security.md) - политика безопасности
-- [CI/CD](../../operations/ci-cd.md) - security scanning в CI
+- [Backend Common](README.md) - обзор модуля
+- [Error Handling](error-handling.md) - обработка security exceptions
+- [Rate Limiting](rate-limiting.md) - защита от злоупотреблений
+- [Authentication](../authentication.md) - JWT и RBAC (общий для backend)
+- [Operations: Security Policy](../../operations/policies/security.md) - security политики
