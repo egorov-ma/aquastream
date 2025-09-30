@@ -5,9 +5,9 @@ on:
     branches: [ main ]
     paths:
       - 'docs/**'
-      - 'docs/docs-tools/mkdocs.yml'
-      - 'docs/docs-tools/requirements-docs.txt'
-      - 'docs/docs-tools/tools/**'
+      - 'docs/_internal/mkdocs.yml'
+      - 'docs/_internal/docs-tools/requirements-docs.txt'
+      - 'docs/_internal/docs-tools/tools/**'
       - '.github/workflows/docs-deploy.yml'
   workflow_dispatch:
 
@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('docs/docs-tools/requirements-docs.txt') }}
+          key: ${{ runner.os }}-pip-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('docs/_internal/docs-tools/requirements-docs.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-${{ steps.setup-python.outputs.python-version }}-
             ${{ runner.os }}-pip-
@@ -45,11 +45,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r docs/docs-tools/requirements-docs.txt
+          pip install -r docs/_internal/docs-tools/requirements-docs.txt
 
       - name: Build MkDocs
         run: |
-          cd docs/docs-tools && mkdocs build --strict
+          python -m mkdocs build --clean --strict --config-file docs/_internal/mkdocs.yml
 
       - name: Configure Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
