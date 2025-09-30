@@ -211,4 +211,4 @@ mc cp --recursive backend-infra/backup/artifacts/ minio/backups/postgres/
 
 - [Database Guide](../backend/database.md) - детали схем и миграций
 - [Infrastructure](infrastructure.md) - настройка окружения
-- [Runbooks](runbooks/database-maintenance.md) - операционные процедуры
+- [Deployment](deployment.md) - процесс развертывания

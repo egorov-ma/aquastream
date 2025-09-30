@@ -2,674 +2,302 @@
 
 ## Обзор
 
-Документация по развертыванию, конфигурации и обслуживанию Crew Service в различных окружениях.
+Crew Service управляет группами участников (crews), назначениями в команды, лодками и палатками.
 
-## Deployment
-
-### Docker
-
-**Image**: `aquastream/backend-crew:dev`
-**Container**: `aquastream-backend-crew`
 **Порт**: 8103
-**Сеть**: `aquastream-net`
+**Контейнер**: `aquastream-backend-crew`
+**Образ**: `aquastream/backend-crew:dev`
+**Memory**: 512MB
+**CPU**: 0.75
 
-```yaml
-# docker-compose.yml
-backend-crew:
-  image: aquastream/backend-crew:dev
-  container_name: aquastream-backend-crew
-  profiles: [dev, stage, prod]
-  depends_on:
-    - postgres
-  env_file:
-    - ${ENV_FILE:-.env}
-  user: "1000:1000"
-  read_only: true
-  tmpfs:
-    - /tmp
-  cap_drop:
-    - ALL
-  security_opt:
-    - no-new-privileges:true
-  ulimits:
-    nofile:
-      soft: 65536
-      hard: 65536
-  healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:8103/actuator/health"]
-    interval: 10s
-    timeout: 5s
-    retries: 10
-  restart: unless-stopped
-  logging:
-    driver: "json-file"
-    options:
-      max-size: "10m"
-      max-file: "5"
-  mem_limit: 512m
-  cpus: "0.75"
-  networks: [aquastream-net]
-```
+> **Общая инфраструктура**: См. [Operations Guide](../../operations/README.md) для команд развертывания через Makefile
 
-### Зависимости
+## Запуск сервиса
 
-**Обязательные**:
-- PostgreSQL (схема `crew`)
-
-**Опциональные**:
-- Redis (для rate limiting через backend-common)
-
-### Запуск
+### Development
 
 ```bash
-# Dev окружение
-docker compose --profile dev up -d backend-crew
+# Запустить весь dev stack (включая crew service)
+make up-dev
 
-# Stage окружение
-docker compose --profile stage up -d backend-crew
+# Проверить health
+curl http://localhost:8103/actuator/health
 
-# Production окружение
-docker compose --profile prod up -d backend-crew
+# Логи
+docker logs -f aquastream-backend-crew
+```
+
+### Отдельный перезапуск
+
+```bash
+# Перезапустить только crew service
+docker compose restart backend-crew
+
+# С rebuild образа
+docker compose up -d --build backend-crew
 ```
 
 ## Конфигурация
 
-### application.yml
+### Environment Variables
 
-```yaml
-server:
-  port: 8103
-
-spring:
-  application:
-    name: backend-crew
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
-
-  datasource:
-    url: jdbc:postgresql://postgres:5432/aquastream
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: none  # Liquibase управляет схемой
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        default_schema: crew
-
-  liquibase:
-    change-log: classpath:migration/liquibase/master.xml
-    contexts: ${LIQUIBASE_CONTEXTS:dev}
-    default-schema: crew
-
-# Application-specific configuration
-app:
-  crew:
-    auto-assignment:
-      enabled: true               # Автоматическое назначение (будущее)
-      prefer-friends: true        # Учитывать предпочтения
-      avoid-conflicts: true       # Избегать конфликтов
-    capacity-validation:
-      strict: true                # Строгая валидация capacity
-      allow-overbook: false       # Запретить overbooking
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: when-authorized
-
-logging:
-  level:
-    org.aquastream.crew: INFO
-    org.hibernate.SQL: WARN
-    org.hibernate.orm.jdbc.bind: WARN
-```
-
-### Переменные окружения
+Основные переменные из `.env.dev`:
 
 ```bash
-# Database
-POSTGRES_USER=aquastream
-POSTGRES_PASSWORD=secure_password
+# Database (используется схема crew)
 POSTGRES_DB=aquastream
+POSTGRES_USER=aquastream
+POSTGRES_PASSWORD=postgres
 
-# Spring profiles
+# Application
 SPRING_PROFILES_ACTIVE=dev
-
-# Liquibase
-LIQUIBASE_CONTEXTS=dev
-
-# Rate limiting (наследуется от backend-common)
-AQUASTREAM_RATE_LIMIT_ENABLED=true
-
-# Logging
-LOG_LEVEL=INFO
 ```
 
-### Профили
+### Application Profiles
 
-#### dev
-
+**dev**:
 ```yaml
-# application-dev.yml
-spring:
-  jpa:
-    show-sql: true
-  liquibase:
-    contexts: dev
-
 app:
   crew:
     capacity-validation:
-      strict: false
+      strict: false          # Разрешен overbooking для тестирования
       allow-overbook: true
-
-logging:
-  level:
-    org.aquastream.crew: DEBUG
-    org.hibernate.SQL: DEBUG
 ```
 
-#### stage
-
+**prod**:
 ```yaml
-# application-stage.yml
-spring:
-  liquibase:
-    contexts: stage
-
 app:
   crew:
     capacity-validation:
-      strict: true
+      strict: true           # Строгая валидация capacity
       allow-overbook: false
-
-logging:
-  level:
-    org.aquastream.crew: INFO
 ```
 
-#### prod
+## Database
 
-```yaml
-# application-prod.yml
-spring:
-  jpa:
-    show-sql: false
-  liquibase:
-    contexts: prod
+### Схема
 
-app:
-  crew:
-    capacity-validation:
-      strict: true
-      allow-overbook: false
-
-logging:
-  level:
-    org.aquastream.crew: WARN
-    org.hibernate.SQL: WARN
-```
-
-## Database Management
-
-### Liquibase Migrations
-
-**Changelog**: `backend-crew-db/src/main/resources/migration/liquibase/master.xml`
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.21.xsd">
-
-    <include file="sql/0001_create_tables.sql" relativeToChangelogFile="true"/>
-    <include file="sql/0002_indexes_constraints.sql" relativeToChangelogFile="true"/>
-
-</databaseChangeLog>
-```
-
-### Схема crew
+PostgreSQL схема: `crew`
 
 **Таблицы**:
-- `crew.crews` - основная таблица групп
-- `crew.crew_assignments` - назначения участников
-- `crew.boats` - детали лодок
-- `crew.tents` - детали палаток
-- `crew.team_preferences` - предпочтения участников
+- `crews` - основная таблица групп (crews)
+- `crew_assignments` - назначения участников
+- `boats` - детали лодок (для type=CREW)
+- `tents` - детали палаток (для type=TENT)
+- `team_preferences` - предпочтения участников (в разработке)
 
-### Применение миграций
+### Миграции
+
+**Liquibase** применяется автоматически при старте:
 
 ```bash
-# Автоматически при старте сервиса
-docker compose up -d backend-crew
+# Changelog location
+backend-crew/backend-crew-db/src/main/resources/migration/liquibase/master.xml
 
 # Ручное применение (если нужно)
-docker exec -it aquastream-backend-crew \
-  java -jar app.jar \
-  --spring.liquibase.contexts=dev \
-  --liquibase.command=update
+make liq-crew-update
+
+# Показать SQL без применения
+make liq-crew-sql
 ```
 
-### Rollback миграций
+### Backup & Restore
 
 ```bash
-# Откат последней миграции
-docker exec -it aquastream-backend-crew \
-  java -jar app.jar \
-  --liquibase.command=rollback \
-  --liquibase.rollback-count=1
+# Backup схемы crew (через общий скрипт)
+make backup
 
-# Откат к конкретной дате
-docker exec -it aquastream-backend-crew \
-  java -jar app.jar \
-  --liquibase.command=rollback \
-  --liquibase.rollback-date=2024-01-15
+# Restore конкретной схемы
+make restore SCHEMA=crew FILE=backend-infra/backup/artifacts/crew_20250930.dump.gz
 ```
 
-### Проверка состояния
-
-```bash
-# Список примененных changesets
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "SELECT id, author, filename, dateexecuted FROM crew.databasechangelog ORDER BY orderexecuted;"
-
-# Структура таблиц
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "\dt crew.*"
-
-# Индексы
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "\di crew.*"
-```
-
-## Monitoring
+## Мониторинг
 
 ### Health Checks
 
-**Endpoint**: `http://localhost:8103/actuator/health`
-
-```json
-{
-  "status": "UP",
-  "components": {
-    "db": {
-      "status": "UP",
-      "details": {
-        "database": "PostgreSQL",
-        "validationQuery": "isValid()"
-      }
-    },
-    "diskSpace": {
-      "status": "UP",
-      "details": {
-        "total": 500107862016,
-        "free": 123456789012,
-        "threshold": 10485760
-      }
-    },
-    "ping": {
-      "status": "UP"
-    }
-  }
-}
-```
-
-**Проверка**:
-
 ```bash
-# Статус сервиса
+# Basic health
 curl http://localhost:8103/actuator/health
 
-# Детальный статус (с авторизацией)
-curl -H "X-User-Role: ADMIN" \
-     http://localhost:8103/actuator/health
+# Detailed (с авторизацией)
+curl -H "X-User-Role: ADMIN" http://localhost:8103/actuator/health
+
+# В Docker Compose (автоматический)
+# interval: 10s, timeout: 5s, retries: 10
 ```
 
 ### Метрики
 
-**Endpoint**: `http://localhost:8103/actuator/metrics`
-
-**Доступные метрики**:
-
 ```bash
 # JVM memory
-curl http://localhost:8103/actuator/metrics/jvm.memory.used
-
-# Database connections
-curl http://localhost:8103/actuator/metrics/hikaricp.connections.active
+curl http://localhost:8103/actuator/metrics/jvm.memory.used | jq
 
 # HTTP requests
-curl http://localhost:8103/actuator/metrics/http.server.requests
+curl http://localhost:8103/actuator/metrics/http.server.requests | jq
 
-# Custom metrics (через backend-common)
-curl http://localhost:8103/actuator/metrics/aquastream.requests.total
-curl http://localhost:8103/actuator/metrics/aquastream.latency.p95
+# Database connections
+curl http://localhost:8103/actuator/metrics/hikaricp.connections.active | jq
 ```
 
 ### Логи
 
 ```bash
-# Просмотр логов
-docker logs aquastream-backend-crew
+# Stream логов
+docker logs -f aquastream-backend-crew
 
 # Последние 100 строк
 docker logs --tail 100 aquastream-backend-crew
 
-# Follow mode
-docker logs -f aquastream-backend-crew
+# Поиск ошибок
+docker logs aquastream-backend-crew | grep ERROR
 
-# С временными метками
-docker logs -t aquastream-backend-crew
-
-# Фильтрация по уровню
-docker logs aquastream-backend-crew 2>&1 | grep ERROR
-docker logs aquastream-backend-crew 2>&1 | grep WARN
+# Capacity violations
+docker logs aquastream-backend-crew | grep "capacity exceeded"
 ```
-
-**Формат логов**:
-
-```
-2024-01-15 10:23:45.123 INFO  [backend-crew,abc123xyz] o.a.crew.service.CrewService - Created crew 'Катамаран #1' for event 550e8400-e29b-41d4-a716-446655440000
-2024-01-15 10:24:12.456 WARN  [backend-crew,def456uvw] o.a.crew.service.AssignmentService - Crew capacity exceeded: crewId=123, capacity=6, currentSize=6
-2024-01-15 10:25:33.789 ERROR [backend-crew,ghi789rst] o.a.crew.api.controller.CrewController - Failed to delete crew: has active assignments
-```
-
-### Алерты
-
-**Рекомендуемые алерты**:
-
-1. **Service Down**
-   ```bash
-   # Health check failed
-   curl -f http://localhost:8103/actuator/health || echo "ALERT: Crew service is down"
-   ```
-
-2. **High Error Rate**
-   ```bash
-   # Более 5% запросов с ошибками за последние 5 минут
-   docker logs --since 5m aquastream-backend-crew 2>&1 | grep ERROR | wc -l
-   ```
-
-3. **Database Connection Issues**
-   ```bash
-   # HikariCP connection timeout
-   docker logs --since 5m aquastream-backend-crew 2>&1 | grep "HikariPool.*timeout"
-   ```
-
-4. **High Memory Usage**
-   ```bash
-   # JVM heap > 80%
-   curl http://localhost:8103/actuator/metrics/jvm.memory.used
-   ```
-
-## Security
-
-### Контейнер
-
-**Hardening** (применяется автоматически):
-- ✅ Неprivileged user (`1000:1000`)
-- ✅ Read-only filesystem
-- ✅ Tmpfs для `/tmp`
-- ✅ Dropped all capabilities
-- ✅ `no-new-privileges` security option
-
-### Доступ к API
-
-- **Authentication**: JWT через Gateway (header `X-User-Id`)
-- **Authorization**: Role-based (header `X-User-Role`)
-- **Rate Limiting**: Bucket4j через backend-common
-
-**Защита endpoints**:
-- ORGANIZER только: создание/изменение/удаление crews
-- ORGANIZER только: назначение/удаление участников
-- USER/ORGANIZER: просмотр crews и назначений
-- GUEST: нет доступа
-
-### Secrets Management
-
-**Секреты через environment**:
-
-```bash
-# .env (не коммитить в Git!)
-POSTGRES_PASSWORD=secure_password_here
-JWT_SECRET=your-jwt-secret-key
-
-# Docker secrets (production)
-echo "secure_password" | docker secret create db_password -
-```
-
-**Best practices**:
-- ✅ Используйте `.env.example` с плейсхолдерами
-- ✅ Ротация паролей каждые 90 дней
-- ✅ Разные пароли для dev/stage/prod
-- ❌ Никогда не коммитьте секреты в Git
 
 ## Troubleshooting
 
 ### Сервис не стартует
 
-**Проблема**: Container exits immediately
-
-**Решение**:
-
 ```bash
 # 1. Проверить логи
 docker logs aquastream-backend-crew
 
-# 2. Проверить зависимости
+# 2. Проверить зависимости (postgres)
 docker ps | grep postgres
 
 # 3. Проверить переменные окружения
-docker exec aquastream-backend-crew env | grep POSTGRES
+docker exec aquastream-backend-crew env | grep -E "POSTGRES|SPRING"
 
 # 4. Проверить подключение к БД
-docker exec aquastream-backend-crew \
-  psql -h postgres -U aquastream -d aquastream -c "SELECT 1"
+docker exec aquastream-postgres pg_isready -U aquastream
 ```
 
 ### Database connection errors
 
-**Проблема**: `Connection refused` или `Connection timeout`
-
-**Решение**:
-
 ```bash
-# 1. Проверить что PostgreSQL запущен
-docker ps | grep postgres
+# Проверить PostgreSQL
+docker exec aquastream-postgres psql -U aquastream -d aquastream -c "SELECT 1"
 
-# 2. Проверить health check PostgreSQL
-docker exec aquastream-postgres pg_isready -U aquastream
+# Проверить схему crew
+docker exec aquastream-postgres psql -U aquastream -d aquastream -c "\dt crew.*"
 
-# 3. Проверить сеть
-docker network inspect aquastream-net | grep backend-crew
-docker network inspect aquastream-net | grep postgres
-
-# 4. Проверить credentials
+# Проверить credentials
 echo $POSTGRES_PASSWORD
 ```
 
-### Liquibase migration failed
+### Capacity validation issues
 
-**Проблема**: Migration changesets не применяются
-
-**Решение**:
+**Проблема**: `CrewCapacityExceededException` при назначении
 
 ```bash
-# 1. Проверить таблицу changesets
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "SELECT * FROM crew.databasechangelog ORDER BY orderexecuted DESC LIMIT 5;"
+# 1. Проверить capacity vs currentSize
+docker exec aquastream-postgres psql -U aquastream -d aquastream \
+  -c "SELECT id, name, capacity, current_size FROM crew.crews WHERE id='<crew-uuid>';"
 
-# 2. Проверить locks
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "SELECT * FROM crew.databasechangeloglock;"
+# 2. Проверить активные назначения
+docker exec aquastream-postgres psql -U aquastream -d aquastream \
+  -c "SELECT COUNT(*) FROM crew.crew_assignments WHERE crew_id='<crew-uuid>' AND status='ACTIVE';"
 
-# 3. Разблокировать (если залочено)
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "UPDATE crew.databasechangeloglock SET locked=false, lockgranted=null, lockedby=null WHERE id=1;"
-
-# 4. Пересоздать сервис
-docker compose restart backend-crew
+# 3. Если currentSize != количество ACTIVE assignments, то есть inconsistency
+# Ручное исправление:
+docker exec aquastream-postgres psql -U aquastream -d aquastream <<EOF
+UPDATE crew.crews c
+SET current_size = (
+    SELECT COUNT(*) FROM crew.crew_assignments a
+    WHERE a.crew_id = c.id AND a.status = 'ACTIVE'
+)
+WHERE c.id = '<crew-uuid>';
+EOF
 ```
 
-### Race condition на capacity
-
-**Проблема**: `CrewCapacityExceededException` при одновременных назначениях
-
-**Решение** (уже реализовано):
-
-```java
-// Оптимистичная блокировка на crew entity
-@Entity
-public class CrewEntity {
-    @Version
-    private Long version;
-}
-```
-
-**Проверка**:
+### Race condition на assignments
 
 ```bash
-# Проверить version field в таблице
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "SELECT id, name, capacity, current_size, version FROM crew.crews WHERE id='crew-uuid';"
+# Проверить version field для optimistic locking
+docker exec aquastream-postgres psql -U aquastream -d aquastream \
+  -c "SELECT id, name, capacity, current_size, version FROM crew.crews WHERE id='<crew-uuid>';"
+
+# Version field автоматически инкрементируется при конкурентных изменениях
+# Если видите OptimisticLockException в логах, это нормально - retry происходит автоматически
+```
+
+### Seat number conflicts
+
+**Проблема**: Два участника на одном месте
+
+```bash
+# Проверить дубликаты seat_number
+docker exec aquastream-postgres psql -U aquastream -d aquastream <<EOF
+SELECT crew_id, seat_number, COUNT(*)
+FROM crew.crew_assignments
+WHERE status = 'ACTIVE' AND seat_number IS NOT NULL
+GROUP BY crew_id, seat_number
+HAVING COUNT(*) > 1;
+EOF
+
+# Unique constraint должен предотвращать это, но если произошло:
+# Найти дубликаты и удалить один из них
 ```
 
 ### High memory usage
-
-**Проблема**: Container использует > 512MB memory
-
-**Решение**:
 
 ```bash
 # 1. Проверить memory usage
 docker stats aquastream-backend-crew
 
 # 2. Проверить heap size
-curl http://localhost:8103/actuator/metrics/jvm.memory.used
+curl http://localhost:8103/actuator/metrics/jvm.memory.used | jq
 
-# 3. Увеличить memory limit (если нужно)
-# В docker-compose.yml:
+# 3. Увеличить memory limit (в docker-compose.yml)
 mem_limit: 768m
 
-# 4. Настроить JVM heap (application.yml)
-JAVA_OPTS="-Xms256m -Xmx512m"
+# 4. Проверить N+1 queries (частая причина memory issues)
+# Включить SQL logging в application-dev.yml
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
 ```
 
 ### Slow queries
 
-**Проблема**: Endpoints отвечают медленно
-
-**Решение**:
-
 ```bash
-# 1. Включить SQL логи
-# application.yml:
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+# 1. Проверить индексы
+docker exec aquastream-postgres psql -U aquastream -d aquastream -c "\di crew.*"
 
-# 2. Проверить N+1 queries
-docker logs aquastream-backend-crew | grep "SELECT"
+# 2. EXPLAIN ANALYZE медленного запроса
+docker exec aquastream-postgres psql -U aquastream -d aquastream \
+  -c "EXPLAIN ANALYZE SELECT * FROM crew.crew_assignments WHERE user_id='<uuid>';"
 
-# 3. Проверить индексы
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "\di crew.*"
-
-# 4. EXPLAIN ANALYZE медленного запроса
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream \
-  -c "EXPLAIN ANALYZE SELECT * FROM crew.crew_assignments WHERE crew_id='uuid';"
-```
-
-## Backup & Recovery
-
-### Backup базы данных
-
-```bash
-# Backup только схемы crew
-docker exec aquastream-postgres pg_dump \
-  -U aquastream -d aquastream -n crew \
-  --format=custom --file=/tmp/crew_backup.dump
-
-# Скопировать backup
-docker cp aquastream-postgres:/tmp/crew_backup.dump ./backups/
-
-# С сжатием
-docker exec aquastream-postgres pg_dump \
-  -U aquastream -d aquastream -n crew \
-  --format=custom --compress=9 --file=/tmp/crew_backup.dump.gz
-```
-
-### Restore базы данных
-
-```bash
-# Копировать backup в контейнер
-docker cp ./backups/crew_backup.dump aquastream-postgres:/tmp/
-
-# Restore
-docker exec aquastream-postgres pg_restore \
-  -U aquastream -d aquastream \
-  --clean --if-exists \
-  /tmp/crew_backup.dump
-
-# С подтверждением
-docker exec -it aquastream-postgres pg_restore \
-  -U aquastream -d aquastream \
-  --clean --if-exists --verbose \
-  /tmp/crew_backup.dump
-```
-
-### Backup расписание
-
-**Production рекомендация**:
-
-```bash
-# Crontab для ежедневного backup
-0 2 * * * docker exec aquastream-postgres pg_dump \
-  -U aquastream -d aquastream -n crew \
-  --format=custom --compress=9 \
-  --file=/backups/crew_$(date +\%Y\%m\%d).dump
-
-# Удаление старых backups (> 30 дней)
-0 3 * * * find /backups -name "crew_*.dump" -mtime +30 -delete
+# 3. Проверить N+1 queries
+# Используйте FETCH JOIN в queries для загрузки связанных entities
 ```
 
 ## Performance Optimization
 
-### JPA/Hibernate
+### Критичные индексы
 
-**Fetch Join для устранения N+1**:
+Следующие индексы критичны для performance (автоматически создаются через Liquibase):
+
+```sql
+-- Crews
+CREATE INDEX idx_crews_event_id ON crew.crews(event_id);
+
+-- Assignments (для частых запросов)
+CREATE INDEX idx_crew_assignments_crew_id ON crew.crew_assignments(crew_id);
+CREATE INDEX idx_crew_assignments_user_event ON crew.crew_assignments(user_id, crew_id);
+CREATE INDEX idx_crew_assignments_booking ON crew.crew_assignments(booking_id);
+CREATE INDEX idx_crew_assignments_status ON crew.crew_assignments(status);
+```
+
+### Fetch Join для устранения N+1
 
 ```java
+// Вместо N+1 queries
 @Query("SELECT c FROM CrewEntity c " +
        "LEFT JOIN FETCH c.assignments a " +
        "WHERE c.eventId = :eventId AND a.status = 'ACTIVE'")
 List<CrewEntity> findByEventIdWithAssignments(@Param("eventId") UUID eventId);
-```
-
-**Batch размер**:
-
-```yaml
-spring:
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          batch_size: 20
-        order_inserts: true
-        order_updates: true
 ```
 
 ### Connection Pool
@@ -682,107 +310,94 @@ spring:
       minimum-idle: 2
       connection-timeout: 30000
       idle-timeout: 600000
-      max-lifetime: 1800000
 ```
 
-### Индексы
-
-**Критичные** (уже применены через Liquibase):
-
-```sql
-CREATE INDEX idx_crews_event_id ON crew.crews(event_id);
-CREATE INDEX idx_crew_assignments_crew_id ON crew.crew_assignments(crew_id);
-CREATE INDEX idx_crew_assignments_user_event ON crew.crew_assignments(user_id, crew_id);
-CREATE INDEX idx_crew_assignments_booking ON crew.crew_assignments(booking_id);
-CREATE INDEX idx_crew_assignments_status ON crew.crew_assignments(status);
-```
-
-### Кэширование
-
-**Candidate для кэша** (будущее улучшение):
+### Кэширование (опционально)
 
 ```java
+// Crews события редко меняются - candidate для кэша
 @Cacheable(value = "event-crews", key = "#eventId")
-public List<CrewDto> getCrews(UUID eventId, String type, boolean availableOnly) {
+public List<CrewDto> getCrews(UUID eventId) {
+    // ...
+}
+
+// Инвалидация при изменениях
+@CacheEvict(value = "event-crews", key = "#crew.eventId")
+public CrewDto updateCrew(CrewEntity crew) {
     // ...
 }
 ```
 
-**Redis конфигурация**:
+## Security
 
-```yaml
-spring:
-  cache:
-    type: redis
-  data:
-    redis:
-      host: redis
-      port: 6379
-      password: ${REDIS_PASSWORD}
-      lettuce:
-        pool:
-          max-active: 10
-          max-idle: 5
-          min-idle: 2
-```
+### Container Hardening
 
-## Maintenance
+Crew Service контейнер использует все стандартные меры безопасности:
+- Non-root user (UID 1000)
+- Read-only filesystem
+- Tmpfs для `/tmp`
+- All capabilities dropped
+- `no-new-privileges` security option
 
-### Обновление сервиса
+См. [Infrastructure Security](../../operations/infrastructure.md#security)
 
-```bash
-# 1. Собрать новый image
-cd backend-crew
-./gradlew clean build
-docker build -t aquastream/backend-crew:dev .
+### API Security
 
-# 2. Остановить старый контейнер
-docker compose stop backend-crew
+- **Authentication**: JWT через Gateway
+- **Authorization**: Role-based (ORGANIZER/ADMIN only)
+- **Rate Limiting**: Bucket4j через backend-common
 
-# 3. Запустить новый
-docker compose up -d backend-crew
+**All endpoints** требуют ORGANIZER роли:
+- POST /api/v1/events/{eventId}/crews
+- PUT /api/v1/crews/{crewId}
+- DELETE /api/v1/crews/{crewId}
+- POST /api/v1/crews/{crewId}/assignments
+- DELETE /api/v1/assignments/{assignmentId}
 
-# 4. Проверить логи
-docker logs -f aquastream-backend-crew
+### Audit
 
-# 5. Health check
-curl http://localhost:8103/actuator/health
-```
+История всех изменений хранится через:
+- `unassigned_at` field в assignments (когда удалён)
+- `status` transitions (ACTIVE → REMOVED → TRANSFERRED)
+- Application logs для всех критичных операций
 
-### Rolling update (zero downtime)
+## Specific Scenarios
+
+### Переназначение участника между crews
 
 ```bash
-# 1. Запустить второй экземпляр
-docker compose up -d --scale backend-crew=2
+# Проверить текущее назначение
+docker exec aquastream-postgres psql -U aquastream -d aquastream \
+  -c "SELECT * FROM crew.crew_assignments WHERE user_id='<uuid>' AND status='ACTIVE';"
 
-# 2. Подождать health check
-sleep 30
-
-# 3. Удалить старый
-docker stop aquastream-backend-crew-old
-
-# 4. Вернуть scale=1
-docker compose up -d --scale backend-crew=1
+# Процесс переназначения (через API):
+# 1. DELETE /api/v1/assignments/{oldAssignmentId}  # status → REMOVED
+# 2. POST /api/v1/crews/{newCrewId}/assignments    # создать новое ACTIVE
 ```
 
-### Очистка данных
+### Удаление crew с активными assignments
+
+**Проблема**: Нельзя удалить crew пока есть ACTIVE assignments
 
 ```bash
-# Удалить REMOVED assignments (старше 90 дней)
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream <<EOF
-DELETE FROM crew.crew_assignments
-WHERE status = 'REMOVED'
-  AND unassigned_at < NOW() - INTERVAL '90 days';
-EOF
+# 1. Сначала удалить все assignments
+curl -X DELETE http://localhost:8103/api/v1/assignments/{assignment-id-1}
+curl -X DELETE http://localhost:8103/api/v1/assignments/{assignment-id-2}
+# ...
 
-# Удалить crews прошедших событий (старше 1 года)
-docker exec -it aquastream-postgres psql -U aquastream -d aquastream <<EOF
-DELETE FROM crew.crews
-WHERE event_id IN (
-  SELECT e.id FROM event.events e
-  WHERE e.date_end < NOW() - INTERVAL '1 year'
-);
-EOF
+# 2. Затем удалить crew
+curl -X DELETE http://localhost:8103/api/v1/crews/{crew-id}
+```
+
+### Изменение capacity crew
+
+```bash
+# Нельзя уменьшить capacity ниже currentSize
+# Проверить перед изменением:
+docker exec aquastream-postgres psql -U aquastream -d aquastream \
+  -c "SELECT name, capacity, current_size FROM crew.crews WHERE id='<crew-uuid>';"
+
+# Если нужно уменьшить capacity: сначала удалить лишние assignments
 ```
 
 ## См. также
@@ -790,5 +405,6 @@ EOF
 - [README](README.md) - обзор сервиса
 - [API Documentation](api.md) - детальное описание API
 - [Business Logic](business-logic.md) - бизнес-правила и валидации
-- [Database Schema](../database.md) - схема crew в PostgreSQL
-- [Backend Common Operations](../common/README.md) - общие backend инструменты
+- [Operations Infrastructure](../../operations/infrastructure.md) - общая инфраструктура
+- [Deployment Guide](../../operations/deployment.md) - процесс развертывания
+- [Backup & Recovery](../../operations/backup-recovery.md) - резервное копирование

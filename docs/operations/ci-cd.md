@@ -421,5 +421,4 @@ git commit -m "chore: update gradle locks"
 ## См. также
 
 - [Deployment Guide](deployment.md) - процесс деплоя
-- [Monitoring](monitoring.md) - мониторинг сервисов
-- [Security Policy](policies/security.md) - политика безопасности
+- [Infrastructure](infrastructure.md) - компоненты инфраструктуры

@@ -4,30 +4,240 @@
 
 Документация по эксплуатации и администрированию системы AquaStream.
 
-## Инфраструктура
+## Технологический стек
 
-- **Containerization**: Docker + Docker Compose
-- **Database**: PostgreSQL 15+
-- **Cache**: Redis
-- **Monitoring**: Prometheus + Grafana
+- **Containerization**: Docker + Docker Compose (профили: dev/stage/prod)
+- **Orchestration**: Makefile-based automation
+- **Database**: PostgreSQL 16 (multi-schema)
+- **Cache**: Redis 7 (AOF persistence)
+- **Object Storage**: MinIO (S3-compatible)
+- **Build System**: Gradle 8.5 + Java 21
+- **Monitoring**: Prometheus + Grafana + Loki + Promtail (dev only)
+- **CI/CD**: GitHub Actions
 - **Documentation**: MkDocs + Material
 
-## Разделы
+## Быстрый старт
 
-- [Infrastructure](infrastructure.md) - инфраструктура и компоненты
-- [Deployment](deployment.md) - процессы развертывания
-- [CI/CD](ci-cd.md) - непрерывная интеграция и доставка
-- [Monitoring](monitoring.md) - мониторинг и алерты
-- [Backup & Recovery](backup-recovery.md) - резервное копирование
+### Development
 
-### Runbooks
+```bash
+# 1. Клонировать репозиторий
+git clone https://github.com/your-org/aquastream.git
+cd aquastream
 
-- [Incident Response](runbooks/incident-response.md) - реагирование на инциденты
-- [Service Restart](runbooks/service-restart.md) - перезапуск сервисов
-- [Database Maintenance](runbooks/database-maintenance.md) - обслуживание БД
+# 2. Создать .env файл
+cp backend-infra/docker/compose/.env.dev.example backend-infra/docker/compose/.env.dev
 
-### Policies
+# 3. Запустить dev stack
+make up-dev
 
-- [Security Policy](policies/security.md) - политика безопасности
-- [Code of Conduct](policies/code-of-conduct.md) - кодекс поведения
-- [Support](policies/support.md) - процедуры поддержки
+# 4. Проверить health
+make smoke
+```
+
+**Доступные сервисы:**
+- Gateway: http://localhost:8080
+- Grafana: http://localhost:3001 (admin/admin)
+- MinIO Console: http://localhost:9001
+
+### Production
+
+```bash
+# 1. Настроить .env.prod с сильными паролями
+cp backend-infra/docker/compose/.env.prod.example backend-infra/docker/compose/.env.prod
+# Редактировать секреты (POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET, etc.)
+
+# 2. Запустить prod stack
+make up-prod
+
+# 3. Проверить все сервисы
+curl -f https://your-domain.com/actuator/health
+```
+
+## Основные команды
+
+### Управление окружениями
+
+```bash
+make up-dev      # Запуск dev (сборка jar + docker build + up)
+make up-stage    # Запуск stage
+make up-prod     # Запуск production
+make down        # Остановка всех контейнеров + удаление volumes
+make logs        # Просмотр логов всех сервисов
+make ps          # Статус контейнеров
+make smoke       # Smoke test (проверка gateway health)
+```
+
+### Backup & Restore
+
+```bash
+make backup                              # Backup всех схем PostgreSQL
+make restore SCHEMA=event FILE=...       # Restore конкретной схемы
+make restore SCHEMA=all FILE=...         # Restore полного backup
+```
+
+### Build & Deploy
+
+```bash
+./gradlew build                  # Полная сборка с тестами
+make build-images                # Build Docker образов всех сервисов
+make scan                        # Trivy security scan образов
+make sbom                        # Генерация SBOM через Syft
+make push-images                 # Push образов в registry
+```
+
+### Мониторинг и диагностика
+
+```bash
+make smoke                       # Smoke test Gateway
+docker stats                     # Resource usage
+docker logs <container>          # Логи конкретного сервиса
+docker logs -f <container>       # Stream логов
+
+# Health checks
+curl http://localhost:8080/actuator/health        # Gateway
+curl http://localhost:8102/actuator/health        # Event Service
+```
+
+### Разработка документации
+
+```bash
+make docs-setup       # Setup Python venv и зависимости
+make docs-serve       # Запуск MkDocs dev сервера
+make docs-build       # Сборка статического сайта
+```
+
+## Документация
+
+### Core Operations
+
+**[Infrastructure](infrastructure.md)** - Инфраструктура и компоненты
+- Docker Compose архитектура
+- Core services (PostgreSQL, Redis, MinIO)
+- Backend services (7 микросервисов)
+- Observability stack (Prometheus, Grafana, Loki)
+- Volumes и сети
+- Security hardening
+
+**[Deployment](deployment.md)** - Развертывание и управление версиями
+- Процесс развертывания (dev/stage/prod)
+- Version management через `version.properties`
+- Rollback стратегии
+- Database migrations (Liquibase)
+- Zero-downtime deployment
+
+**[CI/CD](ci-cd.md)** - Continuous Integration и Delivery
+- GitHub Actions workflows
+- Backend CI (build, test, lock-check)
+- Docker Images CI (build, scan, push)
+- CodeQL, Commitlint, Labeler
+- Release process
+- Security scanning (Trivy, OWASP)
+
+**[Backup & Recovery](backup-recovery.md)** - Резервное копирование
+- Automated backup скрипты
+- Retention policy (7 daily, 4 weekly, 3 monthly)
+- Per-schema backup
+- Recovery procedures
+- Testing backups
+
+### Service-Specific Operations
+
+Каждый backend сервис имеет свою документацию operations:
+
+- [Event Service Operations](../backend/event/operations.md) - scheduled jobs, TTL, waitlist
+- [Crew Service Operations](../backend/crew/operations.md) - capacity validation, assignments
+- User, Payment, Notification, Media - см. `docs/backend/*/operations.md`
+
+## Архитектура
+
+### Микросервисы
+
+| Сервис | Порт | Контейнер | Memory | CPU |
+|--------|------|-----------|--------|-----|
+| Gateway | 8080 | aquastream-backend-gateway | 512MB | 0.75 |
+| User | 8101 | aquastream-backend-user | 512MB | 0.75 |
+| Event | 8102 | aquastream-backend-event | 768MB | 1.0 |
+| Crew | 8103 | aquastream-backend-crew | 512MB | 0.75 |
+| Payment | 8104 | aquastream-backend-payment | 512MB | 0.75 |
+| Notification | 8105 | aquastream-backend-notification | 512MB | 0.75 |
+| Media | 8106 | aquastream-backend-media | 512MB | 0.75 |
+
+### Infrastructure
+
+| Компонент | Порт | Назначение |
+|-----------|------|-----------|
+| PostgreSQL | 5432 | Multi-schema database |
+| Redis | 6379 | Cache, rate limiting |
+| MinIO | 9000/9001 | S3-compatible storage |
+| Prometheus | 9090 | Metrics (dev only) |
+| Grafana | 3001 | Dashboards (dev only) |
+| Loki | 3100 | Log aggregation (dev only) |
+
+## Troubleshooting
+
+### Сервисы не стартуют
+
+```bash
+# 1. Проверить логи
+make logs
+
+# 2. Проверить зависимости
+docker ps -a | grep -E "postgres|redis|minio"
+
+# 3. Пересоздать с чистыми volumes
+make down
+make up-dev
+```
+
+### Database проблемы
+
+```bash
+# Проверить PostgreSQL
+docker exec aquastream-postgres pg_isready -U aquastream
+
+# Проверить схемы
+docker exec aquastream-postgres psql -U aquastream -d aquastream -c "\dn"
+
+# Создать backup перед изменениями
+make backup
+```
+
+### Docker проблемы
+
+```bash
+# Очистить неиспользуемые resources
+docker system prune -a --volumes
+
+# Проверить disk space
+df -h
+
+# Пересобрать образы
+make build-images
+```
+
+### Порты заняты
+
+```bash
+# Проверить занятые порты
+lsof -i :8080
+lsof -i :5432
+
+# Изменить маппинг портов в docker-compose.override.dev.yml
+```
+
+## Полезные ссылки
+
+### Внутренние
+
+- [Backend Infrastructure README](../../backend-infra/README.md) - детали инфраструктуры
+- [Makefile](../../backend-infra/make/Makefile) - все доступные команды
+- [GitHub Workflows](../../.github/workflows/) - CI/CD pipelines
+- [Build System](../../build.gradle) - Gradle конфигурация
+
+### Внешние
+
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/16/)
+- [Semantic Versioning](https://semver.org/)
