@@ -38,6 +38,7 @@ make infra-up
 - PostgreSQL (порт 5432)
 - Redis (порт 6379)
 - RabbitMQ (порт 5672, UI: 15672)
+- MinIO (порт 9000, UI: 9001)
 
 ### 3. Сборка и запуск Backend
 
@@ -50,13 +51,19 @@ make backend-up
 ```
 
 **Что запустится:**
-- API Gateway (порт 8100)
+- API Gateway (порт 8080)
 - User Service (порт 8101)
 - Event Service (порт 8102)
 - Crew Service (порт 8103)
 - Payment Service (порт 8104)
 - Notification Service (порт 8105)
 - Media Service (порт 8106)
+
+**Политики безопасности контейнеров:**
+- Сервисы запускаются под пользователем `1000:1000` (без root)
+- Корневая ФС read-only, запись только в `/tmp` и volumes
+- `cap_drop: [ALL]` + `no-new-privileges:true` - защита от эскалации привилегий
+- Лимит открытых файлов увеличен до 65536
 
 ### 4. Запуск Frontend
 
@@ -113,6 +120,29 @@ make backend-test
 make restart SERVICE=user-service
 ```
 
+### Инфраструктурные команды
+
+```bash
+# Сборка Docker образов локально
+make build-images
+
+# Security scanning (Trivy)
+make scan
+
+# Генерация SBOM (Software Bill of Materials)
+make sbom
+
+# Запуск Observability stack (Prometheus/Grafana/Loki)
+make up-dev-observability
+
+# Инициализация MinIO бакетов
+make minio-bootstrap
+```
+
+**Отчеты сохраняются:**
+- SBOM: `backend-infra/reports/sbom/`
+- Security scans: `backend-infra/reports/scan/`
+
 ### Frontend разработка
 
 ```bash
@@ -151,14 +181,25 @@ make docs-build
 ### Приложение
 
 - **Frontend**: http://localhost:3000
-- **API Gateway**: http://localhost:8100
-- **API Docs**: http://localhost:8100/swagger-ui.html
+- **API Gateway**: http://localhost:8080
+- **API Docs**: http://localhost:8080/swagger-ui.html
+
+### Backend сервисы (dev режим)
+
+- **Gateway**: http://localhost:8080
+- **User API**: http://localhost:8101
+- **Event API**: http://localhost:8102
+- **Crew API**: http://localhost:8103
+- **Payment API**: http://localhost:8104
+- **Notification API**: http://localhost:8105
+- **Media API**: http://localhost:8106
 
 ### Инфраструктура
 
-- **RabbitMQ UI**: http://localhost:15672 (guest/guest)
 - **PostgreSQL**: localhost:5432 (aquastream/password123)
 - **Redis**: localhost:6379
+- **MinIO**: localhost:9000 (UI: localhost:9001)
+- **RabbitMQ**: localhost:5672 (UI: localhost:15672, guest/guest)
 
 ## Первые шаги
 
@@ -172,7 +213,7 @@ make docs-build
 
 ### 3. API документация
 
-Откройте http://localhost:8100/swagger-ui.html для интерактивной документации API.
+Откройте http://localhost:8080/swagger-ui.html для интерактивной документации API.
 
 ## Структура проекта
 

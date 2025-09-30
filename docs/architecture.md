@@ -107,37 +107,158 @@ graph TB
 - Управление изображениями
 - CDN интеграция
 
+## Детальная спецификация сервисов
+
+### Таблица сервисов
+
+| Сервис | Порт | Назначение | База (схема) | Внешние интеграции |
+|--------|------|------------|--------------|-------------------|
+| **Gateway** | 8080 | Маршрутизация, CORS, Rate Limiting, Health aggregation | - | - |
+| **User** | 8101 | Аутентификация, профили, роли, RBAC | `user` | Telegram Bot |
+| **Event** | 8102 | События, организаторы, бронирования, waitlist | `event` | - |
+| **Crew** | 8103 | Управление группами (экипажи/палатки) | `crew` | - |
+| **Payment** | 8104 | Платежи, транзакции, вебхуки | `payment` | YooKassa, CloudPayments, Stripe |
+| **Notification** | 8105 | Telegram бот, уведомления | `notification` | Telegram Bot API |
+| **Media** | 8106 | Файлы, presigned URLs, загрузка | `media` | MinIO/S3 |
+
+### Модульная структура сервисов
+
+Каждый микросервис (кроме Gateway) разбит на три модуля:
+
+```
+backend-[service]/
+├── backend-[service]-api/        # REST API endpoints, Transport DTO, Controllers
+│   └── src/main/java/
+│       └── com/aquastream/[service]/api/
+│           ├── controller/       # REST контроллеры
+│           ├── dto/              # Transport DTO с validation
+│           └── [Service]ApiApplication.java
+├── backend-[service]-service/    # Бизнес-логика, Service DTO
+│   └── src/main/java/
+│       └── com/aquastream/[service]/service/
+│           ├── service/          # Сервисный слой
+│           ├── dto/              # Service DTO (доменные модели)
+│           └── mapper/           # Маппинг между DTO
+└── backend-[service]-db/         # Data Access, JPA Entities
+    └── src/main/java/
+        └── com/aquastream/[service]/db/
+            ├── entity/           # JPA сущности
+            └── repository/       # Spring Data репозитории
+```
+
+**Правила взаимодействия:**
+- `api` → `service` (запрещено: `api` → `db`)
+- `service` → `db` (запрещено: `service` → `api`)
+- Контроллеры маппят Transport DTO ↔ Service DTO
+- Сервисы маппят Service DTO ↔ Entity
+- ArchUnit тесты проверяют соблюдение правил
+
+### Backend-Common
+
+Общая библиотека для всех сервисов с автоконфигурацией Spring Boot:
+
+```
+backend-common/
+├── config/              # Auto-конфигурации
+│   ├── ServiceDiscoveryAutoConfiguration.java
+│   └── ServiceUrls.java
+├── domain/              # Доменные константы и enum'ы
+│   ├── UserRole.java           # GUEST, USER, ORGANIZER, ADMIN
+│   ├── BookingStatus.java      # PENDING, CONFIRMED, COMPLETED, EXPIRED, CANCELLED, NO_SHOW
+│   ├── PaymentStatus.java      # PENDING, PROCESSING, SUCCEEDED, FAILED, REFUNDED
+│   └── DomainConstants.java    # Константы (заголовки, лимиты)
+├── error/               # RFC 7807 Problem Details
+│   ├── GlobalExceptionHandler.java
+│   ├── ApiException.java
+│   ├── ProblemDetails.java
+│   ├── ErrorCodes.java
+│   └── CommonErrorHandlingAutoConfiguration.java
+├── health/              # Health checks
+│   └── ServiceHealthChecker.java
+├── metrics/             # Система метрик
+│   ├── collector/       # MetricsCollector
+│   ├── config/          # MetricsAutoConfiguration, MetricsProperties
+│   ├── controller/      # MetricsController (REST endpoint)
+│   ├── filter/          # MetricsFilter (HTTP метрики)
+│   ├── model/           # MetricData, MetricType
+│   ├── scheduler/       # MetricsScheduler (периодическая запись)
+│   └── writer/          # RedisMetricsWriter
+├── mock/                # Моки для dev окружения
+│   ├── config/          # MockProperties
+│   └── service/         # MockDetector, MockResponseGenerator
+├── ratelimit/           # Rate limiting (Bucket4j + Redis)
+│   ├── config/          # RateLimitAutoConfiguration, RateLimitProperties
+│   ├── filter/          # RateLimitFilter
+│   └── service/         # RateLimitService
+├── util/                # Утилиты
+│   └── Ids.java         # Генерация UUID, JTI, idempotency keys
+└── web/                 # Web конфигурация
+    ├── config/          # WebAutoConfiguration
+    ├── CorrelationIdFilter.java
+    ├── CorrelationIdRestTemplateInterceptor.java
+    └── ServiceDiscoveryController.java
+```
+
+**Экспортируемые зависимости (api)**:
+- `spring-boot-starter-web` - REST, Jackson, Tomcat
+- `spring-boot-starter-validation` - Bean Validation
+- `bucket4j-redis` - Rate limiting
+
+**Internal зависимости (implementation)**:
+- `spring-boot-starter-security` - Security utilities
+- `spring-boot-starter-data-redis` - Redis client
+- `logstash-logback-encoder` - Structured logging
+
+**Автоконфигурации** (через `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`):
+- `CommonErrorHandlingAutoConfiguration` - глобальная обработка ошибок
+- `RateLimitAutoConfiguration` - Bucket4j rate limiting
+- `WebAutoConfiguration` - CORS, CorrelationId
+- `MetricsAutoConfiguration` - система метрик
+- `ServiceDiscoveryAutoConfiguration` - service discovery
+
 ## Технологический стек
 
 ### Backend
 ```yaml
 Language: Java 21
 Framework: Spring Boot 3.x
-Build: Gradle
-Database: PostgreSQL 15+
-Cache: Redis
+Gateway: Spring WebFlux
+Build: Gradle 8.5+
+Database: PostgreSQL 16 (схемы на сервис)
+Cache: Redis 7
+Storage: MinIO (S3-compatible)
+Migrations: Liquibase
 Security: Spring Security + JWT
 API: RESTful + OpenAPI 3.0
-Testing: JUnit 5, TestContainers
+Error Handling: RFC 7807 Problem Details
+Rate Limiting: Bucket4j (soft limits)
+Monitoring: Spring Boot Actuator
+Testing: JUnit 5, TestContainers, ArchUnit
 ```
 
 ### Frontend
 ```yaml
-Framework: Next.js 14
-Language: TypeScript
-Styling: Tailwind CSS
+Framework: Next.js 14 (App Router)
+Language: TypeScript 5.x
+Runtime: React 18
+Styling: Tailwind CSS 3.4 + shadcn/ui
+UI Components: Radix UI
 State: React Hooks + Context
 HTTP: Fetch API
-Testing: Jest, Cypress
+Forms: React Hook Form + Zod
+Testing: Node test runner, Playwright
 ```
 
 ### Infrastructure
 ```yaml
 Containerization: Docker + Docker Compose
-Monitoring: Prometheus + Grafana
+Observability: Prometheus + Grafana + Loki + Promtail
+Security Scanning: Trivy, OWASP Dependency Check
+SBOM: Syft
 Documentation: MkDocs + Material
 CI/CD: GitHub Actions
-Deployment: Docker Compose (local/staging)
+Deployment: Docker Compose (local/staging/prod)
+Storage: MinIO (S3-compatible object storage)
 ```
 
 ## Принципы архитектуры

@@ -1,6 +1,8 @@
-# Media — бизнес-логика
+# Media Service — Бизнес-логика
 
-Статус: as-is
+## Обзор
+
+Media Service управляет файлами в MinIO/S3, генерирует presigned URLs.
 
 ## Ответственности
 - Хранение и выдача файлов доменов (proofs, логотипы, медиа)
@@ -20,7 +22,33 @@
 - Генерация ключей `file_key` по префиксам доменов
 - Антивирус/сканирование по возможности
 
-## Чек‑лист
-- [ ] TTL ссылок и валидация прав
-- [ ] Политика retention покрывает все типы файлов
-- [ ] Маскирование прямых ссылок на бакет
+## База данных (схема `media`)
+
+```sql
+files (
+    id,
+    owner_type,        -- event | organizer | payment_proof
+    owner_id,          -- UUID владельца
+    file_key,          -- Ключ в S3
+    content_type,      -- MIME type
+    size_bytes,
+    storage_url,       -- Полный URL
+    expires_at         -- Retention policy
+)
+```
+
+## Presigned URLs
+
+**TTL**: 15 минут
+**Проверка прав**: только владелец или organizer/admin
+
+## Retention
+
+- Payment proofs: 90 дней
+- Event images: постоянно
+- Organizer logos: постоянно
+
+## См. также
+
+- [Media API](api.md)
+- [Payment Service](../payment/business-logic.md) - payment proofs
