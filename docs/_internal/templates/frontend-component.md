@@ -249,12 +249,12 @@ export function StatefulExample() {
 
 ## Связанные компоненты
 
-- [{RelatedComponent1}](./{RelatedComponent1}.md) - {краткое описание связи}
-- [{RelatedComponent2}](./{RelatedComponent2}.md) - {краткое описание связи}
+- {RelatedComponent1} - {краткое описание связи}
+- {RelatedComponent2} - {краткое описание связи}
 
 ## См. также
 
-- [Frontend Architecture](../README.md) - общая архитектура frontend
-- [Design System](../design-system.md) - дизайн система и гайдлайны
-- [Component Development](../development/components.md) - разработка компонентов
+- Frontend Architecture: `frontend/README.md` - общая архитектура frontend
+- Design System: `frontend/design-playbook.md` - дизайн система и гайдлайны
+- Component Development: `frontend/components.md` - разработка компонентов
 - [Testing Guide](../../qa/test-plans/frontend-testing.md) - тестирование frontend

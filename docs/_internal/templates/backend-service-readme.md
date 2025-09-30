@@ -49,9 +49,9 @@ tags: [backend, microservice, {domain}]
 | DELETE | `/api/v1/{resource}/{id}` | {Описание} | {Роль} |
 
 **Подробная документация:**
-- [API Reference](api.md) - детальное описание всех endpoints
-- [OpenAPI Spec](../../api/specs/root/{service-name}-api.yaml) - машиночитаемая спецификация
-- [ReDoc Documentation](../../api/redoc/root/{service-name}-api.html) - интерактивная документация
+- API Reference: `api.md` - детальное описание всех endpoints
+- OpenAPI Spec: `api/specs/root/{service-name}-api.yaml` - машиночитаемая спецификация
+- ReDoc Documentation: `api/redoc/root/{service-name}-api.html` - интерактивная документация
 
 ## Архитектура
 
@@ -70,8 +70,8 @@ graph TB
 ```
 
 ### Ключевые решения
-- [ADR-XXX](../../decisions/adr-xxx-decision-name.md) - {Описание решения}
-- [ADR-YYY](../../decisions/adr-yyy-another-decision.md) - {Описание решения}
+- ADR-XXX — {Описание решения}
+- ADR-YYY — {Описание решения}
 
 ## Разработка
 
@@ -213,8 +213,8 @@ make {service-name}-heap-dump ENV=production
 
 ## См. также
 
-- [Business Logic](business-logic.md) - детальное описание бизнес-логики
-- [Operations Guide](operations.md) - расширенное руководство по эксплуатации
-- [Changelog](changelog.md) - история изменений сервиса
-- [API Documentation](../../api/) - сводная документация по всем API
-- [Architecture Overview](../../architecture.md) - общая архитектура системы
+- Business Logic: `business-logic.md` - детальное описание бизнес-логики
+- Operations Guide: `operations.md` - расширенное руководство по эксплуатации
+- Changelog: `changelog.md` - история изменений сервиса
+- API Documentation: `api/` - сводная документация по всем API
+- Architecture Overview: `architecture.md` - общая архитектура системы

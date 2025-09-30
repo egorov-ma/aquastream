@@ -9,11 +9,11 @@ summary: Стартовая страница портала документац
 
 ## Быстрый старт для разработчиков
 
-- [Обзор](development/overview.md)
-- [Быстрый старт](development/quick-start.md)
+- [Быстрый старт](quickstart.md)
 - [Сборка](development/build-guide.md)
-- [Локальная разработка](development/local-development.md)
-- [Git Hooks для качества](operations/git-hooks.md)
+- [Установка окружения](development/setup.md)
+- [Рабочие процессы](development/workflows.md)
+- [Style Guides](development/style-guides.md)
 - [Политика безопасности](operations/policies/security.md)
 
 ## Архитектура и дизайн

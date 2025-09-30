@@ -104,5 +104,5 @@ k6 run k6-load.js
 ## См. также
 
 - [Development Testing](../development/testing.md)
-- [Backend Testing Guides](../backend/)
-- [Frontend Testing Guide](../frontend/testing.md)
+- [Backend Testing Guides](../backend/README.md)
+- [Frontend Guide](../frontend/README.md)

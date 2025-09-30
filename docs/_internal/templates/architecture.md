@@ -124,9 +124,9 @@ sequenceDiagram
 ## Ключевые решения и компромиссы
 
 ### Архитектурные решения
-- [ADR-XXX](../decisions/adr-xxx-microservices.md) - Переход на микросервисную архитектуру
-- [ADR-YYY](../decisions/adr-yyy-database-choice.md) - Выбор PostgreSQL как основной БД
-- [ADR-ZZZ](../decisions/adr-zzz-async-communication.md) - Event-driven архитектура
+- ADR-XXX — Переход на микросервисную архитектуру
+- ADR-YYY — Выбор PostgreSQL как основной БД
+- ADR-ZZZ — Event-driven архитектура
 
 ### Технологический стек
 
@@ -391,8 +391,8 @@ make test-contract SERVICE={service-name}
 
 ## См. также
 
-- [Техническая документация](../backend/{module-name}/) → детали реализации
-- [API Documentation](../api/) → документация REST API
-- [Operations Runbook](../operations/{module-name}-runbook.md) → эксплуатация
-- [Архитектурные решения](../decisions/) → ADR записи
-- [Общая архитектура](../architecture.md) → high-level обзор системы
+- Техническая документация: `backend/{module-name}/` → детали реализации
+- API Documentation: `api/` → документация REST API
+- Operations Runbook: `operations/{module-name}-runbook.md` → эксплуатация
+- Архитектурные решения: `decisions/` → ADR записи
+- Общая архитектура: `architecture.md` → high-level обзор системы

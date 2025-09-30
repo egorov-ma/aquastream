@@ -62,5 +62,5 @@ gateway:
 ## См. также
 
 - [Gateway API](api.md)
-- [Authentication](../common/authentication.md) - JWT детали
+- [Authentication](../authentication.md) - JWT детали
 - [Security](../common/security.md) - rate limiting

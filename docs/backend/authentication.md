@@ -312,7 +312,6 @@ CREATE TABLE recovery_codes (
 
 ## См. также
 
-- [Security](security.md) - детали безопасности
-- [User Service](../user/README.md) - реализация auth
-- [Gateway](../gateway/README.md) - JWT validation
-
+- [Security](common/security.md) - детали безопасности
+- [User Service](user/README.md) - реализация auth
+- [Gateway](gateway/README.md) - JWT validation

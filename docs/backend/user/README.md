@@ -54,4 +54,4 @@ User Service отвечает за управление пользователя
 
 - [Business Logic](business-logic.md) - бизнес-логика и процессы
 - [Operations](operations.md) - эксплуатация и мониторинг
-- [Changelog](changelog.md) - история изменений
+- Changelog — TBD

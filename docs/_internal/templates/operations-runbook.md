@@ -278,7 +278,7 @@ make capacity-review SERVICE={service-name}
 
 ## См. также
 
-- [Monitoring Strategy](../monitoring.md) - общая стратегия мониторинга
-- [Incident Response](incident-response.md) - процедуры реагирования на инциденты
-- [Backup & Recovery](../backup-recovery.md) - процедуры резервного копирования
-- [Service Documentation](../../backend/{service-name}/) - техническая документация сервиса
+- Monitoring Strategy: `operations/monitoring.md` - общая стратегия мониторинга
+- Incident Response: `operations/runbooks/incident-response.md` - процедуры реагирования на инциденты
+- Backup & Recovery: `operations/backup-recovery.md` - процедуры резервного копирования
+- Service Documentation: `backend/{service-name}/` - техническая документация сервиса

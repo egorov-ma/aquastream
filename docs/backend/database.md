@@ -268,7 +268,7 @@ ON DELETE CASCADE;
 
 ## Backup & Restore
 
-См. [Backup & Recovery Guide](../../operations/backup-recovery.md) для детальной информации.
+См. [Backup & Recovery Guide](../operations/backup-recovery.md) для детальной информации.
 
 ### Быстрый backup
 

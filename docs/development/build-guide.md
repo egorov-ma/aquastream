@@ -151,7 +151,7 @@
 
 ## Полезные пути и файлы
 - Корень: `build.gradle`, `settings.gradle`, `gradle.properties`, `owasp-suppression.xml`, `version.properties`
-- Управление версиями: см. [Version Management](../devops/version-management.md)
+- Управление версиями: см. [Version Management](../operations/version-management.md)
 - Общее ядро: `backend-common`
 - Гейтвей: `backend-gateway`
 - Доменные модули: `backend-*/**`

@@ -21,10 +21,12 @@ AquaStream backend построен на микросервисной архит
 
 ### Общие компоненты
 
-- **[Authentication](common/authentication.md)** - Система аутентификации и авторизации
-- **[Error Handling](common/error-handling.md)** - Централизованная обработка ошибок
-- **[Database](common/database.md)** - Схема базы данных и миграции
-- **[Security](common/security.md)** - Политики безопасности
+- **[Common Overview](common/README.md)** - стандарты и соглашения, применимые ко всем сервисам
+- **[Error Handling](common/error-handling.md)** - централизованная обработка ошибок
+- **[Security](common/security.md)** - политики безопасности и контроль доступа
+- **[Metrics](common/metrics.md)** - метрики и мониторинг
+- **[Rate Limiting](common/rate-limiting.md)** - защита от перегрузок
+- **[Web Utilities](common/web-utilities.md)** - общие веб-компоненты и middleware
 
 ## Технологический стек
 

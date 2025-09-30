@@ -201,7 +201,7 @@ PostgreSQL использует одну базу с разделением по
 - `notification` - уведомления, подписки
 - `media` - файлы, изображения
 
-См. [Database Details](../backend/common/database.md) для подробностей.
+См. [Database Details](../backend/database.md) для подробностей.
 
 ## Gradle команды
 

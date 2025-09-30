@@ -191,6 +191,6 @@ tags: [roadmap, planning, {module-name}]
 
 ## См. также
 
-- [Architecture Documentation](../architecture.md) - техническое видение
-- [Business Requirements](../business/requirements.md) - бизнес-требования
-- [Team Planning](../development/planning.md) - процессы планирования
+- Architecture Documentation: `architecture.md` - техническое видение
+- Business Requirements: `business/requirements.md` - бизнес-требования
+- Team Planning: `development/planning.md` - процессы планирования

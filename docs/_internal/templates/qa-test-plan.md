@@ -202,7 +202,7 @@ make test-performance-weekly
 
 ## См. также
 
-- [QA Strategy](../test-strategy.md) - общая стратегия тестирования
-- [Test Automation](../automation/) - документация по автотестам
-- [Bug Management](../bug-management.md) - процесс управления дефектами
-- [Performance Testing](../performance/) - нагрузочное тестирование
+- QA Strategy: `qa/test-strategy.md` - общая стратегия тестирования
+- Test Automation: `qa/automation/` - документация по автотестам
+- Bug Management: `qa/bug-management.md` - процесс управления дефектами
+- Performance Testing: `qa/performance/` - нагрузочное тестирование

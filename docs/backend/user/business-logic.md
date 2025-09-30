@@ -212,7 +212,7 @@ public class Profile {
 - `POST /api/admin/users/{id}/role`
 - Audit log обязателен
 
-См. [Authentication](../common/authentication.md) для детальных прав.
+См. [Authentication](../authentication.md) для детальных прав.
 
 ## JWT Токены
 
@@ -307,6 +307,6 @@ audit_log (
 
 ## См. также
 
-- [Authentication](../common/authentication.md) - JWT и RBAC детали
+- [Authentication](../authentication.md) - JWT и RBAC детали
 - [Security](../common/security.md) - политики безопасности
 - [User API](api.md) - REST endpoints

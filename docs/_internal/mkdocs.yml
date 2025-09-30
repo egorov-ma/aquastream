@@ -5,84 +5,117 @@ docs_dir: ../
 nav:
   - Главная: index.md
   - Быстрый старт:
-      - Обзор: development/overview.md
-      - Быстрый старт: development/quick-start.md
+      - Обзор: quickstart.md
       - Сборка: development/build-guide.md
-      - Локальная разработка: development/local-development.md
       - Установка окружения: development/setup.md
   - Архитектура: architecture.md
   - Backend:
       - Обзор: backend/README.md
-      - Common:
-          - Overview: backend/common/README.md
-          - Аутентификация: backend/common/authentication.md
+      - Основы:
+          - Аутентификация: backend/authentication.md
+          - База данных: backend/database.md
+      - Общие компоненты:
+          - Обзор: backend/common/README.md
+          - Метрики: backend/common/metrics.md
+          - Ограничение частоты: backend/common/rate-limiting.md
           - Обработка ошибок: backend/common/error-handling.md
-          - Database: backend/common/database.md
-          - Security: backend/common/security.md
+          - Безопасность: backend/common/security.md
+          - Веб-утилиты: backend/common/web-utilities.md
       - Gateway:
-          - Overview: backend/gateway/README.md
+          - Обзор: backend/gateway/README.md
           - API: backend/gateway/api.md
           - Бизнес-логика: backend/gateway/business-logic.md
           - Операции: backend/gateway/operations.md
       - User:
-          - README: backend/user/README.md
+          - Обзор: backend/user/README.md
           - API: backend/user/api.md
           - Бизнес-логика: backend/user/business-logic.md
           - Операции: backend/user/operations.md
       - Event:
-          - Overview: backend/event/README.md
+          - Обзор: backend/event/README.md
           - API: backend/event/api.md
           - Бизнес-логика: backend/event/business-logic.md
           - Операции: backend/event/operations.md
       - Crew:
-          - Overview: backend/crew/README.md
+          - Обзор: backend/crew/README.md
           - API: backend/crew/api.md
           - Бизнес-логика: backend/crew/business-logic.md
           - Операции: backend/crew/operations.md
       - Payment:
-          - Overview: backend/payment/README.md
+          - Обзор: backend/payment/README.md
           - API: backend/payment/api.md
           - Бизнес-логика: backend/payment/business-logic.md
           - Операции: backend/payment/operations.md
       - Notification:
-          - Overview: backend/notification/README.md
+          - Обзор: backend/notification/README.md
           - API: backend/notification/api.md
           - Бизнес-логика: backend/notification/business-logic.md
           - Операции: backend/notification/operations.md
       - Media:
-          - Overview: backend/media/README.md
+          - Обзор: backend/media/README.md
           - API: backend/media/api.md
           - Бизнес-логика: backend/media/business-logic.md
           - Операции: backend/media/operations.md
   - Frontend:
       - Обзор: frontend/README.md
-      - Маршрутизация: frontend/routing.md
-      - Состояние: frontend/state-management.md
+      - Настройка: frontend/setup.md
+      - Стек: frontend/stack.md
       - Компоненты: frontend/components.md
-      - Stack: frontend/stack.md
-      - Разработка: frontend/development-guide.md
-      - Тестирование: frontend/testing.md
-      - Инструменты: frontend/tooling.md
+      - Управление состоянием: frontend/state-management.md
+      - Маршрутизация: frontend/routing.md
+      - API-интеграция: frontend/api-integration.md
+      - Дизайн-плейбук: frontend/design-playbook.md
+      - Shadcn компоненты: frontend/shadcn-components.md
+      - Деплой: frontend/deployment.md
+      - Безопасность: frontend/security.md
+  - Development:
+      - Рабочие процессы: development/workflows.md
+      - Стандарты оформления: development/style-guides.md
+      - Практики тестирования: development/testing.md
+      - Отладка: development/troubleshooting.md
   - QA & Testing:
       - Индекс: qa/index.md
+      - Стратегия: qa/test-strategy.md
+      - Управление багами: qa/bug-management.md
+      - Автоматизация:
+          - API тесты: qa/automation/api-tests.md
+          - UI тесты: qa/automation/ui-tests.md
+          - Unit тесты: qa/automation/unit-tests.md
+      - Ручное тестирование:
+          - Исследовательское тестирование: qa/manual-testing/exploratory-testing.md
+          - Регрессионный набор: qa/manual-testing/regression-suite.md
+          - Тест-кейсы: qa/manual-testing/test-cases.md
+      - Производительность:
+          - Нагрузочное тестирование: qa/performance/load-testing.md
+          - Бенчмарки: qa/performance/performance-benchmarks.md
+      - Тест-планы:
+          - Backend: qa/test-plans/backend-testing.md
+          - Frontend: qa/test-plans/frontend-testing.md
+          - Интеграция: qa/test-plans/integration-testing.md
+          - E2E: qa/test-plans/e2e-testing.md
   - Operations:
       - Обзор: operations/README.md
       - Инфраструктура: operations/infrastructure.md
       - Развертывание: operations/deployment.md
       - CI/CD: operations/ci-cd.md
       - Мониторинг: operations/monitoring.md
+      - Резервное копирование: operations/backup-recovery.md
+      - Управление версиями: operations/version-management.md
       - Политики:
           - Security: operations/policies/security.md
           - Support: operations/policies/support.md
           - Code of Conduct: operations/policies/code-of-conduct.md
-  - Development:
-      - Обзор: development/overview.md
-      - Версионирование: operations/version-management.md
-      - Git Hooks: operations/git-hooks.md
+      - Runbooks:
+          - Обслуживание БД: operations/runbooks/database-maintenance.md
+          - Инциденты: operations/runbooks/incident-response.md
+          - Перезапуск сервисов: operations/runbooks/service-restart.md
   - API:
       - Обзор: api/index.md
   - Decisions:
       - Индекс: decisions/index.md
+      - ADR-0001 Docs Stack: decisions/adr-0001-docs-stack.md
+      - ADR-0002 Sync Module Docs: decisions/adr-0002-sync-module-docs.md
+      - ADR-0003 API Redoc: decisions/adr-0003-api-redoc.md
 theme:
   name: material
   features:
@@ -103,6 +136,6 @@ markdown_extensions:
   - pymdownx.caret
 plugins:
   - search
-  - mermaid2
+  - mermaid2:
+      javascript: _internal/docs-tools/assets/js/mermaid-loader.js
   - redirects
-

@@ -327,7 +327,7 @@ lsof -i :8100  # для конкретного порта
 - **[Backend Guide](backend/README.md)** - руководство по backend
 - **[Frontend Guide](frontend/README.md)** - руководство по frontend
 - **[Operations](operations/README.md)** - DevOps и эксплуатация
-- **[QA Guide](qa/README.md)** - тестирование и QA
+- **[QA Guide](qa/index.md)** - тестирование и QA
 
 ## Следующие шаги
 
