@@ -1,2 +1,6 @@
 # Media — операции
-- Runbook: [runbook](../../modules/backend-media/backend-media-service/runbook.md)
+
+Статус: as-is
+
+## Retention
+- Proof‑файлы: хранение 90 дней, автоудаление по расписанию

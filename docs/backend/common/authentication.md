@@ -1,5 +1,7 @@
 # Глобальная аутентификация
 
+Статус: as-is
+
 ## Цель
 Единый подход к аутентификации (и базовой авторизации) для всех сервисов.
 
@@ -12,8 +14,8 @@
 2. Проверка: FE/GW → сервисы (проброс заголовка Authorization)
 
 ## Спецификации и детали
-- Gateway: см. backend/gateway/api.md и modules/backend-gateway/README.md
-- User: см. backend/user/api.md и modules/backend-user/backend-user-service/README.md
+- Gateway: см. backend/gateway/api.md и backend/gateway/README.md
+- User: см. backend/user/api.md и backend/user/README.md
 
 ## Чек‑лист
 - [ ] JWT подписывается надёжным ключом; выполняется ротация ключей

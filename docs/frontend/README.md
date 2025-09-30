@@ -1,32 +1,33 @@
-# Frontend Overview
+# Frontend — обзор
+
+Статус: as-is
 
 ## Технологический стек
+- Next.js 14 (App Router), React 18, TypeScript strict
+- Tailwind CSS 3, shadcn/ui (Radix), next-themes
+- RHF + Zod (формы), fetch/React Query стратегии
+- Playwright e2e smoke
 
-- **Framework**: Next.js 14
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **State Management**: React Hooks + Context
-- **HTTP Client**: Fetch API
-- **Testing**: Jest + Cypress
-
-## Архитектура
-
+## Структура проекта (упрощённо)
 ```
 frontend/
-├── components/          # Переиспользуемые компоненты
-├── pages/              # Next.js страницы
-├── hooks/              # Пользовательские хуки
-├── contexts/           # React контексты
-├── utils/              # Утилиты и хелперы
-├── types/              # TypeScript типы
-└── __tests__/          # Тесты
+├── app/                 # App Router, страницы и layout
+├── components/          # Переиспользуемые компоненты (shadcn/ui + примитивы)
+├── hooks/               # Пользовательские хуки
+├── shared/              # Клиент/сервер утилиты, store, API слой
+├── tests/               # Тесты (e2e/unit)
+└── public/              # Статика
 ```
 
-## Разделы документации
+Ключевые страницы (см. routing.md):
+- `/`, `/org/:slug`, `/org/:slug/events`, `/events/:id`, `/checkout/:bookingId`
+- `/auth/login|register|recovery`, `/dashboard`
 
-- [Setup](setup.md) - настройка окружения для разработки
-- [Components](components.md) - архитектура и соглашения компонентов
-- [Routing](routing.md) - маршрутизация в приложении
-- [State Management](state-management.md) - управление состоянием
-- [API Integration](api-integration.md) - интеграция с backend API
-- [Deployment](deployment.md) - развертывание frontend
+## Документы
+- [Setup](setup.md)
+- [Components](components.md)
+- [Routing](routing.md)
+- [State Management](state-management.md)
+- [API Integration](api-integration.md)
+- [Deployment](deployment.md)
+- [Security](security.md)

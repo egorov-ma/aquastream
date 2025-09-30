@@ -15,3 +15,7 @@
 ```bash
 docker build -t aquastream/frontend:local .
 ```
+
+## CI/CD (сводка)
+- PR: install → lint → typecheck → build → (опц.) e2e smoke
+- main: docker buildx → push → deploy

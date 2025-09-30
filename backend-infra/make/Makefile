@@ -160,7 +160,7 @@ liq-user-update:
 # Docs as Code helpers
 # ------------------------------
 docs-setup:
-	cd $(REPO_ROOT)/docs/docs-tools && python3 -m venv .venv-docs && \
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && python3 -m venv .venv-docs && \
 	. .venv-docs/bin/activate && \
 	pip install --upgrade pip && \
 	pip install -r requirements-docs.txt
@@ -169,25 +169,25 @@ docs-serve:
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
-	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && mkdocs serve'
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && bash -c '. .venv-docs/bin/activate && mkdocs serve --config-file $(REPO_ROOT)/docs/_internal/mkdocs.yml'
 
 docs-build:
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-api || $(MAKE) docs-api ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-sync-modules || $(MAKE) docs-sync-modules ; \
 	$(MAKE) -f $(ROOT_DIR)/make/Makefile docs-diagrams || $(MAKE) docs-diagrams ; \
-	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && mkdocs build'
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && bash -c '. .venv-docs/bin/activate && mkdocs build --config-file $(REPO_ROOT)/docs/_internal/mkdocs.yml'
 
 docs-lint:
-	@echo "[docs] markdownlint" && cd $(REPO_ROOT)/docs/docs-tools && npx --yes markdownlint-cli2 .. || true; \
-	 echo "[docs] cspell" && cd $(REPO_ROOT)/docs/docs-tools && npx --yes cspell "../**/*.md" "../../../**/docs/**/*.md" --no-progress --show-context || true; \
+	@echo "[docs] markdownlint" && cd $(REPO_ROOT)/docs/_internal/docs-tools && npx --yes markdownlint-cli2 .. || true; \
+	 echo "[docs] cspell" && cd $(REPO_ROOT)/docs/_internal/docs-tools && npx --yes cspell "../**/*.md" "../../../**/docs/**/*.md" --no-progress --show-context || true; \
 		 echo "[docs] vale" && VBIN=$$( [ -x /opt/homebrew/bin/vale ] && echo /opt/homebrew/bin/vale || ( [ -x /usr/local/bin/vale ] && echo /usr/local/bin/vale || echo vale ) ); \
-		   cd $(REPO_ROOT)/docs/docs-tools && $$VBIN .. || true; \
+		   cd $(REPO_ROOT)/docs/_internal/docs-tools && $$VBIN .. || true; \
 		 echo "[docs] lychee" && LYCHEE=$$( [ -x /opt/homebrew/bin/lychee ] && echo /opt/homebrew/bin/lychee || ( [ -x /usr/local/bin/lychee ] && echo /usr/local/bin/lychee || echo lychee ) ); \
-		   cd $(REPO_ROOT)/docs/docs-tools && $$LYCHEE --config lychee.toml .. || true
+		   cd $(REPO_ROOT)/docs/_internal/docs-tools && $$LYCHEE --config lychee.toml .. || true
 
 docs-check-links:
 	@echo "[docs] link check"
-	@cd $(REPO_ROOT)/docs/docs-tools && \
+	@cd $(REPO_ROOT)/docs/_internal/docs-tools && \
 	  if command -v lychee >/dev/null 2>&1; then \
 	    echo "[docs] using lychee"; \
 	    lychee --config lychee.toml "../**/*.md"; \
@@ -197,31 +197,31 @@ docs-check-links:
 	  fi
 
 docs-inventory:
-	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && . .venv-docs/bin/activate || true; \
 	python tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json || \
 	python3 tools/inventory_md.py --repo-root $(REPO_ROOT) --csv $(REPO_ROOT)/docs/_inventory/md_inventory.csv --json $(REPO_ROOT)/docs/_inventory/md_inventory.json
 
 docs-map:
-	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && . .venv-docs/bin/activate || true; \
 	python tools/map_docs.py || python3 tools/map_docs.py
 
 .PHONY: docs-apply-map
 docs-apply-map:
-	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && . .venv-docs/bin/activate || true; \
 	python tools/apply_move_plan.py || python3 tools/apply_move_plan.py
 
 docs-normalize-report:
-	cd $(REPO_ROOT)/docs/docs-tools && . .venv-docs/bin/activate || true; \
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && . .venv-docs/bin/activate || true; \
 	python tools/normalize_md.py || python3 tools/normalize_md.py
 
 docs-sync-modules:
-	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/centralize_md.py' || python3 tools/centralize_md.py
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/centralize_md.py' || python3 tools/centralize_md.py
 
 docs-api:
-	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/generate_api_docs.py' || python3 tools/generate_api_docs.py
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/generate_api_docs.py' || python3 tools/generate_api_docs.py
 
 docs-diagrams:
-	cd $(REPO_ROOT)/docs/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/generate_diagrams.py' || python3 tools/generate_diagrams.py
+	cd $(REPO_ROOT)/docs/_internal/docs-tools && bash -c '. .venv-docs/bin/activate && python tools/generate_diagrams.py' || python3 tools/generate_diagrams.py
 
 .PHONY: deps-lock
 deps-lock:

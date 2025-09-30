@@ -29,14 +29,12 @@ docs-tools/
 
 ### Сборка документации
 ```bash
-cd docs/docs-tools
-python3 -m mkdocs build --clean
+python3 -m mkdocs build --clean --config-file docs/_internal/mkdocs.yml
 ```
 
 ### Локальный сервер
 ```bash
-cd docs/docs-tools
-python3 -m mkdocs serve
+python3 -m mkdocs serve --config-file docs/_internal/mkdocs.yml
 ```
 
 ### Генерация API документации

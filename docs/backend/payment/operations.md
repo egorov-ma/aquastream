@@ -14,4 +14,4 @@
 - [ ] Эскалация при длительных задержках подтверждений
 
 ### Ссылки
-- Runbook: [runbook](../../modules/backend-payment/backend-payment-service/runbook.md)
+- Runbook: `_internal/to_refactoring/_archived/modules/backend-payment/backend-payment-service/runbook.md`

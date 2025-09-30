@@ -14,46 +14,48 @@ nav:
   - Backend:
       - Обзор: backend/README.md
       - Common:
+          - Overview: backend/common/README.md
           - Аутентификация: backend/common/authentication.md
           - Обработка ошибок: backend/common/error-handling.md
+          - Database: backend/common/database.md
+          - Security: backend/common/security.md
       - Gateway:
+          - Overview: backend/gateway/README.md
           - API: backend/gateway/api.md
+          - Бизнес-логика: backend/gateway/business-logic.md
           - Операции: backend/gateway/operations.md
-          - Changelog: backend/gateway/changelog.md
       - User:
           - README: backend/user/README.md
           - API: backend/user/api.md
           - Бизнес-логика: backend/user/business-logic.md
           - Операции: backend/user/operations.md
-          - Changelog: backend/user/changelog.md
       - Event:
+          - Overview: backend/event/README.md
           - API: backend/event/api.md
           - Бизнес-логика: backend/event/business-logic.md
           - Операции: backend/event/operations.md
-          - Changelog: backend/event/changelog.md
       - Crew:
+          - Overview: backend/crew/README.md
           - API: backend/crew/api.md
           - Бизнес-логика: backend/crew/business-logic.md
           - Операции: backend/crew/operations.md
-          - Changelog: backend/crew/changelog.md
       - Payment:
+          - Overview: backend/payment/README.md
           - API: backend/payment/api.md
           - Бизнес-логика: backend/payment/business-logic.md
           - Операции: backend/payment/operations.md
-          - Changelog: backend/payment/changelog.md
       - Notification:
+          - Overview: backend/notification/README.md
           - API: backend/notification/api.md
           - Бизнес-логика: backend/notification/business-logic.md
           - Операции: backend/notification/operations.md
-          - Changelog: backend/notification/changelog.md
       - Media:
+          - Overview: backend/media/README.md
           - API: backend/media/api.md
           - Бизнес-логика: backend/media/business-logic.md
           - Операции: backend/media/operations.md
-          - Changelog: backend/media/changelog.md
   - Frontend:
       - Обзор: frontend/README.md
-      - Архитектура: frontend/overview.md
       - Маршрутизация: frontend/routing.md
       - Состояние: frontend/state-management.md
       - Компоненты: frontend/components.md

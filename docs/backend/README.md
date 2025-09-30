@@ -11,13 +11,13 @@ AquaStream backend построен на микросервисной архит
 
 ### Модули сервисов
 
-- **[Gateway](gateway/)** - API Gateway, маршрутизация и балансировка нагрузки
-- **[User](user/)** - Управление пользователями, аутентификация и профили
-- **[Event](event/)** - События, бронирования и расписания
-- **[Payment](payment/)** - Платежи, транзакции и интеграции с платежными системами
-- **[Notification](notification/)** - Система уведомлений (Email, SMS, Push, Telegram)
-- **[Crew](crew/)** - Управление экипажами и командами
-- **[Media](media/)** - Загрузка и обработка медиафайлов
+- **[Gateway](gateway/README.md)** - API Gateway, маршрутизация и балансировка нагрузки
+- **[User](user/README.md)** - Управление пользователями, аутентификация и профили
+- **[Event](event/README.md)** - События, бронирования и расписания
+- **[Payment](payment/README.md)** - Платежи, транзакции и интеграции с платежными системами
+- **[Notification](notification/README.md)** - Система уведомлений (Email, SMS, Push, Telegram)
+- **[Crew](crew/README.md)** - Управление экипажами и командами
+- **[Media](media/README.md)** - Загрузка и обработка медиафайлов
 
 ### Общие компоненты
 
@@ -32,7 +32,7 @@ AquaStream backend построен на микросервисной архит
 - **Database**: PostgreSQL
 - **Security**: Spring Security, JWT
 - **API**: RESTful, OpenAPI 3.0
-- **Build**: Maven
+- **Build**: Gradle
 - **Containerization**: Docker
 
 ## Принципы проектирования
@@ -45,6 +45,6 @@ AquaStream backend построен на микросервисной архит
 
 ## См. также
 
-- [API Documentation](../api/) - автогенерированная документация всех API
-- [Architecture Decisions](../decisions/) - архитектурные решения (ADR)
-- [Operations](../operations/) - руководства по эксплуатации
+- [API Documentation](../api/index.md) - автогенерированная документация всех API
+- [Architecture Decisions](../decisions/index.md) - архитектурные решения (ADR)
+- [Operations](../operations/README.md) - руководства по эксплуатации

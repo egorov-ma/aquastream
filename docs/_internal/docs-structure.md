@@ -21,7 +21,6 @@ docs/
     ├── docs-tools/             # Инструменты документации
     ├── to_refactoring/         # Старая документация (временно)
     ├── templates/              # Шаблоны документации
-    ├── _media/                 # Медиа файлы
     └── docs-structure.md       # Этот файл
 ```
 
@@ -186,7 +185,6 @@ _internal/
 │   ├── architecture.md
 │   ├── adr-template.md
 │   └── frontend-component.md
-├── _media/                   # Медиа файлы и диаграммы
 └── docs-structure.md         # Этот файл
 ```
 

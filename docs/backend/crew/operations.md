@@ -1,2 +1,6 @@
 # Crew — операции
-- Runbook: [runbook](../../modules/backend-crew/backend-crew-service/runbook.md)
+
+Статус: as-is
+
+## Назначения
+- Контроль idempotency при назначениях; валидация вместимости

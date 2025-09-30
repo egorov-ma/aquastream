@@ -1,2 +1,8 @@
 # Media API
-- Обзор: [README](../../modules/backend-media/backend-media-service/README.md)
+
+Статус: as-is
+
+## Файлы
+- Генерация presigned URLs для загрузки/скачивания
+
+Документация API (ReDoc): ../../api/redoc/root/backend-media-api.html

@@ -1,2 +1,9 @@
 # Notification — операции
-- Runbook: [runbook](../../modules/backend-notification/backend-notification-service/runbook.md)
+
+Статус: as-is
+
+## Telegram webhook
+- При ошибках: ретраи с backoff, логирование неуспехов
+
+## Подписки
+- Проверка категорий: обязательные и опциональные

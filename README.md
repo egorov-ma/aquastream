@@ -112,7 +112,7 @@ docs/
 │   ├── security-testing.md      # Тестирование безопасности
 │   └── bug-management.md        # Управление дефектами
 │
-├── ✅ api/                          # API документация (автогенерация)
+├── api/                          # API документация (автогенерация)
 │   ├── index.md                  # Сводка всех API
 │   ├── specs/                    # OpenAPI спецификации
 │   │   └── root/                 # Спецификации всех сервисов
@@ -136,14 +136,14 @@ docs/
 │   ├── processes.md              # Бизнес-процессы
 │   └── roadmap.md                # Дорожная карта
 │
-├── ✅ development/                  # Руководство разработчика
+├── development/                  # Руководство разработчика
 │   ├── setup.md                  # Настройка среды
 │   ├── workflows.md              # Git flow, код-ревью
 │   ├── testing.md                # Стратегия тестирования
 │   ├── style-guides.md           # Стандарты кода
 │   └── troubleshooting.md        # Частые проблемы
 │
-├── ✅ decisions/                    # Architecture Decision Records
+├── decisions/                    # Architecture Decision Records
 │   ├── index.md                  # Список всех ADR
 │   ├── adr-001-docs-stack.md
 │   ├── adr-002-sync-modules.md

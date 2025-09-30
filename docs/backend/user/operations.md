@@ -1,2 +1,13 @@
 # User — операции
-- Runbook: [runbook](../../modules/backend-user/backend-user-service/runbook.md)
+
+Статус: as-is
+
+## Токены и сессии
+- Access: 15 минут; Refresh: 30 дней (rotation по jti)
+- Revoke refresh при компрометации; аудит входов
+
+## Восстановление через Telegram
+- Инициация `/auth/recovery/init` → проверка, верификация, смена пароля
+
+## Диагностика
+- Проверка `/profile/me` для валидности JWT

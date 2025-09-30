@@ -1,2 +1,3 @@
 # Инфраструктура
-- [Developer Guide](../modules/backend-infra/DEVELOPER.md)
+
+См. Developer Guide: `_internal/to_refactoring/modules/backend-infra/DEVELOPER.md`.
