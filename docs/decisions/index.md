@@ -1,15 +1,36 @@
-# ADR — Architecture Decision Records (индекс)
+# Architecture Decision Records
 
 ---
 title: ADR Index
-summary: Индекс архитектурных решений с нумерацией и ссылками на карточки ADR.
-tags: [adr]
+summary: Индекс всех архитектурных решений проекта AquaStream
+tags: [adr, architecture, decisions]
 ---
 
-Индекс архитектурных решений с нумерацией и ссылками на карточки ADR.
+Индекс всех архитектурных решений с хронологией и статусами.
 
-Нумерация: по возрастанию, формат `ADR-<NNN>`.
+**Формат нумерации:** `ADR-NNN` (3 цифры, zero-padded)
 
-- [ADR-0001: Выбор стека Doc as Code для aquastream](./adr-0001-docs-stack.md)
- - [ADR-0002: Стратегия сборки модульных доков через docs/modules](./adr-0002-sync-module-docs.md)
- - [ADR-0003: Автогенерация API‑документации (ReDoc + Spectral)](./adr-0003-api-redoc.md)
+## Активные решения
+
+| ADR | Название | Статус | Дата |
+|-----|----------|--------|------|
+| [ADR-001](./adr-001-docs-stack.md) | Doc as Code Stack для AquaStream | ✅ Accepted | 2025-09-22 |
+| [ADR-002](./adr-002-api-documentation.md) | Автогенерация API документации (ReDoc + Swagger UI) | ✅ Accepted | 2025-09-22 |
+
+## Устаревшие решения
+
+_Пока нет устаревших ADR_
+
+## Замененные решения
+
+_Пока нет замененных ADR_
+
+---
+
+**Как создать новый ADR:**
+1. Скопируй шаблон: `cp docs/_internal/templates/adr-template.md docs/decisions/adr-NNN-short-title.md`
+2. Замени placeholders
+3. Обнови этот index.md
+4. Создай PR с пометкой `[ADR]`
+
+См. [Documentation Guidelines](../_internal/documentation-guidelines.md#architecture-decision-records-adr) для деталей.

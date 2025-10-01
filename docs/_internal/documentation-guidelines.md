@@ -58,6 +58,246 @@ docs/
     └── documentation-guidelines.md  # Этот файл
 ```
 
+### Детальная структура директорий
+
+#### backend/
+
+Документация для каждого backend сервиса:
+
+```
+backend/
+├── gateway/
+│   ├── README.md              # Обзор Gateway (routing, CORS, rate limiting)
+│   ├── api.md                 # API endpoints Gateway
+│   └── operations.md          # Эксплуатация Gateway
+├── user/
+│   ├── README.md              # User Service overview
+│   ├── api.md                 # REST API endpoints
+│   ├── business-logic.md      # Domain логика (регистрация, JWT)
+│   └── operations.md          # Service-specific operations
+├── event/
+│   ├── README.md              # Event Service overview
+│   ├── api.md                 # Events API
+│   ├── business-logic.md      # Бронирования, waitlist, capacity
+│   └── operations.md          # Operations
+├── crew/                      # Аналогично для Crew Service
+├── payment/                   # Аналогично для Payment Service
+├── notification/              # Аналогично для Notification Service
+├── media/                     # Аналогично для Media Service
+└── common/                    # backend-common библиотека
+    ├── README.md              # Обзор backend-common
+    ├── error-handling.md      # GlobalExceptionHandler, RFC 7807
+    ├── rate-limiting.md       # Bucket4j, RateLimitFilter
+    ├── metrics.md             # MetricsCollector, RedisMetricsWriter
+    ├── web-utilities.md       # CorrelationId, фильтры, interceptors
+    └── security.md            # Security utilities
+```
+
+**Правила для backend/**:
+
+**Для сервисов (user/, event/, crew/, etc.):**
+- Каждый сервис = отдельная папка с названием сервиса (lowercase)
+- `README.md` обязателен для каждого сервиса (используй шаблон `backend-service-readme.md`)
+- `api.md` для детального описания REST API (если не генерируется из OpenAPI)
+- `business-logic.md` для сложной domain логики
+- `operations.md` для service-specific операций (liquibase, troubleshooting)
+
+**Для common/:**
+- Документирует `backend-common/` - переиспользуемую библиотеку
+- `README.md` - обзор структуры, автоконфигураций, зависимостей
+- Отдельные файлы для каждой подсистемы (error-handling, metrics, rate-limiting)
+- Примеры использования в application.yml
+- Cross-references на общую backend документацию (authentication, database)
+
+#### frontend/
+
+```
+frontend/
+├── README.md                  # Frontend architecture overview
+├── setup.md                   # Настройка frontend окружения
+├── components/                # Документация React компонентов
+│   ├── ui/                    # UI компоненты (Button, Input, Card)
+│   │   ├── button.md
+│   │   └── card.md
+│   ├── forms/                 # Формы
+│   └── layouts/               # Layout компоненты
+├── pages/                     # Документация страниц
+│   ├── dashboard.md
+│   └── events.md
+├── state-management.md        # Redux/Zustand
+├── routing.md                 # Next.js routing
+├── styling.md                 # Tailwind CSS, theme
+└── testing.md                 # Frontend testing strategy
+```
+
+**Правила для frontend/**:
+- Компоненты группируются по категориям (ui/, forms/, layouts/)
+- Используй шаблон `frontend-component.md` для документации компонентов
+- Страницы документируются отдельно в `pages/`
+
+#### qa/
+
+```
+qa/
+├── README.md                  # QA strategy overview
+├── test-strategy.md           # Общая стратегия тестирования
+├── test-plans/                # Тест-планы для фич/модулей
+│   ├── user-registration.md
+│   ├── event-booking.md
+│   └── payment-flow.md
+├── automation/                # Автоматизация
+│   ├── README.md              # Фреймворки и инструменты
+│   ├── e2e-tests.md           # E2E тесты (Cypress/Playwright)
+│   └── api-tests.md           # API тесты (REST Assured)
+├── manual-testing/            # Ручное тестирование
+│   ├── test-cases.md
+│   └── exploratory.md
+└── performance/               # Performance testing
+    ├── load-testing.md        # Нагрузочное тестирование
+    └── benchmarks.md          # Результаты benchmarks
+```
+
+**Правила для qa/**:
+- Используй шаблон `qa-test-plan.md` для тест-планов
+- Тест-планы называются по feature: `{feature-name}.md`
+- Результаты тестов храни в репозитории (не в docs)
+
+#### api/
+
+```
+api/
+├── index.md                   # Индекс всех API (таблица со ссылками)
+├── specs/                     # OpenAPI спецификации (source)
+│   └── root/                  # Все спецификации в одной директории
+│       ├── backend-user-api.yaml
+│       ├── backend-event-api.yaml
+│       ├── backend-crew-api.yaml
+│       ├── backend-payment-api.yaml
+│       ├── backend-notification-api.yaml
+│       ├── backend-media-api.yaml
+│       ├── backend-gateway-admin-api.yaml
+│       ├── backend-gateway-metrics-api.yaml
+│       ├── frontend-api.yaml
+│       ├── payment-webhook-api.yaml
+│       ├── service-health-api.yaml
+│       ├── telegram-bot-api.yaml
+│       └── user-admin-api.yaml
+├── redoc/                     # ReDoc HTML (для чтения)
+│   └── root/
+│       ├── backend-user-api.html
+│       ├── backend-event-api.html
+│       └── ... (остальные .html)
+└── swagger/                   # Swagger UI HTML (для тестирования)
+    └── root/
+        ├── backend-user-api.html
+        ├── backend-event-api.html
+        └── ... (остальные .html)
+```
+
+**Правила для api/**:
+- `index.md` - главная страница с таблицей всех API (модуль | спецификация | ReDoc | Swagger)
+- OpenAPI specs в `specs/root/` (YAML формат) - **единственный source of truth**
+- Автоматическая генерация **обоих** форматов через `make docs-api`:
+  - **ReDoc** - для чтения и изучения API (компактный, трехколоночный layout)
+  - **Swagger UI** - для интерактивного тестирования (Try it out, отправка запросов)
+- **НЕ** пиши API документацию вручную, используй OpenAPI спецификации
+- Каждый backend сервис должен иметь свою `.yaml` спецификацию
+- HTML файлы генерируются автоматически, не редактируй их вручную
+- См. [ADR-0003: API Documentation Strategy](../decisions/adr-002-api-documentation.md) для деталей
+
+#### operations/
+
+```
+operations/
+├── README.md                  # Operations overview
+├── infrastructure.md          # Docker Compose, сервисы, volumes
+├── deployment.md              # Процесс deployment, version management
+├── ci-cd.md                   # GitHub Actions workflows
+├── monitoring.md              # Prometheus, Grafana (если есть)
+├── backup-recovery.md         # Backup стратегия
+└── troubleshooting.md         # Общий troubleshooting
+```
+
+**Правила для operations/**:
+- Инфраструктурные команды должны быть copy-paste ready
+- Документируй Makefile команды
+- Troubleshooting с примерами логов
+
+#### business/
+
+```
+business/
+├── README.md                  # Бизнес-документация overview
+├── requirements/              # Функциональные требования
+│   ├── user-management.md
+│   └── event-booking.md
+├── roadmap.md                 # Product roadmap
+├── glossary.md                # Бизнес-глоссарий терминов
+└── analytics.md               # Аналитика и метрики
+```
+
+**Правила для business/**:
+- Документируй бизнес-требования, не технические решения
+- Используй глоссарий для единообразия терминов
+
+#### development/
+
+```
+development/
+├── README.md                  # Development overview
+├── setup.md                   # Детальная настройка окружения
+├── workflows/                 # Git workflows, branching strategy
+│   ├── git-workflow.md
+│   └── code-review.md
+├── style-guides/              # Code style guides
+│   ├── java-style.md
+│   ├── typescript-style.md
+│   └── sql-style.md
+├── debugging.md               # Debugging tips
+└── tooling.md                 # IDE setup, plugins
+```
+
+**Правила для development/**:
+- Практические руководства для разработчиков
+- Setup инструкции должны работать на clean machine
+
+#### decisions/
+
+```
+decisions/
+├── README.md                  # ADR index
+├── adr-001-microservices.md
+├── adr-002-postgresql.md
+├── adr-003-jwt-auth.md
+└── adr-004-redis-cache.md
+```
+
+**Правила для decisions/**:
+- Используй шаблон `adr-template.md`
+- Нумерация: `adr-NNN-short-title.md` (3 цифры, zero-padded)
+- README.md содержит список всех ADR с кратким описанием
+
+#### _internal/
+
+```
+_internal/
+├── documentation-guidelines.md  # Этот файл
+├── templates/                   # Шаблоны документации
+│   ├── README.md
+│   ├── backend-service-readme.md
+│   ├── adr-template.md
+│   ├── frontend-component.md
+│   └── qa-test-plan.md
+└── docs-tools/                  # Скрипты и инструменты
+    ├── link-checker.sh
+    └── markdown-linter.sh
+```
+
+**Правила для _internal/**:
+- Не публикуется в MkDocs (префикс `_`)
+- Шаблоны всегда актуальны и соответствуют guidelines
+- Инструменты должны быть executable
+
 ### Принципы организации
 
 **По аудитории:**
@@ -487,8 +727,8 @@ graph LR
 
 ## См. также
 
-- [ADR-001: Doc as Code Stack](../decisions/adr-0001-docs-stack.md) — решение о выборе инструментов
-- [ADR-003: API Documentation Strategy](../decisions/adr-0003-api-redoc.md) — автогенерация API docs
+- [ADR-001: Doc as Code Stack](../decisions/adr-001-docs-stack.md) — решение о выборе инструментов
+- [ADR-002: API Documentation Strategy](../decisions/adr-002-api-documentation.md) — автогенерация API docs
 - [Templates README](templates/README.md) — доступные шаблоны
 - [MkDocs Documentation](https://www.mkdocs.org/) — официальная документация MkDocs
 - [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) — тема и возможности

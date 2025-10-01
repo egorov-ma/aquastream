@@ -215,6 +215,5 @@ make {service-name}-heap-dump ENV=production
 
 - Business Logic: `business-logic.md` - детальное описание бизнес-логики
 - Operations Guide: `operations.md` - расширенное руководство по эксплуатации
-- Changelog: `changelog.md` - история изменений сервиса
 - API Documentation: `api/` - сводная документация по всем API
 - Architecture Overview: `architecture.md` - общая архитектура системы
