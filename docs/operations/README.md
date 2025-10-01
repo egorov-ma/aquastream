@@ -1,5 +1,11 @@
 # Operations Overview
 
+---
+title: Operations Overview
+summary: Документация по эксплуатации и администрированию системы AquaStream
+tags: [operations, devops, infrastructure]
+---
+
 ## Обзор
 
 Документация по эксплуатации и администрированию системы AquaStream.

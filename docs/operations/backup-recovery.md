@@ -1,5 +1,11 @@
 # Резервное копирование и восстановление
 
+---
+title: Backup & Recovery
+summary: Автоматическое резервное копирование PostgreSQL и процедуры восстановления
+tags: [operations, backup, recovery, postgresql]
+---
+
 ## Обзор
 
 Автоматическое резервное копирование PostgreSQL с поддержкой retention policy для ежедневных, еженедельных и ежемесячных бэкапов.
@@ -212,3 +218,4 @@ mc cp --recursive backend-infra/backup/artifacts/ minio/backups/postgres/
 - [Database Guide](../backend/database.md) - детали схем и миграций
 - [Infrastructure](infrastructure.md) - настройка окружения
 - [Deployment](deployment.md) - процесс развертывания
+- [Architecture](../architecture.md) - архитектура системы

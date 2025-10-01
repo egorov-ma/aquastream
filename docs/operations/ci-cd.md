@@ -1,5 +1,11 @@
 # CI/CD Pipeline
 
+---
+title: CI/CD Pipeline
+summary: GitHub Actions для автоматизации сборки, тестирования, security scanning и деплоя
+tags: [operations, ci-cd, github-actions, automation]
+---
+
 ## Обзор
 
 GitHub Actions pipeline для автоматизации сборки, тестирования, security scanning и деплоя.

@@ -1,5 +1,11 @@
 # Инфраструктура
 
+---
+title: Infrastructure
+summary: Контейнеризованная инфраструктура на базе Docker Compose
+tags: [operations, infrastructure, docker, kubernetes]
+---
+
 ## Обзор
 
 AquaStream использует контейнеризованную инфраструктуру на базе Docker Compose с централизованным управлением через Makefile.
@@ -85,7 +91,7 @@ aquastream/
 
 ### Observability Stack (dev окружение)
 
-**Prometheus 2.45**
+**Prometheus v2.52.0**
 - **Порт**: 9090
 - **Контейнер**: `aquastream-prometheus`
 - **Volume**: `prometheusdata`
@@ -94,7 +100,7 @@ aquastream/
 - **Retention**: 15 дней
 - **Scrape interval**: 15 секунд
 
-**Grafana 10**
+**Grafana 10.4.2**
 - **Порт**: 3001
 - **Контейнер**: `aquastream-grafana`
 - **Volume**: `grafanadata`
@@ -102,7 +108,7 @@ aquastream/
 - **Credentials**: `${GRAFANA_ADMIN_USER}/${GRAFANA_ADMIN_PASSWORD}` (по умолчанию admin/admin)
 - **Datasources**: Prometheus, Loki
 
-**Loki 2.8**
+**Loki 2.9.5**
 - **Порт**: 3100
 - **Контейнер**: `aquastream-loki`
 - **Volume**: `lokidata`
@@ -110,7 +116,7 @@ aquastream/
 - **Retention**: 7 дней
 - **Использование**: централизованное хранилище логов
 
-**Promtail 2.8**
+**Promtail 2.9.5**
 - **Контейнер**: `aquastream-promtail`
 - **Volume**: `/var/run/docker.sock` (read-only)
 - **Конфигурация**: `promtail-config.yml`

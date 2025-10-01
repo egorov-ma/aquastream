@@ -1,5 +1,11 @@
 # Deployment
 
+---
+title: Deployment Guide
+summary: Развертывание AquaStream через Docker Compose с управлением версиями
+tags: [operations, deployment, docker-compose, versioning]
+---
+
 ## Обзор
 
 Развертывание AquaStream осуществляется через **Docker Compose** с централизованным управлением через **Makefile**. Поддерживаются три окружения: dev, stage, prod.
