@@ -10,6 +10,19 @@ tags: [architecture, overview]
 
 AquaStream - система управления водными мероприятиями, построенная на модульной архитектуре с четким разделением ответственности между компонентами.
 
+**Назначение:**
+- Управление водными мероприятиями (сплавы, походы, туры)
+- Бронирование участников на события
+- Управление экипажами и назначениями
+- Обработка платежей и уведомлений
+- Хранение медиа-контента
+
+**Границы ответственности:**
+- ✅ Бизнес-логика организации водных мероприятий
+- ✅ API для frontend и мобильных приложений
+- ✅ Интеграция с платежными провайдерами
+- ✅ Уведомления через Telegram и Email
+
 ## Архитектурная схема
 
 ```mermaid
@@ -153,6 +166,42 @@ backend-[service]/
 - Сервисы маппят Service DTO ↔ Entity
 - ArchUnit тесты проверяют соблюдение правил
 
+### Слоистая архитектура
+
+```
+┌─────────────────────────────────────┐
+│         Presentation Layer          │  ← REST Controllers, Validation
+├─────────────────────────────────────┤
+│          Service Layer              │  ← Business Logic, Transactions
+├─────────────────────────────────────┤
+│         Repository Layer            │  ← Data Access, JPA Repositories
+├─────────────────────────────────────┤
+│          Domain Layer               │  ← Entities, Value Objects
+└─────────────────────────────────────┘
+```
+
+**Presentation Layer (api):**
+- REST контроллеры (`@RestController`)
+- Input validation (`@Valid`, Jakarta Bean Validation)
+- Transport DTO (request/response models)
+- OpenAPI аннотации
+
+**Service Layer (service):**
+- Бизнес-логика (`@Service`)
+- Транзакционная обработка (`@Transactional`)
+- Service DTO (доменные модели)
+- Маппинг между слоями
+
+**Repository Layer (db):**
+- Spring Data JPA репозитории
+- Custom queries (`@Query`)
+- Specifications для сложных запросов
+
+**Domain Layer (db/entity):**
+- JPA entities (`@Entity`)
+- Value Objects
+- Domain logic (методы сущностей)
+
 ### Backend-Common
 
 Общая библиотека для всех сервисов с автоконфигурацией Spring Boot:
@@ -215,6 +264,64 @@ backend-common/
 - `WebAutoConfiguration` - CORS, CorrelationId
 - `MetricsAutoConfiguration` - система метрик
 - `ServiceDiscoveryAutoConfiguration` - service discovery
+
+## Ключевые решения и паттерны
+
+### Design Patterns
+
+**Применяемые паттерны:**
+
+**Repository Pattern**
+- Абстракция доступа к данным через Spring Data JPA
+- Инкапсуляция деталей persistence слоя
+- Переиспользуемые query методы
+
+**Service Layer Pattern**
+- Инкапсуляция бизнес-логики в `@Service` классах
+- Транзакционные границы через `@Transactional`
+- Координация между репозиториями
+
+**DTO/Mapper Pattern**
+- Изоляция слоев через Transport DTO и Service DTO
+- Явный маппинг данных между слоями
+- Предотвращение утечки Entity в API
+
+**Circuit Breaker** (планируется)
+- Устойчивость к сбоям внешних сервисов
+- Fallback логика для критичных операций
+- Resilience4j интеграция
+
+**Saga Pattern** (частично)
+- Компенсирующие транзакции для межсервисных операций
+- Eventual consistency через события
+
+**API Gateway Pattern**
+- Единая точка входа для всех клиентов
+- Централизованная аутентификация и rate limiting
+- Routing и aggregation
+
+### Обоснование технологического стека
+
+**Java 21**
+- Производительность: virtual threads (Project Loom) для высокой throughput
+- Экосистема: богатая библиотека, зрелые фреймворки
+- Команда: опыт разработки на Java
+
+**Spring Boot 3.x**
+- Быстрая разработка: автоконфигурация, стартеры
+- Интеграции: готовые решения для PostgreSQL, Redis, MinIO
+- Production-ready: Actuator, metrics, health checks
+
+**PostgreSQL 16**
+- ACID транзакции для финансовых операций
+- Производительность: эффективные индексы, query planner
+- JSON поддержка для гибких данных (notifications, metadata)
+- Multi-schema: изоляция данных сервисов
+
+**Gradle**
+- Гибкость: Kotlin DSL, convention plugins
+- Performance: incremental builds, build cache
+- Dependency locking для воспроизводимых сборок
 
 ## Технологический стек
 
@@ -313,39 +420,266 @@ Storage: MinIO (S3-compatible object storage)
 - Security event tracking
 - Access audit trails
 
-## Масштабирование
+## Производительность и масштабирование
 
-### Горизонтальное
-- Stateless сервисы
-- Load balancing через nginx/HAProxy
-- Database read replicas
+### Performance характеристики
 
-### Вертикальное
-- JVM tuning
-- Connection pooling
-- Cache strategies
+**Целевые SLA:**
+- Response time: <500ms (p95) для READ операций
+- Response time: <1s (p95) для WRITE операций
+- Throughput: 100 requests/second на сервис
+- Availability: 99.5% uptime (dev/staging), 99.9% (production)
+- Concurrent users: 500-1000 одновременных пользователей
 
-### Performance
-- Database indexing
-- CDN для статики
-- API response caching
+**Текущие метрики:**
+- Event Service: ~300ms (p95) для создания бронирования
+- User Service: ~100ms (p95) для authentication
+- Payment Service: ~800ms (p95) с учетом внешних провайдеров
+
+**Оптимизации:**
+
+**Database indexing**
+- Composite индексы на частых JOIN колонках
+- Partial индексы для filtered queries
+- GIN индексы для JSON поля (notifications, metadata)
+
+**Connection pooling (HikariCP)**
+```yaml
+spring.datasource.hikari:
+  maximum-pool-size: 20        # Max connections
+  minimum-idle: 5              # Min idle connections
+  connection-timeout: 30000    # 30s
+  idle-timeout: 600000         # 10 min
+```
+
+**Lazy loading с N+1 защитой**
+- Entity graphs для eager loading критичных связей
+- @BatchSize для коллекций
+- DTO projections для read-only queries
+
+**Caching strategy**
+- Redis для session storage (TTL: 1 час)
+- In-memory cache (Caffeine) для справочных данных
+- HTTP cache headers для статики
+
+### Горизонтальное масштабирование
+
+**Stateless сервисы:**
+- Session в Redis (не в JVM memory)
+- No local file storage (MinIO для файлов)
+- Idempotency keys для безопасного retry
+
+**Load balancing:**
+```bash
+# Docker Compose scale
+docker-compose up -d --scale backend-event=3
+
+# Nginx upstream
+upstream event-service {
+    least_conn;  # Least connections algorithm
+    server backend-event-1:8102;
+    server backend-event-2:8102;
+    server backend-event-3:8102;
+}
+```
+
+**Database scaling:**
+- PostgreSQL read replicas (планируется)
+- Connection pooling для эффективного использования
+- Schema-per-service для независимости
+
+### Вертикальное масштабирование
+
+**JVM tuning:**
+```bash
+# Heap size (50-75% от container memory)
+-Xms512m -Xmx768m
+
+# GC (G1GC для latency-sensitive apps)
+-XX:+UseG1GC
+-XX:MaxGCPauseMillis=200
+
+# Metaspace
+-XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m
+```
+
+**Resource limits (Docker Compose):**
+- Memory: 512MB-768MB per service
+- CPU: 0.75-1.0 vCPU
+- См. [Infrastructure](operations/infrastructure.md) для деталей
 
 ## Мониторинг и наблюдаемость
 
-### Метрики
-- Business KPIs
-- Technical performance
-- System health
+### Метрики (Prometheus format)
+
+**Business Metrics:**
+- `bookings_created_total` — количество созданных бронирований
+- `payments_succeeded_total` — успешные платежи
+- `booking_duration_seconds` — время создания бронирования
+- `waitlist_additions_total` — добавления в waitlist
+
+**Technical Metrics:**
+- `http_requests_total{method, status, service}` — HTTP запросы
+- `http_request_duration_seconds` — latency (histogram)
+- `jvm_memory_used_bytes{area}` — использование памяти JVM
+- `database_connections_active` — активные DB соединения
+- `redis_commands_total{command}` — Redis операции
+
+**Доступ к метрикам:**
+```bash
+# Actuator endpoints
+curl http://localhost:8102/actuator/metrics
+curl http://localhost:8102/actuator/prometheus
+
+# Prometheus (dev окружение)
+http://localhost:9090
+```
 
 ### Логирование
-- Structured JSON logs
-- Correlation IDs
-- Centralized aggregation
+
+**Structured logging (JSON через Logback):**
+```json
+{
+  "timestamp": "2025-10-01T12:00:00.123Z",
+  "level": "INFO",
+  "service": "backend-event",
+  "correlationId": "abc-123-def-456",
+  "userId": "user-789",
+  "event": "BOOKING_CREATED",
+  "message": "Booking successfully created",
+  "duration": 287,
+  "bookingId": "booking-1001",
+  "eventId": "event-42"
+}
+```
+
+**Key events для мониторинга:**
+- `SERVICE_STARTED` — сервис запущен
+- `BOOKING_CREATED` — создано бронирование
+- `PAYMENT_SUCCEEDED` / `PAYMENT_FAILED` — результат платежа
+- `EXTERNAL_API_CALL` — вызовы внешних API (YooKassa, Telegram)
+- `ERROR_OCCURRED` — ошибки требующие внимания
+- `CAPACITY_EXCEEDED` — превышение capacity экипажа
+
+**Centralized logging (dev окружение):**
+- Loki для хранения логов
+- Promtail для сбора из Docker контейнеров
+- Grafana для визуализации и поиска
+- Correlation IDs для трейсинга запросов
+
+**Log levels:**
+- **TRACE** (dev only): детальная отладка
+- **DEBUG** (dev only): разработка
+- **INFO**: нормальные операции, бизнес-события
+- **WARN**: предупреждения (capacity близко к лимиту)
+- **ERROR**: ошибки требующие внимания
+
+### Дашборды
+
+**Dev окружение (Grafana):**
+- Service Health Dashboard — health checks, uptime
+- Business Metrics Dashboard — bookings, payments, users
+- Performance Dashboard — latency, throughput, errors
+
+**Actuator endpoints:**
+```bash
+/actuator/health       # Health status
+/actuator/info         # Build info, version
+/actuator/metrics      # All metrics
+/actuator/prometheus   # Prometheus format
+```
 
 ### Алерты
-- Service health monitoring
-- Performance thresholds
-- Business metric anomalies
+
+**Критичные алерты:**
+- Service down (health check failed > 2 min)
+- Error rate > 5% (5xx responses)
+- Response time p95 > 2s
+- Database connections > 90% pool size
+
+**Предупреждения:**
+- Memory usage > 85%
+- Disk space < 15%
+- Event capacity близко к лимиту (>80%)
+
+## Тестирование
+
+### Стратегия тестирования
+
+**Test Pyramid:**
+```
+    /\     E2E Tests (5%)
+   /  \    ← Critical user journeys
+  /____\   Integration Tests (15%)
+ /      \  ← API contracts, DB interactions
+/________\ Unit Tests (80%)
+           ← Business logic, edge cases
+```
+
+**Coverage targets:**
+- Unit tests: >80% line coverage
+- Integration tests: все API endpoints
+- E2E tests: critical paths (booking, payment)
+
+### Unit Tests (JUnit 5)
+
+```bash
+# Запуск всех unit тестов
+./gradlew test
+
+# Конкретный модуль
+./gradlew :backend-event:backend-event-service:test
+```
+
+**Что тестируем:**
+- Бизнес-логика в `@Service` классах
+- Маппинг между DTO
+- Валидация входных данных
+- Edge cases (null, empty, boundary values)
+
+**Инструменты:**
+- JUnit 5 — test framework
+- Mockito — моки зависимостей
+- AssertJ — fluent assertions
+
+### Integration Tests (TestContainers)
+
+```bash
+# Запуск integration тестов
+./gradlew integrationTest
+
+# С TestContainers (Postgres, Redis)
+./gradlew :backend-event:backend-event-api:integrationTest
+```
+
+**Что тестируем:**
+- API endpoints (REST controllers)
+- Database взаимодействие (JPA repositories)
+- Redis caching
+- Liquibase migrations
+
+**Инструменты:**
+- Spring Boot Test (`@SpringBootTest`)
+- TestContainers (PostgreSQL, Redis)
+- REST Assured для API тестов
+
+### Architecture Tests (ArchUnit)
+
+```bash
+# Проверка архитектурных правил
+./gradlew :backend-event:test --tests ArchitectureTest
+```
+
+**Правила:**
+- `api` модуль не зависит от `db`
+- `service` модуль не зависит от `api`
+- Controllers только в `api` пакете
+- Entities только в `db` пакете
+- No cyclic dependencies
+
+### Contract Tests (планируется)
+
+Spring Cloud Contract для API contracts между сервисами
 
 ## Развертывание
 
@@ -358,8 +692,9 @@ Storage: MinIO (S3-compatible object storage)
 
 ### Deployment Strategy
 - Blue-green deployments
-- Health checks
-- Automated rollback
+- Health checks перед переключением трафика
+- Automated rollback при failure
+- См. [Deployment Guide](operations/deployment.md)
 
 ## Архитектурные решения
 
@@ -369,18 +704,57 @@ Storage: MinIO (S3-compatible object storage)
 - [ADR-002: API Documentation Strategy](decisions/adr-0003-api-redoc.md)
 - [ADR-003: Module Documentation Sync](decisions/adr-0002-sync-module-docs.md)
 
-## Ограничения и trade-offs
+## Риски и ограничения
+
+### Технические риски
+
+| Риск | Вероятность | Влияние | Митигация |
+|------|-------------|---------|-----------|
+| Database bottleneck | Medium | High | Connection pooling, read replicas (планируется), индексы |
+| Single point of failure (PostgreSQL) | Low | Critical | Backup каждые 24ч, retention policy, restore testing |
+| External API unavailable (YooKassa) | High | Medium | Circuit breaker (планируется), fallback, retry logic |
+| Memory leaks в JVM | Low | High | Мониторинг heap, G1GC tuning, heap dumps при OOM |
+| Redis unavailability | Medium | Medium | Session regeneration, graceful degradation |
+| Capacity exhaustion (events) | Medium | Medium | Waitlist mechanism, capacity alerts (>80%) |
 
 ### Текущие ограничения
-- Single PostgreSQL instance (нет HA)
-- Synchronous inter-service communication
-- Manual deployment процессы
 
-### Планируемые улучшения
-- Database clustering
-- Async messaging
-- CI/CD automation
-- Monitoring improvements
+**Технические:**
+- Single PostgreSQL instance (нет HA)
+  - Impact: downtime при сбое БД
+  - Планируется: PostgreSQL read replicas, failover
+- Synchronous inter-service communication
+  - Impact: latency накапливается
+  - Планируется: async messaging (RabbitMQ/Kafka)
+- Manual deployment процессы
+  - Impact: human error risks
+  - Планируется: CI/CD automation
+- No distributed tracing
+  - Impact: сложно отлаживать межсервисные проблемы
+  - Планируется: Jaeger/Zipkin integration
+
+**Бизнесовые:**
+- Только одна платежная система (YooKassa)
+- Нет multi-tenancy (одна организация)
+- Ограниченная поддержка локализации (русский язык)
+
+### Trade-offs архитектурных решений
+
+**Microservices vs Monolith:**
+- ✅ Pros: независимый deploy, масштабирование, изоляция сбоев
+- ❌ Cons: network latency, сложность разработки, distributed transactions
+
+**Multi-schema PostgreSQL vs отдельные БД:**
+- ✅ Pros: простота backup/restore, одна Postgres instance, схемы как namespace
+- ❌ Cons: shared connection pool, no physical isolation, single point of failure
+
+**JWT vs Session-based auth:**
+- ✅ Pros: stateless, horizontal scaling, no session storage
+- ❌ Cons: сложность revoke, размер токена, хранение в browser storage
+
+**Docker Compose vs Kubernetes:**
+- ✅ Pros: простота setup, low overhead, достаточно для MVP
+- ❌ Cons: no auto-scaling, no self-healing, limited orchestration
 
 ## См. также
 
