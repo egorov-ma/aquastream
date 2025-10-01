@@ -1,5 +1,11 @@
 # Unit Tests
 
+---
+title: Unit Tests
+summary: Unit-тесты для backend и frontend компонентов
+tags: [qa, testing, unit-tests, junit, vitest]
+---
+
 ## Обзор
 
 Unit-тесты проверяют отдельные компоненты системы в изоляции.

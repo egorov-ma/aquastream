@@ -1,5 +1,11 @@
 # Backend Testing Plan
 
+---
+title: Backend Testing Plan
+summary: План тестирования backend компонентов системы AquaStream
+tags: [qa, testing, backend, unit-tests, integration-tests]
+---
+
 ## Обзор
 
 План тестирования backend компонентов системы AquaStream.
@@ -14,7 +20,7 @@
 - **Payment Service** (8104): обработка платежей
 - **Notification Service** (8105): отправка уведомлений
 - **Media Service** (8106): работа с медиа
-- **Gateway** (8100): API Gateway
+- **Gateway** (8080): API Gateway
 
 ## Уровни тестирования
 

@@ -1,5 +1,11 @@
 # Regression Suite
 
+---
+title: Regression Suite
+summary: Набор тестов для проверки, что новые изменения не сломали существующую функциональность
+tags: [qa, testing, manual-testing, regression]
+---
+
 ## Обзор
 
 Regression suite - набор тестов для проверки, что новые изменения не сломали существующую функциональность.

@@ -1,5 +1,11 @@
 # API Tests
 
+---
+title: API Tests
+summary: API-тесты для проверки REST endpoints и интеграции между слоями
+tags: [qa, testing, api-tests, testcontainers, spring-boot-test]
+---
+
 ## Обзор
 
 API-тесты проверяют REST endpoints и интеграцию между слоями.

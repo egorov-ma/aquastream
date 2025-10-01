@@ -1,5 +1,11 @@
 # Frontend Testing Plan
 
+---
+title: Frontend Testing Plan
+summary: План тестирования frontend приложения AquaStream
+tags: [qa, testing, frontend, playwright, e2e]
+---
+
 ## Обзор
 
 План тестирования frontend приложения AquaStream.

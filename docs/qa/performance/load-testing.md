@@ -1,5 +1,11 @@
 # Load Testing
 
+---
+title: Load Testing
+summary: План нагрузочного тестирования для проверки производительности системы AquaStream под нагрузкой
+tags: [qa, testing, performance, load-testing, k6]
+---
+
 ## Обзор
 
 План нагрузочного тестирования для проверки производительности системы AquaStream под нагрузкой.

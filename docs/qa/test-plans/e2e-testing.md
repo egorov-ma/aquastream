@@ -1,5 +1,11 @@
 # E2E Testing Plan
 
+---
+title: E2E Testing Plan
+summary: План end-to-end тестирования полных пользовательских сценариев в системе AquaStream
+tags: [qa, testing, e2e, playwright]
+---
+
 ## Обзор
 
 План end-to-end тестирования полных пользовательских сценариев в системе AquaStream.

@@ -139,28 +139,38 @@ frontend/
 
 ```
 qa/
-├── README.md                  # QA strategy overview
-├── test-strategy.md           # Общая стратегия тестирования
-├── test-plans/                # Тест-планы для фич/модулей
-│   ├── user-registration.md
-│   ├── event-booking.md
-│   └── payment-flow.md
-├── automation/                # Автоматизация
-│   ├── README.md              # Фреймворки и инструменты
-│   ├── e2e-tests.md           # E2E тесты (Cypress/Playwright)
-│   └── api-tests.md           # API тесты (REST Assured)
-├── manual-testing/            # Ручное тестирование
-│   ├── test-cases.md
-│   └── exploratory.md
-└── performance/               # Performance testing
-    ├── load-testing.md        # Нагрузочное тестирование
-    └── benchmarks.md          # Результаты benchmarks
+├── README.md                      # QA strategy overview (главная точка входа)
+├── test-strategy.md               # Общая стратегия тестирования
+├── bug-management.md              # Процесс управления дефектами
+├── test-plans/                    # Тест-планы для компонентов
+│   ├── backend-testing.md         # Backend testing plan
+│   ├── frontend-testing.md        # Frontend testing plan
+│   ├── integration-testing.md     # Integration testing plan
+│   └── e2e-testing.md             # E2E testing plan
+├── automation/                    # Автоматизация
+│   ├── unit-tests.md              # Unit tests (JUnit, Vitest)
+│   ├── api-tests.md               # API tests (Spring Boot Test, Testcontainers)
+│   └── ui-tests.md                # UI tests (Playwright)
+├── manual-testing/                # Ручное тестирование
+│   ├── test-cases.md              # Тест-кейсы для критичной функциональности
+│   ├── regression-suite.md        # Regression suite (чек-листы)
+│   └── exploratory-testing.md     # Exploratory testing (session-based)
+└── performance/                   # Performance testing
+    ├── load-testing.md            # Нагрузочное тестирование (K6)
+    └── performance-benchmarks.md  # Базовые показатели производительности
 ```
 
 **Правила для qa/**:
-- Используй шаблон `qa-test-plan.md` для тест-планов
-- Тест-планы называются по feature: `{feature-name}.md`
-- Результаты тестов храни в репозитории (не в docs)
+- `README.md` - обязательный файл с overview всей QA документации и quick start
+- `test-strategy.md` - единственный source of truth для стратегии тестирования
+- `bug-management.md` - полный процесс управления дефектами (lifecycle, severity, priority)
+- Тест-планы (`test-plans/`) организованы **по компонентам** (backend, frontend, integration, e2e), **НЕ по features**
+- Используй шаблон `qa-test-plan.md` только для feature-specific тест-планов (если нужны)
+- Automation docs описывают **типы тестов и инструменты**, а не конкретные тесты
+- Manual testing docs содержат **чек-листы и процессы**, не результаты тестирования
+- Performance docs включают **планы нагрузочного тестирования и baseline метрики**
+- Результаты тестов храни в CI/CD artifacts и test reports, **НЕ в docs**
+- Все файлы должны иметь YAML frontmatter (title, summary, tags)
 
 #### api/
 

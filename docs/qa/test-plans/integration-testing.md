@@ -1,5 +1,11 @@
 # Integration Testing Plan
 
+---
+title: Integration Testing Plan
+summary: План интеграционного тестирования взаимодействия между компонентами системы AquaStream
+tags: [qa, testing, integration, testcontainers]
+---
+
 ## Обзор
 
 План интеграционного тестирования взаимодействия между компонентами системы AquaStream.

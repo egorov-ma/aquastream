@@ -1,5 +1,11 @@
 # Performance Benchmarks
 
+---
+title: Performance Benchmarks
+summary: Базовые показатели производительности системы AquaStream для отслеживания регрессий
+tags: [qa, testing, performance, benchmarks]
+---
+
 ## Обзор
 
 Базовые показатели производительности системы AquaStream для отслеживания регрессий.
