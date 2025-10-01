@@ -32,7 +32,7 @@ graph TB
     end
 
     subgraph "API Gateway Layer"
-        GW[API Gateway<br/>8100]
+        GW[API Gateway<br/>8080]
     end
 
     subgraph "Backend Services"
@@ -105,7 +105,7 @@ graph TB
 
 ### 🔧 Supporting Services
 
-**API Gateway (8100)**
+**API Gateway (8080)**
 - Единая точка входа
 - Аутентификация и авторизация
 - Rate limiting и мониторинг
@@ -700,9 +700,8 @@ Spring Cloud Contract для API contracts между сервисами
 
 Ключевые решения документированы в [ADR записях](decisions/):
 
-- [ADR-001: Doc as Code Stack](decisions/adr-0001-docs-stack.md)
-- [ADR-002: API Documentation Strategy](decisions/adr-0003-api-redoc.md)
-- [ADR-003: Module Documentation Sync](decisions/adr-0002-sync-module-docs.md)
+- [ADR-001: Doc as Code Stack](decisions/adr-001-docs-stack.md)
+- [ADR-002: API Documentation Strategy](decisions/adr-002-api-documentation.md)
 
 ## Риски и ограничения
 
