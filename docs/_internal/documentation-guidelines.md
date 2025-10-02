@@ -219,19 +219,26 @@ api/
 
 ```
 operations/
-├── README.md                  # Operations overview
-├── infrastructure.md          # Docker Compose, сервисы, volumes
-├── deployment.md              # Процесс deployment, version management
-├── ci-cd.md                   # GitHub Actions workflows
-├── monitoring.md              # Prometheus, Grafana (если есть)
-├── backup-recovery.md         # Backup стратегия
-└── troubleshooting.md         # Общий troubleshooting
+├── README.md                  # Operations overview (главная точка входа)
+├── infrastructure.md          # Docker Compose архитектура, сервисы, volumes, security
+├── deployment.md              # Процесс deployment, version management, rollback
+├── ci-cd.md                   # GitHub Actions workflows, security scanning, release
+├── monitoring.md              # Prometheus, Grafana, Loki, метрики, логирование
+├── backup-recovery.md         # Backup стратегия, retention policy, recovery
+└── troubleshooting.md         # Общий troubleshooting по категориям проблем
 ```
 
 **Правила для operations/**:
-- Инфраструктурные команды должны быть copy-paste ready
-- Документируй Makefile команды
-- Troubleshooting с примерами логов
+- `README.md` - обязательный файл с overview, quick start, основными командами
+- Инфраструктурные команды должны быть **copy-paste ready** (работать из корня проекта)
+- Документируй **Makefile команды** с примерами использования
+- Troubleshooting структурирован по **типам проблем** (запуск, БД, Redis, Docker, build, performance)
+- Каждая проблема: **Симптомы → Диагностика → Решения**
+- Включай **примеры логов** и ожидаемых output'ов
+- Мониторинг: описывай **что мониторить**, **как интерпретировать метрики**, **alerting thresholds**
+- Deployment: полный lifecycle от pre-deployment checks до post-deployment verification
+- CI/CD: описание **каждого workflow**, triggers, artifacts, локальная валидация
+- Все файлы должны иметь YAML frontmatter (title, summary, tags)
 
 #### business/
 

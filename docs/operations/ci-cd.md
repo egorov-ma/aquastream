@@ -324,27 +324,19 @@ make sbom
 
 ### Semantic Versioning
 
-Проект следует [SemVer](https://semver.org/):
-- **MAJOR**: breaking changes
-- **MINOR**: новый функционал (обратная совместимость)
-- **PATCH**: bug fixes
+Проект следует [SemVer](https://semver.org/). См. детали управления версиями в [Deployment - Version Management](deployment.md#version-management).
 
 ### Создание релиза
 
+См. детальный процесс управления версиями и создания релизов в [Deployment - Version Management](deployment.md#version-management).
+
+Краткий пример:
 ```bash
-# 1. Обновить версию в version.properties
-version.major=1
-version.minor=0
-version.patch=0
-version.suffix=
-
-# 2. Создать тег
+# Обновить version.properties, создать и запушить тег
 git tag -a v1.0.0 -m "Release v1.0.0"
-
-# 3. Push тега
 git push origin v1.0.0
 
-# 4. GitHub Actions автоматически создаст Release
+# GitHub Actions автоматически создаст Release
 ```
 
 ### Hotfix процесс

@@ -67,62 +67,29 @@ aquastream/
 
 ### Backend Services
 
-Все backend сервисы запущены с security hardening:
-- **User**: Non-privileged (`1000:1000`)
-- **Filesystem**: Read-only root filesystem
-- **Tmpfs**: Writable `/tmp` через tmpfs
-- **Capabilities**: All Linux capabilities dropped
-- **Security opt**: `no-new-privileges`
-- **Health checks**: Spring Boot Actuator `/actuator/health`
-- **Ulimits**: `nofile: 65536`
+Все backend сервисы запущены с security hardening (non-root user, read-only fs, dropped capabilities). См. детали в разделе [Container Hardening](#container-hardening).
 
-| Сервис | Порт | Контейнер | Memory | CPU | Описание |
-|--------|------|-----------|--------|-----|----------|
-| Gateway | 8080 | aquastream-backend-gateway | 512MB | 0.75 | API Gateway, routing, CORS |
-| User | 8101 | aquastream-backend-user | 512MB | 0.75 | Управление пользователями, JWT |
-| Event | 8102 | aquastream-backend-event | 768MB | 1.0 | События, бронирования, waitlist |
-| Crew | 8103 | aquastream-backend-crew | 512MB | 0.75 | Команды, назначения, capacity |
-| Payment | 8104 | aquastream-backend-payment | 512MB | 0.75 | Платежи, refunds, YooKassa |
-| Notification | 8105 | aquastream-backend-notification | 512MB | 0.75 | Email, Telegram уведомления |
-| Media | 8106 | aquastream-backend-media | 512MB | 0.75 | Загрузка файлов в MinIO |
+| Сервис | Порт | Контейнер | Описание |
+|--------|------|-----------|----------|
+| Gateway | 8080 | aquastream-backend-gateway | API Gateway, routing, CORS |
+| User | 8101 | aquastream-backend-user | Управление пользователями, JWT |
+| Event | 8102 | aquastream-backend-event | События, бронирования, waitlist |
+| Crew | 8103 | aquastream-backend-crew | Команды, назначения, capacity |
+| Payment | 8104 | aquastream-backend-payment | Платежи, refunds, YooKassa |
+| Notification | 8105 | aquastream-backend-notification | Email, Telegram уведомления |
+| Media | 8106 | aquastream-backend-media | Загрузка файлов в MinIO |
 
-**Memory limits**: Включают heap + metaspace + native memory
-**CPU limits**: В единицах vCPU (0.75 = 75% одного ядра)
+См. resource limits (memory/CPU) в разделе [Resource Limits](#resource-limits).
 
 ### Observability Stack (dev окружение)
 
-**Prometheus v2.52.0**
-- **Порт**: 9090
-- **Контейнер**: `aquastream-prometheus`
-- **Volume**: `prometheusdata`
-- **Конфигурация**: `prometheus.yml`
-- **Scrape targets**: Spring Boot Actuator endpoints всех сервисов
-- **Retention**: 15 дней
-- **Scrape interval**: 15 секунд
+**Компоненты**: Prometheus (v2.52.0), Grafana (10.4.2), Loki (2.9.5), Promtail (2.9.5)
 
-**Grafana 10.4.2**
-- **Порт**: 3001
-- **Контейнер**: `aquastream-grafana`
-- **Volume**: `grafanadata`
-- **Provisioning**: автоматическая настройка datasources и dashboards через `provisioning/`
-- **Credentials**: `${GRAFANA_ADMIN_USER}/${GRAFANA_ADMIN_PASSWORD}` (по умолчанию admin/admin)
-- **Datasources**: Prometheus, Loki
-
-**Loki 2.9.5**
-- **Порт**: 3100
-- **Контейнер**: `aquastream-loki`
-- **Volume**: `lokidata`
-- **Конфигурация**: `loki-config.yml`
-- **Retention**: 7 дней
-- **Использование**: централизованное хранилище логов
-
-**Promtail 2.9.5**
-- **Контейнер**: `aquastream-promtail`
-- **Volume**: `/var/run/docker.sock` (read-only)
-- **Конфигурация**: `promtail-config.yml`
-- **Использование**: сбор логов из Docker контейнеров через docker driver
+**Порты**: Prometheus :9090, Grafana :3001, Loki :3100 (внутренний)
 
 > ⚠️ **Важно**: Observability stack включен только в **dev** профиле. Для production используйте внешний мониторинг.
+
+См. детальную конфигурацию, метрики и использование в [Monitoring](monitoring.md).
 
 ## Docker Compose профили
 
@@ -332,74 +299,17 @@ make sbom
 
 ## Health Checks
 
-Все сервисы имеют Docker health checks:
+Все сервисы имеют Docker health checks. Проверка статуса: `docker ps` (STATUS должен быть "healthy").
 
-**PostgreSQL**:
-```bash
-pg_isready -U aquastream -d aquastream
-# interval: 10s, timeout: 5s, retries: 5
-```
-
-**Redis**:
-```bash
-redis-cli -a ${REDIS_PASSWORD} PING
-# interval: 10s, timeout: 5s, retries: 5
-```
-
-**MinIO**:
-```bash
-curl -f http://localhost:9000/minio/health/live
-# interval: 30s, timeout: 10s, retries: 3
-```
-
-**Backend services**:
-```bash
-curl -f http://localhost:<port>/actuator/health
-# interval: 10s, timeout: 5s, retries: 10
-```
-
-**Проверка статуса**:
-```bash
-docker ps
-# STATUS должен быть "healthy" для всех сервисов
-```
+См. детальную конфигурацию health checks, Spring Boot Actuator endpoints и health aggregation в [Monitoring - Health Checks](monitoring.md#health-checks).
 
 ## Logging
 
-**Driver**: `json-file` (Docker default)
+**Driver**: `json-file` с ротацией (max-size: 10m, max-file: 5). **Total per container**: 50MB.
 
-**Rotation**:
-```yaml
-logging:
-  driver: json-file
-  options:
-    max-size: "10m"   # Максимальный размер файла
-    max-file: "5"     # Количество ротированных файлов
-```
+**Структурированные логи**: JSON через Logback. **Centralized logging** (dev): Loki + Promtail.
 
-**Total log size per container**: 50MB (10MB × 5 файлов)
-
-**Просмотр логов**:
-```bash
-# Все сервисы
-make logs
-
-# Конкретный сервис
-docker logs aquastream-backend-event
-
-# Streaming
-docker logs -f aquastream-backend-event
-
-# Последние N строк
-docker logs --tail 100 aquastream-backend-event
-
-# С временными метками
-docker logs -t aquastream-backend-event
-```
-
-**Структурированные логи**: JSON через Logback в Spring Boot
-
-**Centralized logging** (dev): Loki + Promtail для агрегации и поиска логов
+См. детальную конфигурацию structured logging, log levels, rotation и centralized logging в [Monitoring - Логирование](monitoring.md#логирование).
 
 ## Resource Limits
 
@@ -427,68 +337,7 @@ docker stats
 
 ## Troubleshooting
 
-### Порты заняты
-
-```bash
-# Проверить занятые порты
-lsof -i :5432
-lsof -i :8080
-
-# Изменить маппинг портов в docker-compose.override.dev.yml
-ports:
-  - "5433:5432"  # Использовать другой внешний порт
-```
-
-### Контейнеры не стартуют
-
-```bash
-# Проверить логи
-make logs
-
-# Проверить health checks
-docker ps -a
-
-# Пересоздать с чистыми volumes
-make down
-make up-dev
-```
-
-### MinIO buckets не созданы
-
-```bash
-# Пересоздать buckets
-make minio-bootstrap
-
-# Проверить
-make minio-buckets
-```
-
-### Проблемы с зависимостями Gradle
-
-```bash
-# Очистить кэши
-./gradlew clean --no-daemon
-
-# Обновить lockfiles
-make deps-lock
-
-# Проверить конфликты
-./gradlew dependencies
-```
-
-### Out of disk space
-
-```bash
-# Очистить неиспользуемые resources
-docker system prune -a --volumes
-
-# Проверить disk usage
-docker system df
-
-# Проверить volumes
-docker volume ls
-docker volume prune
-```
+См. полное руководство по диагностике и решению проблем в [Troubleshooting Guide](troubleshooting.md).
 
 ## См. также
 

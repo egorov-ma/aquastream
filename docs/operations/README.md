@@ -159,78 +159,26 @@ make docs-build       # Сборка статического сайта
 
 ### Микросервисы
 
-| Сервис | Порт | Контейнер | Memory | CPU |
-|--------|------|-----------|--------|-----|
-| Gateway | 8080 | aquastream-backend-gateway | 512MB | 0.75 |
-| User | 8101 | aquastream-backend-user | 512MB | 0.75 |
-| Event | 8102 | aquastream-backend-event | 768MB | 1.0 |
-| Crew | 8103 | aquastream-backend-crew | 512MB | 0.75 |
-| Payment | 8104 | aquastream-backend-payment | 512MB | 0.75 |
-| Notification | 8105 | aquastream-backend-notification | 512MB | 0.75 |
-| Media | 8106 | aquastream-backend-media | 512MB | 0.75 |
+7 микросервисов: Gateway (8080), User (8101), Event (8102), Crew (8103), Payment (8104), Notification (8105), Media (8106).
+
+См. полную таблицу с resource limits в [Infrastructure - Backend Services](infrastructure.md#backend-services).
 
 ### Infrastructure
 
-| Компонент | Порт | Назначение |
-|-----------|------|-----------|
-| PostgreSQL | 5432 | Multi-schema database |
-| Redis | 6379 | Cache, rate limiting |
-| MinIO | 9000/9001 | S3-compatible storage |
-| Prometheus | 9090 | Metrics (dev only) |
-| Grafana | 3001 | Dashboards (dev only) |
-| Loki | 3100 | Log aggregation (dev only) |
+**Core компоненты**: PostgreSQL (multi-schema), Redis (AOF persistence), MinIO (S3-compatible).
+
+**Observability** (dev only): Prometheus, Grafana, Loki, Promtail.
+
+См. детальные конфигурации, порты и resource limits в [Infrastructure](infrastructure.md#компоненты-инфраструктуры).
 
 ## Troubleshooting
 
-### Сервисы не стартуют
+**Быстрые решения**:
+- Сервисы не стартуют: `make logs && make down && make up-dev`
+- Порты заняты: изменить маппинг в `docker-compose.override.dev.yml`
+- Disk space: `docker system prune -a --volumes`
 
-```bash
-# 1. Проверить логи
-make logs
-
-# 2. Проверить зависимости
-docker ps -a | grep -E "postgres|redis|minio"
-
-# 3. Пересоздать с чистыми volumes
-make down
-make up-dev
-```
-
-### Database проблемы
-
-```bash
-# Проверить PostgreSQL
-docker exec aquastream-postgres pg_isready -U aquastream
-
-# Проверить схемы
-docker exec aquastream-postgres psql -U aquastream -d aquastream -c "\dn"
-
-# Создать backup перед изменениями
-make backup
-```
-
-### Docker проблемы
-
-```bash
-# Очистить неиспользуемые resources
-docker system prune -a --volumes
-
-# Проверить disk space
-df -h
-
-# Пересобрать образы
-make build-images
-```
-
-### Порты заняты
-
-```bash
-# Проверить занятые порты
-lsof -i :8080
-lsof -i :5432
-
-# Изменить маппинг портов в docker-compose.override.dev.yml
-```
+См. полное руководство по диагностике проблем в [Troubleshooting Guide](troubleshooting.md).
 
 ## Полезные ссылки
 
