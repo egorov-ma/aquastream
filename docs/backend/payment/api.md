@@ -1,13 +1,23 @@
 # Payment API
 
-Статус: as-is
+API платежного сервиса покрывает инициализацию платежей, обработку вебхуков и модерацию чеков.
 
-## Инициализация и подтверждение
-```yaml
-POST /api/v1/payments/init        # {bookingId, method} -> {paymentId, widgetConfig?, qrCode?}
-POST /api/v1/payments/{id}/proof  # {proofUrl} -> {success}
-PUT  /api/v1/payments/{id}/review # (ORGANIZER) {action:'approve'|'reject', comment?} -> {payment}
-POST /api/v1/webhooks/{provider}  # X-Webhook-Signature + providerPayload
-```
+## Основные эндпоинты
 
-Документация API (ReDoc): ../../api/redoc/root/backend-payment-api.html
+### Платежи
+- `POST /api/v1/payments/{bookingId}/init` — создать платеж для брони (виджет/QR).
+- `GET /api/v1/payments/{paymentId}` — получить текущее состояние платежа.
+- `POST /api/v1/payments/{paymentId}/proof` — загрузить подтверждение оплаты (QR).
+- `PUT /api/v1/payments/{paymentId}/review` — модерация подтверждения организатором (`approve/reject`).
+
+### Вебхуки
+- `POST /api/v1/webhooks/{provider}` — точка входа для YooKassa/CloudPayments/Stripe. Требует подпись/секрет провайдера и обрабатывает идемпотентно.
+
+## Безопасность
+
+- Все публичные операции требуют JWT; модерация доступна ролям `ORGANIZER` и `ADMIN`.
+- Вебхуки защищены секретами/подписями, логи маскируют чувствительные данные.
+- Идемпотентность обеспечивается таблицей `webhook_events`.
+
+## Документация API
+- Полная спецификация: [`../../api/redoc/root/backend-payment-api.html`](../../api/redoc/root/backend-payment-api.html)
