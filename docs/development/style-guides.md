@@ -8,61 +8,58 @@ tags: [development, style-guides]
 
 ## Обзор
 
-Этот документ собирает основные практики, которые применяются в проекте. Для подробностей — переходите по ссылкам на тематические страницы.
+Основные практики проекта. Для подробностей — переходите по ссылкам.
 
 ## Код (Java Backend)
 
-- Используем стандартные рекомендации Spring Boot: конвенции именования пакетов `com.aquastream.<domain>` и классов `PascalCase`.
-- Ломбок допускается только в `*-api` DTO (см. `backend/common`), бизнес-логика предпочитает явные конструкторы/билдеры.
-- Не используем `field injection`. Сервисы и контроллеры получают зависимости через конструктор.
-- DTO располагаются в `api/dto`, сервисные модели — в `service/dto`, сущности — в `db/entity`.
-- Проверяйте архитектурные правила через ArchUnit (`LayerRulesTest`). Они не должны нарушаться при добавлении модулей.
-- Дополнительные детали: [`docs/backend/common/README.md`](../backend/common/README.md) и [`docs/backend/database.md`](../backend/database.md).
+- Spring Boot конвенции: пакеты `com.aquastream.<domain>`, классы `PascalCase`
+- Ломбок только в `*-api` DTO ([backend/common](../backend/common/README.md)), бизнес-логика - явные конструкторы/билдеры
+- Не используем `field injection`, только конструктор
+- DTO: `api/dto`, сервисные модели: `service/dto`, сущности: `db/entity`
+- ArchUnit: `LayerRulesTest` не должны нарушаться
+- См. [backend/common/README.md](../backend/common/README.md), [backend/database.md](../backend/database.md)
 
 ## Код (Frontend)
 
-- React/Next.js 14 с TypeScript: используем функциональные компоненты и React Hooks.
-- Стили: Tailwind + shadcn/ui, придерживаемся `class-variance-authority` паттернов.
-- Структура папок: `components/ui`, `components/forms`, `app/(routes)` — подробнее см. [`docs/frontend/README.md`](../frontend/README.md).
-- Линтеры (`pnpm lint`, `pnpm typecheck`) обязательны перед PR.
+- React/Next.js 14 + TypeScript: функциональные компоненты, React Hooks
+- Стили: Tailwind + shadcn/ui, паттерны `class-variance-authority`
+- Структура: `components/ui`, `components/forms`, `app/(routes)` — см. [frontend/README.md](../frontend/README.md)
+- Линтеры (`pnpm lint`, `pnpm typecheck`) обязательны перед PR
 
 ## Коммиты и PR
 
-- Следуем Conventional Commits: `type(scope): subject`. Детали и примеры см. в [`development/workflows.md`](../development/workflows.md#commit-messages-conventional-commits).
-- Один Pull Request — один изолированный поток изменений; если нужно, дробим на несколько PR.
-- В описании PR добавляем:
-  - Что изменено
-  - Как протестировано
-  - Ссылки на связанные issue/ADR (если есть)
+- Conventional Commits: `type(scope): subject`. См. [workflows.md](workflows.md#commit-messages-conventional-commits)
+- Один PR — один поток изменений
+- Описание PR: что изменено, как протестировано, ссылки на issue/ADR
 
 ## Документация
 
-- Документы живут в `docs/` и обновляются вместе с кодом (Doc-as-Code). Основные принципы — в [`documentation-guidelines.md`](../_internal/documentation-guidelines.md).
-- Для новой страницы смотрим шаблоны в `docs/_internal/templates/`.
-- Перед PR проверяем документацию: `make docs-serve` (preview) и `make docs-build` (strict build).
-- Ссылка на первоисточник вместо дублирования текста.
+- Документы в `docs/`, обновляются с кодом (Doc-as-Code). Принципы: [documentation-guidelines.md](../_internal/documentation-guidelines.md)
+- Шаблоны: `docs/_internal/templates/`
+- Перед PR: `make docs-serve` (preview) и `make docs-build` (strict)
+- Ссылка на первоисточник вместо дублирования
 
-## Базы данных и миграции
+## БД и миграции
 
-- Миграции описываем через Liquibase, лежат в `*/backend-*-db/src/main/resources/migration/liquibase/`.
-- Конвенции по именованию таблиц и колонок — в [`backend/database.md`](../backend/database.md).
-- Каждое изменение таблицы сопровождаем миграцией и тестами (интеграционными или E2E).
+- Liquibase: `*/backend-*-db/src/main/resources/migration/liquibase/`
+- Конвенции: [backend/database.md](../backend/database.md)
+- Каждое изменение таблицы — миграция + тесты
 
-## Линтеры и форматирование
+## Линтеры
 
 | Область | Команда | Автоматизация |
 |---------|---------|----------------|
-| Java/Kotlin | `./gradlew spotlessApply` | Spotless (Gradle) |
+| Java/Kotlin | `./gradlew spotlessApply` | Spotless |
 | JavaScript/TypeScript | `pnpm lint --fix` | ESLint + Prettier |
 | Markdown/Docs | `make docs-lint` | markdownlint, Vale, cSpell |
 | Docker/YAML | `make infra-lint` | hadolint, yq |
 
-## Как работать с гайдлайнами
+## Правила работы
 
-1. При добавлении нового модуля свериться с этим документом и ссылками.
-2. Если понадобится отступление — обсуждаем в PR и фиксируем в документации.
-3. Если возникает желание обновить правила — создаём ADR или issue, чтобы остальные участники тоже были в курсе.
+1. При добавлении модуля свериться с этим документом
+2. Отступление — обсуждаем в PR и фиксируем в документации
+3. Обновление правил — создаём ADR или issue
 
 ---
 
-Для быстрых ссылок на рабочие процессы см. [`development/workflows.md`](workflows.md) и [`development/testing.md`](testing.md).
+См. [workflows.md](workflows.md) и [testing.md](testing.md).

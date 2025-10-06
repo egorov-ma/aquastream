@@ -11,56 +11,16 @@
 
 ## Установка зависимостей
 
-### Установка Java 21
+Установите требуемые зависимости (инструкции на официальных сайтах):
+- **Java 21**: [OpenJDK](https://openjdk.org/) или [Eclipse Temurin](https://adoptium.net/)
+- **Docker**: [docker.com/get-started](https://www.docker.com/get-started)
+- **Node.js 20 LTS**: [nodejs.org](https://nodejs.org/)
 
 ```bash
-# macOS (Homebrew)
-brew install openjdk@21
-
-# Ubuntu/Debian
-sudo apt update
-sudo apt install openjdk-21-jdk
-
-# Windows (Chocolatey)
-choco install openjdk21
-
-# Проверка
-java -version
-javac -version
-```
-
-### Установка Docker
-
-```bash
-# macOS (Homebrew)
-brew install --cask docker
-
-# Ubuntu/Debian
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-sudo usermod -aG docker $USER
-
-# Проверка
-docker --version
-docker compose version
-```
-
-### Установка Node.js
-
-```bash
-# macOS (Homebrew)
-brew install node@20
-
-# Ubuntu/Debian (через NodeSource)
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Windows (Chocolatey)
-choco install nodejs-lts
-
-# Проверка
-node --version
-npm --version
+# Проверка версий
+java -version   # OpenJDK 21
+docker --version && docker compose version
+node --version  # 18+
 ```
 
 ## Быстрый старт
@@ -98,204 +58,89 @@ open http://localhost:3000                  # Frontend
 
 ## IDE настройка
 
-### IntelliJ IDEA
+**IntelliJ IDEA**: импорт Gradle проекта, Java 21 SDK, плагины (Spring Boot, Docker, Database Navigator)
 
-1. Импортировать как Gradle проект
-2. Настроить Java 21 как Project SDK
-3. Установить плагины:
-   - Spring Boot
-   - Docker
-   - Database Navigator
-
-### VS Code
-
-1. Установить расширения:
-   - Extension Pack for Java
-   - Spring Boot Tools
-   - Docker
-   - TypeScript
+**VS Code**: расширения (Extension Pack for Java, Spring Boot Tools, Docker, TypeScript)
 
 ## Переменные окружения
 
-### Структура env-файлов
-
-Env-файлы находятся в `backend-infra/docker/compose/` и разделены по средам:
+Env-файлы находятся в `backend-infra/docker/compose/`:
 
 ```bash
 cd backend-infra/docker/compose
-
-# Создайте файлы окружений из примеров
-cp .env.dev.example   .env.dev
-cp .env.stage.example .env.stage
-cp .env.prod.example  .env.prod
+cp .env.dev.example .env.dev  # dev/stage/prod
 ```
 
-### Ключевые переменные (Development)
-
-#### База данных
+**Ключевые переменные (dev)**:
 ```bash
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=aquastream
-POSTGRES_USER=aquastream
-POSTGRES_PASSWORD=password123
+# PostgreSQL
+POSTGRES_HOST=postgres POSTGRES_DB=aquastream POSTGRES_USER=aquastream POSTGRES_PASSWORD=password123
+
+# Redis
+REDIS_HOST=redis REDIS_PORT=6379
+
+# MinIO
+MINIO_ENDPOINT=http://minio:9000 MINIO_ACCESS_KEY=minioadmin MINIO_BUCKET=aquastream
+
+# JWT
+JWT_SECRET=dev-secret-key JWT_ACCESS_EXPIRATION=3600 JWT_REFRESH_EXPIRATION=2592000
+
+# External APIs
+TELEGRAM_BOT_TOKEN=your-token YOOKASSA_SHOP_ID=your-id YOOKASSA_SECRET_KEY=your-key
 ```
 
-#### Redis
-```bash
-REDIS_HOST=redis
-REDIS_PORT=6379
-```
-
-#### MinIO (S3)
-```bash
-MINIO_ENDPOINT=http://minio:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
-MINIO_BUCKET=aquastream
-```
-
-#### JWT
-```bash
-JWT_SECRET=dev-secret-key-change-in-production
-JWT_ACCESS_EXPIRATION=3600      # 1 час
-JWT_REFRESH_EXPIRATION=2592000  # 30 дней
-```
-
-#### External APIs
-```bash
-TELEGRAM_BOT_TOKEN=your-telegram-bot-token
-YOOKASSA_SHOP_ID=your-shop-id
-YOOKASSA_SECRET_KEY=your-secret-key
-```
-
-### Профили окружений
-
-- **dev**: локальная разработка, слабые пароли, debug логи
-- **stage**: тестовое окружение, реальные секреты
-- **prod**: production, строгая безопасность
+**Профили**: `dev` (локальная разработка), `stage` (тестовое окружение), `prod` (production)
 
 ## База данных
 
-### Подключение к локальной БД
-
 ```bash
-# Connection string
-URL: jdbc:postgresql://localhost:5432/aquastream
-User: aquastream
-Password: password123
+# Connection
+jdbc:postgresql://localhost:5432/aquastream (user: aquastream, password: password123)
 
-# psql команда
+# psql
 psql -h localhost -p 5432 -U aquastream -d aquastream
 ```
 
-### Схемы БД
-
-PostgreSQL использует одну базу с разделением по схемам:
-
-- `user` - пользователи, профили, сессии
-- `event` - события, бронирования, организаторы
-- `crew` - экипажи, назначения
-- `payment` - платежи, транзакции
-- `notification` - уведомления, подписки
-- `media` - файлы, изображения
-
-См. [Database Details](../backend/database.md) для подробностей.
+PostgreSQL использует схемы: `user`, `event`, `crew`, `payment`, `notification`, `media`. См. [Database Details](../backend/database.md).
 
 ## Gradle команды
 
-### Сборка
-
 ```bash
-# Полная сборка всех модулей
-./gradlew clean build
+# Сборка
+./gradlew clean build                                  # Все модули
+./gradlew :backend-user:backend-user-api:bootJar       # Конкретный сервис
+./gradlew build -x test                                # Без тестов
 
-# Сборка конкретного сервиса
-./gradlew :backend-user:backend-user-api:bootJar
+# Тестирование
+./gradlew test                                         # Unit-тесты
+./gradlew integrationTest                              # Integration-тесты
+./gradlew :backend-user:backend-user-service:test      # Конкретный модуль
+./gradlew test jacocoTestReport                        # С покрытием
 
-# Сборка без тестов
-./gradlew build -x test
-```
+# Зависимости
+./gradlew :backend-common:dependencies                 # Дерево зависимостей
+./gradlew dependencies --write-locks (или make deps-lock)  # Обновить locks
+./gradlew dependencyUpdates                            # Проверить обновления
 
-### Тестирование
-
-```bash
-# Unit-тесты
-./gradlew test
-
-# Integration-тесты
-./gradlew integrationTest
-
-# Тесты конкретного модуля
-./gradlew :backend-user:backend-user-service:test
-
-# С отчетом о покрытии
-./gradlew test jacocoTestReport
-```
-
-### Зависимости
-
-```bash
-# Просмотр дерева зависимостей
-./gradlew :backend-common:dependencies
-
-# Обновление dependency lock файлов
-./gradlew dependencies --write-locks
-
-# Или через Make
-make deps-lock
-
-# Проверка устаревших зависимостей
-./gradlew dependencyUpdates
-```
-
-### OWASP Security Scan
-
-```bash
-# Сканирование зависимостей
-./gradlew dependencyCheckAnalyze
-
-# Отчеты в: build/reports/dependency-check-report.html
+# Security
+./gradlew dependencyCheckAnalyze  # OWASP scan → build/reports/
 ```
 
 ## Docker команды
 
-### Через Make (рекомендуется)
-
 ```bash
-# Сборка Docker образов
-make build-images
+# Make (рекомендуется)
+make build-images          # Сборка образов
+make scan && make sbom     # Security scanning + SBOM
+make up-dev-observability  # Observability stack
+make logs SERVICE=user     # Логи сервиса
+make restart SERVICE=user  # Перезапуск
+make clean-all             # Очистка
 
-# Security scanning
-make scan
-
-# SBOM генерация
-make sbom
-
-# Запуск Observability stack
-make up-dev-observability
-
-# Логи сервисов
-make logs SERVICE=user-service
-
-# Перезапуск сервиса
-make restart SERVICE=user-service
-
-# Очистка
-make clean-all
-```
-
-### Через Docker Compose
-
-```bash
-# Development окружение
-docker compose -f backend-infra/docker/compose/docker-compose.yml --profile dev up -d
-
-# Просмотр логов
-docker compose -f backend-infra/docker/compose/docker-compose.yml logs -f
-
-# Остановка
-docker compose -f backend-infra/docker/compose/docker-compose.yml down
+# Docker Compose (альтернатива)
+docker compose -f backend-infra/docker/compose/docker-compose.yml --profile dev up -d  # Запуск
+docker compose -f backend-infra/docker/compose/docker-compose.yml logs -f              # Логи
+docker compose -f backend-infra/docker/compose/docker-compose.yml down                 # Остановка
 ```
 
 ## Troubleshooting

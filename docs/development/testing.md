@@ -2,79 +2,42 @@
 
 ## Обзор
 
-Стратегия тестирования включает несколько уровней:
-- Unit-тесты
-- Integration-тесты  
-- E2E-тесты
+Стратегия включает: Unit-тесты, Integration-тесты, E2E-тесты. См. [QA Test Strategy](../qa/test-strategy.md).
 
-См. также: [QA Test Strategy](../qa/test-strategy.md)
-
-## Backend тестирование
-
-### Unit-тесты
+## Backend
 
 ```bash
-# Запуск всех тестов
-./gradlew test
+# Unit-тесты
+./gradlew test                                    # Все тесты
+./gradlew :backend-user:backend-user-service:test # Конкретный модуль
 
-# Запуск тестов конкретного модуля
-./gradlew :backend-user:backend-user-service:test
-```
-
-### Integration-тесты
-
-```bash
-# Запуск интеграционных тестов
+# Integration-тесты
 ./gradlew integrationTest
-```
 
-### Архитектурные тесты (ArchUnit)
-
-```bash
-# Проверка архитектурных правил
+# Архитектурные тесты (ArchUnit)
 ./gradlew test --tests "*LayerRulesTest"
 ```
 
-## Frontend тестирование
-
-### Линтеры и типизация
+## Frontend
 
 ```bash
-# ESLint
-pnpm lint
+# Линтеры и типизация
+pnpm lint && pnpm typecheck && pnpm build
 
-# TypeScript
-pnpm typecheck
-
-# Сборка
-pnpm build
-```
-
-### Unit-тесты
-
-```bash
-# Node test runner
+# Unit-тесты (Node test runner)
 pnpm test:unit
-```
 
-### E2E-тесты (Playwright)
-
-```bash
-# Установка браузеров (один раз)
-pnpm exec playwright install --with-deps chromium
-
-# Запуск тестов
+# E2E-тесты (Playwright)
+pnpm exec playwright install --with-deps chromium  # Установка браузеров (один раз)
 pnpm test:e2e
 ```
 
-## Полезные команды
+## Команды
 
 ```bash
-# Все проверки backend
-make backend-test
-
-# Все проверки frontend
-make frontend-test
+# Все проверки
+make backend-test   # Backend
+make frontend-test  # Frontend
 
 # Отчёты
 # Backend: build/reports/tests/test/index.html
@@ -84,6 +47,6 @@ make frontend-test
 ## Рекомендации
 
 - Пишите тесты для новой функциональности
-- Поддерживайте покрытие выше 70%
+- Поддерживайте покрытие ≥ 70%
 - Используйте Testcontainers для интеграционных тестов
 - Следуйте паттернам существующих тестов
