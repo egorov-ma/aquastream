@@ -1,10 +1,10 @@
-# Инфраструктура
-
 ---
 title: Infrastructure
 summary: Практическое руководство по управлению Compose-инфраструктурой AquaStream.
 tags: [operations, infrastructure, docker, compose]
 ---
+
+# Инфраструктура
 
 ## Обзор
 

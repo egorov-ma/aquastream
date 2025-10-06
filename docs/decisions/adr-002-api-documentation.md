@@ -1,10 +1,10 @@
-# ADR-002: Автогенерация API‑документации (ReDoc + Swagger UI + Spectral)
-
 ---
 title: ADR-002 - API Documentation Strategy
 summary: Генерация ReDoc и Swagger UI из OpenAPI, линтинг Spectral и drift‑check в CI.
 tags: [adr, api, documentation, openapi]
 ---
+
+# ADR-002: Автогенерация API‑документации (ReDoc + Swagger UI + Spectral)
 
 **Статус:** Accepted
 **Дата:** 2025-09-22

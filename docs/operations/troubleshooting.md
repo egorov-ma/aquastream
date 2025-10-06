@@ -1,10 +1,10 @@
-# Troubleshooting
-
 ---
 title: Troubleshooting Guide
 summary: Быстрая диагностика проблем и ссылки на runbooks для инфраструктуры AquaStream.
 tags: [operations, troubleshooting]
 ---
+
+# Troubleshooting
 
 ## Как пользоваться
 

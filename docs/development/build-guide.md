@@ -1,10 +1,10 @@
-# Build Guide
-
 ---
 title: Build Guide
 summary: Архитектура сборочной системы, типовые команды и правила управления зависимостями.
 tags: [development, build]
 ---
+
+# Build Guide
 
 ## Архитектура сборки
 

@@ -1,10 +1,10 @@
-# Архитектура AquaStream
-
 ---
 title: Architecture Overview
 summary: High-level обзор архитектуры системы AquaStream - микросервисы, модули и взаимодействия
 tags: [architecture, overview]
 ---
+
+# Архитектура AquaStream
 
 ## Обзор
 

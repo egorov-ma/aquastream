@@ -1,10 +1,10 @@
-# Test Plan: {Feature/Module Name}
-
 ---
 title: Test Plan - {Feature/Module Name}
 summary: План тестирования для {краткое описание функциональности}
 tags: [qa, testing, test-plan, {module}]
 ---
+
+# Test Plan: {Feature/Module Name}
 
 ## Цель тестирования
 

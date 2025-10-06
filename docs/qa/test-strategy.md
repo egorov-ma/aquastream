@@ -1,10 +1,10 @@
-# Тестовая стратегия
-
 ---
 title: Test Strategy
 summary: Общая стратегия тестирования проекта AquaStream
 tags: [qa, testing, strategy, quality-assurance]
 ---
+
+# Тестовая стратегия
 
 ## Обзор
 

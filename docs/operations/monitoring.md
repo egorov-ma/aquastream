@@ -1,10 +1,10 @@
-# Мониторинг и наблюдаемость
-
 ---
 title: Monitoring & Observability
 summary: Как запускать и использовать observability stack AquaStream.
 tags: [operations, monitoring, observability]
 ---
+
+# Мониторинг и наблюдаемость
 
 ## Обзор
 

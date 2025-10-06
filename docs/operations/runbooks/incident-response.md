@@ -1,10 +1,10 @@
-# Runbook: Incident Response
-
 ---
 title: Incident Response Runbook
 summary: Шаги реагирования на инциденты в продуктивной среде AquaStream.
 tags: [operations, runbook, incident]
 ---
+
+# Runbook: Incident Response
 
 ## Подготовка
 

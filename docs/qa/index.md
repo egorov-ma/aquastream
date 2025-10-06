@@ -1,10 +1,10 @@
-# QA & Testing
-
 ---
 title: QA & Testing Overview
 summary: Стратегия тестирования, процессы QA и документация для AquaStream
 tags: [qa, testing, quality-assurance]
 ---
+
+# QA & Testing
 
 ## Обзор
 

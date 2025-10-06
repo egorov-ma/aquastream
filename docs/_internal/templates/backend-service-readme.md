@@ -1,10 +1,10 @@
-# {Service Name} Service
-
 ---
 title: {Service Name} Service
 summary: {Краткое описание сервиса в 1-2 предложения - что делает, за что отвечает}
 tags: [backend, microservice, {domain}]
 ---
+
+# {Service Name} Service
 
 ## Назначение
 

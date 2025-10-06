@@ -1,6 +1,7 @@
 site_name: AquaStream Docs (Internal Config)
 site_dir: ../../build/docs
 repo_url: https://github.com/egorov-ma/aquastream
+edit_uri: edit/main/docs/
 docs_dir: ../
 nav:
 - Главная: index.md

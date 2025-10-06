@@ -1,10 +1,10 @@
-# Nginx Edge Proxy
-
 ---
 title: Nginx Edge Proxy
 tags: [operations, nginx, proxy]
 summary: Управление фронтовым reverse proxy, завершение TLS и проксирование запросов к Spring Gateway.
 ---
+
+# Nginx Edge Proxy
 
 ## Обзор
 

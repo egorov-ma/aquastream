@@ -1,10 +1,10 @@
-# Development Overview
-
 ---
 title: Development Overview
 summary: Как развернуть окружение, собирать проект и следовать рабочим процессам в AquaStream.
 tags: [development]
 ---
+
+# Development Overview
 
 ## Куда идти дальше
 

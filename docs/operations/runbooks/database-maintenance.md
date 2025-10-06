@@ -1,10 +1,10 @@
-# Runbook: Database Maintenance
-
 ---
 title: Database Maintenance Runbook
 summary: Регламентные операции с PostgreSQL для AquaStream.
 tags: [operations, runbook, database]
 ---
+
+# Runbook: Database Maintenance
 
 ## Контекст
 

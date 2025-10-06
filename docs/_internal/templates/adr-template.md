@@ -1,10 +1,10 @@
-# ADR-{NNN}: {Короткий заголовок}
-
 ---
 title: ADR-{NNN} - {Title}
 summary: {Короткое резюме решения и причины}
 tags: [adr, architecture, decision]
 ---
+
+# ADR-{NNN}: {Короткий заголовок}
 
 **Статус:** Proposed | Accepted | Deprecated | Superseded
 **Дата:** YYYY-MM-DD

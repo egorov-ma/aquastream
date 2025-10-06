@@ -1,10 +1,10 @@
-# Политика безопасности
-
 ---
 title: Security Policy
 summary: Базовые требования безопасности для сервисов AquaStream.
 tags: [operations, security, policy]
 ---
+
+# Политика безопасности
 
 ## Принципы
 

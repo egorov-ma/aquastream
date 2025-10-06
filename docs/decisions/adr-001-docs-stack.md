@@ -1,10 +1,10 @@
-# ADR-001: Doc as Code Stack для AquaStream
-
 ---
 title: ADR-001 - Doc as Code Stack
 summary: Выбор MkDocs + Material для документации проекта с автоматизацией через CI/CD
 tags: [adr, documentation, docs-as-code]
 ---
+
+# ADR-001: Doc as Code Stack для AquaStream
 
 **Статус:** Accepted
 **Дата:** 2025-09-22

@@ -1,10 +1,10 @@
-# Управление версиями
-
 ---
 title: Version Management
 summary: Политика управления версиями и релизами AquaStream.
 tags: [operations, release-management, semver]
 ---
+
+# Управление версиями
 
 ## Подход к версиям
 

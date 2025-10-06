@@ -1,10 +1,10 @@
-# {Component Name}
-
 ---
 title: {Component Name}
 summary: {Краткое описание компонента и его назначения}
 tags: [frontend, component, react, {category}]
 ---
+
+# {Component Name}
 
 ## Описание
 

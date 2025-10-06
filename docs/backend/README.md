@@ -1,9 +1,9 @@
-# Backend Architecture
-
 ---
 title: Backend Overview
 summary: Обзор backend архитектуры AquaStream - микросервисы, общие компоненты и принципы проектирования.
 ---
+
+# Backend Architecture
 
 ## Архитектура
 

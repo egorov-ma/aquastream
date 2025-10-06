@@ -1,10 +1,10 @@
-# Runbook: Service Restart
-
 ---
 title: Service Restart Runbook
 summary: Безопасная перезагрузка сервисов AquaStream в разных окружениях.
 tags: [operations, runbook]
 ---
+
+# Runbook: Service Restart
 
 ## Предусловия
 

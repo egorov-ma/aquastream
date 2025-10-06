@@ -1,10 +1,10 @@
-# Architecture Decision Records
-
 ---
 title: ADR Index
 summary: Индекс всех архитектурных решений проекта AquaStream
 tags: [adr, architecture, decisions]
 ---
+
+# Architecture Decision Records
 
 Индекс всех архитектурных решений с хронологией и статусами.
 

@@ -1,10 +1,10 @@
-# Style Guides
-
 ---
 title: Development Style Guides
 summary: Единые правила кодирования, коммитов и документации для AquaStream.
 tags: [development, style-guides]
 ---
+
+# Style Guides
 
 ## Обзор
 

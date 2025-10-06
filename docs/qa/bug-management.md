@@ -1,10 +1,10 @@
-# Управление багами
-
 ---
 title: Bug Management
 summary: Процесс управления дефектами в проекте AquaStream
 tags: [qa, bugs, defects, issue-tracking]
 ---
+
+# Управление багами
 
 ## Обзор
 
