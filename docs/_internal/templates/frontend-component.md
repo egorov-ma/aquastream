@@ -257,4 +257,4 @@ export function StatefulExample() {
 - Frontend Architecture: `frontend/README.md` - общая архитектура frontend
 - Design System: `frontend/design-playbook.md` - дизайн система и гайдлайны
 - Component Development: `frontend/components.md` - разработка компонентов
-- [Testing Guide](../../qa/test-plans/frontend-testing.md) - тестирование frontend
+- [Testing Guide](../../qa/testing.md#frontend-testing) - тестирование frontend
