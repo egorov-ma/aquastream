@@ -508,7 +508,7 @@ upstream event-service {
 - CPU: 0.75-1.0 vCPU
 - См. [Infrastructure](operations/infrastructure.md) для деталей
 
-## Мониторинг и наблюдаемость
+## Мониторинг и наблюдаемость {#мониторинг-и-наблюдаемость}
 
 ### Метрики (Prometheus format)
 
@@ -698,7 +698,7 @@ Spring Cloud Contract для API contracts между сервисами
 
 ## Архитектурные решения
 
-Ключевые решения документированы в [ADR записях](decisions/):
+Ключевые решения документированы в [ADR записях](decisions/index.md):
 
 - [ADR-001: Doc as Code Stack](decisions/adr-001-docs-stack.md)
 - [ADR-002: API Documentation Strategy](decisions/adr-002-api-documentation.md)
@@ -757,8 +757,8 @@ Spring Cloud Contract для API contracts между сервисами
 
 ## См. также
 
-- [Backend Documentation](backend/) - детали по каждому сервису
-- [Frontend Documentation](frontend/) - архитектура клиентской части
-- [API Documentation](api/) - полная документация API
-- [Operations Guide](operations/) - руководство по эксплуатации
-- [QA Strategy](qa/) - стратегия тестирования
+- [Backend Documentation](backend/README.md) - детали по каждому сервису
+- [Frontend Documentation](frontend/README.md) - архитектура клиентской части
+- [API Documentation](api/index.md) - полная документация API
+- [Operations Guide](operations/README.md) - руководство по эксплуатации
+- [QA Strategy](qa/index.md) - стратегия тестирования

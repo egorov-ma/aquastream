@@ -104,7 +104,6 @@ nav:
       - Политики:
           - Security: operations/policies/security.md
           - Support: operations/policies/support.md
-          - Code of Conduct: operations/policies/code-of-conduct.md
       - Runbooks:
           - Обслуживание БД: operations/runbooks/database-maintenance.md
           - Инциденты: operations/runbooks/incident-response.md
@@ -113,9 +112,8 @@ nav:
       - Обзор: api/index.md
   - Decisions:
       - Индекс: decisions/index.md
-      - ADR-0001 Docs Stack: decisions/adr-0001-docs-stack.md
-      - ADR-0002 Sync Module Docs: decisions/adr-0002-sync-module-docs.md
-      - ADR-0003 API Redoc: decisions/adr-0003-api-redoc.md
+      - ADR-001 Docs Stack: decisions/adr-001-docs-stack.md
+      - ADR-002 API Documentation: decisions/adr-002-api-documentation.md
 theme:
   name: material
   features:

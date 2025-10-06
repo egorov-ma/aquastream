@@ -207,9 +207,9 @@ Ready for production deployment.
 6. Post-mortem: анализ причин и prevention мер
 
 **Коммуникация**:
-- Уведомить команду в Slack/Teams
-- Уведомить stakeholders
-- Создать incident report
+- Обновить соответствующий Incident Issue (статус, таймлайн)
+- Сообщить заинтересованным пользователям через выбранный канал (например, комментарий в Issue или email)
+- Подготовить короткий пост-мортем заметку
 
 ### Security Vulnerabilities
 

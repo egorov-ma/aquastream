@@ -41,7 +41,7 @@ docs/api/specs/root/*.yaml →
 
 | Модуль | Спецификация | ReDoc (чтение) | Swagger (тестирование) |
 |--------|--------------|----------------|------------------------|
-| backend-user-api | [YAML](specs/root/backend-user-api.yaml) | [ReDoc](redoc/root/backend-user-api.html) | [Swagger](swagger/root/backend-user-api.html) |
+| backend-user-api | [YAML](../api/specs/root/backend-user-api.yaml) | [ReDoc](../api/redoc/root/backend-user-api.html) | Swagger UI (в разработке) |
 
 ### CI/CD
 

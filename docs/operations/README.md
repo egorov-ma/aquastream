@@ -10,18 +10,6 @@ tags: [operations, devops, infrastructure]
 
 Документация по эксплуатации и администрированию системы AquaStream.
 
-## Технологический стек
-
-- **Containerization**: Docker + Docker Compose (профили: dev/stage/prod)
-- **Orchestration**: Makefile-based automation
-- **Database**: PostgreSQL 16 (multi-schema)
-- **Cache**: Redis 7 (AOF persistence)
-- **Object Storage**: MinIO (S3-compatible)
-- **Build System**: Gradle 8.5 + Java 21
-- **Monitoring**: Prometheus + Grafana + Loki + Promtail (dev only)
-- **CI/CD**: GitHub Actions
-- **Documentation**: MkDocs + Material
-
 ## Быстрый старт
 
 ### Development
@@ -113,85 +101,36 @@ make docs-serve       # Запуск MkDocs dev сервера
 make docs-build       # Сборка статического сайта
 ```
 
-## Документация
+## Куда идти дальше
 
-### Core Operations
-
-**[Infrastructure](infrastructure.md)** - Инфраструктура и компоненты
-- Docker Compose архитектура
-- Core services (PostgreSQL, Redis, MinIO)
-- Backend services (7 микросервисов)
-- Observability stack (Prometheus, Grafana, Loki)
-- Volumes и сети
-- Security hardening
-
-**[Deployment](deployment.md)** - Развертывание и управление версиями
-- Процесс развертывания (dev/stage/prod)
-- Version management через `version.properties`
-- Rollback стратегии
-- Database migrations (Liquibase)
-- Zero-downtime deployment
-
-**[CI/CD](ci-cd.md)** - Continuous Integration и Delivery
-- GitHub Actions workflows
-- Backend CI (build, test, lock-check)
-- Docker Images CI (build, scan, push)
-- CodeQL, Commitlint, Labeler
-- Release process
-- Security scanning (Trivy, OWASP)
-
-**[Backup & Recovery](backup-recovery.md)** - Резервное копирование
-- Automated backup скрипты
-- Retention policy (7 daily, 4 weekly, 3 monthly)
-- Per-schema backup
-- Recovery procedures
-- Testing backups
+| Документ | Вопросы которые закрывает | Примечание |
+|----------|---------------------------|------------|
+| [Infrastructure](infrastructure.md) | Подготовка окружений, сети, ресурсы | Архитектурный контекст см. в [Architecture](../architecture.md) |
+| [Deployment](deployment.md) | Как выполнять релизы dev/stage/prod | Повышение версий → [Version Management](version-management.md) |
+| [CI/CD](ci-cd.md) | Какие workflow'ы есть и как их запускать | Ссылки на GitHub Actions файлы и best practices |
+| [Monitoring](monitoring.md) | Как смотреть метрики, логи, алерты | Dev stack, для stage/prod — внешний мониторинг |
+| [Backup & Recovery](backup-recovery.md) | Создание и проверка бэкапов | PostgreSQL + MinIO процедуры |
+| Runbooks | Пошаговые инструкции (рестарт, инциденты) | [Service Restart](runbooks/service-restart.md), [Incident Response](runbooks/incident-response.md), [Database Maintenance](runbooks/database-maintenance.md) |
+| [Troubleshooting](troubleshooting.md) | Быстрая диагностика и ссылки на runbooks | Содержит quick reference и переходы |
 
 ### Service-Specific Operations
 
-Каждый backend сервис имеет свою документацию operations:
+- [Event Service](../backend/event/operations.md)
+- [Crew Service](../backend/crew/operations.md)
+- Остальные сервисы — см. `docs/backend/<service>/operations.md`
 
-- [Event Service Operations](../backend/event/operations.md) - scheduled jobs, TTL, waitlist
-- [Crew Service Operations](../backend/crew/operations.md) - capacity validation, assignments
-- User, Payment, Notification, Media - см. `docs/backend/*/operations.md`
+## Архитектурный контекст
 
-## Архитектура
-
-### Микросервисы
-
-7 микросервисов: Gateway (8080), User (8101), Event (8102), Crew (8103), Payment (8104), Notification (8105), Media (8106).
-
-См. полную таблицу с resource limits в [Infrastructure - Backend Services](infrastructure.md#backend-services).
-
-### Infrastructure
-
-**Core компоненты**: PostgreSQL (multi-schema), Redis (AOF persistence), MinIO (S3-compatible).
-
-**Observability** (dev only): Prometheus, Grafana, Loki, Promtail.
-
-См. детальные конфигурации, порты и resource limits в [Infrastructure](infrastructure.md#компоненты-инфраструктуры).
+Высокоуровневые решения, взаимосвязи сервисов и ограничения описаны в [Architecture](../architecture.md). При изменении архитектуры сначала обновляем её описание, затем вносим правки в специализированные руководства из раздела Operations.
 
 ## Troubleshooting
 
-**Быстрые решения**:
-- Сервисы не стартуют: `make logs && make down && make up-dev`
-- Порты заняты: изменить маппинг в `docker-compose.override.dev.yml`
-- Disk space: `docker system prune -a --volumes`
+- Для быстрых проверок используйте раздел Quick Reference в [Troubleshooting](troubleshooting.md).
+- Повторяемые процедуры вынесены в runbooks, например [Service Restart](runbooks/service-restart.md) и [Incident Response](runbooks/incident-response.md).
 
-См. полное руководство по диагностике проблем в [Troubleshooting Guide](troubleshooting.md).
+## Дополнительные материалы
 
-## Полезные ссылки
-
-### Внутренние
-
-- [Backend Infrastructure README](../../backend-infra/README.md) - детали инфраструктуры
-- [Makefile](../../backend-infra/make/Makefile) - все доступные команды
-- [GitHub Workflows](../../.github/workflows/) - CI/CD pipelines
-- [Build System](../../build.gradle) - Gradle конфигурация
-
-### Внешние
-
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
-- [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/16/)
-- [Semantic Versioning](https://semver.org/)
+- [backend-infra/README.md](https://github.com/egorov-ma/aquastream/blob/main/backend-infra/README.md) — содержимое инфраструктурного пакета
+- [backend-infra/make/Makefile](https://github.com/egorov-ma/aquastream/blob/main/backend-infra/make/Makefile) — полный список make-команд
+- [GitHub Workflows](https://github.com/egorov-ma/aquastream/tree/main/.github/workflows) — исходники CI/CD
+- [Docker Compose docs](https://docs.docker.com/compose/), [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html), [Semantic Versioning](https://semver.org/)

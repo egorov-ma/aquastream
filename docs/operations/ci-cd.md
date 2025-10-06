@@ -12,163 +12,24 @@ GitHub Actions pipeline для автоматизации сборки, тест
 
 ## Workflow Компоненты
 
-### Backend CI
+| Workflow | Файл | Триггер | Шаги | Артефакты |
+|----------|------|---------|------|-----------|
+| **Backend CI** | `backend-ci.yml` | `push`/`pr` на backend paths | Gradle build, test, lock check | Test reports |
+| **Frontend CI** | `frontend-ci.yml` | `push`/`pr` на `frontend/**` | pnpm lint/typecheck/build/test | - |
+| **Docker Images** | `ci-images.yml` | `pr`/`push`/`release` | Build, Trivy scan, SBOM, push (GHCR) | Security reports, SBOM |
+| **CodeQL** | `codeql.yml` | `push`/`pr`/weekly | Analyze java/js/python | Security findings |
+| **Commitlint** | `commitlint.yml` | `push`/`pr` | Validate Conventional Commits | - |
+| **Labeler** | `labeler.yml` | `pr` opened | Auto-label by paths | - |
+| **Label Sync** | `label-sync.yml` | `labels.yml` changes | Sync repo labels | - |
+| **Release** | `release.yml` | Tag `v*` pushed | Create GitHub Release | Release notes |
+| **Docs CI** | `docs-ci.yml` | `pr` на docs | Build MkDocs, check links | Static site |
+| **Docs Deploy** | `docs-deploy.yml` | `push` to main | Deploy to GitHub Pages | - |
 
-**Файл**: `.github/workflows/backend-ci.yml`
+### Как читать таблицу
 
-**Триггеры**:
-- `push` и `pull_request` с фильтрами путей:
-  - `backend-*/**`
-  - `build.gradle`
-  - `settings.gradle`
-  - `gradle/**`
-  - `version.properties`
-
-**Что выполняется**:
-1. Gradle Wrapper Validation
-2. Setup Java 21 (Temurin)
-3. Gradle кэширование
-4. `./gradlew clean build`
-5. Lock Check - проверка актуальности dependency lock файлов
-6. Upload test reports
-
-**Кэширование**: Gradle dependencies + build cache
-
-### Frontend CI
-
-**Файл**: `.github/workflows/frontend-ci.yml`
-
-**Триггеры**:
-- `push` и `pull_request` с фильтрами путей:
-  - `frontend/**`
-  - `.github/workflows/frontend-ci.yml`
-
-**Что выполняется**:
-1. Setup Node.js 22
-2. pnpm install (с кэшированием)
-3. `pnpm lint` - ESLint
-4. `pnpm typecheck` - TypeScript
-5. `pnpm build` - Production build
-6. `pnpm test:e2e` - Playwright тесты
-
-**Кэширование**: pnpm store
-
-### Docker Images CI
-
-**Файл**: `.github/workflows/ci-images.yml`
-
-**Триггеры**:
-- `pull_request` (scan only, без push)
-- `push` в `main`
-- `release`
-- `workflow_dispatch`
-
-**Матрица сервисов**:
-```yaml
-services:
-  - user
-  - event
-  - crew
-  - payment
-  - notification
-  - media
-  - gateway
-```
-
-**Что выполняется**:
-1. Docker buildx setup
-2. Login to GHCR (GitHub Container Registry)
-3. Build образа для каждого сервиса
-4. Trivy security scan
-   - PR: информативный режим
-   - main/release: fail на High/Critical
-5. Syft SBOM generation (spdx-json format)
-6. Push образов в GHCR (только main/release)
-7. Upload security artifacts
-
-**Артефакты**: `security-<service>-<sha>` (Trivy + SBOM)
-
-### CodeQL Analysis
-
-**Файл**: `.github/workflows/codeql.yml`
-
-**Триггеры**:
-- `push` в `main`
-- `pull_request`
-- Schedule: еженедельно (понедельник 00:00)
-
-**Языки**:
-- `java` (покрывает Java и Kotlin)
-- `javascript` (покрывает JS/TS)
-- `python`
-
-**Что выполняется**:
-1. Initialize CodeQL
-2. Autobuild (Java) / Manual build (если нужно)
-3. Perform CodeQL Analysis
-4. Upload results to GitHub Security
-
-### Commitlint
-
-**Файл**: `.github/workflows/commitlint.yml`
-
-**Триггеры**:
-- `pull_request` (проверка заголовка PR)
-- `push` (проверка commit messages)
-
-**Что выполняется**:
-- Проверка соответствия Conventional Commits
-- Формат: `type(scope): subject`
-- Разрешенные типы: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `build`, `ci`, `chore`, `perf`, `revert`
-
-### Labeler & Label Sync
-
-**Файлы**: `.github/workflows/labeler.yml`, `.github/workflows/label-sync.yml`
-
-**Labeler**:
-- Автоматическая простановка меток на PR по измененным путям
-- Конфиг: `.github/labeler.yml`
-- Метки: `backend`, `frontend`, `docs-changed`, `ci`, etc.
-
-**Label Sync**:
-- Синхронизация списка меток репозитория
-- Источник: `.github/labels.yml`
-- Триггер: изменения в `labels.yml` или `workflow_dispatch`
-
-### Release
-
-**Файл**: `.github/workflows/release.yml`
-
-**Триггеры**:
-- `push` тэгов `v*` (например, `v1.0.0`)
-- `workflow_dispatch` (ручной запуск)
-
-**Что выполняется**:
-1. Создание GitHub Release
-2. Автогенерация release notes
-3. Опция draft release
-4. Прикрепление артефактов (опционально)
-
-**Пример**:
-```bash
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
-```
-
-### Docs CI/CD
-
-**Файл CI**: `.github/workflows/docs-ci.yml`
-**Файл Deploy**: `.github/workflows/docs-deploy.yml`
-
-**Docs CI** (на PR):
-- Сборка MkDocs
-- Проверка ссылок
-- Upload артефакта `site`
-
-**Docs Deploy** (на push в main):
-- Сборка MkDocs
-- Деплой на GitHub Pages
-- URL: `https://<org>.github.io/<repo>/`
+- Подробные скрипты и параметры смотрите прямо в файлах workflow (`.github/workflows/<name>`).
+- Любые изменения pipeline проходят через Pull Request и ревью — соблюдаем принцип *Docs as Code*.
+- Если нужен ручной запуск, используйте `workflow_dispatch` в интерфейсе GitHub Actions.
 
 ## Dependency Lock Check
 
@@ -272,10 +133,9 @@ git commit -m "chore: update dependency locks"
 - **Автодеплой**: GitHub Pages с main
 - **Link checking**: проверка битых ссылок
 
-CodeQL: языки и расширение
-- По умолчанию включены `java` (покрывает Java и Kotlin), `javascript` (покрывает JS/TS) и `python`.
-- Чтобы добавить другие языки (например, `go`, `ruby`, `csharp`, `swift`), отредактируйте шаг `Initialize CodeQL`:
-  `languages: java,javascript,python,go`
+#### CodeQL языки
+- По умолчанию включены `java` (Java/Kotlin), `javascript` (JS/TS) и `python`.
+- Дополнительные языки (например, `go`, `ruby`, `csharp`, `swift`) добавляются в шаге `Initialize CodeQL`: `languages: java,javascript,python,go`.
 
 ## Локальная валидация
 
@@ -320,24 +180,9 @@ make scan
 make sbom
 ```
 
-## Release Process
+## Release process
 
-### Semantic Versioning
-
-Проект следует [SemVer](https://semver.org/). См. детали управления версиями в [Deployment - Version Management](deployment.md#version-management).
-
-### Создание релиза
-
-См. детальный процесс управления версиями и создания релизов в [Deployment - Version Management](deployment.md#version-management).
-
-Краткий пример:
-```bash
-# Обновить version.properties, создать и запушить тег
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
-
-# GitHub Actions автоматически создаст Release
-```
+См. [Version Management](version-management.md) для повышения версий и постановки тегов. Workflow `release.yml` автоматически публикует GitHub Release при пуше тега `v*`.
 
 ### Hotfix процесс
 
@@ -348,13 +193,11 @@ git checkout -b hotfix/v1.0.1 v1.0.0
 # 2. Исправить проблему
 # ... fixes ...
 
-# 3. Обновить версию (patch)
-version.patch=1
+# 3. Повысить версию (patch)
+./gradlew releasePatch
 
-# 4. Commit, tag, push
-git commit -m "fix: critical bug"
-git tag -a v1.0.1 -m "Hotfix v1.0.1"
-git push origin v1.0.1
+# 4. Запушить ветку (Gradle задача уже создала тег)
+git push origin hotfix/v1.0.1
 ```
 
 ## Monitoring & Alerts
@@ -367,10 +210,10 @@ git push origin v1.0.1
 
 ### Notifications
 
-Настройка в Settings → Notifications:
-- **Failed workflows**: email/Slack
+Настройки GitHub Notifications:
+- **Failed workflows**: email
 - **Security alerts**: немедленно
-- **Dependabot PRs**: дайджест
+- **Dependabot PRs**: digest раз в неделю
 
 ### Metrics
 

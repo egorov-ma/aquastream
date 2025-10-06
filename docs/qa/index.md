@@ -168,7 +168,7 @@ k6 run k6-load.js
 
 ### Текущие показатели
 
-См. [Test Strategy](test-strategy.md#метрики-качества) для актуальных метрик.
+См. [Test Strategy](test-strategy.md#qa-metrics) для актуальных метрик.
 
 ## Процесс QA
 
@@ -191,7 +191,7 @@ graph LR
 5. **Анализ** - выявление проблем, root cause analysis
 6. **Улучшение** - оптимизация тестов, увеличение coverage
 
-См. [Test Strategy - Процесс тестирования](test-strategy.md#процесс-тестирования) для деталей.
+См. [Test Strategy - Процесс тестирования](test-strategy.md#qa-process) для деталей.
 
 ## Инструменты и технологии
 
@@ -258,7 +258,7 @@ graph LR
 **Допустимые исключения:**
 - ⚠️ Пропустить full regression (выполнить после hotfix)
 
-См. [Test Strategy - Критерии выхода](test-strategy.md#критерии-выхода) для полного списка.
+См. [Test Strategy - Критерии выхода](test-strategy.md#qa-exit-criteria) для полного списка.
 
 ## CI/CD Integration
 
@@ -403,10 +403,10 @@ open build/reports/jacoco/test/html/index.html
 ### Внутренние ссылки
 
 - [Architecture Overview](../architecture.md) - архитектура системы
-- [Backend Documentation](../backend/) - детали backend сервисов
-- [Frontend Documentation](../frontend/) - frontend архитектура
-- [Operations Guide](../operations/) - deployment, CI/CD, infrastructure
-- [Development Guide](../development/) - setup, workflows
+- [Backend Documentation](../backend/README.md) - детали backend сервисов
+- [Frontend Documentation](../frontend/README.md) - frontend архитектура
+- [Operations Guide](../operations/README.md) - deployment, CI/CD, infrastructure
+- [Development Workflows](../development/workflows.md) - setup, процессы, инструменты
 
 ### Внешние ресурсы
 
