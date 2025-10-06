@@ -72,8 +72,8 @@ make smoke                 # проверить API Gateway
 
 | Симптом | Что проверить | Runbook |
 |---------|---------------|---------|
-| Метрики не обновляются | `docker ps`, логи Prometheus | [Troubleshooting](troubleshooting.md#prometheus-issues) |
-| В Grafana нет логов | `docker logs aquastream-promtail`, права на docker.sock | [Troubleshooting](troubleshooting.md#loki-issues) |
+| Метрики не обновляются | `docker ps`, логи Prometheus | [Troubleshooting](troubleshooting.md#monitoring-stack) |
+| В Grafana нет логов | `docker logs aquastream-promtail`, права на docker.sock | [Troubleshooting](troubleshooting.md#monitoring-stack) |
 | Edge не отдаёт ответы | `docker logs nginx`, `curl -I http://localhost` | [Service Restart](runbooks/service-restart.md) |
 | Health красный | `make smoke`, зависимые сервисы | [Service Restart](runbooks/service-restart.md) |
 

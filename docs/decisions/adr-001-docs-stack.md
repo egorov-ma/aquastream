@@ -118,9 +118,9 @@ make docs-setup         # Установить зависимости (Python ve
 make docs-serve         # Запустить dev сервер
 make docs-build         # Собрать статический сайт
 
-# Quality checks (TODO)
-make docs-lint          # Markdown lint
-make docs-check         # Проверка broken links
+# Quality checks
+make docs-lint          # Markdown lint (markdownlint, Vale, cSpell)
+make docs-check-links   # Проверка ссылок (lychee)
 ```
 
 ## Последствия

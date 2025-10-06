@@ -539,7 +539,7 @@ make docs-build         # Собрать статический сайт в site
 
 # Quality checks (TODO)
 make docs-lint          # Markdown lint
-make docs-check         # Проверка broken links
+make docs-check-links   # Проверка broken links
 ```
 
 ## Процесс обновления документации

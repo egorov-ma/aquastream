@@ -21,7 +21,7 @@ docker exec aquastream-postgres psql -U aquastream -d aquastream -c "\l"
 docker exec aquastream-backend-user env | grep POSTGRES
 
 # 4. Пересоздайте контейнер
-docker-compose restart backend-user
+docker compose restart backend-user
 
 # 5. Если не помогает - пересоберите
 make backend-clean && make backend-build && make backend-up
@@ -48,7 +48,7 @@ lsof -i :8101
 kill -9 <PID>
 
 # Остановить все Docker контейнеры
-docker-compose down
+docker compose down
 ```
 
 ### Out of Memory
@@ -105,11 +105,11 @@ pnpm exec playwright test --headed --debug
 
 ```bash
 # Проверить docker-compose.yml
-docker-compose config
+docker compose config
 
 # Пересоздать контейнеры
-docker-compose down -v
-docker-compose up -d
+docker compose down -v
+docker compose up -d
 
 # Очистить неиспользуемые ресурсы
 docker system prune -a
@@ -125,7 +125,7 @@ docker network inspect aquastream_default
 docker exec backend-user ping postgres
 
 # Пересоздать network
-docker-compose down && docker network prune && docker-compose up -d
+docker compose down && docker network prune && docker compose up -d
 ```
 
 ## Проблемы с БД
@@ -223,7 +223,11 @@ docker logs aquastream-backend-user --tail 1000
 curl http://localhost:8101/actuator/health
 
 # 3. Откатить версию
-docker-compose up -d --force-recreate backend-user
+docker compose up -d --force-recreate backend-user
+
+# Если недоступен только edge, проверяем nginx
+docker logs nginx --tail 200
+curl -I http://localhost
 ```
 
 ### Database connection pool exhausted
@@ -243,5 +247,5 @@ WHERE state = 'idle in transaction'
 
 - **Документация**: [docs/](../index.md)
 - **Issues**: создайте issue в GitHub с меткой `help wanted`
-- **Runbooks**: [Operations Runbooks](../operations/runbooks/)
-- **Incident Response**: [runbooks/incident-response.md](../operations/runbooks/incident-response.md)
+- **Runbooks**: [Service Restart](../operations/runbooks/service-restart.md), [Database Maintenance](../operations/runbooks/database-maintenance.md)
+- **Incident Response**: [Incident Response](../operations/runbooks/incident-response.md)

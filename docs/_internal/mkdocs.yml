@@ -69,6 +69,9 @@ nav:
   - Деплой: frontend/deployment.md
   - Безопасность: frontend/security.md
 - Development:
+  - Обзор: development/README.md
+  - Настройка окружения: development/setup.md
+  - Сборка: development/build-guide.md
   - Рабочие процессы: development/workflows.md
   - Стандарты оформления: development/style-guides.md
   - Практики тестирования: development/testing.md

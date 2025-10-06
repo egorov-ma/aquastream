@@ -84,22 +84,17 @@ version.suffix=SNAPSHOT
 #### 1. Подготовка
 
 ```bash
-# Убрать SNAPSHOT
-sed -i '' 's/version.suffix=.*/version.suffix=/' version.properties
+# Выполнить релизную Gradle-задачу
+./gradlew releasePatch  # или releaseMinor / releaseMajor
 
-# Commit
-git add version.properties
-git commit -m "release: bump version to 1.0.0"
-
-# Tag
-git tag -a v1.0.0 -m "Release v1.0.0"
+# Gradle создаст commit и тег vX.Y.Z
 ```
 
 #### 2. Push и деплой
 
 ```bash
-# Push тега
-git push origin v1.0.0
+# Push изменений и тега (Gradle уже создал)
+git push origin main --follow-tags
 
 # GitHub Actions автоматически:
 # - Создаст GitHub Release
@@ -111,15 +106,11 @@ git push origin v1.0.0
 #### 3. Следующая версия
 
 ```bash
-# Увеличить minor, вернуть SNAPSHOT
-sed -i '' 's/version.minor=.*/version.minor=1/' version.properties
-sed -i '' 's/version.patch=.*/version.patch=0/' version.properties
-sed -i '' 's/version.suffix=.*/version.suffix=SNAPSHOT/' version.properties
+# Перевести проект на следующую версию (например, MINOR)
+./gradlew releaseMinor
 
-# Commit
-git add version.properties
-git commit -m "chore: bump version to 1.1.0-SNAPSHOT"
-git push origin main
+# Push
+git push origin main --follow-tags
 ```
 
 ### Hotfix Process
@@ -131,16 +122,13 @@ git checkout -b hotfix/v1.0.1 v1.0.0
 # 2. Исправить проблему
 # ... fixes ...
 
-# 3. Обновить версию
-sed -i '' 's/version.patch=.*/version.patch=1/' version.properties
-sed -i '' 's/version.suffix=.*/version.suffix=/' version.properties
+# 3. Выполнить релизную задачу (patch)
+./gradlew releasePatch
 
-# 4. Commit, tag, push
-git commit -am "fix: critical security issue"
-git tag -a v1.0.1 -m "Hotfix v1.0.1"
-git push origin v1.0.1
+# 4. Push и PR
+git push origin hotfix/v1.0.1 --follow-tags
 
-# 5. Merge обратно в main
+# 5. После ревью: merge в main
 git checkout main
 git merge hotfix/v1.0.1
 git push origin main
@@ -231,7 +219,7 @@ frontend:
 - [ ] Документация обновлена
 - [ ] CI проходит успешно
 - [ ] Нет hardcoded секретов
-- [ ] Нет TODO без issue
+- [ ] Не оставляем пометки в коде без соответствующего issue
 - [ ] Breaking changes описаны
 
 ### Approval Requirements

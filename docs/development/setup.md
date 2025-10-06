@@ -42,7 +42,7 @@ sudo usermod -aG docker $USER
 
 # Проверка
 docker --version
-docker-compose --version
+docker compose version
 ```
 
 ### Установка Node.js
@@ -72,30 +72,29 @@ git clone https://github.com/egorov-ma/aquastream.git
 cd aquastream
 ```
 
-### 2. Запуск инфраструктуры
+### 2. Запуск всего стека (backend + инфраструктура + nginx)
 
 ```bash
-make infra-up
+make up-dev
 ```
 
-### 3. Сборка и запуск backend
+Команда поднимет PostgreSQL, Redis, MinIO, nginx и все backend сервисы. Логи доступны через `make logs`.
 
-```bash
-make backend-build
-make backend-up
-```
-
-### 4. Запуск frontend
+### 3. Запуск frontend
 
 ```bash
 make frontend-dev
 ```
 
-### 5. Проверка
+### 4. Проверка
 
 ```bash
-make health-check
+curl http://localhost/actuator/health       # Gateway через nginx
+curl http://localhost:8080/actuator/health  # Прямой доступ к gateway (без nginx)
+open http://localhost:3000                  # Frontend
 ```
+
+> Подробности по инфраструктуре и профилям см. в [Operations → Infrastructure](../operations/infrastructure.md).
 
 ## IDE настройка
 
