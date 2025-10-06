@@ -2,114 +2,26 @@
 
 ---
 title: QA & Testing Overview
-summary: Comprehensive QA strategy, processes, and testing documentation for AquaStream
-tags: [qa, testing, quality-assurance, strategy]
+summary: Стратегия тестирования, процессы QA и документация для AquaStream
+tags: [qa, testing, quality-assurance]
 ---
 
 ## Обзор
 
-Документация по обеспечению качества (Quality Assurance) и тестированию проекта AquaStream. Этот раздел описывает стратегию тестирования, процессы QA, инструменты и best practices для поддержания высокого качества продукта.
+Документация по обеспечению качества и тестированию проекта AquaStream.
 
-**Цели QA в проекте:**
-- Обеспечение качества кода и функциональности
-- Предотвращение дефектов через раннее тестирование
-- Автоматизация тестирования для быстрой обратной связи
-- Continuous quality improvement
+**Цели QA:**
+- Качество кода и функциональности
+- Предотвращение дефектов
+- Автоматизация для быстрой обратной связи
+- Continuous improvement
 
-## Структура документации
+## Документация
 
-### 📋 Стратегия и процессы
-
-- **[Test Strategy](test-strategy.md)** - общая стратегия тестирования
-  - Уровни тестирования (Unit, Integration, E2E, Performance, Security)
-  - Типы тестирования (функциональное, нефункциональное)
-  - Инструменты и фреймворки
-  - Метрики качества и KPI
-  - Процесс тестирования (планирование → разработка → выполнение → отчетность)
-
-- **[Bug Management](bug-management.md)** - управление дефектами
-  - Процесс обнаружения и создания bug reports
-  - Триаж и приоритизация (Severity, Priority)
-  - Lifecycle дефектов (обнаружение → исправление → валидация → закрытие)
-  - Специальные случаи (Critical bugs, Security vulnerabilities)
-  - Метрики и KPI
-
-### 🧪 Тест-планы
-
-Тест-планы для различных компонентов системы:
-
-- **[Backend Testing](test-plans/backend-testing.md)** - план тестирования backend
-  - Unit tests (JUnit 5, Mockito)
-  - Integration tests (Testcontainers)
-  - Architecture tests (ArchUnit)
-
-- **[Frontend Testing](test-plans/frontend-testing.md)** - план тестирования frontend
-  - Unit tests (Vitest)
-  - Component tests (Testing Library)
-  - E2E tests (Playwright)
-
-- **[Integration Testing](test-plans/integration-testing.md)** - интеграционное тестирование
-  - Backend ↔ Database
-  - Service ↔ Service
-  - Frontend ↔ Backend
-
-- **[E2E Testing](test-plans/e2e-testing.md)** - end-to-end тестирование
-  - Критичные user journeys
-  - Smoke tests
-  - Regression suite
-
-### 🤖 Автоматизация
-
-Документация по автоматизированному тестированию:
-
-- **[Unit Tests](automation/unit-tests.md)** - юнит-тесты
-  - Backend (Java/Kotlin + JUnit)
-  - Frontend (TypeScript + Vitest)
-  - Best practices
-
-- **[API Tests](automation/api-tests.md)** - API тесты
-  - REST API testing (Spring Boot Test, MockMvc)
-  - Testcontainers для изоляции
-  - Contract testing
-
-- **[UI Tests](automation/ui-tests.md)** - UI тесты
-  - Playwright для E2E
-  - Селекторы и best practices
-  - CI/CD integration
-
-### ✋ Ручное тестирование
-
-Документация для manual testing:
-
-- **[Test Cases](manual-testing/test-cases.md)** - тест-кейсы
-  - Структура тест-кейсов
-  - Критичные сценарии
-  - Отчетность
-
-- **[Regression Suite](manual-testing/regression-suite.md)** - регрессионное тестирование
-  - Чек-листы для релизов
-  - Критичные пути
-  - Частота запуска
-
-- **[Exploratory Testing](manual-testing/exploratory-testing.md)** - исследовательское тестирование
-  - Session-based testing
-  - Техники исследования
-  - Документирование находок
-
-### ⚡ Производительность
-
-Performance testing documentation:
-
-- **[Load Testing](performance/load-testing.md)** - нагрузочное тестирование
-  - Типы тестов (Smoke, Load, Stress, Spike, Soak)
-  - K6 scenarios
-  - Метрики и критерии успеха
-
-- **[Performance Benchmarks](performance/performance-benchmarks.md)** - базовые показатели
-  - Backend performance (API latency, throughput)
-  - Frontend performance (Lighthouse scores, Core Web Vitals)
-  - Database performance
-  - Regression testing
+- **[Test Strategy](test-strategy.md)** - стратегия, уровни, инструменты, метрики
+- **[Bug Management](bug-management.md)** - процесс управления дефектами
+- **[Testing](testing.md)** - планы тестирования (backend, frontend, E2E, automation, manual)
+- **[Performance](performance.md)** - нагрузочное тестирование и бенчмарки
 
 ## Быстрый старт
 

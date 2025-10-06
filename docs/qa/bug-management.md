@@ -327,7 +327,7 @@ Ready for production deployment.
 
 ## Примеры
 
-### Пример 1: Functional Bug
+### Functional Bug
 
 **Title**: "Event booking fails when event is at full capacity"
 
@@ -335,98 +335,39 @@ Ready for production deployment.
 
 **Description**:
 ```markdown
-## Description
-При попытке забронировать событие которое уже заполнено (capacity reached),
-система возвращает 500 Internal Server Error вместо 400 Bad Request.
+При попытке забронировать событие которое уже заполнено, система возвращает 500 вместо 400.
 
-## Steps to Reproduce
+Steps to Reproduce:
 1. POST /api/events с capacity=10
-2. POST /api/bookings 10 раз (заполнить capacity)
+2. POST /api/bookings 10 раз
 3. POST /api/bookings 11-й раз
 
-## Expected Behavior
-HTTP 400 Bad Request с сообщением "Event is fully booked"
-
-## Actual Behavior
-HTTP 500 Internal Server Error
-
-## Logs
-```
-java.lang.IllegalStateException: Capacity exceeded
-  at com.aquastream.event.service.BookingService.createBooking
+Expected: HTTP 400 "Event is fully booked"
+Actual: HTTP 500 Internal Server Error
 ```
 
-**Fix**:
-```java
-// Before
-if (event.isFull()) {
-    throw new IllegalStateException("Capacity exceeded");
-}
+**Fix**: Заменить `IllegalStateException` на `EventFullException`
 
-// After
-if (event.isFull()) {
-    throw new EventFullException("Event is fully booked");
-}
-```
-
-**Test**:
-```java
-@Test
-void shouldThrowEventFullExceptionWhenCapacityReached() {
-    // given
-    Event event = createEventWithCapacity(10);
-    fillEventToCapacity(event);
-
-    // when/then
-    assertThatThrownBy(() -> bookingService.createBooking(event.getId(), userId))
-        .isInstanceOf(EventFullException.class)
-        .hasMessage("Event is fully booked");
-}
-```
-
-### Пример 2: Security Vulnerability
+### Security Vulnerability
 
 **Title**: "SQL Injection in user search endpoint"
 
-**Labels**: `bug`, `priority: critical`, `security`, `backend`, `backend-user`
-
-**Private Security Advisory** (не публичный issue)
+**Labels**: `bug`, `priority: critical`, `security`, `backend`
 
 **CVSS Score**: 9.8 (Critical)
 
 **Description**:
 ```markdown
 Endpoint `/api/users/search?name=` уязвим к SQL injection.
-Параметр `name` напрямую подставляется в SQL запрос без sanitization.
 
-## Proof of Concept
-GET /api/users/search?name=admin' OR '1'='1
+Proof: GET /api/users/search?name=admin' OR '1'='1
 
-## Impact
-- Получение всех данных пользователей из БД
-- Potential data breach
-- GDPR violation risk
-
-## Affected Version
-<= 1.0.0
+Impact: Получение всех данных из БД, GDPR violation risk
 ```
 
-**Fix**:
-```java
-// Before (VULNERABLE)
-String sql = "SELECT * FROM users WHERE name = '" + name + "'";
+**Fix**: Использовать параметризованные запросы через `@Query` с `@Param`
 
-// After (SAFE)
-@Query("SELECT u FROM User u WHERE u.name = :name")
-List<User> findByName(@Param("name") String name);
-```
-
-**Hotfix process**:
-1. Создать hotfix/v1.0.1 от production
-2. Исправить vulnerability
-3. Security scan (Trivy, OWASP)
-4. Deploy hotfix немедленно
-5. Security bulletin для пользователей
+**Hotfix process**: Создать hotfix ветку → исправить → security scan → deploy ASAP
 
 ## См. также
 

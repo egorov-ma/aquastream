@@ -20,179 +20,67 @@ tags: [qa, testing, strategy, quality-assurance]
 
 ## Уровни тестирования
 
-### 1. Unit Tests (Юнит-тесты)
+### Unit Tests
 
-**Цель**: тестирование изолированных компонентов
+**Охват**: Service layer, Repository layer (моки), Utility classes, Domain entities, Mappers
 
-**Охват**:
-- Service layer: бизнес-логика
-- Repository layer: работа с БД (моки)
-- Utility classes: вспомогательные классы
-- Domain entities: валидация, поведение
-- Mappers/Converters: трансформация данных
+**Инструменты**: JUnit 5, Mockito, AssertJ (backend); Vitest, Testing Library (frontend)
 
-**Инструменты**:
-- Backend: JUnit 5, Mockito, AssertJ
-- Frontend: Vitest, Testing Library
+**Критерии**: Coverage ≥70%, время <5 мин, изоляция
 
-**Критерии**:
-- Code Coverage ≥ 70%
-- Время выполнения < 5 минут
-- Изоляция: без внешних зависимостей
+**Запуск**: `./gradlew test` (backend), `pnpm test:unit` (frontend)
 
-**Запуск**:
-```bash
-# Backend
-./gradlew test
+### Integration Tests
 
-# Frontend
-pnpm test:unit
-```
+**Охват**: REST API endpoints, Database (Testcontainers), Redis, MinIO, Liquibase migrations
 
-### 2. Integration Tests (Интеграционные тесты)
+**Инструменты**: Spring Boot Test, Testcontainers, RestAssured
 
-**Цель**: проверка взаимодействия компонентов
+**Критерии**: Все критичные endpoints, время <15 мин, изоляция транзакций
 
-**Охват**:
-- REST API endpoints
-- Database operations (реальная БД через Testcontainers)
-- Redis cache operations
-- MinIO storage operations
-- Liquibase migrations
+**Запуск**: `./gradlew integrationTest`
 
-**Инструменты**:
-- Spring Boot Test
-- Testcontainers (PostgreSQL, Redis, MinIO)
-- RestAssured для API тестирования
+### Contract Tests
 
-**Критерии**:
-- Все критичные API endpoints покрыты
-- Время выполнения < 15 минут
-- Изоляция: каждый тест в отдельной транзакции
+**Охват**: OpenAPI спецификации, межсервисное взаимодействие
 
-**Запуск**:
-```bash
-./gradlew integrationTest
-```
+**Инструменты**: Spring Cloud Contract (планируется), OpenAPI Validator
 
-### 3. Contract Tests (Контрактное тестирование)
+### E2E Tests
 
-**Цель**: проверка контрактов между сервисами
+**Охват**: Критичные user journeys, полный стек UI → Gateway → Services → DB
 
-**Охват**:
-- OpenAPI спецификации
-- Межсервисное взаимодействие
-- API Gateway routing
+**Инструменты**: Playwright (frontend), RestAssured + Testcontainers (backend)
 
-**Инструменты**:
-- Spring Cloud Contract (планируется)
-- OpenAPI Validator
+**Критерии**: Критичные сценарии покрыты, время <30 мин, flaky rate <2%
 
-**Критерии**:
-- Все публичные API покрыты контрактами
-- Контракты версионируются вместе с кодом
+**Запуск**: `pnpm test:e2e`
 
-### 4. E2E Tests (End-to-End тесты)
+### Architecture Tests
 
-**Цель**: проверка пользовательских сценариев
+**Охват**: Layered architecture, package dependencies, naming conventions
 
-**Охват**:
-- Критичные user journeys
-- Взаимодействие frontend ↔ backend
-- Полный стек: UI → Gateway → Services → Database
+**Инструменты**: ArchUnit
 
-**Инструменты**:
-- Frontend: Playwright
-- Backend API: RestAssured + Testcontainers
+**Критерии**: 100% compliance, запуск при каждом commit
 
-**Критерии**:
-- Покрыты все критичные сценарии (регистрация, бронирование, оплата)
-- Время выполнения < 30 минут
-- Стабильность: flaky rate < 2%
+### Performance Tests
 
-**Запуск**:
-```bash
-# Frontend E2E
-pnpm test:e2e
+**Охват**: Latency (p50/p95/p99), throughput, resource usage
 
-# Backend API E2E (через integration tests)
-./gradlew integrationTest
-```
+**Инструменты**: K6, JMeter (опционально)
 
-### 5. Architecture Tests (Архитектурные тесты)
+**Критерии**: Gateway p95 <200ms, Service p95 <100ms, throughput ≥100 rps
 
-**Цель**: проверка соблюдения архитектурных правил
+**Типы**: Smoke (1-5 VUs), Load (10-50 VUs), Stress (до 100 VUs), Soak (1 час+)
 
-**Охват**:
-- Layered architecture (api → service → repository)
-- Package dependencies
-- Naming conventions
-- Security constraints
+### Security Tests
 
-**Инструменты**:
-- ArchUnit
+**Охват**: Dependency vulnerabilities, image scanning, SQL injection, auth, rate limiting
 
-**Критерии**:
-- Все правила проходят на 100%
-- Запуск при каждом commit
+**Инструменты**: OWASP Dependency Check, Trivy, ZAP Proxy (планируется)
 
-**Пример правил**:
-```java
-// Service classes должны быть в пакете .service
-classes().that().haveSimpleNameEndingWith("Service")
-    .should().resideInAPackage("..service..")
-
-// Repository должен использоваться только из Service
-noClasses().that().resideInAPackage("..api..")
-    .should().dependOnClassesThat().resideInAPackage("..repository..")
-```
-
-### 6. Performance Tests (Нагрузочное тестирование)
-
-**Цель**: проверка производительности под нагрузкой
-
-**Охват**:
-- Latency: p50, p95, p99
-- Throughput: requests/sec
-- Resource usage: CPU, memory
-- Database query performance
-
-**Инструменты**:
-- K6 для HTTP load testing
-- JMeter (опционально)
-
-**Критерии**:
-- Gateway p95 latency < 200ms
-- Service p95 latency < 100ms
-- Throughput: минимум 100 rps на сервис
-- No errors при load testing
-
-**Типы тестов**:
-- **Smoke test**: минимальная нагрузка (1-5 VUs)
-- **Load test**: нормальная нагрузка (10-50 VUs)
-- **Stress test**: повышенная нагрузка (до 100 VUs)
-- **Soak test**: длительная нагрузка (1 час+)
-
-### 7. Security Tests (Тесты безопасности)
-
-**Цель**: выявление уязвимостей
-
-**Охват**:
-- Dependency vulnerabilities (OWASP)
-- Docker image scanning (Trivy)
-- SQL injection, XSS
-- Authentication & Authorization
-- Rate limiting
-
-**Инструменты**:
-- OWASP Dependency Check
-- Trivy (Docker images)
-- ZAP Proxy (планируется)
-
-**Критерии**:
-- No HIGH/CRITICAL vulnerabilities в dependencies
-- No HIGH/CRITICAL в Docker images
-- JWT validation покрыт тестами
+**Критерии**: No HIGH/CRITICAL vulnerabilities
 
 ## Типы тестирования
 
