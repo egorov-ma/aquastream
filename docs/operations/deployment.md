@@ -24,16 +24,16 @@ AquaStream разворачивается через **Docker Compose** и Makef
 
 | Окружение | Команда | Compose файлы | Что ещё учесть |
 |-----------|---------|---------------|----------------|
-| **Dev** | `make up-dev` | base + `docker-compose.override.dev.yml` | Автосборка артефактов, observability stack включён |
-| **Stage** | `make up-stage` | base + `docker-compose.override.stage.yml` | Секреты из `.env.stage`, наблюдение через внешний мониторинг |
-| **Prod** | `make up-prod` | base | Сильные пароли, закрытые порты, обязательный HTTPS |
+| **Dev** | `make up-dev` | base + `docker-compose.override.dev.yml` | Автосборка артефактов, observability stack + nginx включены |
+| **Stage** | `make up-stage` | base + `docker-compose.override.stage.yml` | Секреты из `.env.stage`, внешний мониторинг, nginx слушает :80/:443 |
+| **Prod** | `make up-prod` | base | Сильные пароли, обязательный HTTPS через nginx |
 
 > Шаблоны переменных окружения: `backend-infra/docker/compose/.env.<env>.example`. Используйте их как единственный источник правды.
 
 ## Подготовка перед выкатыванием
 
 - Обновить `version.properties` через Gradle задачи.
-- Убедиться, что `.env.<env>` заполнен и не закоммичен.
+- Убедиться, что `.env.<env>` заполнен и не закоммичен (включая `NGINX_*` переменные).
 - Запустить локально `./gradlew clean build` и `pnpm lint && pnpm build` (frontend).
 - Выполнить security проверки: `make scan`, `./gradlew dependencyCheckAnalyze`.
 - Сделать бэкап (`make backup`) перед stage/prod выката.
@@ -47,6 +47,8 @@ AquaStream разворачивается через **Docker Compose** и Makef
 cp backend-infra/docker/compose/.env.dev.example backend-infra/docker/compose/.env.dev
 make up-dev
 make smoke
+# Проверить, что nginx проксирует трафик
+curl -I http://localhost
 ```
 
 Используйте dev окружение для интеграционного тестирования и проверки миграций.
@@ -63,9 +65,10 @@ make smoke
 ```
 
 После старта:
-- Проверить health всех сервисов (`curl -f https://<env>/actuator/health`).
+- Проверить edge: `curl -I https://<env>` возвращает 200/301, TLS сертификат актуальный.
+- Проверить health всех сервисов (`curl -f https://<env>/actuator/health` через gateway).
 - Открыть основные пользовательские сценарии (booking, payment).
-- Убедиться в отсутствии ошибок в `make logs` и алертов мониторинга.
+- Убедиться в отсутствии ошибок в `make logs` (особенно `nginx` и `backend-gateway`) и алертов мониторинга.
 
 ## Проверки после релиза
 
@@ -79,7 +82,7 @@ make smoke
 | Стратегия | Когда использовать | Как выполнить |
 |-----------|--------------------|---------------|
 | **Git tag** | Проблема в коде, без миграций | Checkout предыдущего тега → `make build-images` → `make up-<env>` |
-| **Docker образ** | Образы в registry | Pull предыдущего образа, retag → перезапуск | 
+| **Docker образ** | Образы в registry | Pull предыдущего образа, retag → перезапуск (не забудьте `docker compose restart nginx`) |
 | **Бэкап БД** | Ошибка миграции | См. [Database Maintenance](runbooks/database-maintenance.md) |
 | **Service restart** | Отдельный сервис деградирует | См. [Service Restart](runbooks/service-restart.md) |
 

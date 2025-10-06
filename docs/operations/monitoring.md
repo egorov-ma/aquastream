@@ -18,6 +18,7 @@ Observability стек (Prometheus, Grafana, Loki, Promtail) включён по
 | Prometheus | `http://localhost:9090` | открытый доступ |
 | Loki API | `http://localhost:3100` | внутренняя сеть, через Grafana |
 | Gateway health | `http://localhost:8080/actuator/health` | curl для smoke |
+| Nginx status | `http://localhost/nginx-status` (если включено) | базовая статистика воркеров |
 
 > Stage/Prod используют внешний мониторинг (например, Grafana Cloud). Поддерживайте паритет дашбордов.
 
@@ -73,6 +74,7 @@ make smoke                 # проверить API Gateway
 |---------|---------------|---------|
 | Метрики не обновляются | `docker ps`, логи Prometheus | [Troubleshooting](troubleshooting.md#prometheus-issues) |
 | В Grafana нет логов | `docker logs aquastream-promtail`, права на docker.sock | [Troubleshooting](troubleshooting.md#loki-issues) |
+| Edge не отдаёт ответы | `docker logs nginx`, `curl -I http://localhost` | [Service Restart](runbooks/service-restart.md) |
 | Health красный | `make smoke`, зависимые сервисы | [Service Restart](runbooks/service-restart.md) |
 
 ## См. также

@@ -248,9 +248,8 @@ public BookingDto createBooking(UUID userId, CreateBookingRequest request) {
             "Event is at full capacity. Please join the waitlist.");
     }
 
-    // 4. TODO: Проверка профиля пользователя
+    // 4. Проверка профиля пользователя (phone или telegram должны быть заполнены)
     // validateUserProfile(userId);
-    // - phone ИЛИ telegram должен быть заполнен
 
     // 5. Создание бронирования
     BookingEntity booking = new BookingEntity();

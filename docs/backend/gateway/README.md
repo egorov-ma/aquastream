@@ -1,7 +1,6 @@
 # Gateway — Overview
 
-Статус: as-is
+API Gateway обеспечивает единую точку входа за Nginx: получает очищенный трафик, выполняет валидацию JWT, CORS и прикладной rate limiting.
 
-- JWT валидация, CORS, rate limiting
-- Агрегация health статусов
-- См. также: `api.md`, `operations.md`
+- См. `api.md` для списка маршрутов
+- См. `operations.md` для эксплуатационных процедур

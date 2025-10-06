@@ -25,8 +25,11 @@ tags: [operations, runbook]
 ### Docker Compose (dev/stage)
 
 ```bash
-# Перезапуск backend-event
+# Перезапуск основного сервиса
 make restart SERVICE=backend-event
+
+# Edge слой
+make restart SERVICE=nginx
 
 # Рестарт всех сервисов
 make restart-all

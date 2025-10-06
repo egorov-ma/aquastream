@@ -35,7 +35,8 @@ backend-infra/
 
 | Сервис | Порт | Назначение | Where to look |
 |--------|------|------------|----------------|
-| Gateway | 8080 | API входная точка | `docs/backend/gateway/operations.md` |
+| Nginx | 80/443 | TLS terminator, CORS, edge rate limiting | `backend-infra/docker/compose/nginx.conf` |
+| Gateway | 8080 | JWT валидация, маршрутизация к сервисам | `docs/backend/gateway/operations.md` |
 | User | 8101 | Пользователи, auth | `docs/backend/user/operations.md` |
 | Event | 8102 | События, бронирования | `docs/backend/event/operations.md` |
 | Crew | 8103 | Команды | `docs/backend/crew/operations.md` |
@@ -94,7 +95,7 @@ backend-infra/
 ## Сети и доступы
 
 - Внутренняя сеть: `aquastream-net` (bridge). Сервисы доступны по именам контейнеров.
-- Для доступа извне используйте gateway + reverse proxy (nginx/traefik) — см. [Deployment](deployment.md).
+- Внешний трафик принимает Nginx и проксирует в gateway — см. [Deployment](deployment.md).
 - Проверка DNS внутри сети: `docker exec backend-user ping -c1 postgres`.
 
 ## Чек-лист обновления инфраструктуры
@@ -111,3 +112,4 @@ backend-infra/
 - [Monitoring](monitoring.md)
 - [Backup & Recovery](backup-recovery.md)
 - Runbooks: [Database Maintenance](runbooks/database-maintenance.md), [Service Restart](runbooks/service-restart.md)
+- [Nginx Edge Proxy](nginx.md)

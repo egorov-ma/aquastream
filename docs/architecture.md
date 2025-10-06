@@ -31,6 +31,10 @@ graph TB
         WEB[Web App<br/>Next.js]
     end
 
+    subgraph "Edge Layer"
+        NGINX[Nginx Reverse Proxy]
+    end
+
     subgraph "API Gateway Layer"
         GW[API Gateway<br/>8080]
     end
@@ -55,7 +59,8 @@ graph TB
         EMAIL[Email Service]
     end
 
-    WEB --> GW
+    WEB --> NGINX
+    NGINX --> GW
     GW --> USER
     GW --> EVENT
     GW --> CREW
@@ -105,10 +110,15 @@ graph TB
 
 ### 🔧 Supporting Services
 
+**Nginx Reverse Proxy**
+- TLS termination, CORS, базовый rate limiting
+- Маршрутизация клиентских запросов к API Gateway
+- Раздача статического контента и health-check на уровне edge
+
 **API Gateway (8080)**
-- Единая точка входа
-- Аутентификация и авторизация
-- Rate limiting и мониторинг
+- Валидация JWT и проброс user context (X-User-Id, X-User-Role)
+- Прикладной rate limiting и аудит запросов
+- Агрегация health статусов сервисов
 
 **Notification Service (8105)**
 - Email уведомления
@@ -329,7 +339,8 @@ backend-common/
 ```yaml
 Language: Java 21
 Framework: Spring Boot 3.x
-Gateway: Spring WebFlux
+Gateway: Spring WebFlux + Spring Security
+Edge Proxy: Nginx (TLS, CORS, IP rate limit)
 Build: Gradle 8.5+
 Database: PostgreSQL 16 (схемы на сервис)
 Cache: Redis 7
@@ -364,7 +375,7 @@ Security Scanning: Trivy, OWASP Dependency Check
 SBOM: Syft
 Documentation: MkDocs + Material
 CI/CD: GitHub Actions
-Deployment: Docker Compose (local/staging/prod)
+Deployment: Nginx + Docker Compose (local/staging/prod)
 Storage: MinIO (S3-compatible object storage)
 ```
 

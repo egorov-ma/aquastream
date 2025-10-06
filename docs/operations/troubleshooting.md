@@ -20,6 +20,7 @@ tags: [operations, troubleshooting]
 | DB connection refused | `docker ps \| grep postgres`, `pg_isready` | [Database](#database-issues) |
 | Redis PING не отвечает | `docker exec aquastream-redis redis-cli -a $REDIS_PASSWORD PING` | [Redis](#redis-issues) |
 | MinIO выдаёт 403/404 | `curl http://localhost:9000/minio/health/live` | [MinIO](#minio-issues) |
+| Nginx не отвечает | `docker ps | grep nginx`, `curl -I http://localhost` | [Service Restart](#startup-issues) |
 | Health check красный | `make smoke`, `curl /actuator/health` | [Health checks](#health-checks) |
 | Высокая задержка API | Grafana → `http_server_requests_seconds` | [Performance](#performance-issues) |
 | Заканчивается место | `df -h`, `docker system df` | [Disk space](#disk-space) |
@@ -43,7 +44,8 @@ curl http://localhost:8102/actuator/health   # health конкретного с�
 1. Проверить зависимости (`postgres`, `redis`, `minio`): `docker ps | grep -E "postgres|redis|minio"`.
 2. Убедиться в корректности `.env` (`docker exec <svc> env | grep POSTGRES`).
 3. Проверить порты на конфликт: `lsof -i :8080`.
-4. При необходимости выполнить перезапуск через [Service Restart](runbooks/service-restart.md).
+4. Если проблема на edge, перезапустить `nginx` и убедиться в валидности конфига: `docker compose logs nginx`.
+5. При необходимости выполнить перезапуск через [Service Restart](runbooks/service-restart.md).
 
 ## Database {#database-issues}
 
