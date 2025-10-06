@@ -43,7 +43,7 @@ jobs:
           languages: java,javascript,python
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v3
+        uses: gradle/actions/setup-gradle@cd4b95f1dffd155d6d8f6b8c195a3ff2f9f77a5d # v3
 
       - name: Build for CodeQL (compile only)
         run: ./gradlew clean -x test assemble --no-configuration-cache --no-daemon
