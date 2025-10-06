@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.3_9-jre
+FROM eclipse-temurin:24.0.2_12-jre
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
