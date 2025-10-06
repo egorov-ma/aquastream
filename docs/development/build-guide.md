@@ -8,8 +8,8 @@ tags: [development, build]
 
 ## Архитектура сборки
 
-- **Gradle 8.5** — многомодульный проект со своим `build-logic`
-- **Java 21 / Spring Boot 3** — backend сервисы
+- **Gradle 8.12** — многомодульный проект со своим `build-logic`
+- **Java 21 / Spring Boot 3.5** — backend сервисы
 - **Convention plugins**:
   - `com.aquastream.java-library-conventions` — библиотеки (`*-service`, `*-db`, `backend-common`)
   - `com.aquastream.spring-boot-api-conventions` — исполняемые модули (`*-api`, `backend-gateway`)

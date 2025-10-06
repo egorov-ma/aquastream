@@ -6,6 +6,10 @@ const processed = new Set<string>();
 
 type Provider = "yookassa" | "cloudpayments" | "stripe";
 
+function isSupportedProvider(value: string): value is Provider {
+  return value === "yookassa" || value === "cloudpayments" || value === "stripe";
+}
+
 type YooPayload = { object?: { metadata?: { bookingId?: string }; status?: string } };
 type CloudPayload = { Data?: { bookingId?: string }; Status?: string };
 type StripePayload = { data?: { object?: { metadata?: { bookingId?: string } } }; type?: string };
@@ -36,8 +40,11 @@ function mapPayloadToUpdate(provider: Provider, payload: unknown): { bookingId: 
   }
 }
 
-export async function POST(req: NextRequest, ctx: { params: Promise<{ provider: Provider }> }) {
+export async function POST(req: NextRequest, ctx: { params: Promise<{ provider: string }> }) {
   const { provider } = await ctx.params;
+  if (!isSupportedProvider(provider)) {
+    return NextResponse.json({ ok: false, error: "unsupported_provider" }, { status: 400 });
+  }
   const payload = await req.json().catch(() => ({}));
   if (process.env.NODE_ENV !== "production") {
     console.log("[webhook:dev]", provider, payload);
@@ -56,5 +63,4 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ provider: 
   setBookingStatus(update.bookingId, update.status);
   return NextResponse.json({ ok: true });
 }
-
 

@@ -30,7 +30,7 @@ AquaStream backend построен на микросервисной архит
 
 ## Технологический стек
 
-- **Framework**: Spring Boot 3.x
+- **Framework**: Spring Boot 3.5.x
 - **Database**: PostgreSQL
 - **Security**: Spring Security, JWT
 - **API**: RESTful, OpenAPI 3.0

@@ -50,8 +50,8 @@ tags: [qa, testing, automation, manual]
 
 ### Технологический стек
 
-- Framework: Next.js 14 (App Router), React 18
-- Styling: Tailwind CSS 3.4 + shadcn/ui
+- Framework: Next.js 15 (App Router), React 18
+- Styling: Tailwind CSS 3.4 (3.4.18) + shadcn/ui
 - Testing: Playwright, Node test runner
 
 ### Уровни

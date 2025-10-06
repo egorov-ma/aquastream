@@ -24,7 +24,7 @@ allprojects {
 }
 
 ext {
-    set('springBootVersion', '3.3.5')
+    set('springBootVersion', '3.5.6')
     set('springCloudVersion', '2023.0.3')
     set('springKafkaVersion', '3.2.4')
     set('grpcVersion', '1.64.0')
@@ -44,7 +44,8 @@ ext {
     set('springSecurityTestVersion', '6.3.4')
     set('h2Version', '2.2.224')
     set('mockitoVersion', '5.14.2')
-    set('junitVersion', '5.11.3')
+    set('junitVersion', '5.10.5')
+    set('junitPlatformVersion', '1.10.5')
     set('protobufPluginVersion', '0.9.4')
     set('jakartaValidationVersion', '3.0.2')
     set('hibernateValidatorVersion', '8.0.2.Final')

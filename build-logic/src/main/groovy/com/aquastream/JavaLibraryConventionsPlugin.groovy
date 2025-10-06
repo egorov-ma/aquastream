@@ -117,5 +117,20 @@ class JavaLibraryConventionsPlugin implements Plugin<Project> {
             dc.nvd.apiKey = System.getenv('NVD_API_KEY')
             dc.skip = System.getenv('NVD_API_KEY') == null
         }
+
+        def junitVer = (project.findProperty('junitVersion') ?: '5.10.5')
+        def junitPlatformVer = (project.findProperty('junitPlatformVersion') ?: '1.10.5')
+        project.configurations.configureEach { cfg ->
+            cfg.resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == 'org.junit.jupiter') {
+                    details.useVersion(junitVer)
+                    details.because 'Align JUnit Jupiter artifacts across configurations'
+                }
+                if (details.requested.group == 'org.junit.platform') {
+                    details.useVersion(junitPlatformVer)
+                    details.because 'Ensure compatibility with Gradle bundled launcher'
+                }
+            }
+        }
     }
 }

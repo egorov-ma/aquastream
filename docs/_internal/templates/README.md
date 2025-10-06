@@ -61,7 +61,7 @@ sed -i 's/{Короткий заголовок}/JWT Authentication/g' docs/decis
 ## Соглашения
 
 ### Технические стандарты
-- **Backend:** Java 21, Spring Boot 3.x, Gradle
+- **Backend:** Java 21, Spring Boot 3.5.x, Gradle
 - **Frontend:** React, TypeScript, Next.js
 - **Database:** PostgreSQL
 - **Build:** Makefile команды

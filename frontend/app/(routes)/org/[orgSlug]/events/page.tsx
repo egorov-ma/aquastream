@@ -14,9 +14,9 @@ async function fetchEvents(slug: string): Promise<OrgEventRow[]> {
 export default async function OrganizerEventsPage({
   params,
 }: {
-  params: { orgSlug: string };
+  params: Promise<{ orgSlug: string }>;
 }) {
-  const { orgSlug } = params;
+  const { orgSlug } = await params;
   const items = await fetchEvents(orgSlug);
 
   return (

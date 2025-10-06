@@ -3,8 +3,8 @@
 Статус: as-is
 
 ## Технологический стек
-- Next.js 14 (App Router), React 18, TypeScript strict
-- Tailwind CSS 3, shadcn/ui (Radix), next-themes
+- Next.js 15.5 (App Router), React 18, TypeScript strict
+- Tailwind CSS 3.4 (3.4.18), shadcn/ui (Radix), next-themes
 - RHF + Zod (формы), fetch/React Query стратегии
 - Playwright e2e smoke
 

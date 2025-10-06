@@ -21,7 +21,7 @@ tags: [development, style-guides]
 
 ## Код (Frontend)
 
-- React/Next.js 14 + TypeScript: функциональные компоненты, React Hooks
+- React/Next.js 15 + TypeScript: функциональные компоненты, React Hooks
 - Стили: Tailwind + shadcn/ui, паттерны `class-variance-authority`
 - Структура: `components/ui`, `components/forms`, `app/(routes)` — см. [frontend/README.md](../frontend/README.md)
 - Линтеры (`pnpm lint`, `pnpm typecheck`) обязательны перед PR

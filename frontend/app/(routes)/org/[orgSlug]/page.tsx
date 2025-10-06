@@ -10,9 +10,9 @@ import { getOrganizerCached, getOrganizerEventsCached } from "@/shared/data";
 export default async function OrganizerHomePage({
   params,
 }: {
-  params: { orgSlug: string };
+  params: Promise<{ orgSlug: string }>;
 }) {
-  const { orgSlug } = params;
+  const { orgSlug } = await params;
   const org = await getOrganizerCached(orgSlug);
   const list = (await getOrganizerEventsCached(orgSlug)) as unknown as EventRow[];
   const top2 = list.slice(0, 2);

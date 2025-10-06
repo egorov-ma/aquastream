@@ -317,7 +317,7 @@ backend-common/
 - Экосистема: богатая библиотека, зрелые фреймворки
 - Команда: опыт разработки на Java
 
-**Spring Boot 3.x**
+**Spring Boot 3.5.x**
 - Быстрая разработка: автоконфигурация, стартеры
 - Интеграции: готовые решения для PostgreSQL, Redis, MinIO
 - Production-ready: Actuator, metrics, health checks
@@ -338,10 +338,10 @@ backend-common/
 ### Backend
 ```yaml
 Language: Java 21
-Framework: Spring Boot 3.x
+Framework: Spring Boot 3.5.x
 Gateway: Spring WebFlux + Spring Security
 Edge Proxy: Nginx (TLS, CORS, IP rate limit)
-Build: Gradle 8.5+
+Build: Gradle 8.12+
 Database: PostgreSQL 16 (схемы на сервис)
 Cache: Redis 7
 Storage: MinIO (S3-compatible)
@@ -356,10 +356,10 @@ Testing: JUnit 5, TestContainers, ArchUnit
 
 ### Frontend
 ```yaml
-Framework: Next.js 14 (App Router)
+Framework: Next.js 15 (App Router)
 Language: TypeScript 5.x
 Runtime: React 18
-Styling: Tailwind CSS 3.4 + shadcn/ui
+Styling: Tailwind CSS 3.4 (3.4.18) + shadcn/ui
 UI Components: Radix UI
 State: React Hooks + Context
 HTTP: Fetch API

@@ -2,8 +2,6 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import DOMPurify from "isomorphic-dompurify"
-
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import type EditorJS from "@editorjs/editorjs"
@@ -106,15 +104,33 @@ interface EditorPreviewProps
 
 const EditorPreview = React.forwardRef<HTMLPreElement, EditorPreviewProps>(
   ({ className, size, data, ...props }, ref) => {
-    const content = React.useMemo(() => {
+    const raw = React.useMemo(() => {
       try {
-        const json = JSON.stringify(data, null, 2)
-        const safe = DOMPurify.sanitize(json, { USE_PROFILES: { html: true } })
-        return safe
+        return JSON.stringify(data, null, 2)
       } catch {
         return ""
       }
     }, [data])
+
+    const [content, setContent] = React.useState(raw)
+
+    React.useEffect(() => {
+      let active = true
+      ;(async () => {
+        try {
+          const mod = await import("isomorphic-dompurify")
+          if (!active) return
+          const DOMPurify = mod.default
+          setContent(DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } }))
+        } catch {
+          if (active) setContent(raw)
+        }
+      })()
+
+      return () => {
+        active = false
+      }
+    }, [raw])
 
     return (
       <pre
@@ -135,5 +151,4 @@ export {
   EditorPreview,
   editorPreviewVariants,
 }
-
 

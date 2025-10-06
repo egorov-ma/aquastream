@@ -12,10 +12,10 @@ export const metadata = { title: 'Событие' };
 export default async function EventPage({
   params,
 }: {
-  params: { eventId: string };
+  params: Promise<{ eventId: string }>;
 }) {
-  const { eventId } = params;
-  const origin = resolveApiOrigin();
+  const { eventId } = await params;
+  const origin = await resolveApiOrigin();
   const [summaryRes, waitRes] = await Promise.all([
     fetch(`${origin}/api/organizer/events/${eventId}/groups?summary=1`, { cache: "no-store" }).catch(() => null),
     fetch(`${origin}/api/events/${eventId}/waitlist`, { cache: "no-store" }).catch(() => null),

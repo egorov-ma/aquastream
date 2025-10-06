@@ -10,6 +10,8 @@ nav:
   - Сборка: development/build-guide.md
   - Установка окружения: development/setup.md
 - Архитектура: architecture.md
+- API:
+    - Обзор: api/index.md
 - Backend:
   - Обзор: backend/README.md
   - Основы:
@@ -91,6 +93,8 @@ nav:
   - Мониторинг: operations/monitoring.md
   - Резервное копирование: operations/backup-recovery.md
   - Управление версиями: operations/version-management.md
+  - Nginx Edge Proxy: operations/nginx.md
+  - Отладка: operations/troubleshooting.md
   - Политики:
     - Security: operations/policies/security.md
     - Support: operations/policies/support.md
@@ -98,11 +102,8 @@ nav:
     - Обслуживание БД: operations/runbooks/database-maintenance.md
     - Инциденты: operations/runbooks/incident-response.md
     - Перезапуск сервисов: operations/runbooks/service-restart.md
-  - Nginx Edge Proxy: operations/nginx.md
-- API:
-  - Обзор: api/index.md
 - Decisions:
-  - Индекс: decisions/index.md
+  - Обзор: decisions/index.md
   - ADR-001 Docs Stack: decisions/adr-001-docs-stack.md
   - ADR-002 API Documentation: decisions/adr-002-api-documentation.md
   - ADR-003 Nginx Edge Proxy: decisions/adr-003-nginx-edge-gateway.md

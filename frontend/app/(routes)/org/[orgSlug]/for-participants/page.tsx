@@ -8,9 +8,9 @@ import { Section } from "@/components/ui/section";
 export default async function OrganizerFaqPage({
   params,
 }: {
-  params: { orgSlug: string };
+  params: Promise<{ orgSlug: string }>;
 }) {
-  const { orgSlug } = params;
+  const { orgSlug } = await params;
   void orgSlug;
 
   return (

@@ -11,10 +11,10 @@ export const fetchCache = "default-no-store";
 export default async function CheckoutPage({
   params,
 }: {
-  params: { bookingId: string };
+  params: Promise<{ bookingId: string }>;
 }) {
-  const { bookingId } = params;
-  const origin = resolveApiOrigin();
+  const { bookingId } = await params;
+  const origin = await resolveApiOrigin();
   const res = await fetch(`${origin}/api/bookings/${bookingId}`, { cache: "no-store" });
   const booking = res.ok ? await res.json() : null;
 
