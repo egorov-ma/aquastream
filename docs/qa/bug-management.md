@@ -372,6 +372,6 @@ Impact: Получение всех данных из БД, GDPR violation risk
 ## См. также
 
 - [Test Strategy](test-strategy.md)
-- [Backend Testing Plan](test-plans/backend-testing.md)
+- [Testing](testing.md)
 - [CI/CD Pipeline](../operations/ci-cd.md)
 - [GitHub Issues Best Practices](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)

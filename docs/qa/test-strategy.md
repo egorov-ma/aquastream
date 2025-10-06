@@ -349,8 +349,8 @@ void setUp() {
 
 ## См. также
 
-- [Backend Testing Plan](test-plans/backend-testing.md)
-- [Frontend Testing Plan](test-plans/frontend-testing.md)
+- [Testing](testing.md) - планы тестирования (backend, frontend, E2E)
 - [Bug Management](bug-management.md)
+- [Performance](performance.md)
 - [CI/CD Pipeline](../operations/ci-cd.md)
 - [Architecture](../architecture.md)

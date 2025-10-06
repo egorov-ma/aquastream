@@ -77,25 +77,11 @@ nav:
   - Практики тестирования: development/testing.md
   - Отладка: development/troubleshooting.md
 - QA & Testing:
-  - Индекс: qa/index.md
+  - Обзор: qa/index.md
   - Стратегия: qa/test-strategy.md
   - Управление багами: qa/bug-management.md
-  - Автоматизация:
-    - API тесты: qa/automation/api-tests.md
-    - UI тесты: qa/automation/ui-tests.md
-    - Unit тесты: qa/automation/unit-tests.md
-  - Ручное тестирование:
-    - Исследовательское тестирование: qa/manual-testing/exploratory-testing.md
-    - Регрессионный набор: qa/manual-testing/regression-suite.md
-    - Тест-кейсы: qa/manual-testing/test-cases.md
-  - Производительность:
-    - Нагрузочное тестирование: qa/performance/load-testing.md
-    - Бенчмарки: qa/performance/performance-benchmarks.md
-  - Тест-планы:
-    - Backend: qa/test-plans/backend-testing.md
-    - Frontend: qa/test-plans/frontend-testing.md
-    - Интеграция: qa/test-plans/integration-testing.md
-    - E2E: qa/test-plans/e2e-testing.md
+  - Тестирование: qa/testing.md
+  - Производительность: qa/performance.md
 - Operations:
   - Обзор: operations/README.md
   - Инфраструктура: operations/infrastructure.md
