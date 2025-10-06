@@ -8,7 +8,7 @@ tags: [operations, runbook, incident]
 
 ## Подготовка
 
-- Шаблон для фикса инцидента: [Incident Report](https://github.com/egorov-ma/aquastream/blob/main/.github/ISSUE_TEMPLATE/incident-report.md).
+- Для фикса инцидента создавайте GitHub Issue с заголовком вида `[INCIDENT] <краткое описание>` и меткой `incident`.
 - Список сервисов и доступов: `.env.*`, `backend-infra/make/Makefile`.
 - Инструменты мониторинга: Grafana, Loki, `make smoke`.
 

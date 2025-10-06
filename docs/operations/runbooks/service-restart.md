@@ -34,16 +34,11 @@ make restart-all
 
 Команда вызывает `docker compose restart <service>` и ждёт успешного health check.
 
-### Production (systemd/kubernetes)
+### Production (systemd)
 
 ```bash
-# systemd
 sudo systemctl restart aquastream-backend-event
 sudo systemctl status aquastream-backend-event
-
-# Kubernetes
-kubectl rollout restart deployment backend-event
-kubectl rollout status deployment backend-event
 ```
 
 ## Проверки после рестарта

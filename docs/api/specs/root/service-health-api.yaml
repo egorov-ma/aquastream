@@ -77,7 +77,7 @@ paths:
     get:
       tags: [Health]
       summary: Liveness Probe
-      description: Проверка живости сервиса (для Kubernetes)
+      description: Проверка живости сервиса
       responses:
         '200':
           description: Сервис жив
@@ -92,7 +92,7 @@ paths:
     get:
       tags: [Health]
       summary: Readiness Probe
-      description: Проверка готовности сервиса к обработке запросов (для Kubernetes)
+      description: Проверка готовности сервиса к обработке запросов
       responses:
         '200':
           description: Сервис готов

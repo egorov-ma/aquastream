@@ -751,9 +751,9 @@ Spring Cloud Contract для API contracts между сервисами
 - ✅ Pros: stateless, horizontal scaling, no session storage
 - ❌ Cons: сложность revoke, размер токена, хранение в browser storage
 
-**Docker Compose vs Kubernetes:**
-- ✅ Pros: простота setup, low overhead, достаточно для MVP
-- ❌ Cons: no auto-scaling, no self-healing, limited orchestration
+**Docker Compose:**
+- ✅ Pros: простота setup, low overhead, достаточно для текущей цели
+- ❌ Cons: нет авто-масштабирования, ручное управление отказами
 
 ## См. также
 

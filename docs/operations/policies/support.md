@@ -47,7 +47,6 @@ tags: [operations, support, solo]
 
 - Runbooks: [Runbook Catalog](../runbooks/incident-response.md)
 - Troubleshooting: [Operations Troubleshooting](../troubleshooting.md)
-- Incident шаблон: [GitHub Issue Template](https://github.com/egorov-ma/aquastream/blob/main/.github/ISSUE_TEMPLATE/incident-report.md)
 
 ## Улучшения
 
