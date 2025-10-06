@@ -2,299 +2,128 @@
 
 ---
 title: ADR-001 - Doc as Code Stack
-summary: Выбор технологического стека для документации проекта - MkDocs + Material с автоматизацией через CI/CD
+summary: Выбор MkDocs + Material для документации проекта с автоматизацией через CI/CD
 tags: [adr, documentation, docs-as-code]
 ---
 
 **Статус:** Accepted
 **Дата:** 2025-09-22
 **Авторы:** AquaStream Team
-**Reviewers:** Team Lead
 
 ## Контекст
 
-AquaStream - монорепозиторий с множеством компонентов:
-- **Backend**: 7 микросервисов (Java 21, Spring Boot, Gradle)
-- **Frontend**: Next.js приложение (TypeScript, React)
-- **Infrastructure**: Docker Compose, Makefile, CI/CD
-- **Команда**: Backend, Frontend, QA, DevOps специалисты
-
-**Проблемы которые нужно решить:**
-- Документация разбросана по разным файлам и форматам
-- Нет единого портала для поиска информации
-- Сложно поддерживать актуальность (документация отстаёт от кода)
-- Нет автоматической проверки качества документации
-- Новым разработчикам сложно найти нужную информацию
+AquaStream - монорепозиторий с Backend (7 микросервисов), Frontend (Next.js), Infrastructure (Docker Compose). Документация разбросана по разным файлам, нет единого портала, сложно поддерживать актуальность.
 
 **Требования:**
-- Документация версионируется вместе с кодом (Git)
-- Простой формат для написания (не требует специальных навыков)
+- Документация версионируется с кодом (Git)
+- Простой формат (Markdown)
 - Автоматическая сборка и публикация
-- Поддержка диаграмм и технической документации
+- Поддержка диаграмм
 - Full-text search
-- Responsive design для мобильных устройств
-- Быстрый onboarding для новых разработчиков
+- Responsive design
 
 ## Решение
 
 ### Технологический стек
 
-**Генератор**: [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+**Генератор:** [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 
-**Формат**: Markdown с расширениями:
-- GitHub Flavored Markdown (GFM)
-- YAML frontmatter для метаданных
-- Mermaid для диаграмм
-- Admonitions для заметок и предупреждений
+**Формат:** Markdown с расширениями (GFM, YAML frontmatter, Mermaid диаграммы)
 
-**MkDocs плагины**:
-```yaml
-plugins:
-  - search              # Full-text search
-  - awesome-pages       # Автоматическая навигация
-  - mermaid2            # Mermaid диаграммы
-  - include-markdown    # Переиспользование контента
-```
+**Плагины:**
+- search - full-text search
+- mermaid2 - диаграммы
+- redirects - управление перемещениями
 
-**Markdown расширения (pymdownx)**:
-- `pymdownx.superfences` - fenced code blocks с подсветкой
-- `pymdownx.tabbed` - вкладки для разных вариантов
-- `pymdownx.tasklist` - чеклисты
-- `pymdownx.emoji` - эмодзи для визуальных маркеров
-
-### Структура документации
-
+**Структура:**
 ```
 docs/
-├── index.md                    # Главная страница
-├── quickstart.md               # Быстрый старт
-├── architecture.md             # High-level архитектура
-├── backend/                    # Backend по сервисам
-│   ├── user/README.md
-│   ├── event/README.md
-│   └── common/                 # backend-common библиотека
-├── frontend/                   # Frontend документация
-├── qa/                         # QA стратегия и тест-планы
-├── api/                        # API документация (OpenAPI)
-├── operations/                 # DevOps: infrastructure, deployment
-├── business/                   # Бизнес-требования
-├── development/                # Developer guides
-├── decisions/                  # Architecture Decision Records
-└── _internal/                  # Внутренние файлы
-    ├── templates/              # Шаблоны документации
-    └── documentation-guidelines.md
+├── index.md, quickstart.md, architecture.md
+├── backend/            # По сервисам
+├── frontend/           # Frontend docs
+├── qa/                 # QA стратегия
+├── api/                # OpenAPI specs
+├── operations/         # DevOps
+├── development/        # Developer guides
+├── decisions/          # ADR
+└── _internal/          # Templates, guidelines
 ```
 
-**Принципы организации**:
+**Принципы:**
 - По аудитории: development/, operations/, qa/, business/
-- По lifecycle: quickstart.md → development/setup.md → operations/deployment.md
-- Single Source of Truth: нет дублирования, cross-references
-
-### Процессы
-
-**Development**:
-```bash
-make docs-serve    # Локальный dev сервер на :8000
-make docs-build    # Сборка статического сайта в site/
-```
-
-**CI/CD**:
-- Автоматическая сборка при каждом PR
-- Линтинг Markdown (markdownlint)
-- Проверка битых ссылок
-- Автодеплой в GitHub Pages при merge в main
-
-**Управление зависимостями**:
-- Pinned versions в `requirements-docs.txt`
-- Python virtual environment для изоляции
+- По lifecycle: quickstart → setup → deployment
+- Single Source of Truth: cross-references вместо дублирования
 
 ### Команды
 
 ```bash
-# Setup (первый раз)
-make docs-setup         # Установить зависимости (Python venv)
-
-# Development
-make docs-serve         # Запустить dev сервер
-make docs-build         # Собрать статический сайт
-
-# Quality checks
-make docs-lint          # Markdown lint (markdownlint, Vale, cSpell)
-make docs-check-links   # Проверка ссылок (lychee)
+make docs-setup    # Установить зависимости
+make docs-serve    # Dev сервер :8000
+make docs-build    # Сборка в site/
+make docs-lint     # Markdown lint
 ```
+
+**CI/CD:**
+- Автосборка при PR
+- Линтинг Markdown
+- Проверка битых ссылок
+- Автодеплой в GitHub Pages
 
 ## Последствия
 
-### Положительные
+**Положительные:**
+- ✅ Простота - Markdown знают все
+- ✅ Быстрый онбординг - search + navigation
+- ✅ Версионирование - те же процессы что и код (PR, review)
+- ✅ Автоматизация - CI/CD проверки
+- ✅ Красивый UI - Material theme
+- ✅ Диаграммы - Mermaid support
+- ✅ Extensibility - богатая экосистема плагинов
 
-- ✅ **Простота для разработчиков** - Markdown знают все, низкий порог входа
-- ✅ **Быстрый онбординг** - новый разработчик может найти всё через search
-- ✅ **Версионирование** - документация в Git, те же процессы что и код (PR, review)
-- ✅ **Автоматизация** - CI/CD проверки, автоматический deploy
-- ✅ **Красивый UI** - Material theme, responsive, modern
-- ✅ **Диаграммы** - Mermaid для architecture, sequence, flowcharts
-- ✅ **Переиспользование** - include-markdown для DRY
-- ✅ **Extensibility** - богатая экосистема плагинов MkDocs
+**Отрицательные:**
+- ❌ Требует настройку CI
+- ❌ Python зависимость
+- ❌ Ручное обновление (не автогенерация)
 
-### Отрицательные
-
-- ❌ **Требует настройку CI** - нужно настроить workflows для линтинга и deploy
-- ❌ **Python зависимость** - требуется Python для сборки (но это не проблема для большинства)
-- ❌ **Ручное обновление** - документация не обновляется автоматически при изменении кода
-- ❌ **Нет версионирования из коробки** - mike plugin нужен для версий (опционально)
-
-### Риски
-
-| Риск | Вероятность | Влияние | Митигация |
-|------|-------------|---------|-----------|
-| Документация устаревает | High | Medium | Checklist в PR template, обязательное обновление docs при изменении API |
-| Битые ссылки после рефакторинга | Medium | Low | Автоматическая проверка broken links в CI |
-| Конфликты при одновременном редактировании | Low | Low | Git merge conflicts, code review процесс |
-| MkDocs перестанет поддерживаться | Low | High | MkDocs - популярный проект, большое community, можно мигрировать на Docusaurus если нужно |
+**Риски:**
+| Риск | Вероятность | Митигация |
+|------|-------------|-----------|
+| Документация устаревает | High | PR checklist, обязательное обновление docs при API changes |
+| Битые ссылки | Medium | Автопроверка в CI |
+| MkDocs перестанет поддерживаться | Low | Популярный проект, можно мигрировать на Docusaurus |
 
 ## Альтернативы
 
 ### Вариант 1: Docusaurus (Meta)
-
-**Плюсы:**
-- ✅ React-based, гибкая кастомизация через компоненты
-- ✅ Встроенное версионирование документации
-- ✅ MDX support (React components в Markdown)
-- ✅ Большое community (используется в Facebook)
-
-**Минусы:**
-- ❌ Требует знания React для кастомизации
-- ❌ Более сложная настройка (webpack, babel)
-- ❌ Node.js зависимость (дополнительный runtime)
-- ❌ Slower build time для больших сайтов
-
-**Почему не выбран:** Избыточная сложность для наших потребностей, нам не нужна гибкость React компонентов
+**Плюсы:** React-based, встроенное версионирование, MDX support
+**Минусы:** Требует React знания, сложнее настройка, slower build
+**Почему не выбран:** Избыточная сложность
 
 ### Вариант 2: GitBook
+**Плюсы:** Красивый UI, GitHub интеграция
+**Минусы:** Платный для private repos, vendor lock-in
+**Почему не выбран:** Не хотим зависеть от external service
 
-**Плюсы:**
-- ✅ Очень красивый UI
-- ✅ Встроенная интеграция с GitHub
-- ✅ Collaborative editing
-
-**Минусы:**
-- ❌ Платная для private repositories
-- ❌ Vendor lock-in (hosted solution)
-- ❌ Меньше контроля над deployment
-
-**Почему не выбран:** Не хотим зависеть от внешнего сервиса, нужен self-hosted
-
-### Вариант 3: Sphinx (Python docs standard)
-
-**Плюсы:**
-- ✅ De facto standard для Python проектов
-- ✅ Мощная система cross-references
-- ✅ reStructuredText богаче Markdown
-
-**Минусы:**
-- ❌ reStructuredText сложнее Markdown
-- ❌ Менее современный UI по сравнению с Material
-- ❌ Более steep learning curve
-
-**Почему не выбран:** reStructuredText менее популярен, сложнее для non-Python разработчиков
+### Вариант 3: Sphinx
+**Плюсы:** Python standard, мощные cross-references
+**Минусы:** reStructuredText сложнее, менее современный UI
+**Почему не выбран:** Меньше популярен, steep learning curve
 
 ### Вариант 4: Read the Docs
-
-**Плюсы:**
-- ✅ Hosted solution для open source проектов
-- ✅ Автоматическая сборка из Git
-- ✅ Версионирование из коробки
-
-**Минусы:**
-- ❌ Ограничения на кастомизацию
-- ❌ Vendor lock-in
-- ❌ Платный для private projects
-
-**Почему не выбран:** Хотим полный контроль, self-hosted решение
-
-## План реализации
-
-### Этапы
-
-1. **Этап 1: Setup базовой инфраструктуры** - 1 день
-   - Создать `mkdocs.yml`
-   - Настроить Material theme
-   - Создать базовую структуру `docs/`
-   - Написать `requirements-docs.txt`
-
-2. **Этап 2: Создание templates и guidelines** - 2 дня
-   - Создать шаблоны для разных типов документации
-   - Написать documentation-guidelines.md
-   - Примеры использования templates
-
-3. **Этап 3: Миграция существующей документации** - 5 дней
-   - Перенести README.md файлов в новую структуру
-   - Создать cross-references между документами
-   - Удалить дублирование
-
-4. **Этап 4: CI/CD setup** - 2 дня
-   - GitHub Actions workflow для сборки
-   - Линтинг и проверка ссылок
-   - Автодеплой в GitHub Pages
-
-### Критерии успеха
-
-- [x] MkDocs сайт успешно собирается и отображается
-- [x] Все разделы (backend, frontend, qa, operations) имеют документацию
-- [x] Templates созданы и используются
-- [x] Documentation Guidelines написаны
-- [x] CI/CD pipeline работает
-
-### Rollback plan
-
-Если MkDocs не подойдёт:
-1. Остановить автодеплой
-2. Markdown файлы остаются валидными для любого генератора
-3. Можно мигрировать на Docusaurus или другой генератор без потери контента
-
-## Мониторинг
-
-**Метрики для отслеживания:**
-- Freshness: % документов обновлённых за последние 3 месяца
-- Coverage: % API endpoints с документацией
-- Broken links: количество битых ссылок (цель: 0)
-- Build time: время сборки документации (цель: < 1 минута)
-- Usage: page views через GitHub Pages analytics
-
-**Ожидаемые значения:**
-- Freshness: > 80% за 3 месяца
-- Coverage: > 90% API endpoints
-- Broken links: 0
-- Build time: < 1 минута
+**Плюсы:** Hosted solution, автосборка
+**Минусы:** Vendor lock-in, платный для private
+**Почему не выбран:** Хотим self-hosted
 
 ## Связанные решения
 
-**Зависит от:**
-- Нет зависимостей
-
-**Влияет на:**
-- ADR-002: API Documentation Strategy (автогенерация OpenAPI в MkDocs)
-
-**Заменяет:**
-- Нет предыдущих ADR
+**Зависит от:** Нет
+**Влияет на:** ADR-002 (API Documentation Strategy)
+**Заменяет:** Нет
 
 ## Ссылки
 
-**Документация:**
-- [Documentation Guidelines](../_internal/documentation-guidelines.md) - правила ведения документации
-- [Templates README](../_internal/templates/README.md) - доступные шаблоны
-
-**Конфигурация:**
-- `mkdocs.yml` - конфигурация MkDocs
-- `requirements-docs.txt` - Python зависимости
-- `.github/workflows/docs.yml` - CI/CD pipeline
-
-**Внешние ресурсы:**
-- [MkDocs Documentation](https://www.mkdocs.org/)
+- [Documentation Guidelines](../_internal/documentation-guidelines.md)
+- [Templates](../_internal/templates/README.md)
+- [MkDocs Docs](https://www.mkdocs.org/)
 - [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 - [Mermaid JS](https://mermaid.js.org/)
-- [Doc as Code Philosophy](https://www.writethedocs.org/guide/docs-as-code/)
-
----
-**История изменений:**
-- 2025-09-22: Создание документа - выбор MkDocs + Material
