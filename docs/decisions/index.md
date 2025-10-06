@@ -14,8 +14,9 @@ tags: [adr, architecture, decisions]
 
 | ADR | Название | Статус | Дата |
 |-----|----------|--------|------|
-| [ADR-001](./adr-001-docs-stack.md) | Doc as Code Stack для AquaStream | ✅ Accepted | 2025-09-22 |
+| [ADR-003](./adr-003-nginx-edge-gateway.md) | Nginx как edge proxy перед Spring Gateway | ✅ Accepted | 2025-10-06 |
 | [ADR-002](./adr-002-api-documentation.md) | Автогенерация API документации (ReDoc + Swagger UI) | ✅ Accepted | 2025-09-22 |
+| [ADR-001](./adr-001-docs-stack.md) | Doc as Code Stack для AquaStream | ✅ Accepted | 2025-09-22 |
 
 ## Устаревшие решения
 

@@ -105,6 +105,7 @@ nav:
   - Индекс: decisions/index.md
   - ADR-001 Docs Stack: decisions/adr-001-docs-stack.md
   - ADR-002 API Documentation: decisions/adr-002-api-documentation.md
+  - ADR-003 Nginx Edge Proxy: decisions/adr-003-nginx-edge-gateway.md
 theme:
   name: material
   features:

@@ -94,3 +94,4 @@ curl -I http://localhost
 - [Deployment](deployment.md)
 - [Gateway operations](../backend/gateway/operations.md)
 - [Service Restart runbook](runbooks/service-restart.md)
+- [ADR-003: Nginx edge proxy](../decisions/adr-003-nginx-edge-gateway.md)
