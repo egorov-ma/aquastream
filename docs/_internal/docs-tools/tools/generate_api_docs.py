@@ -5,11 +5,12 @@ import shutil
 from pathlib import Path
 from typing import List, Tuple, Optional
 
-REPO = Path(__file__).resolve().parents[3]
-SOURCES_HINTS = ['api', 'docs/api/specs/root']
+REPO = Path(__file__).resolve().parents[4]
+SOURCES_HINTS = ['api', 'docs/api/specs']
 SPEC_EXTS = ('.yaml', '.yml', '.json')
 DEST_SPECS = REPO / 'docs' / 'api' / 'specs'
 DEST_REDOC = REPO / 'docs' / 'api' / 'redoc'
+DEST_SWAGGER = REPO / 'docs' / 'api' / 'swagger'
 INDEX_MD = REPO / 'docs' / 'api' / 'index.md'
 
 OPENAPI_PATTERNS = [
@@ -31,16 +32,6 @@ def looks_like_openapi(file_path: Path) -> bool:
         if pat.search(head):
             return True
     return False
-
-
-def guess_module(file_path: Path) -> str:
-    parts = file_path.relative_to(REPO).parts
-    if not parts:
-        return 'root'
-    top = parts[0]
-    if top.startswith('backend-') or top in ('frontend', 'infra'):
-        return top
-    return 'root'
 
 
 def find_specs() -> List[Path]:
@@ -76,51 +67,105 @@ def write_redoc_html(spec_rel_from_html: str, title: str) -> str:
 </html>"""
 
 
+def write_swagger_html(spec_rel_from_html: str, title: str) -> str:
+    cdn_base = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5"
+    return f"""<!doctype html>
+<html>
+  <head>
+    <meta charset=\"utf-8\"/>
+    <title>{title}</title>
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>
+    <link rel=\"stylesheet\" href=\"{cdn_base}/swagger-ui.css\"/>
+    <style>html, body {{ margin: 0; padding: 0; }}</style>
+  </head>
+  <body>
+    <div id=\"swagger-ui\"></div>
+    <script src=\"{cdn_base}/swagger-ui-bundle.js\"></script>
+    <script src=\"{cdn_base}/swagger-ui-standalone-preset.js\"></script>
+    <script>
+      window.onload = function() {{
+        const ui = SwaggerUIBundle({{
+          url: '{spec_rel_from_html}',
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          layout: 'BaseLayout'
+        }});
+        window.ui = ui;
+      }};
+    </script>
+  </body>
+</html>"""
+
+
 def ensure_dirs():
     DEST_SPECS.mkdir(parents=True, exist_ok=True)
     DEST_REDOC.mkdir(parents=True, exist_ok=True)
+    DEST_SWAGGER.mkdir(parents=True, exist_ok=True)
 
 
 def main() -> int:
     ensure_dirs()
     specs = find_specs()
-    rows: List[Tuple[str, str, Path, Path]] = []  # (module, name, spec_dest, html_dest)
+    rows: List[Tuple[str, Path, Path, Path]] = []  # (name, spec_dest, redoc_dest, swagger_dest)
 
     for spec in specs:
-        module = guess_module(spec)
         name = spec.stem
-        spec_dest_dir = DEST_SPECS / module
+        spec_dest_dir = DEST_SPECS
         spec_dest_dir.mkdir(parents=True, exist_ok=True)
         spec_dest = spec_dest_dir / spec.name
         # Only copy if source and destination are different
         if spec.resolve() != spec_dest.resolve():
             shutil.copy2(spec, spec_dest)
-        html_dest_dir = DEST_REDOC / module
+        html_dest_dir = DEST_REDOC
         html_dest_dir.mkdir(parents=True, exist_ok=True)
         html_dest = html_dest_dir / f"{name}.html"
-        # build relative path from HTML to spec
         spec_rel = os.path.relpath(spec_dest, html_dest.parent)
-        html = write_redoc_html(spec_rel, f"{module} — {name}")
+        html = write_redoc_html(spec_rel, name)
         html_dest.write_text(html, encoding='utf-8')
-        rows.append((module, name, spec_dest, html_dest))
+
+        swagger_dest_dir = DEST_SWAGGER
+        swagger_dest_dir.mkdir(parents=True, exist_ok=True)
+        swagger_dest = swagger_dest_dir / f"{name}.html"
+        swagger_rel = os.path.relpath(spec_dest, swagger_dest.parent)
+        swagger_html = write_swagger_html(swagger_rel, f"{name} (Swagger UI)")
+        swagger_dest.write_text(swagger_html, encoding='utf-8')
+
+        rows.append((name, spec_dest, html_dest, swagger_dest))
 
     # write index.md
     INDEX_MD.parent.mkdir(parents=True, exist_ok=True)
     with INDEX_MD.open('w', encoding='utf-8') as f:
-        f.write('# API\n\n')
         f.write('---\n')
         f.write('title: API\n')
-        f.write('summary: Автоматически сгенерированные страницы API (ReDoc) и исходные спецификации.\n')
+        f.write('summary: Автоматически сгенерированные страницы API (ReDoc) и интерактивный Swagger UI.\n')
         f.write('---\n\n')
+        f.write('# API\n\n')
+        f.write(
+            'Эта страница собирается автоматически из OpenAPI спецификаций, расположенных в '
+            '`docs/api/specs/`. Для каждого файла создаются две HTML-версии:\n\n'
+        )
+        f.write('- **ReDoc** — удобный режим чтения спецификации.\n')
+        f.write('- **Swagger UI** — интерактивное тестирование и проверка контрактов.\n\n')
+        f.write('## Обновление\n\n')
+        f.write('```bash\n')
+        f.write('python3 docs/_internal/docs-tools/tools/generate_api_docs.py\n')
+        f.write('```\n\n')
+        f.write('Команда копирует актуальные спецификации, пересобирает HTML и индекс.\n\n')
         if not rows:
-            f.write('Пока не найдено спецификаций OpenAPI. Поместите файлы в `contracts/` или `**/api/` в модулях.\n')
+            f.write('Пока не найдено спецификаций OpenAPI. Поместите файлы в `docs/api/specs/` и выполните скрипт выше.\n')
         else:
-            f.write('| Модуль | Имя | Спецификация | ReDoc |\n')
+            f.write('## Список API\n\n')
+            f.write('| API | Спецификация | ReDoc | Swagger UI |\n')
             f.write('|---|---|---|---|\n')
-            for module, name, spec_dest, html_dest in sorted(set(rows)):
+            for name, spec_dest, html_dest, swagger_dest in sorted(set(rows)):
                 spec_rel = spec_dest.relative_to(INDEX_MD.parent)
                 html_rel = html_dest.relative_to(INDEX_MD.parent)
-                f.write(f"| {module} | {name} | [{spec_dest.name}]({spec_rel.as_posix()}) | [Открыть]({html_rel.as_posix()}) |\n")
+                swagger_rel = swagger_dest.relative_to(INDEX_MD.parent)
+                f.write(
+                    f"| {name} | [{spec_dest.name}]({spec_rel.as_posix()}) | "
+                    f"[Открыть]({html_rel.as_posix()}) | [Открыть]({swagger_rel.as_posix()}) |\n"
+                )
     print(f"[api] specs found: {len(rows)}")
     print(f"[api] index: {INDEX_MD.relative_to(REPO)}")
     return 0
