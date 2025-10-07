@@ -57,7 +57,7 @@ ext {
     // Centralized versions for third-party libs
     set('hypersistenceVersion', '3.6.0')
     set('hibernateTypesVersion', '2.21.1')
-    set('jacksonVersion', '2.17.2')
+    set('jacksonVersion', '2.19.2')
     set('minioVersion', '8.5.7')
     set('archunitVersion', '1.3.0')
 }
