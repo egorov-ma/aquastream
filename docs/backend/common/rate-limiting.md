@@ -2,10 +2,9 @@
 
 ## Обзор
 
-Встроенная система rate limiting на базе Bucket4j с поддержкой Redis для распределенного хранения. Защищает API от злоупотребления и DDoS атак.
+Встроенная система rate limiting на базе **Bucket4j** с **Redis** для распределенного хранения. Защищает API от злоупотребления и DDoS атак.
 
-## Архитектура
-
+**Архитектура**:
 ```
 HTTP Request → RateLimitFilter → RateLimitService → Bucket4j → Redis
                      ↓
@@ -18,92 +17,30 @@ HTTP Request → RateLimitFilter → RateLimitService → Bucket4j → Redis
 
 ## Компоненты
 
-### RateLimitFilter
+| Компонент | Описание | Функции |
+|-----------|----------|---------|
+| **RateLimitFilter** | Servlet фильтр | Проверяет лимиты перед обработкой запроса, skip для health checks/static resources |
+| **RateLimitService** | Управление buckets | `checkLimit(clientKey, limitKey)` → `RateLimitResult(allowed, remainingTokens, retryAfter)` |
+| **RateLimitProperties** | Конфигурация | `@ConfigurationProperties("aquastream.rate-limit")`, поддержка кастомных лимитов |
 
-Servlet фильтр для проверки rate limits перед обработкой запроса.
-
-**Процесс**:
-1. Проверяет нужно ли skip (health checks, static resources, OPTIONS)
-2. Определяет client key (IP address или user ID)
-3. Определяет limit key (тип endpoint: default, login, recovery)
-4. Вызывает `RateLimitService.checkLimit()`
-5. Если разрешено → добавляет headers + продолжает
-6. Если запрещено → возвращает 429 с RFC 7807 Problem Details
-
-### RateLimitService
-
-Сервис управления rate limit buckets через Bucket4j.
-
-**Методы**:
-
-```java
-public class RateLimitService {
-
-    /**
-     * Check if request is allowed
-     */
-    public RateLimitResult checkLimit(String clientKey, String limitKey) {
-        // ...
-    }
-
-    public static class RateLimitResult {
-        private boolean allowed;
-        private long remainingTokens;
-        private long retryAfterSeconds;
-    }
-}
-```
-
-### RateLimitProperties
-
-Конфигурация rate limits через `application.yml`.
-
-```java
-@ConfigurationProperties(prefix = "aquastream.rate-limit")
-public class RateLimitProperties {
-    private boolean enabled = true;
-    private RateLimit defaultLimit;
-    private Map<String, RateLimit> limits;
-
-    public static class RateLimit {
-        private long capacity = 100;
-        private Duration window = Duration.ofMinutes(1);
-        private long refillTokens = 10;
-        private Duration refillPeriod = Duration.ofSeconds(1);
-        private boolean enabled = true;
-        private Long retryAfterSeconds;
-    }
-}
-```
-
-## Bucket4j Integration
-
-### Token Bucket Algorithm
+## Bucket4j Token Bucket Algorithm
 
 ```
 Bucket:
-- capacity: максимум токенов
+- capacity: максимум токенов (burst)
 - refillTokens: сколько токенов добавлять
 - refillPeriod: как часто добавлять
 
-Пример:
-- capacity: 100
-- refillTokens: 10 per second
-- window: 1 minute
-
-Клиент может сделать:
+Пример (capacity: 100, refillTokens: 10/sec):
 - Burst: 100 запросов сразу
 - Sustained: 10 req/sec (600 req/min)
 ```
 
-### Redis Storage
-
-Buckets хранятся в Redis:
-
+**Redis Storage**:
 ```
 Key format: rate-limit:{clientKey}:{limitKey}
 
-Example:
+Examples:
 rate-limit:ip:192.168.1.100:login
 rate-limit:ip:192.168.1.100:default
 rate-limit:user:550e8400-e29b-41d4-a716-446655440000:default
@@ -111,26 +48,31 @@ rate-limit:user:550e8400-e29b-41d4-a716-446655440000:default
 
 ## Конфигурация
 
+### Типы лимитов
+
+| Тип | Capacity | Window | Refill | Use Case | Patterns |
+|-----|----------|--------|--------|----------|----------|
+| **login** | 10 | 1m | 1 token / 6s | Защита от брутфорса паролей | `**/login**`, `**/auth**`, `**/signin**` |
+| **recovery** | 5 | 5m | 1 token / 60s | Спам восстановления паролей | `**/recovery**`, `**/reset**`, `**/forgot**` |
+| **default** | 100 | 1m | 10 tokens / 1s | Общее злоупотребление API | Все остальные endpoints |
+
 ### application.yml
 
 ```yaml
 aquastream:
   rate-limit:
-    # Глобально включить/выключить
     enabled: true
 
-    # Default лимит для всех endpoints
+    # Default для всех endpoints
     default-limit:
       capacity: 100
       window: 1m
       refill-tokens: 10
       refill-period: 1s
-      enabled: true
       retry-after-seconds: 60
 
-    # Кастомные лимиты для разных типов endpoints
+    # Кастомные лимиты
     limits:
-      # Login endpoints (строгий лимит)
       login:
         capacity: 10
         window: 1m
@@ -138,111 +80,59 @@ aquastream:
         refill-period: 6s
         retry-after-seconds: 60
 
-      # Password recovery (очень строгий)
       recovery:
         capacity: 5
         window: 5m
         refill-tokens: 1
         refill-period: 60s
         retry-after-seconds: 300
+```
 
-      # Default для остальных API
-      default:
-        capacity: 100
+### Добавление кастомного лимита
+
+```java
+// 1. Паттерн в RateLimitFilter
+private static final Pattern PAYMENT_PATTERN = Pattern.compile(".*/payments.*");
+
+if (PAYMENT_PATTERN.matcher(path).matches()) {
+    return "payment";
+}
+```
+
+```yaml
+# 2. Конфигурация
+aquastream:
+  rate-limit:
+    limits:
+      payment:
+        capacity: 30
         window: 1m
-        refill-tokens: 10
-        refill-period: 1s
+        refill-tokens: 5
+        refill-period: 2s
 ```
-
-### Типы лимитов
-
-#### 1. Login endpoints
-
-```yaml
-login:
-  capacity: 10          # Максимум 10 попыток
-  window: 1m           # В минуту
-  refill-tokens: 1     # +1 попытка
-  refill-period: 6s    # Каждые 6 секунд
-```
-
-**Patterns**:
-- `**/login**`
-- `**/auth**`
-- `**/signin**`
-
-**Защита от**: брутфорс паролей
-
-#### 2. Recovery endpoints
-
-```yaml
-recovery:
-  capacity: 5           # Максимум 5 попыток
-  window: 5m           # В 5 минут
-  refill-tokens: 1     # +1 попытка
-  refill-period: 60s   # Каждую минуту
-```
-
-**Patterns**:
-- `**/recovery**`
-- `**/reset**`
-- `**/forgot**`
-
-**Защита от**: спам восстановления паролей
-
-#### 3. Default endpoints
-
-```yaml
-default:
-  capacity: 100         # 100 запросов
-  window: 1m           # В минуту
-  refill-tokens: 10    # +10 запросов
-  refill-period: 1s    # Каждую секунду
-```
-
-**Все остальные** API endpoints
-
-**Защита от**: общее злоупотребление API
 
 ## Client Identification
 
 ### IP-based (по умолчанию)
 
 ```java
-private String getClientKey(HttpServletRequest request) {
-    String clientIp = getClientIpAddress(request);
-    return "ip:" + clientIp;
-}
-```
+String clientKey = "ip:" + getClientIpAddress(request);
 
-**Headers проверяются**:
-1. `X-Forwarded-For` (proxy/load balancer)
-2. `X-Real-IP` (nginx)
-3. `request.getRemoteAddr()` (fallback)
+// Headers проверяются: X-Forwarded-For → X-Real-IP → RemoteAddr
+```
 
 ### User-based (опционально)
 
-Для авторизованных запросов можно использовать user ID:
-
 ```java
-private String getClientKey(HttpServletRequest request) {
-    String userId = extractUserId(request);  // From JWT or header
-    if (userId != null) {
-        return "user:" + userId;
-    }
-
-    String clientIp = getClientIpAddress(request);
-    return "ip:" + clientIp;
+String userId = extractUserId(request);  // From JWT or X-User-Id
+if (userId != null) {
+    return "user:" + userId;
 }
+return "ip:" + clientIp;
 ```
 
-**Плюсы**:
-- Более точный контроль (один пользователь = один bucket)
-- Работает при смене IP (мобильные сети)
-
-**Минусы**:
-- Не защищает неавторизованные endpoints
-- Требует интеграцию с auth
+**Плюсы**: точный контроль, работает при смене IP (мобильные)
+**Минусы**: не защищает неавторизованные endpoints
 
 ## Response Formats
 
@@ -252,10 +142,6 @@ private String getClientKey(HttpServletRequest request) {
 HTTP/1.1 200 OK
 X-RateLimit-Remaining: 95
 Content-Type: application/json
-
-{
-  "data": "..."
-}
 ```
 
 ### Превышен лимит (429 Too Many Requests)
@@ -277,101 +163,14 @@ X-RateLimit-Remaining: 0
 }
 ```
 
-**Headers**:
-- `Retry-After`: сколько секунд ждать (обязательно)
-- `X-RateLimit-Remaining`: оставшиеся токены (0 при превышении)
+**Headers**: `Retry-After` (обязательно), `X-RateLimit-Remaining`
 
 ## Excluded Paths
 
 Rate limiting **НЕ применяется** к:
-
-```java
-private boolean shouldSkipRateLimit(HttpServletRequest request) {
-    String path = request.getRequestURI();
-
-    // Health checks и monitoring
-    if (path.startsWith("/actuator/") ||
-        path.startsWith("/health") ||
-        path.startsWith("/metrics")) {
-        return true;
-    }
-
-    // Static resources
-    if (path.startsWith("/static/") ||
-        path.startsWith("/css/") ||
-        path.startsWith("/js/") ||
-        path.startsWith("/images/")) {
-        return true;
-    }
-
-    // CORS preflight
-    return "OPTIONS".equals(request.getMethod());
-}
-```
-
-## Использование
-
-### Автоматическое применение
-
-Фильтр применяется ко всем HTTP запросам автоматически:
-
-```java
-@RestController
-@RequestMapping("/api/users")
-public class UserController {
-
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable UUID id) {
-        // RateLimitFilter автоматически проверит лимит
-        // перед вызовом этого метода
-        return userService.findById(id);
-    }
-}
-```
-
-### Кастомные лимиты для endpoint
-
-Настраивается через паттерны в фильтре:
-
-```java
-private String determineLimitKey(HttpServletRequest request) {
-    String path = request.getRequestURI();
-
-    if (LOGIN_PATTERN.matcher(path).matches()) {
-        return "login";  // Использует limits.login из config
-    }
-
-    if (RECOVERY_PATTERN.matcher(path).matches()) {
-        return "recovery";  // Использует limits.recovery
-    }
-
-    return "default";  // Использует default-limit
-}
-```
-
-Для добавления нового типа:
-
-```java
-// 1. Добавить паттерн
-private static final Pattern PAYMENT_PATTERN = Pattern.compile(".*/payments.*");
-
-// 2. Добавить проверку
-if (PAYMENT_PATTERN.matcher(path).matches()) {
-    return "payment";
-}
-```
-
-```yaml
-# 3. Настроить в application.yml
-aquastream:
-  rate-limit:
-    limits:
-      payment:
-        capacity: 30
-        window: 1m
-        refill-tokens: 5
-        refill-period: 2s
-```
+- `/actuator/*`, `/health`, `/metrics` (monitoring)
+- `/static/*`, `/css/*`, `/js/*`, `/images/*` (static resources)
+- `OPTIONS` requests (CORS preflight)
 
 ## Мониторинг
 
@@ -383,26 +182,23 @@ logging:
     org.aquastream.common.ratelimit: WARN
 ```
 
-При превышении лимита:
-
+При превышении:
 ```
 [WARN] RateLimitFilter - Rate limit exceeded - Client: ip:192.168.1.100,
        Endpoint: POST /api/auth/login, Limit: login, Retry after: 60s
 ```
 
-### Метрики Redis
-
-Проверка buckets в Redis:
+### Redis метрики
 
 ```bash
 # Список всех rate limit keys
 redis-cli KEYS "rate-limit:*"
 
-# Просмотр bucket для конкретного клиента
+# Bucket конкретного клиента
 redis-cli GET "rate-limit:ip:192.168.1.100:login"
 ```
 
-### Тестирование лимитов
+### Тестирование
 
 ```bash
 # Тест login endpoint (лимит: 10/min)
@@ -415,45 +211,20 @@ for i in {1..15}; do
 done
 
 # Первые 10 → 401 Unauthorized (wrong password)
-# Остальные → 429 Too Many Requests (rate limit)
+# Остальные → 429 Too Many Requests
 ```
 
-## Production Рекомендации
+## Production рекомендации
 
 ### Настройки для production
 
-```yaml
-aquastream:
-  rate-limit:
-    enabled: true
+| Лимит | Capacity | Window | Refill | Retry After |
+|-------|----------|--------|--------|-------------|
+| **login** | 5 | 1m | 1 token / 12s | 60s |
+| **recovery** | 3 | 10m | 1 token / 180s | 600s |
+| **default** | 60 | 1m | 10 tokens / 1s | 60s |
 
-    limits:
-      # Login: очень строгий
-      login:
-        capacity: 5
-        window: 1m
-        refill-tokens: 1
-        refill-period: 12s
-        retry-after-seconds: 60
-
-      # Recovery: экстра строгий
-      recovery:
-        capacity: 3
-        window: 10m
-        refill-tokens: 1
-        refill-period: 180s
-        retry-after-seconds: 600
-
-      # Default: умеренный
-      default:
-        capacity: 60
-        window: 1m
-        refill-tokens: 10
-        refill-period: 1s
-        retry-after-seconds: 60
-```
-
-### Redis настройки
+### Redis connection pool
 
 ```yaml
 spring:
@@ -461,7 +232,6 @@ spring:
     redis:
       host: redis
       port: 6379
-      # Connection pool для Bucket4j
       lettuce:
         pool:
           max-active: 10
@@ -471,7 +241,7 @@ spring:
 
 ### Настройка за load balancer
 
-Убедитесь что LB пробрасывает правильные headers:
+**Критично**: LB должен пробрасывать правильные headers, иначе все запросы будут с IP load balancer'а!
 
 ```nginx
 # Nginx
@@ -479,58 +249,35 @@ proxy_set_header X-Real-IP $remote_addr;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 ```
 
-Иначе все запросы будут с IP load balancer'а!
-
 ## Отключение rate limiting
 
-### Глобально
-
-```yaml
-aquastream:
-  rate-limit:
-    enabled: false
-```
-
-### Для конкретного типа
-
-```yaml
-aquastream:
-  rate-limit:
-    limits:
-      login:
-        enabled: false  # Отключить только для login
-```
-
-### Для dev окружения
-
-```yaml
-# application-dev.yml
-aquastream:
-  rate-limit:
-    enabled: false
-```
+| Scope | Config |
+|-------|--------|
+| **Глобально** | `aquastream.rate-limit.enabled: false` |
+| **Конкретный тип** | `aquastream.rate-limit.limits.login.enabled: false` |
+| **Dev окружение** | `application-dev.yml`: `enabled: false` |
 
 ## Troubleshooting
 
 ### Rate limit срабатывает слишком часто
 
-1. Проверьте capacity и refill rate:
-   ```yaml
-   capacity: 100  # Увеличить burst capacity
-   refill-tokens: 20  # Увеличить sustained rate
-   ```
+```yaml
+# Увеличить capacity и refill rate
+capacity: 100      # Burst capacity
+refill-tokens: 20  # Sustained rate
+```
 
-2. Проверьте что используется правильный client key (IP, не LB IP)
+Проверить что используется правильный client key (IP, не LB IP).
 
 ### Rate limit не срабатывает
 
-1. Проверьте `enabled: true`
-2. Проверьте что Redis подключен и работает
-3. Проверьте логи фильтра
+1. Проверить `enabled: true`
+2. Проверить Redis подключен: `redis-cli ping`
+3. Проверить логи фильтра
 
 ### 429 для legitimate users
 
-Используйте user-based вместо IP-based:
+Использовать user-based вместо IP-based:
 
 ```java
 // Модифицировать RateLimitFilter.getClientKey()
@@ -540,9 +287,6 @@ if (userId != null) {
 }
 ```
 
-## См. также
+---
 
-- [Backend Common](README.md) - обзор модуля
-- [Security](security.md) - другие security механизмы
-- [Error Handling](error-handling.md) - RFC 7807 Problem Details
-- [Operations: Security](../../operations/policies/security.md) - security политики
+См. [Backend Common](README.md), [Security](security.md), [Error Handling](error-handling.md), [Operations: Security](../../operations/policies/security.md).

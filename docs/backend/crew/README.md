@@ -4,9 +4,9 @@
 
 **Порт**: 8103
 **База данных**: PostgreSQL схема `crew`
-**Назначение**: Управление экипажами (crews), распределение участников по группам, управление лодками и палатками
+**Назначение**: Управление экипажами (crews), распределение участников по группам
 
-Crew Service отвечает за создание и управление группами участников событий: экипажи лодок, палатки для кемпинга, столы на банкетах, места в автобусах.
+Crew Service управляет группами участников событий: экипажи лодок, палатки, столы, места в транспорте.
 
 ## Структура модуля
 
@@ -21,304 +21,107 @@ backend-crew/
 
 ### 1. Crew (Экипаж/Группа)
 
-Группа участников для конкретного события.
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | UUID | Primary key |
+| `eventId` | UUID | FK на событие |
+| `name` | String | Название (например, "Лодка #1") |
+| `type` | CrewType | CREW \| TENT \| TABLE \| BUS |
+| `capacity` | Integer | Максимальная вместимость |
+| `currentSize` | Integer | Текущее количество участников |
+| `description` | String | Описание |
+| `metadata` | JSONB | Дополнительные данные |
 
 **Типы crews**:
-- `CREW` - Экипаж лодки (гребцы + рулевой)
-- `TENT` - Палатка для кемпинга
-- `TABLE` - Стол на банкете
-- `BUS` - Места в автобусе
+- `CREW` - Экипаж лодки (водные мероприятия)
+- `TENT` - Палатка (кемпинги)
+- `TABLE` - Стол (банкеты)
+- `BUS` - Места в автобусе (транспортировка)
 
-**Поля**:
-```java
-UUID id
-UUID eventId
-String name                // Название (например, "Лодка #1", "Палатка Северная")
-CrewType type              // CREW | TENT | TABLE | BUS
-Integer capacity           // Максимальная вместимость
-Integer currentSize        // Текущее количество участников
-String description         // Описание
-Map<String, Object> metadata  // Дополнительные данные (JSONB)
-```
-
-**Отношения**:
-- `OneToMany` → CrewAssignment (назначения участников)
-- `OneToOne` → Boat (для type=CREW)
-- `OneToOne` → Tent (для type=TENT)
+**Отношения**: `OneToMany` → CrewAssignment, `OneToOne` → Boat (для CREW), `OneToOne` → Tent (для TENT)
 
 ### 2. CrewAssignment (Назначение)
 
-Назначение участника в crew.
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id`, `crewId`, `userId`, `bookingId` | UUID | - |
+| `seatNumber` | Integer | Номер места (опционально) |
+| `position` | String | Позиция: гребец, рулевой, и т.д. |
+| `assignedBy`, `assignedAt` | UUID, Instant | Кто и когда назначил |
+| `status` | AssignmentStatus | ACTIVE \| REMOVED \| TRANSFERRED |
+| `notes` | String | Заметки |
 
-**Поля**:
-```java
-UUID id
-UUID crewId               // Ссылка на crew
-UUID userId               // ID участника
-UUID bookingId            // ID брони участника
-Integer seatNumber        // Номер места (опционально)
-String position           // Позиция (например, "гребец", "рулевой")
-UUID assignedBy           // Кто назначил (organizer)
-Instant assignedAt        // Когда назначено
-AssignmentStatus status   // ACTIVE | REMOVED | TRANSFERRED
-String notes              // Заметки
-```
+### 3-5. Дополнительные сущности
 
-### 3. Boat (Лодка)
-
-Детали лодки для экипажа.
-
-**Поля**:
-```java
-UUID id
-UUID crewId               // Ссылка на crew
-String boatType           // Тип лодки (катамаран, каяк, рафт)
-String boatNumber         // Номер лодки
-String condition          // Состояние (отлично, хорошо, требует ремонта)
-Map<String, Object> specifications  // Спецификации (JSONB)
-```
-
-### 4. Tent (Палатка)
-
-Детали палатки для кемпинга.
-
-**Поля**:
-```java
-UUID id
-UUID crewId               // Ссылка на crew
-String tentType           // Тип палатки (двухместная, четырехместная)
-String location           // Локация на кемпинге
-String condition          // Состояние
-Map<String, Object> specifications  // Спецификации (JSONB)
-```
-
-### 5. TeamPreferences (Предпочтения)
-
-Предпочтения участника по составу команды.
-
-**Поля**:
-```java
-UUID id
-UUID userId               // ID участника
-UUID eventId              // ID события
-List<UUID> prefersWithUserIds  // С кем хочет быть
-List<UUID> avoidsUserIds       // Кого хочет избежать
-```
+| Сущность | Описание | Ключевые поля |
+|----------|----------|---------------|
+| **Boat** | Детали лодки для экипажа | boatType, boatNumber, condition, specifications (JSONB) |
+| **Tent** | Детали палатки для кемпинга | tentType, location, condition, specifications (JSONB) |
+| **TeamPreferences** | Предпочтения участника по составу | prefersWithUserIds, avoidsUserIds (в разработке) |
 
 ## API Endpoints
 
-### Crews
+См. [api.md](api.md) для полного описания. Краткий обзор:
 
-```http
-# Получить все crews события
-GET /api/v1/events/{eventId}/crews
-Query: ?type=CREW&availableOnly=true
-
-# Получить конкретный crew
-GET /api/v1/events/{eventId}/crews/{crewId}
-
-# Создать crew (ORGANIZER)
-POST /api/v1/events/{eventId}/crews
-Body: CreateCrewDto
-
-# Обновить crew (ORGANIZER)
-PUT /api/v1/events/{eventId}/crews/{crewId}
-Body: CreateCrewDto
-
-# Удалить crew (ORGANIZER)
-DELETE /api/v1/events/{eventId}/crews/{crewId}
-```
-
-### Assignments
-
-```http
-# Создать назначение (ORGANIZER)
-POST /api/v1/assignments
-Body: CreateAssignmentDto
-
-# Удалить назначение (ORGANIZER)
-DELETE /api/v1/assignments/{assignmentId}
-
-# Получить назначения crew
-GET /api/v1/assignments/crews/{crewId}
-
-# Получить назначения пользователя
-GET /api/v1/assignments/users/{userId}
-
-# Получить назначение пользователя для события
-GET /api/v1/assignments/events/{eventId}/users/{userId}
-```
-
-### Boats
-
-```http
-# Получить лодки события
-GET /api/v1/events/{eventId}/boats
-Query: ?boatType=катамаран&condition=отлично
-
-# Получить конкретную лодку
-GET /api/v1/events/{eventId}/boats/{boatId}
-```
-
-### Tents
-
-```http
-# Получить палатки события
-GET /api/v1/events/{eventId}/tents
-Query: ?tentType=четырехместная&condition=хорошо
-
-# Получить конкретную палатку
-GET /api/v1/events/{eventId}/tents/{tentId}
-```
+| Группа | Примеры | Доступ |
+|--------|---------|--------|
+| **Crews** | `GET /events/{eventId}/crews`, `POST /events/{eventId}/crews`, `DELETE /crews/{crewId}` | USER (read), ORGANIZER (write) |
+| **Assignments** | `POST /assignments`, `DELETE /assignments/{assignmentId}`, `GET /assignments/crews/{crewId}` | ORGANIZER (write), USER (read свои) |
+| **Boats** | `GET /events/{eventId}/boats`, `GET /boats/{boatId}` | USER, ORGANIZER |
+| **Tents** | `GET /events/{eventId}/tents`, `GET /tents/{tentId}` | USER, ORGANIZER |
 
 ## Бизнес-логика
+
+См. [business-logic.md](business-logic.md) для детального описания. Основные процессы:
 
 ### Создание crew
 
 1. Организатор создает crew для события
-2. Указывает тип (CREW, TENT, TABLE, BUS)
-3. Устанавливает capacity (вместимость)
-4. Опционально: привязывает Boat или Tent
+2. Указывает тип (CREW, TENT, TABLE, BUS) и capacity
+3. Опционально привязывает Boat или Tent
 
-```java
-CrewDto crew = crewService.createCrew(eventId, CreateCrewDto.builder()
-    .name("Лодка #1")
-    .type(CrewType.CREW)
-    .capacity(8)
-    .build());
-```
+**Правила**: Название уникально в событии, capacity >= 1, тип соответствует CrewType.
 
 ### Назначение участников
 
+**Процесс**:
 1. Организатор назначает участника в crew
-2. Проверка: crew не заполнен (currentSize < capacity)
-3. Проверка: участник имеет активную бронь
-4. Создается CrewAssignment
-5. Увеличивается currentSize crew
+2. Валидация: crew не заполнен (`currentSize < capacity`)
+3. Валидация: участник имеет CONFIRMED бронь для этого события
+4. Валидация: участник не в другом crew этого события
+5. Создание CrewAssignment со статусом ACTIVE
+6. Увеличение `currentSize` crew
 
-```java
-CrewAssignmentDto assignment = assignmentService.createAssignment(
-    CreateAssignmentDto.builder()
-        .crewId(crewId)
-        .userId(userId)
-        .bookingId(bookingId)
-        .seatNumber(3)      // Опционально
-        .position("гребец")  // Опционально
-        .build()
-);
-```
+**Правила**:
+- ✅ Один участник = один crew на событие
+- ✅ Seat number уникален в crew (если указан)
+- ❌ Нельзя удалить crew с активными назначениями
 
-### Team Preferences (В разработке)
+### Team Preferences (в разработке)
 
-Участники могут указать предпочтения:
-- **Prefers with**: с кем хотят быть в одной команде
-- **Avoids**: кого хотят избежать
-
-Организатор может учитывать эти предпочтения при назначении.
+Участники могут указать предпочтения (prefers with / avoids). Организатор учитывает при назначении.
 
 ## База данных
 
-### Схема crew
+**Схема**: `crew`
 
-```sql
--- Crews (группы)
-CREATE TABLE crew.crews (
-    id UUID PRIMARY KEY,
-    event_id UUID NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    type VARCHAR(20) NOT NULL,  -- CREW, TENT, TABLE, BUS
-    capacity INTEGER NOT NULL,
-    current_size INTEGER NOT NULL DEFAULT 0,
-    description TEXT,
-    metadata JSONB DEFAULT '{}',
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
-    UNIQUE(event_id, name)
-);
+**Таблицы**: crews, crew_assignments, boats, tents, team_preferences
 
--- Назначения участников
-CREATE TABLE crew.crew_assignments (
-    id UUID PRIMARY KEY,
-    crew_id UUID NOT NULL REFERENCES crew.crews(id),
-    user_id UUID NOT NULL,
-    booking_id UUID NOT NULL,
-    seat_number INTEGER,
-    position VARCHAR(50),
-    assigned_by UUID NOT NULL,
-    assigned_at TIMESTAMP NOT NULL,
-    unassigned_at TIMESTAMP,
-    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-    notes TEXT,
-    created_at TIMESTAMP NOT NULL
-);
-
--- Лодки
-CREATE TABLE crew.boats (
-    id UUID PRIMARY KEY,
-    crew_id UUID NOT NULL UNIQUE REFERENCES crew.crews(id),
-    boat_type VARCHAR(50) NOT NULL,
-    boat_number VARCHAR(50),
-    condition VARCHAR(50),
-    specifications JSONB DEFAULT '{}',
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
-);
-
--- Палатки
-CREATE TABLE crew.tents (
-    id UUID PRIMARY KEY,
-    crew_id UUID NOT NULL UNIQUE REFERENCES crew.crews(id),
-    tent_type VARCHAR(50) NOT NULL,
-    location VARCHAR(100),
-    condition VARCHAR(50),
-    specifications JSONB DEFAULT '{}',
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
-);
-
--- Предпочтения команд
-CREATE TABLE crew.team_preferences (
-    id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
-    event_id UUID NOT NULL,
-    prefers_with_user_ids UUID[],
-    avoids_user_ids UUID[],
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
-    UNIQUE(user_id, event_id)
-);
-```
-
-### Индексы
+### Критичные индексы
 
 ```sql
 CREATE INDEX idx_crews_event_id ON crew.crews(event_id);
-CREATE INDEX idx_crews_type ON crew.crews(type);
 CREATE INDEX idx_crew_assignments_crew_id ON crew.crew_assignments(crew_id);
 CREATE INDEX idx_crew_assignments_user_id ON crew.crew_assignments(user_id);
 CREATE INDEX idx_crew_assignments_booking_id ON crew.crew_assignments(booking_id);
-CREATE INDEX idx_crew_assignments_status ON crew.crew_assignments(status);
-CREATE INDEX idx_boats_crew_id ON crew.boats(crew_id);
-CREATE INDEX idx_tents_crew_id ON crew.tents(crew_id);
-CREATE INDEX idx_team_preferences_user_event ON crew.team_preferences(user_id, event_id);
 ```
 
-## Зависимости
-
-```gradle
-dependencies {
-    implementation project(':backend-common')
-    implementation project(':backend-crew:backend-crew-db')
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-}
-```
+**Constraints**:
+- `crews`: UNIQUE(event_id, name)
+- `crew_assignments`: UNIQUE(crew_id, seat_number) WHERE seat_number IS NOT NULL
+- `boats`, `tents`: One-to-One с crew
 
 ## Конфигурация
-
-### application.yml
 
 ```yaml
 server:
@@ -327,18 +130,13 @@ server:
 spring:
   application:
     name: crew-service
-
   datasource:
     url: jdbc:postgresql://localhost:5432/aquastream
-    username: aquastream
-    password: ${DB_PASSWORD}
-
   jpa:
     properties:
       hibernate:
         default_schema: crew
 
-# Rate limiting
 aquastream:
   rate-limit:
     enabled: true
@@ -350,115 +148,70 @@ aquastream:
 
 ## Сценарии использования
 
-### 1. Организатор создает экипажи для сплава
+### Организатор создает экипажи для сплава
 
 ```java
-// Создать crew для лодки
-CrewDto crew1 = crewService.createCrew(eventId, CreateCrewDto.builder()
+// 1. Создать crew
+CrewDto crew = crewService.createCrew(eventId, CreateCrewDto.builder()
     .name("Катамаран #1")
     .type(CrewType.CREW)
     .capacity(6)
-    .description("Опытный экипаж для сложных порогов")
     .build());
 
-// Добавить информацию о лодке
+// 2. Добавить информацию о лодке
 boatService.createBoat(CreateBoatDto.builder()
-    .crewId(crew1.getId())
+    .crewId(crew.getId())
     .boatType("Катамаран 6-местный")
     .boatNumber("K-001")
-    .condition("Отлично")
     .build());
 
-// Назначить участников
-for (Booking booking : confirmedBookings) {
-    assignmentService.createAssignment(CreateAssignmentDto.builder()
-        .crewId(crew1.getId())
-        .userId(booking.getUserId())
-        .bookingId(booking.getId())
-        .build());
-}
+// 3. Назначить участников
+assignmentService.createAssignment(CreateAssignmentDto.builder()
+    .crewId(crew.getId())
+    .userId(userId)
+    .bookingId(bookingId)
+    .position("гребец")
+    .build());
 ```
 
-### 2. Участник смотрит свой экипаж
+### Участник смотрит свой экипаж
 
 ```java
-// Получить назначение пользователя
+// Получить назначение
 CrewAssignmentDto assignment = assignmentService
     .getUserEventAssignment(eventId, userId);
 
-// Получить детали crew
+// Получить детали crew и лодки
 CrewDto crew = crewService.getCrew(eventId, assignment.getCrewId());
+BoatDto boat = boatService.getBoat(eventId, crew.getBoatId());
 
-// Crew type=CREW → получить лодку
-if (crew.getType() == CrewType.CREW) {
-    BoatDto boat = boatService.getBoat(eventId, crew.getBoatId());
-}
-
-// Получить всех участников crew
+// Получить teammates
 List<CrewAssignmentDto> teammates = assignmentService
     .getCrewAssignments(crew.getId());
 ```
 
-### 3. Кемпинг: распределение по палаткам
-
-```java
-// Создать палатки
-CrewDto tent1 = crewService.createCrew(eventId, CreateCrewDto.builder()
-    .name("Палатка Северная")
-    .type(CrewType.TENT)
-    .capacity(4)
-    .build());
-
-tentService.createTent(CreateTentDto.builder()
-    .crewId(tent1.getId())
-    .tentType("Четырехместная")
-    .location("Северная поляна, место 12")
-    .condition("Хорошо")
-    .build());
-
-// Назначить участников в палатку
-assignmentService.createAssignment(...);
-```
-
 ## Права доступа
 
-### ORGANIZER
-- Создание/изменение/удаление crews
-- Назначение/удаление участников
-- Просмотр всех crews и назначений события
-
-### USER
-- Просмотр своего crew и назначения
-- Просмотр списка crews события (публичный)
-- Установка team preferences (в разработке)
-
-### GUEST
-- Нет доступа к crew информации
+| Роль | Права |
+|------|-------|
+| **ORGANIZER** | Создание/изменение/удаление crews, назначение/удаление участников, просмотр всех crews события |
+| **USER** | Просмотр своего crew, просмотр списка crews события, установка team preferences (в разработке) |
+| **GUEST** | Нет доступа |
 
 ## Мониторинг
 
-### Health Check
 ```bash
+# Health check
 curl http://localhost:8103/actuator/health
-```
 
-### Метрики
-```bash
+# Метрики
 curl http://localhost:8103/actuator/metrics
-```
 
-### Логи
-```bash
-# Просмотр логов сервиса
+# Логи
 docker logs backend-crew-service
-
-# Фильтрация по уровню
 docker logs backend-crew-service | grep ERROR
 ```
 
-## См. также
+---
 
-- [API Documentation](api.md) - детальное описание API endpoints
-- [Business Logic](business-logic.md) - бизнес-правила и валидации
-- [Operations](operations.md) - развертывание и обслуживание
-- [Database Schema](../database.md) - схема crew в PostgreSQL
+См. [API Documentation](api.md), [Business Logic](business-logic.md), [Operations](operations.md), [Database Schema](../database.md).

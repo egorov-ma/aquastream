@@ -1,35 +1,44 @@
-# Media Service — Overview
+# Media Service
 
-## Назначение
+## Обзор
 
-Media Service отвечает за хранение файлов (изображения, платежные доказательства, документы) в MinIO/S3, управляет доступом и сроками жизни ссылок.
+Media Service управляет файлами в MinIO/S3: загрузка, доступ через presigned URLs, retention policies.
 
-**Порт**: 8106  
-**База данных**: PostgreSQL схема `media`
+**Порт**: 8106
+**Схема БД**: `media`
+**Хранилище**: MinIO/S3
 
-## Архитектура модуля
+## Архитектура
 
 ```
 backend-media/
-├── backend-media-api/       # REST API, правила доступа, контроллеры
-├── backend-media-service/   # Бизнес-логика presigned URLs и retention
-└── backend-media-db/        # Entities, репозитории, миграции Liquibase
+├── backend-media-api/       # REST API, правила доступа
+├── backend-media-service/   # Presigned URLs, retention
+└── backend-media-db/        # Entities, миграции
 ```
 
-## Основные сценарии
+## Основные процессы
 
-1. **Загрузка файлов** — выдача presigned URL для загрузки, валидация размера и MIME-типа, регистрация метаданных (owner_type/owner_id).
-2. **Доступ к файлам** — проверка прав, генерация краткоживущего presigned URL (TTL 15 минут).
-3. **Retention** — плановое удаление просроченных файлов (payment proofs 90 дней, орг/ивент изображения бессрочно).
+| Процесс | Действия |
+|---------|----------|
+| **Загрузка** | Presigned URL для PUT → валидация MIME/размера → регистрация метаданных (owner_type, owner_id) |
+| **Доступ** | Проверка прав → presigned URL (TTL 15 минут) |
+| **Retention** | Автоудаление: payment proofs 90 дней, event images постоянно |
+
+## Типы файлов
+
+| Owner Type | Retention | Использование |
+|------------|-----------|---------------|
+| `payment_proof` | 90 дней | Скриншоты QR-оплаты (Payment Service) |
+| `event` | Постоянно | Изображения событий, обложки |
+| `organizer` | Постоянно | Логотипы организаторов |
 
 ## Интеграции
 
-- **MinIO/S3** — основное хранилище объектов.
-- **Payment Service** — хранение квитанций для QR-оплаты.
-- **Event Service** — изображения событий, обложки.
+- **MinIO/S3** - хранилище объектов
+- **Payment Service** - квитанции для QR-оплаты
+- **Event Service** - изображения событий
 
-## Дополнительно
+---
 
-- Подробности бизнес-логики: [`business-logic.md`](business-logic.md)
-- REST API и схемы: [`api.md`](api.md)
-- Эксплуатация и конфигурация: [`operations.md`](operations.md)
+См. [Business Logic](business-logic.md), [API](api.md), [Operations](operations.md).

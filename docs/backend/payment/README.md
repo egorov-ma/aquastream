@@ -1,36 +1,35 @@
-# Payment Service — Overview
+# Payment Service
 
-## Назначение
+## Обзор
 
-Payment Service интегрируется с YooKassa, CloudPayments и Stripe, инициирует платежи, принимает вебхуки и синхронизирует статусы броней.
+Payment Service интегрируется с YooKassa, CloudPayments и Stripe. Инициирует платежи, обрабатывает вебхуки, синхронизирует статусы броней.
 
-**Порт**: 8104  
-**База данных**: PostgreSQL схема `payment`
+**Порт**: 8104
+**Схема БД**: `payment`
 
-## Архитектура модуля
+## Архитектура
 
 ```
 backend-payment/
-├── backend-payment-api/       # REST API (инициализация платежа, webhooks)
+├── backend-payment-api/       # REST API, webhooks
 ├── backend-payment-service/   # Бизнес-логика, адаптеры провайдеров
-└── backend-payment-db/        # Entities, Liquibase миграции, outbox
+└── backend-payment-db/        # Entities, миграции
 ```
 
 ## Основные процессы
 
-1. **Инициализация платежа** — создание записи `payment`, выбор провайдера, подготовка виджета/QR.
-2. **Обработка вебхуков** — проверка подписи, идемпотентность (`webhook_events`), обновление статуса.
-3. **Сопоставление с Booking** — публикация доменного события, подтверждение/отмена брони в Event Service.
-4. **Модерация доказательств** (QR) — загрузка скриншотов, ручное подтверждение организатором.
+| Процесс | Описание |
+|---------|----------|
+| **Инициализация** | Создание `payment`, выбор провайдера, подготовка виджета/QR |
+| **Вебхуки** | Проверка подписи, idempotency, обновление статуса |
+| **Сопоставление с бронью** | Публикация доменного события → Event подтверждает/отменяет бронь |
+| **Модерация QR** | Загрузка скриншотов, ручное подтверждение организатором |
 
 ## Интеграции
 
-- **YooKassa** (основной провайдер) — redirect/widget.
-- **CloudPayments**, **Stripe** — адаптеры через интерфейс `PaymentProvider`.
-- **Event Service** — подтверждение/отмена брони в зависимости от статуса платежа.
+- **YooKassa** (основной), **CloudPayments**, **Stripe** - через adapter pattern
+- **Event Service** - подтверждение/отмена броней
 
-## Дополнительно
+---
 
-- Бизнес-логика: [`business-logic.md`](business-logic.md)
-- REST API: [`api.md`](api.md)
-- Эксплуатация: [`operations.md`](operations.md)
+См. [Business Logic](business-logic.md), [API](api.md), [Operations](operations.md).

@@ -1,35 +1,47 @@
-# Notification Service — Overview
+# Notification Service
 
-## Назначение
+## Обзор
 
-Notification Service связывает события системы с каналами оповещения (в первую очередь Telegram) и управляет пользовательскими предпочтениями.
+Notification Service управляет уведомлениями пользователей через Telegram (основной канал), Email и SMS.
 
-**Порт**: 8105  
-**База данных**: PostgreSQL схема `notification`
+**Порт**: 8105
+**Схема БД**: `notification`
 
-## Архитектура модуля
+## Архитектура
 
 ```
 backend-notification/
-├── backend-notification-api/       # REST API и Telegram webhook
-├── backend-notification-service/   # Обработка шаблонов, outbox, worker
-└── backend-notification-db/        # Entities, миграции Liquibase
+├── backend-notification-api/       # REST API, Telegram webhook
+├── backend-notification-service/   # Шаблоны, outbox, worker
+└── backend-notification-db/        # Entities, миграции
 ```
 
-## Основные сценарии
+## Основные процессы
 
-1. **Telegram подписка** — привязка пользователя через `/start <code>`, сохранение `telegram_chat_id`.
-2. **Отправка уведомлений** — генерация payload, запись в outbox, worker с retry/backoff.
-3. **Настройки предпочтений** — включение/отключение категорий (обязательные, опциональные).
+| Процесс | Описание |
+|---------|----------|
+| **Telegram подписка** | Привязка через `/start <code>`, сохранение `telegram_chat_id` |
+| **Отправка уведомлений** | Генерация payload → запись в `outbox` → worker с retry/backoff |
+| **Настройки** | Управление предпочтениями (категория/канал/enabled) |
+
+## Каналы и категории
+
+| Канал | Приоритет | Статус |
+|-------|-----------|--------|
+| **Telegram** | 1 (основной) | Активен |
+| **Email** | 2 (fallback) | Заготовка |
+| **SMS** | 3 (резерв) | Заготовка |
+
+**Категории**:
+- **Обязательные** (нельзя отключить): BOOKING_CONFIRMED, PAYMENT_STATUS, EVENT_REMINDER
+- **Опциональные**: WAITLIST_AVAILABLE, EVENT_NEWS
 
 ## Интеграции
 
-- **Telegram Bot API** — получение апдейтов и отправка сообщений.
-- **Event & Payment Services** — источники событий (booking, payment, waitlist).
-- **Outbox pattern** — гарантированная доставка (таблица `outbox`).
+- **Telegram Bot API** - получение апдейтов, отправка сообщений
+- **Event & Payment Services** - источники событий
+- **Outbox pattern** - гарантированная доставка
 
-## Дополнительно
+---
 
-- Детали реализации: [`business-logic.md`](business-logic.md)
-- REST API и webhook: [`api.md`](api.md)
-- Эксплуатация: [`operations.md`](operations.md)
+См. [Business Logic](business-logic.md), [API](api.md), [Operations](operations.md).

@@ -1,21 +1,23 @@
 # Gateway API
 
-Gateway API служит тонким прокси между Nginx и внутренними сервисами: выполняет JWT-валидацию, прикладной rate limiting и предоставляет административные эндпоинты.
+API Gateway служит прокси между Nginx и внутренними сервисами: JWT-валидация, rate limiting, административные endpoints.
 
-## Основные возможности
+## Административные endpoints
 
-- Валидация Access JWT (HS512) и проброс user context (`X-User-Id`, `X-User-Role`).
-- CORS-конфигурация и нормализация заголовков.
-- Дополнительные лимиты с Bucket4j (пер пользователь/IP) — дополняют лимиты Nginx.
-- Агрегированные health и info эндпоинты для наблюдаемости.
+| Метод | Endpoint | Описание | Доступ |
+|-------|----------|----------|--------|
+| GET | `/api/admin/health` | Сводный health всех сервисов | ADMIN |
+| GET | `/api/admin/info` | Версии сервисов и git hash | ADMIN |
+| ANY | `/api/**` | Маршруты на backend-сервисы (после JWT валидации) | По JWT |
 
-## Ключевые эндпоинты
+## Возможности
 
-```text
-GET /api/v1/admin/health   # сводный health всех сервисов
-GET /api/v1/admin/info     # версии сервисов и git hash
-ANY /api/v1/**             # маршруты на backend-сервисы (после проверки JWT)
-```
+| Функция | Реализация |
+|---------|------------|
+| **JWT валидация** | HS512, проброс user context (`X-User-Id`, `X-User-Role`) |
+| **CORS** | Нормализация заголовков, конфигурация `allowed-origins` |
+| **Rate limiting** | Bucket4j per user/IP, дополняет лимиты Nginx |
+| **Health aggregation** | Агрегация `/actuator/health` всех сервисов |
 
 ## Конфигурация
 
@@ -23,7 +25,8 @@ ANY /api/v1/**             # маршруты на backend-сервисы (по�
 gateway:
   cors:
     allowed-origins:
-      - https://aquastream.app
+      - https://aquastream.com
+    allowed-methods: [GET, POST, PUT, DELETE, PATCH]
   rate-limit:
     default: 60/min
     auth-endpoints: 10/min
@@ -32,7 +35,12 @@ gateway:
     access-ttl: PT15M
 ```
 
-## Документация
+## Публичные маршруты (без JWT)
 
-- Admin API (ReDoc): [`../../api/redoc/root/backend-gateway-admin-api.html`](../../api/redoc/root/backend-gateway-admin-api.html)
-- Metrics API (ReDoc): [`../../api/redoc/root/backend-gateway-metrics-api.html`](../../api/redoc/root/backend-gateway-metrics-api.html)
+```
+/api/auth/**, /api/events (GET), /api/organizers (GET), /actuator/health
+```
+
+---
+
+См. [Business Logic](business-logic.md), [Operations](operations.md), [README](README.md).

@@ -2,84 +2,53 @@
 
 ## Обзор
 
-Payment Service интегрируется с платежными провайдерами, обрабатывает вебхуки и поддерживает QR-оплату с модерацией.
+Payment Service интегрируется с платежными провайдерами (YooKassa, CloudPayments, Stripe), обрабатывает вебхуки и поддерживает QR-оплату с модерацией.
 
-## Потоки
-1. Инициализация
-   - Создание записи `payment` со статусом `NEW` и параметрами (amount, currency, provider)
-   - Режимы: `WIDGET` (редирект/виджет), `QR_MANUAL` (показ QR и загрузка чека)
-2. Обработка вебхуков
-   - Проверка подписи/секрета провайдера
-   - Идемпотентность по ключу события → запись в `webhook_events`
-   - Обновление статуса платежа и публикация доменного события
-3. Сопоставление с бронью
-   - `SUCCESS` → подтверждение брони в Event
-   - `FAILED/CANCELED` → правила рекавери (оставить `PENDING`, авто‑отмена по TTL)
-4. Ручная модерация proof
-   - Для `QR_MANUAL`: проверка `payment_receipts`, принятие/отклонение
+## Потоки оплаты
+
+| Этап | Действия |
+|------|----------|
+| 1. **Инициализация** | Создание `payment` (status=NEW, amount, currency, provider)<br>Режимы: `WIDGET` (redirect/виджет) или `QR_MANUAL` (QR + чек) |
+| 2. **Обработка вебхуков** | Проверка подписи провайдера<br>Idempotency (`webhook_events`)<br>Обновление статуса + доменное событие |
+| 3. **Сопоставление с бронью** | `SUCCESS` → Event подтверждает бронь<br>`FAILED/CANCELED` → recovery (оставить PENDING или авто-отмена по TTL) |
+| 4. **Модерация (QR)** | Проверка `payment_receipts`, принятие/отклонение организатором |
 
 ## Статусы
-- `NEW` → `PENDING` → `SUCCESS` | `FAILED` | `CANCELED`
-- Маппинг к Event.Booking: `SUCCESS` → `CONFIRMED`
 
-## Провайдеры
-- YooKassa, CloudPayments, Stripe (через адаптеры)
+**Payment Status Flow**:
+```
+NEW → PENDING → SUCCESS | FAILED | CANCELED
+```
 
-## Безопасность и соответствие
-- Сверка суммы/валюты и idempotency ключей
-- Верификация источника вебхука (IP/подпись)
-- Маскирование чувствительных полей в логах
-
-## Retention
-- `payment_receipts` (proof) — хранение 90 дней
+**Маппинг к Booking**: `SUCCESS` → Event Booking `CONFIRMED`
 
 ## Провайдеры
 
-Поддерживаемые платежные системы:
-- **YooKassa** (приоритетный)
-- **CloudPayments**
-- **Stripe**
+| Провайдер | Приоритет | Режим |
+|-----------|-----------|-------|
+| **YooKassa** | Основной | redirect/widget |
+| **CloudPayments** | Альтернатива | redirect/widget |
+| **Stripe** | Альтернатива | redirect/widget |
 
-**Adapter pattern**: единый интерфейс PaymentProvider
+**Adapter pattern**: единый интерфейс `PaymentProvider`.
 
 ## База данных (схема `payment`)
 
-```sql
-payments (
-    id, 
-    booking_id,           -- Ссылка на бронь
-    method,               -- WIDGET | QR_MANUAL
-    amount, currency,
-    status,               -- PENDING | SUCCEEDED | FAILED | REFUNDED
-    provider,             -- yookassa | cloudpayments | stripe
-    provider_payment_id   -- ID в системе провайдера
-)
-
-payment_receipts (
-    id,
-    payment_id,
-    proof_url,            -- Ссылка на скриншот оплаты
-    reviewed_by,          -- Organizer кто проверил
-    reviewed_at
-)
-
-webhook_events (
-    idempotency_key,      -- Уникальный ключ
-    provider,
-    raw_payload,          -- Полный JSON
-    status,               -- processed | failed
-    processed_at
-)
-```
+| Таблица | Ключевые поля | Описание |
+|---------|---------------|----------|
+| `payments` | `id`, `booking_id`, `method` (WIDGET/QR_MANUAL), `amount`, `currency`, `status`, `provider`, `provider_payment_id` | Платежи |
+| `payment_receipts` | `id`, `payment_id`, `proof_url`, `reviewed_by`, `reviewed_at` | Скриншоты для QR |
+| `webhook_events` | `idempotency_key` (PK), `provider`, `raw_payload`, `status` (processed/failed), `processed_at` | Вебхуки |
 
 ## Безопасность
 
-- ✅ Проверка подписей вебхуков
-- ✅ Idempotency по webhook idempotency_key
-- ✅ Маскирование чувствительных данных в логах
-- ✅ Retention policy: proof хранятся 90 дней
+| Механизм | Реализация |
+|----------|------------|
+| **Подписи вебхуков** | Проверка секретов/подписей провайдеров |
+| **Idempotency** | По `idempotency_key` в `webhook_events` |
+| **Маскирование данных** | Чувствительные поля скрыты в логах |
+| **Retention** | Proof хранятся 90 дней |
 
-## См. также
+---
 
-- [Payment API](api.md) - REST endpoints
-- [Event Service](../event/business-logic.md) - интеграция бронирований
+См. [Payment API](api.md), [Operations](operations.md), [Event Service](../event/business-logic.md).

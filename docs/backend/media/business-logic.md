@@ -2,53 +2,40 @@
 
 ## Обзор
 
-Media Service управляет файлами в MinIO/S3, генерирует presigned URLs.
+Media Service управляет файлами в MinIO/S3, генерирует presigned URLs для загрузки и доступа.
 
 ## Ответственности
-- Хранение и выдача файлов доменов (proofs, логотипы, медиа)
-- Контроль доступа (владение/роль), срок жизни ссылок
+
+- Хранение файлов доменов (payment proofs, логотипы, медиа)
+- Контроль доступа (владение/роль)
+- Срок жизни ссылок (TTL 15 минут)
+- Retention policies
 
 ## Потоки
-1. Загрузка
-   - Генерация `presigned URL` для PUT, валидация типа/размера
-   - Сохранение метаданных (owner_type/owner_id, content_type, size)
-2. Доступ
-   - Проверка прав доступа → генерация `presigned URL` (TTL 15 минут)
-3. Удаление/Retention
-   - Плановый GC/Retention (например, proofs — 90 дней)
 
-## Политики и безопасность
-- Ограничения по размеру и MIME
-- Генерация ключей `file_key` по префиксам доменов
-- Антивирус/сканирование по возможности
+| Поток | Действия |
+|-------|----------|
+| **Загрузка** | Генерация presigned URL для PUT<br>Валидация MIME/размера<br>Сохранение метаданных (owner_type, owner_id, content_type, size) |
+| **Доступ** | Проверка прав → presigned URL (TTL 15 мин) |
+| **Удаление** | Retention: payment proofs 90 дней, event images постоянно |
 
 ## База данных (схема `media`)
 
-```sql
-files (
-    id,
-    owner_type,        -- event | organizer | payment_proof
-    owner_id,          -- UUID владельца
-    file_key,          -- Ключ в S3
-    content_type,      -- MIME type
-    size_bytes,
-    storage_url,       -- Полный URL
-    expires_at         -- Retention policy
-)
-```
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `owner_type` | String | event, organizer, payment_proof |
+| `owner_id` | UUID | Владелец |
+| `file_key` | String | Ключ в S3 (по префиксам доменов) |
+| `content_type` | String | MIME type |
+| `size_bytes` | Long | Размер файла |
+| `expires_at` | Timestamp | Retention policy |
 
-## Presigned URLs
+## Безопасность
 
-**TTL**: 15 минут
-**Проверка прав**: только владелец или organizer/admin
+- ✅ Ограничения по размеру и MIME
+- ✅ Проверка прав доступа (только владелец или ORGANIZER/ADMIN)
+- ✅ Presigned URLs TTL 15 минут
 
-## Retention
+---
 
-- Payment proofs: 90 дней
-- Event images: постоянно
-- Organizer logos: постоянно
-
-## См. также
-
-- [Media API](api.md)
-- [Payment Service](../payment/business-logic.md) - payment proofs
+См. [API](api.md), [Operations](operations.md), [Payment Service](../payment/business-logic.md).

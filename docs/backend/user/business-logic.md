@@ -4,213 +4,70 @@
 
 User Service отвечает за аутентификацию, авторизацию, управление профилями и RBAC.
 
-## Основные функции
+**Основные функции**: JWT генерация/валидация, password recovery через Telegram, RBAC, audit logging.
 
-- Регистрация и аутентификация пользователей
-- Генерация и валидация JWT токенов
-- Управление профилями
-- Password recovery через Telegram
-- RBAC (Role-Based Access Control)
-- Audit logging
+## Аутентификация
 
-## Домены
+### Auth Endpoints
 
-### Аутентификация
+| Endpoint | Ключевые шаги | Возвращает |
+|----------|---------------|------------|
+| `POST /api/auth/register` | 1. Проверка уникальности username<br>2. BCrypt hash (strength 12)<br>3. Создание user (role=USER) + profile<br>4. Генерация JWT<br>5. Audit log | Access + refresh tokens |
+| `POST /api/auth/login` | 1. Поиск user + проверка активности<br>2. Проверка пароля (BCrypt)<br>3. Генерация JWT<br>4. Сохранение refresh session<br>5. Audit log | Access + refresh tokens |
+| `POST /api/auth/refresh` | 1. Валидация refresh token<br>2. Проверка не revoked<br>3. Revoke старого токена<br>4. Генерация новых токенов<br>5. Сохранение новой session | Новые tokens |
+| `POST /api/auth/logout` | 1. Валидация refresh token<br>2. Revoke session<br>3. Audit log | 204 No Content |
 
-#### Регистрация
+### Валидация
 
-**Endpoint**: `POST /api/auth/register`
+| Поле | Требования |
+|------|------------|
+| `username` | Email формат, уникальный |
+| `password` | Min 12 символов, uppercase + lowercase + digit + special char |
+| `phone` | Опционально, E.164 формат |
 
-**Логика**:
-```java
-public AuthResponse register(RegisterRequest request) {
-    // 1. Проверка уникальности username (email)
-    if (userRepository.existsByUsername(request.getUsername())) {
-        throw new ConflictException("User already exists");
-    }
-    
-    // 2. Хеширование пароля (BCrypt strength 12)
-    String passwordHash = passwordEncoder.encode(request.getPassword());
-    
-    // 3. Создание пользователя с ролью USER
-    User user = new User();
-    user.setUsername(request.getUsername());
-    user.setPasswordHash(passwordHash);
-    user.setRole(UserRole.USER);
-    user.setActive(true);
-    userRepository.save(user);
-    
-    // 4. Создание профиля
-    Profile profile = new Profile();
-    profile.setUserId(user.getId());
-    profile.setPhone(request.getPhone());
-    profileRepository.save(profile);
-    
-    // 5. Генерация JWT токенов
-    String accessToken = jwtService.generateAccessToken(user);
-    String refreshToken = jwtService.generateRefreshToken(user);
-    
-    // 6. Сохранение refresh session
-    refreshSessionRepository.save(new RefreshSession(refreshToken, user.getId()));
-    
-    // 7. Audit log
-    auditLog.log(user.getId(), "USER_REGISTERED", null, null);
-    
-    return new AuthResponse(accessToken, refreshToken);
-}
-```
+## Профили
 
-**Валидация**:
-- Username: email формат, уникальный
-- Password: минимум 12 символов, uppercase + lowercase + digit + special char
-- Phone: опционально, E.164 формат
+### Управление
 
-#### Логин
-
-**Endpoint**: `POST /api/auth/login`
-
-**Логика**:
-```java
-public AuthResponse login(LoginRequest request) {
-    // 1. Поиск пользователя
-    User user = userRepository.findByUsername(request.getUsername())
-        .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
-    
-    // 2. Проверка активности
-    if (!user.isActive()) {
-        throw new UnauthorizedException("Account is disabled");
-    }
-    
-    // 3. Проверка пароля
-    if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-        throw new UnauthorizedException("Invalid credentials");
-    }
-    
-    // 4. Генерация новых токенов
-    String accessToken = jwtService.generateAccessToken(user);
-    String refreshToken = jwtService.generateRefreshToken(user);
-    
-    // 5. Сохранение refresh session
-    refreshSessionRepository.save(new RefreshSession(refreshToken, user.getId()));
-    
-    // 6. Audit log
-    auditLog.log(user.getId(), "USER_LOGIN", request.getIpAddress());
-    
-    return new AuthResponse(accessToken, refreshToken);
-}
-```
-
-#### Refresh Token
-
-**Endpoint**: `POST /api/auth/refresh`
-
-**Логика**:
-```java
-public AuthResponse refresh(RefreshRequest request) {
-    // 1. Валидация refresh token
-    Claims claims = jwtService.validateRefreshToken(request.getRefreshToken());
-    String jti = claims.get("jti", String.class);
-    UUID userId = UUID.fromString(claims.getSubject());
-    
-    // 2. Проверка что session не revoked
-    RefreshSession session = refreshSessionRepository.findByJti(jti)
-        .orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
-    
-    if (session.isRevoked()) {
-        throw new UnauthorizedException("Token was revoked");
-    }
-    
-    // 3. Revoke старого refresh token
-    refreshSessionRepository.revokeByJti(jti);
-    
-    // 4. Генерация новых токенов
-    User user = userRepository.findById(userId).orElseThrow();
-    String newAccessToken = jwtService.generateAccessToken(user);
-    String newRefreshToken = jwtService.generateRefreshToken(user);
-    
-    // 5. Сохранение новой session
-    refreshSessionRepository.save(new RefreshSession(newRefreshToken, userId));
-    
-    return new AuthResponse(newAccessToken, newRefreshToken);
-}
-```
-
-#### Logout
-
-**Endpoint**: `POST /api/auth/logout`
-
-**Логика**:
-```java
-public void logout(String refreshToken) {
-    // Revoke refresh session
-    Claims claims = jwtService.validateRefreshToken(refreshToken);
-    String jti = claims.get("jti", String.class);
-    refreshSessionRepository.revokeByJti(jti);
-    
-    // Audit log
-    UUID userId = UUID.fromString(claims.getSubject());
-    auditLog.log(userId, "USER_LOGOUT");
-}
-```
-
-### Профили
-
-#### Управление профилем
-
-**Endpoints**:
 - `GET /api/users/me` - получить свой профиль
 - `PUT /api/users/me` - обновить профиль
 
-**Обязательные поля для бронирования**:
-- `phone` ИЛИ `telegram` должен быть заполнен
-- Проверяется в Event Service при создании брони
+**Обязательные поля для бронирования**: `phone` ИЛИ `telegram` (проверяется в Event Service).
 
-**Поля профиля**:
-```java
-public class Profile {
-    UUID userId;
-    String phone;              // E.164 format
-    String telegram;           // @username
-    Boolean isTelegramVerified;
-    String firstName;
-    String lastName;
-    LocalDate birthDate;
-    JsonNode extra;            // Дополнительные поля
-}
-```
+### Поля профиля
 
-### Password Recovery
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `userId` | UUID | FK на user |
+| `phone` | String | E.164 format |
+| `telegram` | String | @username |
+| `isTelegramVerified` | Boolean | Верификация через бота |
+| `firstName`, `lastName` | String | Имя, фамилия |
+| `birthDate` | LocalDate | Дата рождения |
+| `extra` | JsonNode | Дополнительные поля |
+
+## Password Recovery
 
 **Процесс**:
 
-1. **Инициация**: `POST /api/auth/recovery`
-   - Проверка существования пользователя
-   - Генерация 6-значного кода
-   - Отправка через Telegram (приоритет) или Email
-   - TTL кода: 15 минут
+| Шаг | Endpoint | Действия |
+|-----|----------|----------|
+| 1. Инициация | `POST /api/auth/recovery` | Генерация 6-значного кода → отправка через Telegram/Email, TTL 15 минут |
+| 2. Верификация | `POST /api/auth/recovery/verify` | Проверка кода → возврат временного токена (TTL 15 минут) |
+| 3. Сброс | `POST /api/auth/recovery/reset` | Обновление пароля, revoke всех sessions, возврат новых JWT |
 
-2. **Верификация**: `POST /api/auth/recovery/verify`
-   - Проверка кода
-   - Возврат временного токена (TTL 15 минут)
+**Recovery codes**: таблица `recovery_codes`, one-time use, TTL 15 минут.
 
-3. **Сброс пароля**: `POST /api/auth/recovery/reset`
-   - Проверка временного токена
-   - Обновление пароля
-   - Revoke всех refresh sessions
-   - Возврат новых JWT
+## RBAC
 
-### RBAC
+| Роль | Описание | Изменение роли |
+|------|----------|----------------|
+| `GUEST` | Только публичные данные | - |
+| `USER` | Зарегистрированный пользователь | - |
+| `ORGANIZER` | Организатор событий | Только ADMIN |
+| `ADMIN` | Полный доступ | Только ADMIN |
 
-**Роли**:
-- `GUEST` - только публичные данные
-- `USER` - зарегистрированный пользователь
-- `ORGANIZER` - организатор событий
-- `ADMIN` - полный доступ
-
-**Изменение роли**:
-- Только `ADMIN` может изменять роли
-- `POST /api/admin/users/{id}/role`
-- Audit log обязателен
+**Изменение роли**: `POST /api/admin/users/{id}/role` (только ADMIN), audit log обязателен.
 
 См. [Authentication](../authentication.md) для детальных прав.
 
@@ -220,93 +77,66 @@ public class Profile {
 
 - **TTL**: 1 час (3600 секунд)
 - **Алгоритм**: HS512
-- **Payload**: user_id, username, role, jti
+- **Payload**: `sub` (user_id), `username`, `role`, `jti`
 
 ### Refresh Token
 
 - **TTL**: 30 дней (2592000 секунд)
 - **Storage**: БД (`refresh_sessions`)
-- **Rotation**: при каждом refresh
-- **Revoke**: при logout, password change
+- **Rotation**: При каждом refresh
+- **Revoke**: При logout, password change, смене роли
 
-## Базы данных
+## База данных
 
 ### Таблицы (схема `user`)
 
+| Таблица | Ключевые поля | Описание |
+|---------|---------------|----------|
+| `users` | `id` (PK), `username` (unique), `password_hash`, `role`, `active` | Пользователи |
+| `profiles` | `user_id` (PK, FK), `phone`, `telegram`, `is_telegram_verified`, `first_name`, `last_name`, `birth_date`, `extra` (JSONB) | Профили |
+| `refresh_sessions` | `jti` (PK), `user_id` (FK), `issued_at`, `expires_at`, `revoked_at`, `device_info`, `ip_address` | Refresh tokens |
+| `recovery_codes` | `id` (PK), `user_id` (FK), `code_hash`, `used_at`, `expires_at` | Password recovery |
+| `audit_log` | `id` (PK), `actor_user_id`, `action`, `target_type`, `target_id`, `payload` (JSONB), `ip_address`, `created_at` | Audit trail |
+
+### Индексы
+
 ```sql
--- Пользователи
-users (
-    id UUID PRIMARY KEY,
-    username VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL,
-    active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Профили
-profiles (
-    user_id UUID PRIMARY KEY REFERENCES users(id),
-    phone VARCHAR(20),
-    telegram VARCHAR(100),
-    is_telegram_verified BOOLEAN DEFAULT false,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    birth_date DATE,
-    extra JSONB
-);
-
--- Refresh sessions
-refresh_sessions (
-    jti UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id),
-    issued_at TIMESTAMP NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    revoked_at TIMESTAMP,
-    device_info VARCHAR(255),
-    ip_address VARCHAR(45)
-);
-
--- Recovery codes
-recovery_codes (
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id),
-    code_hash VARCHAR(255) NOT NULL,
-    used_at TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Audit log
-audit_log (
-    id UUID PRIMARY KEY,
-    actor_user_id UUID,
-    action VARCHAR(100) NOT NULL,
-    target_type VARCHAR(50),
-    target_id UUID,
-    payload JSONB,
-    ip_address VARCHAR(45),
-    created_at TIMESTAMP DEFAULT NOW()
-);
+CREATE INDEX idx_users_username ON user.users(username);
+CREATE INDEX idx_refresh_sessions_user_id ON user.refresh_sessions(user_id);
+CREATE INDEX idx_refresh_sessions_expires_at ON user.refresh_sessions(expires_at);
+CREATE INDEX idx_audit_log_actor_user_id ON user.audit_log(actor_user_id);
 ```
 
 ## Интеграции
 
-- **JWT**: все сервисы валидируют через Gateway
-- **Telegram**: для recovery и верификации аккаунтов
-- **Audit**: критичные действия логируются
+| Сервис | Использование |
+|--------|---------------|
+| **Gateway** | JWT валидация, добавление `X-User-Id`, `X-User-Role` headers |
+| **Notification** | Password recovery через Telegram/Email |
+| **Event** | Проверка заполненности профиля при бронировании |
 
 ## Безопасность
 
-- Password hashing: BCrypt (strength 12)
-- JWT secret: сильный ключ, env variable
-- Refresh token rotation: при каждом использовании
-- Rate limiting: 10 req/min на auth endpoints
-- Audit logging: все критичные операции
+| Механизм | Реализация |
+|----------|------------|
+| **Password hashing** | BCrypt (strength 12) |
+| **JWT secret** | Сильный ключ, environment variable |
+| **Refresh rotation** | Новый refresh при каждом использовании |
+| **Rate limiting** | 10 req/min для auth endpoints, 5 req/5min для recovery |
+| **Audit logging** | Все критичные операции (login, logout, role change) |
+| **Session cleanup** | Автоматическое удаление expired sessions (TTL > 30 дней) |
 
-## См. также
+## Audit Events
 
-- [Authentication](../authentication.md) - JWT и RBAC детали
-- [Security](../common/security.md) - политики безопасности
-- [User API](api.md) - REST endpoints
+| Action | Trigger | Payload |
+|--------|---------|---------|
+| `USER_REGISTERED` | Регистрация | - |
+| `USER_LOGIN` | Логин | `ip_address` |
+| `USER_LOGOUT` | Logout | - |
+| `PASSWORD_CHANGED` | Смена пароля | - |
+| `ROLE_CHANGED` | Изменение роли | `old_role`, `new_role` |
+| `PROFILE_UPDATED` | Обновление профиля | Измененные поля |
+
+---
+
+См. [Authentication](../authentication.md), [Security](../common/security.md), [User API](api.md).

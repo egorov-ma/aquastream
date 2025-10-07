@@ -1,53 +1,75 @@
-# Notification — операции
+# Notification Service — Operations
 
 ## Обзор
 
-Notification Service работает совместно с Telegram Bot API и хранит пользовательские предпочтения в PostgreSQL схеме `notification`.
+**Порт**: 8105
+**Схема БД**: `notification`
+**Env**: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `NOTIFICATION_OUTBOX_BATCH_SIZE`
 
-**Порт**: 8105  
-**Ключевые переменные**: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `NOTIFICATION_OUTBOX_BATCH_SIZE`
+## Telegram Webhook
 
-## Webhook Telegram
+**Настройка**:
+```bash
+curl -X POST "https://api.telegram.org/bot$TOKEN/setWebhook?url=https://<domain>/api/notifications/telegram/webhook"
+```
 
-- Настройка: `https://api.telegram.org/bot$TOKEN/setWebhook?url=https://<domain>/api/v1/notifications/telegram/webhook`
-- Проверка: `docker compose exec backend-notification curl -s http://localhost:8105/actuator/health`
-- Логи ошибок: `make logs SERVICE=backend-notification | grep webhook`
-- Повторные доставки выполняются автоматически с backoff; статус хранится в таблице `outbox`
+**Проверка**:
+```bash
+curl http://localhost:8105/actuator/health
+docker logs backend-notification | grep webhook
+```
 
-## Outbox и воркеры
+## Outbox и Workers
 
-- Outbox-записи со статусом `FAILED` пересылаются воркером каждые 30 секунд.
-- Проверка очереди:
-  ```bash
-  psql notification -c "select id, category, status, attempts from outbox order by created_at desc limit 20"
-  ```
-- Метрики: `notification.outbox.pending`, `notification.telegram.errors`
+| Параметр | Значение | Описание |
+|----------|----------|----------|
+| Retry interval | 30 секунд | Повторная отправка FAILED |
+| Batch size | `NOTIFICATION_OUTBOX_BATCH_SIZE` | Размер пакета worker'а |
+| Status | `pending`, `sent`, `failed` | Статусы в outbox |
+
+**Проверка очереди**:
+```sql
+SELECT id, category, status, attempts
+FROM outbox
+ORDER BY created_at DESC
+LIMIT 20;
+```
+
+**Метрики**: `notification.outbox.pending`, `notification.telegram.errors`
 
 ## Управление подписками
 
-- Таблица `notification_prefs` хранит настройки пользователями (обязательные категории всегда `enabled=true`).
-- Проверить подписки пользователя:
-  ```bash
-  psql notification -c "select category, channel, enabled from notification_prefs where user_id='<uuid>'"
-  ```
-- Привязка Telegram (`telegram_subscriptions`) создаётся после `/start <code>` и содержит `telegram_chat_id`
+**Проверка подписок пользователя**:
+```sql
+SELECT category, channel, enabled
+FROM notification_prefs
+WHERE user_id = '<uuid>';
+```
+
+**Проверка Telegram привязки**:
+```sql
+SELECT *
+FROM telegram_subscriptions
+WHERE user_id = '<uuid>';
+```
 
 ## Типичные задачи
 
 | Задача | Команда |
 |--------|---------|
-| Проверить состояние привязки | `psql notification -c "select * from telegram_subscriptions where user_id='<uuid>'"` |
-| Отправить тестовое уведомление | `POST /api/v1/notifications/test` (требует роль ADMIN) |
-| Перерегистрировать webhook | `curl -X POST https://api.telegram.org/bot$TOKEN/setWebhook -d url=https://<domain>/api/v1/notifications/telegram/webhook` |
+| **Проверить привязку** | `SELECT * FROM telegram_subscriptions WHERE user_id='<uuid>'` |
+| **Тестовое уведомление** | `POST /api/notifications/test` (ADMIN) |
+| **Перерегистрировать webhook** | `curl -X POST https://api.telegram.org/bot$TOKEN/setWebhook -d url=https://<domain>/api/notifications/telegram/webhook` |
 
 ## Troubleshooting
 
-- **Сообщения не доходят**: проверить `outbox`, убедиться что `notification.outbox.pending` не растёт, см. логи Telegram API.
-- **Webhook отвечает 401**: перепроверить `TELEGRAM_BOT_TOKEN` и `TELEGRAM_WEBHOOK_SECRET`.
-- **Пользователь не может привязать Telegram**: убедиться что deep-link передаёт правильный `code` и пользователь существует в User Service.
+| Проблема | Решение |
+|----------|---------|
+| **Сообщения не доходят** | 1. Проверить `outbox` (pending растет?)<br>2. Логи Telegram API<br>3. Метрика `notification.outbox.pending` |
+| **Webhook 401** | Проверить `TELEGRAM_BOT_TOKEN` и `TELEGRAM_WEBHOOK_SECRET` |
+| **Не работает привязка** | 1. Deep-link передает правильный `code`<br>2. Пользователь существует в User Service<br>3. Проверить логи `/start` команды |
+| **Worker застрял** | 1. Проверить Redis<br>2. Перезапустить сервис<br>3. Проверить `attempts` в outbox |
 
-## См. также
+---
 
-- [Notification Overview](README.md)
-- [Notification API](api.md)
-- [Incident Response runbook](../../operations/runbooks/incident-response.md)
+См. [Business Logic](business-logic.md), [API](api.md), [README](README.md).

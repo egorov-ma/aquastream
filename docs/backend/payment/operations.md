@@ -1,59 +1,54 @@
-# Payment — операции
+# Payment Service — Operations
 
 ## Обзор
 
-Payment Service зависит от внешних провайдеров. Все секреты хранятся в `.env.<env>` (`YOOKASSA_*`, `CLOUDPAYMENTS_*`, `STRIPE_*`).
-
-**Порт**: 8104  
+**Порт**: 8104
 **Схема БД**: `payment`
+**Env**: `YOOKASSA_*`, `CLOUDPAYMENTS_*`, `STRIPE_*`, `PAYMENT_WEBHOOK_BASE_URL`
 
-## Запуск и проверка
+## Запуск
 
 ```bash
 make up-dev
 curl http://localhost:8104/actuator/health
 
-# Проверка доступности провайдера (dev mock)
-curl http://localhost:8104/api/v1/payments/{bookingId}/init -H "Authorization: Bearer ..."
+# Инициализация платежа (dev mock)
+curl http://localhost:8104/api/payments/{bookingId}/init \
+  -H "Authorization: Bearer ..."
 ```
-
-## Конфигурация провайдеров
-
-- `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`
-- `CLOUDPAYMENTS_PUBLIC_ID`, `CLOUDPAYMENTS_API_SECRET`
-- `STRIPE_API_KEY`
-- `PAYMENT_WEBHOOK_BASE_URL` — публичный URL, который передаём в провайдера
 
 ## Мониторинг
 
-- Actuator metrics: `payment.provider.requests`, `payment.webhook.failures`.
-- Логи `make logs SERVICE=backend-payment` — смотреть статусы webhook.
-- Grafana панели: *Payments Overview* (успех/ошибки, время подтверждения).
+| Метрика | Описание |
+|---------|----------|
+| `payment.provider.requests` | Запросы к провайдерам |
+| `payment.webhook.failures` | Ошибки обработки вебхуков |
+| **Grafana**: Payments Overview | Успех/ошибки, время подтверждения |
 
-## Диагностика
+**Логи**: `docker logs backend-payment | grep webhook`
 
-| Ситуация | Что делать |
-|----------|------------|
-| Платёж завис в `PENDING` | Проверить webhook в логах, при необходимости повторно отправить через интерфейс провайдера |
-| Ошибка webhooks `signature invalid` | Сравнить секреты, синхронизировать `PAYMENT_WEBHOOK_BASE_URL` |
-| Дубликаты платежей | Проверить `webhook_events` (idempotency), удалить дубликаты и повторить обработку |
+## Troubleshooting
 
-## Повторная доставка webhook
+| Проблема | Решение |
+|----------|---------|
+| **Платеж завис в PENDING** | Проверить webhook в логах, повторно отправить через провайдера |
+| **`signature invalid`** | Сравнить секреты, синхронизировать `PAYMENT_WEBHOOK_BASE_URL` |
+| **Дубликаты платежей** | Проверить `webhook_events` (idempotency), удалить дубли, повторить обработку |
 
-1. Найти запись в `webhook_events` по `idempotency_key`.
-2. Убедиться, что статус `failed` и ошибка исправлена.
-3. В провайдере инициировать повторную отправку события.
-4. Проверить, что статус платежа обновился (`GET /api/v1/payments/{id}`).
+### Повторная доставка webhook
 
-## Чек-лист перед релизом провайдера
+1. Найти `webhook_events` по `idempotency_key`
+2. Убедиться `status=failed` и ошибка исправлена
+3. В провайдере инициировать повторную отправку
+4. Проверить статус: `GET /api/payments/{id}`
 
-- [ ] Обновлены ключи и URL вебхуков.
-- [ ] Проведено тестовое бронирование + платеж.
-- [ ] В `Event` подтверждение пришло автоматически.
-- [ ] Отчёты позволят отследить `FAILED/REFUNDED` операции.
+## Release Checklist
 
-## См. также
+- [ ] Обновлены ключи и webhook URLs
+- [ ] Тестовое бронирование + платеж
+- [ ] Event подтверждение работает автоматически
+- [ ] Мониторинг `FAILED/REFUNDED` операций
 
-- [Payment Overview](README.md)
-- [Payment API](api.md)
-- [Database Maintenance](../../operations/runbooks/database-maintenance.md)
+---
+
+См. [Business Logic](business-logic.md), [API](api.md), [README](README.md).

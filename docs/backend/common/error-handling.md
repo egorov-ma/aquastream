@@ -2,7 +2,9 @@
 
 ## Обзор
 
-Централизованная обработка ошибок через `GlobalExceptionHandler` в формате **RFC 7807 Problem Details**. Все backend сервисы автоматически получают эту функциональность через `backend-common`.
+Централизованная обработка ошибок через `GlobalExceptionHandler` в формате **RFC 7807 Problem Details**. Автоматически доступно всем сервисам через `backend-common`.
+
+**Автоконфигурация**: `CommonErrorHandlingAutoConfiguration` регистрирует handler автоматически.
 
 ## RFC 7807 Problem Details
 
@@ -27,143 +29,51 @@
 }
 ```
 
-**Headers**:
-```http
-Content-Type: application/problem+json
-```
+**Headers**: `Content-Type: application/problem+json`
 
-### Поля ProblemDetails
+### Поля
 
-| Поле | Тип | Описание |
-|------|-----|----------|
-| `type` | URI | Тип проблемы (https://aquastream.app/problems/{status}) |
-| `title` | String | Краткое описание (обычно HTTP status reason) |
-| `status` | Integer | HTTP status code |
-| `detail` | String | Детальное описание |
-| `instance` | URI | URI запроса который вызвал ошибку |
-| `code` | String | Машиночитаемый код ошибки |
-| `correlationId` | String | ID для трейсинга (из X-Request-Id или MDC) |
-| `errors` | Array | Массив валидационных ошибок (опционально) |
+| Поле | Описание |
+|------|----------|
+| `type` | URI типа проблемы: `https://aquastream.app/problems/{status}` |
+| `title` | Краткое описание (HTTP status reason) |
+| `status` | HTTP status code |
+| `detail` | Детальное описание |
+| `instance` | URI запроса |
+| `code` | Машиночитаемый код (например, `validation.failed`) |
+| `correlationId` | ID для трейсинга (из `X-Request-Id` или генерируется) |
+| `errors` | Массив валидационных ошибок (опционально) |
 
-## Реализация (backend-common)
+## Маппинг исключений
 
-### GlobalExceptionHandler
-
-Обрабатывает все исключения и преобразует в Problem Details:
-
-```java
-@ControllerAdvice
-public class GlobalExceptionHandler {
-    
-    // ApiException → Problem Details
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ProblemDetails> handleApiException(ApiException ex) {
-        // status, code, detail из исключения
-    }
-    
-    // Bean Validation → 400 + errors[]
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetails> handleValidation(
-        MethodArgumentNotValidException ex
-    ) {
-        // Собрать field errors в errors[]
-    }
-    
-    // Security → 401 Unauthorized
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ProblemDetails> handleAuth(...) {
-        // code: "unauthorized"
-    }
-    
-    // Security → 403 Forbidden
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ProblemDetails> handleAccessDenied(...) {
-        // code: "access.denied"
-    }
-    
-    // ResponseStatusException → соответствующий status
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ProblemDetails> handleResponseStatus(...) {
-        // Маппинг status → code
-    }
-    
-    // Любые другие → 500
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetails> handleOther(...) {
-        // code: "internal.error"
-        // detail: "Unexpected error" (без stacktrace!)
-    }
-}
-```
-
-### Автоконфигурация
-
-Включается автоматически для всех сервисов:
-
-```java
-@AutoConfiguration
-public class CommonErrorHandlingAutoConfiguration {
-    @Bean
-    public GlobalExceptionHandler globalExceptionHandler() {
-        return new GlobalExceptionHandler();
-    }
-}
-```
-
-## Маппинг исключений → HTTP Status
-
-| Исключение | Status | Code | Title |
-|------------|--------|------|-------|
-| `ApiException` | Из ex.status | Из ex.code | Status reason |
-| `MethodArgumentNotValidException` | 400 | `validation.failed` | Validation Failed |
-| `AuthenticationException` | 401 | `unauthorized` | Unauthorized |
-| `AccessDeniedException` | 403 | `access.denied` | Forbidden |
-| `ResponseStatusException(404)` | 404 | `not.found` | Not Found |
-| `ResponseStatusException(409)` | 409 | `conflict` | Conflict |
-| `ResponseStatusException(422)` | 422 | `unprocessable` | Unprocessable Entity |
-| `ResponseStatusException(429)` | 429 | `rate.limit-exceeded` | Too Many Requests |
-| `Exception` (fallback) | 500 | `internal.error` | Internal Server Error |
-
-### Rate Limit Special Handling
-
-```http
-HTTP/1.1 429 Too Many Requests
-Retry-After: 60
-Content-Type: application/problem+json
-
-{
-  "type": "https://aquastream.app/problems/429",
-  "title": "Too Many Requests",
-  "status": 429,
-  "code": "rate.limit-exceeded",
-  "detail": "Rate limit exceeded",
-  "correlationId": "..."
-}
-```
-
-**Обязательно**: заголовок `Retry-After` для 429 responses
+| Исключение | Status | Code | Особенности |
+|------------|--------|------|-------------|
+| `ApiException` | Из ex.status | Из ex.code | Кастомные ошибки |
+| `MethodArgumentNotValidException` | 400 | `validation.failed` | Bean Validation → `errors[]` |
+| `AuthenticationException` | 401 | `unauthorized` | Security |
+| `AccessDeniedException` | 403 | `access.denied` | Security |
+| `ResponseStatusException(404)` | 404 | `not.found` | Ресурс не найден |
+| `ResponseStatusException(409)` | 409 | `conflict` | Дубликаты |
+| `ResponseStatusException(422)` | 422 | `unprocessable` | Бизнес-правила |
+| `ResponseStatusException(429)` | 429 | `rate.limit-exceeded` | + `Retry-After` header |
+| `Exception` (fallback) | 500 | `internal.error` | Без stacktrace |
 
 ## ApiException
 
-### Использование в сервисах
-
+**Использование**:
 ```java
-// Создание кастомного исключения
+// Базовое
 throw new ApiException(404, "event.not-found", "Event not found");
 
 // С деталями
-throw new ApiException(
-    409, 
-    "booking.duplicate", 
-    "Active booking already exists for this event"
-);
+throw new ApiException(409, "booking.duplicate",
+    "Active booking already exists for this event");
 
 // Rate limit
 throw new ApiException(429, "rate.limit-exceeded", "Too many requests");
 ```
 
-### Конструктор
-
+**Конструктор**:
 ```java
 public ApiException(int status, String code, String message) {
     super(message);
@@ -174,68 +84,49 @@ public ApiException(int status, String code, String message) {
 
 ## Correlation ID
 
-### Автоматическое добавление
+**Автоматически**:
+1. `CorrelationIdFilter` читает `X-Request-Id` header или генерирует новый
+2. Добавляет в MDC как `correlationId`
+3. Propagates в логи и error responses
 
-`CorrelationIdFilter` автоматически:
-1. Читает `X-Request-Id` заголовок
-2. Если отсутствует - генерирует новый (через `Ids.newIdempotencyKey()`)
-3. Добавляет в MDC как `correlationId`
-4. Propagates в логи и error responses
-
-### В логах
-
+**Логи**:
 ```
 [correlationId=xR3k9mP2nQ] POST /api/bookings - 201 Created
 [correlationId=xR3k9mP2nQ] Booking created: id=550e8400...
 ```
 
-### В ответах
+**Ответы**: Автоматически в ProblemDetails.
 
-Автоматически добавляется в ProblemDetails:
-
-```json
-{
-  ...
-  "correlationId": "xR3k9mP2nQ"
-}
+**Отладка**:
+```bash
+# Найти все логи запроса
+grep "xR3k9mP2nQ" logs/*.log
 ```
 
 ## Validation Errors
 
-### Bean Validation
-
+**DTO с аннотациями**:
 ```java
-// DTO с аннотациями
 public class CreateBookingRequest {
     @NotNull(message = "Event ID is required")
     private UUID eventId;
-    
-    @Positive
-    @Max(10)
+
+    @Positive @Max(10)
     private Integer quantity;
 }
 ```
 
-### Error Response
-
+**Response**:
 ```json
 {
   "type": "https://aquastream.app/problems/400",
-  "title": "Validation Failed",
   "status": 400,
   "code": "validation.failed",
-  "instance": "/api/bookings",
-  "correlationId": "xR3k9mP2nQ",
   "errors": [
     {
       "field": "eventId",
       "message": "Event ID is required",
       "code": "NotNull"
-    },
-    {
-      "field": "quantity",
-      "message": "must be less than or equal to 10",
-      "code": "Max"
     }
   ]
 }
@@ -243,80 +134,76 @@ public class CreateBookingRequest {
 
 ## Error Codes
 
-### Стандартные коды
+### Стандартные
 
 | Code | Status | Описание |
 |------|--------|----------|
-| `bad.request` | 400 | Некорректный запрос |
+| `bad.request` | 400 | Некорректный синтаксис запроса |
 | `unauthorized` | 401 | Не авторизован |
-| `access.denied` | 403 | Доступ запрещен |
+| `access.denied` | 403 | Нет прав |
 | `not.found` | 404 | Ресурс не найден |
-| `conflict` | 409 | Конфликт (duplicate, etc) |
+| `conflict` | 409 | Конфликт (duplicate, concurrency) |
 | `validation.failed` | 400 | Ошибка валидации |
-| `unprocessable` | 422 | Бизнес-правило нарушено |
-| `rate.limit-exceeded` | 429 | Превышен лимит запросов |
+| `unprocessable` | 422 | Нарушение бизнес-правила |
+| `rate.limit-exceeded` | 429 | Превышен лимит (+ `Retry-After` header) |
 | `internal.error` | 500 | Внутренняя ошибка |
 
-### Доменные коды
+### Доменные
 
-Сервисы могут определять свои:
-- `event.not-found` - событие не найдено
-- `booking.duplicate` - дубликат брони
-- `booking.expired` - бронь истекла
-- `payment.failed` - оплата не прошла
-- `profile.incomplete` - профиль не заполнен
+Сервисы определяют свои:
+- `event.not-found`, `event.full`
+- `booking.duplicate`, `booking.expired`
+- `payment.failed`
+- `profile.incomplete`
 
 ## Best Practices
 
-### Не раскрывайте внутренние детали
+| Правило | ✅ Хорошо | ❌ Плохо |
+|---------|----------|---------|
+| **Сообщения** | "Phone or Telegram must be filled" | "Validation error: field phone null" |
+| **500 errors** | "Unexpected error" | Stacktrace в response |
+| **Correlation ID** | Автоматически через CorrelationIdFilter | Ручное добавление |
+| **HTTP статусы** | 400 (синтаксис), 422 (бизнес-правило) | 400 для всего |
+| **429 Rate Limit** | Обязательно `Retry-After` header | Без header |
 
-```java
-// ✅ Хорошо
-throw new ApiException(500, "internal.error", "Unexpected error");
-
-// ❌ Плохо - stacktrace в response
-throw new Exception("NullPointerException at UserService.java:123");
-```
-
-### Используйте понятные сообщения
-
-```java
-// ✅ Хорошо
-"Phone or Telegram must be filled in profile"
-
-// ❌ Плохо
-"Validation error: field phone null"
-```
-
-### Всегда включайте correlationId
-
-- Автоматически через CorrelationIdFilter
-- Можно передать из клиента через `X-Request-Id`
-- Используется для отладки и трейсинга
-
-### Используйте правильные HTTP статусы
+### HTTP статусы
 
 - **400**: Bad Request (некорректный синтаксис)
 - **401**: Unauthorized (нет/невалидный токен)
 - **403**: Forbidden (нет прав)
 - **404**: Not Found (ресурс не существует)
 - **409**: Conflict (duplicate, concurrency)
-- **422**: Unprocessable (бизнес-правило)
+- **422**: Unprocessable (бизнес-правило нарушено)
 - **429**: Too Many Requests
 - **500**: Internal Server Error
 
-## Автоматическая конфигурация
+## GlobalExceptionHandler
 
-Все сервисы автоматически получают:
-- ✅ GlobalExceptionHandler (@ControllerAdvice)
-- ✅ ProblemDetails serialization
-- ✅ CorrelationId в MDC
-- ✅ RFC 7807 Content-Type: `application/problem+json`
+**Ключевые методы**:
 
-Никаких дополнительных настроек не требуется!
+```java
+@ControllerAdvice
+public class GlobalExceptionHandler {
 
-## См. также
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ProblemDetails> handleApiException(ApiException ex) {
+        // status, code, detail из исключения
+    }
 
-- [Backend Common](README.md) - обзор модуля
-- [Security](security.md) - обработка security exceptions
-- [API Design](../../development/style-guides.md) - API guidelines
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ProblemDetails> handleValidation(...) {
+        // Собирает field errors в errors[]
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ProblemDetails> handleOther(...) {
+        // Fallback → 500 без stacktrace
+    }
+}
+```
+
+**Автоматическая регистрация**: Все сервисы получают handler, ProblemDetails serialization, RFC 7807 Content-Type.
+
+---
+
+См. [Backend Common](README.md), [Security](security.md), [Web Utilities](web-utilities.md), [API Design](../../development/style-guides.md).

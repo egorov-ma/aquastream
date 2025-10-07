@@ -1,57 +1,36 @@
----
-title: User Service
-summary: Сервис управления пользователями - регистрация, аутентификация, профили и управление сессиями.
----
-
 # User Service
 
-## Назначение
+## Обзор
 
-User Service отвечает за управление пользователями системы AquaStream:
-- Регистрация и аутентификация пользователей
-- Управление профилями пользователей
-- Сессии и токены доступа
-- Роли и права доступа
+User Service управляет пользователями: регистрация, аутентификация, профили, JWT sessions.
+
+**Порт**: 8101
+**Схема БД**: `user`
 
 ## Основные функции
 
-### Аутентификация
-- Регистрация новых пользователей
-- Вход в систему (email/password)
-- JWT токены и refresh tokens
-- Сброс пароля
+| Функция | Возможности |
+|---------|-------------|
+| **Аутентификация** | Регистрация, login (email/password), JWT + refresh tokens, password recovery |
+| **Профили** | CRUD профиля, настройки, аватары, верификация email |
+| **Авторизация** | Роли (USER, ORGANIZER, ADMIN), проверка прав |
 
-### Профили
-- CRUD операции с профилем пользователя
-- Настройки и предпочтения
-- Загрузка аватаров
-- Верификация email
+## Ключевые endpoints
 
-### Авторизация
-- Роли: `USER`, `ORGANIZER`, `ADMIN`, `SUPER_ADMIN`
-- Права доступа к ресурсам
-- Проверка разрешений
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| POST | `/api/auth/register` | Регистрация |
+| POST | `/api/auth/login` | Вход |
+| POST | `/api/auth/refresh` | Обновление токенов |
+| POST | `/api/auth/logout` | Выход (revoke refresh) |
+| GET | `/api/users/me` | Получить профиль |
+| PUT | `/api/users/me` | Обновить профиль |
 
-## API
+## Внешние зависимости
 
-Подробное описание API см. в [API документации](api.md)
+- **Notification Service**: Email/Telegram для recovery
+- **Media Service**: Аватары пользователей
 
-**Основные endpoints:**
-- `POST /api/v1/auth/register` - регистрация
-- `POST /api/v1/auth/login` - вход в систему
-- `GET /api/v1/users/profile` - профиль пользователя
-- `PUT /api/v1/users/profile` - обновление профиля
+---
 
-## Технические детали
-
-**Порт:** 8101
-**База данных:** `user_service` schema в PostgreSQL
-**Внешние зависимости:**
-- Notification Service (отправка email)
-- Media Service (аватары пользователей)
-
-## См. также
-
-- [Business Logic](business-logic.md) - бизнес-логика и процессы
-- [Operations](operations.md) - эксплуатация и мониторинг
-- Changelog — TBD
+См. [Business Logic](business-logic.md), [API](api.md), [Operations](operations.md).

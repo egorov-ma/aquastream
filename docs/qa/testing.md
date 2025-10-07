@@ -1,6 +1,6 @@
 ---
 title: Testing
-summary: Comprehensive testing plans: backend, frontend, integration, E2E, automation, manual
+summary: Comprehensive testing plans:: backend, frontend, integration, E2E, automation, manual
 tags: [qa, testing, automation, manual]
 ---
 

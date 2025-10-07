@@ -4,118 +4,73 @@
 
 PostgreSQL 16, одна база данных с разделением по схемам для каждого сервиса. Миграции управляются через Liquibase.
 
-## Подключение
-
-### Development
-
+**Подключение** (dev):
 ```bash
-Host: localhost
-Port: 5432
+Host: localhost:5432
 Database: aquastream
 User: aquastream
 Password: password123
 
-# JDBC URL
-jdbc:postgresql://localhost:5432/aquastream
-
 # psql
-psql -h localhost -p 5432 -U aquastream -d aquastream
-```
+psql -h localhost -U aquastream -d aquastream
 
-### Из контейнера
-
-```bash
-# Подключение к PostgreSQL контейнеру
+# Docker
 docker exec -it aquastream-postgres psql -U aquastream -d aquastream
-
-# Список схем
-\dn
-
-# Список таблиц в схеме
-\dt user.*
 ```
 
-## Схемы и ключевые таблицы
+## Схемы и таблицы
 
-### user
-```sql
-users (id, username, password_hash, role, active)
-profiles (user_id, phone, telegram, is_telegram_verified, extra)
-refresh_sessions (jti, user_id, issued_at, expires_at, revoked_at)
-recovery_codes (user_id, code_hash, used_at, expires_at)
-audit_log (id, actor_user_id, action, target_type, target_id, payload)
-```
+| Схема | Ключевые таблицы | Описание |
+|-------|------------------|----------|
+| **user** | `users`, `profiles`, `refresh_sessions`, `recovery_codes`, `audit_log` | Пользователи, профили, JWT sessions, audit |
+| **event** | `organizers`, `events`, `bookings`, `booking_logs`, `waitlist`, `favorites`, `team_members`, `faq_items` | События, бронирования, waitlist, организаторы |
+| **crew** | `crews`, `crew_assignments`, `team_preferences` | Экипажи, назначения, предпочтения |
+| **payment** | `payments`, `payment_receipts`, `webhook_events` | Оплата, QR-receipts, webhooks |
+| **notification** | `notification_prefs`, `telegram_subscriptions`, `outbox` | Настройки уведомлений, Telegram, очередь |
+| **media** | `files` | Загруженные файлы, S3 keys |
 
-### event
-```sql
-organizers (id, slug, name, logo_url, description, contacts, brand_color)
-events (id, organizer_id, type, title, date_start, date_end, location, price, capacity, available, status)
-bookings (id, event_id, user_id, status, amount, payment_status, payment_id, expires_at, created_by)
-booking_logs (id, booking_id, action, old_value, new_value, actor_user_id)
-waitlist (id, event_id, user_id, priority, notified_at, notification_expires_at)
-favorites (user_id, event_id)
-team_members (id, organizer_id, name, role, photo_url, bio)
-faq_items (id, organizer_id, question, answer)
-```
+### Детали ключевых таблиц
 
-### crew
-```sql
-crews (id, event_id, name, type, capacity)
-crew_assignments (id, crew_id, user_id, booking_id, seat_number, assigned_by)
-team_preferences (user_id, event_id, prefers_with_user_ids[], avoids_user_ids[])
-```
+**user.users**: `id`, `username` (unique), `password_hash`, `role`, `active`
+**user.profiles**: `user_id` (PK, FK), `phone`, `telegram`, `is_telegram_verified`, `extra` (JSONB)
 
-### payment
-```sql
-payments (id, booking_id, method, amount, currency, status, provider, provider_payment_id)
-payment_receipts (id, payment_id, proof_url, reviewed_by, reviewed_at)
-webhook_events (idempotency_key, provider, raw_payload, status, processed_at)
-```
+**event.events**: `id`, `organizer_id`, `type`, `title`, `date_start`, `date_end`, `location`, `price`, `capacity`, `available`, `status`
+**event.bookings**: `id`, `event_id`, `user_id`, `status`, `amount`, `payment_status`, `payment_id`, `expires_at`
+**event.waitlist**: `id`, `event_id`, `user_id`, `priority`, `notified_at`, `notification_expires_at`
 
-### notification
-```sql
-notification_prefs (user_id, category, channel, enabled)
-telegram_subscriptions (user_id, telegram_username, telegram_chat_id, verified_at)
-outbox (id, user_id, category, payload, status, attempts, sent_at)
-```
+**crew.crews**: `id`, `event_id`, `name`, `type` (CREW/TENT/TABLE/BUS), `capacity`, `current_size`
 
-### media
-```sql
-files (id, owner_type, owner_id, file_key, content_type, size_bytes, storage_url, expires_at)
-```
+**payment.payments**: `id`, `booking_id`, `method`, `amount`, `status`, `provider`, `provider_payment_id`
 
 ## Миграции (Liquibase)
 
-### Структура миграций
-
-Каждый сервис управляет миграциями своей схемы:
+### Структура
 
 ```
-backend-[service]-db/
-└── src/main/resources/
-    └── db/changelog/
-        ├── db.changelog-master.xml          # Главный файл
-        ├── changesets/
-        │   ├── 001-initial-schema.sql       # Создание схемы и таблиц
-        │   ├── 002-add-indexes.sql          # Индексы
-        │   ├── 003-add-constraints.sql      # Ограничения
-        │   └── ...
-        └── data/
-            └── seed-data.sql                # Начальные данные (dev)
+backend-[service]-db/src/main/resources/db/changelog/
+├── db.changelog-master.xml       # Главный файл
+├── changesets/
+│   ├── 001-initial-schema.sql
+│   ├── 002-add-indexes.sql
+│   └── ...
+└── data/
+    └── seed-data.sql             # Dev only
 ```
 
-### Запуск миграций
+### Запуск
 
-```bash
-# Автоматически при старте сервиса
-# Настроено в application.yml:
+**Автоматически** при старте сервиса (настроено в `application.yml`):
+```yaml
 spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
     default-schema: [service_schema]
+```
 
-# Вручную через Gradle
+**Вручную**:
+```bash
+# Применить миграции
 ./gradlew :backend-user:backend-user-db:update
 
 # Откат последнего changeset
@@ -124,61 +79,40 @@ spring:
 
 ### Best Practices
 
-- Каждый changeset - атомарная операция
-- ID формата: `YYYYMMDD-HHmm-description`
-- Никогда не изменять примененные changesets
-- Использовать rollback стратегии
-- Тестировать миграции на копии prod данных
+| Правило | Описание |
+|---------|----------|
+| Атомарность | Каждый changeset - одна операция |
+| ID формат | `YYYYMMDD-HHmm-description` |
+| Неизменность | Никогда не изменять примененные changesets |
+| Rollback | Всегда предусматривать rollback стратегию |
+| Тестирование | На копии prod данных |
 
-## Индексы и оптимизация
+## Индексы
 
-### Ключевые индексы
+### Критичные индексы
 
-#### user схема
-```sql
-CREATE INDEX idx_users_username ON user.users(username);
-CREATE INDEX idx_users_active ON user.users(active) WHERE active = true;
-CREATE INDEX idx_refresh_sessions_jti ON user.refresh_sessions(jti);
-CREATE INDEX idx_refresh_sessions_user_id ON user.refresh_sessions(user_id);
-```
-
-#### event схема
-```sql
-CREATE INDEX idx_events_organizer_id ON event.events(organizer_id);
-CREATE INDEX idx_events_status ON event.events(status);
-CREATE INDEX idx_events_date_start ON event.events(date_start);
-CREATE INDEX idx_bookings_event_id ON event.bookings(event_id);
-CREATE INDEX idx_bookings_user_id ON event.bookings(user_id);
-CREATE INDEX idx_bookings_status ON event.bookings(status);
-CREATE INDEX idx_waitlist_event_id ON event.waitlist(event_id);
-```
-
-#### payment схема
-```sql
-CREATE INDEX idx_payments_booking_id ON payment.payments(booking_id);
-CREATE INDEX idx_payments_status ON payment.payments(status);
-CREATE INDEX idx_payments_provider_payment_id ON payment.payments(provider_payment_id);
-CREATE INDEX idx_webhook_events_idempotency ON payment.webhook_events(idempotency_key);
-```
+| Схема | Индекс | Цель |
+|-------|--------|------|
+| **user** | `idx_users_username` | Login lookup |
+| | `idx_refresh_sessions_jti`, `idx_refresh_sessions_user_id` | JWT refresh |
+| **event** | `idx_events_organizer_id`, `idx_events_status`, `idx_events_date_start` | Events filtering |
+| | `idx_bookings_event_id`, `idx_bookings_user_id`, `idx_bookings_status` | Bookings queries |
+| | `idx_waitlist_event_id` | Waitlist processing |
+| **crew** | `idx_crews_event_id`, `idx_crew_assignments_crew_id`, `idx_crew_assignments_user_id` | Crew queries |
+| **payment** | `idx_payments_booking_id`, `idx_payments_status`, `idx_payments_provider_payment_id` | Payment tracking |
+| | `idx_webhook_events_idempotency` | Webhook deduplication |
 
 ### Query optimization
 
 ```sql
--- Использование EXPLAIN ANALYZE
-EXPLAIN ANALYZE 
-SELECT * FROM event.events 
-WHERE status = 'PUBLISHED' 
-  AND date_start > CURRENT_DATE
+-- EXPLAIN ANALYZE
+EXPLAIN ANALYZE
+SELECT * FROM event.events
+WHERE status = 'PUBLISHED' AND date_start > CURRENT_DATE
 ORDER BY date_start;
 
--- Проверка использования индексов
-SELECT 
-    schemaname,
-    tablename,
-    indexname,
-    idx_scan,
-    idx_tup_read,
-    idx_tup_fetch
+-- Индексная статистика
+SELECT schemaname, tablename, indexname, idx_scan
 FROM pg_stat_user_indexes
 WHERE schemaname = 'event'
 ORDER BY idx_scan DESC;
@@ -186,7 +120,7 @@ ORDER BY idx_scan DESC;
 
 ## Connection Pooling
 
-### HikariCP настройки (application.yml)
+### HikariCP настройки
 
 ```yaml
 spring:
@@ -197,96 +131,56 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
-      pool-name: AquaStreamHikariCP
 ```
 
-### Мониторинг пула
+**Мониторинг**: `curl http://localhost:8101/actuator/metrics/hikaricp.connections.active`
 
-```bash
-# Через Actuator
-curl http://localhost:8101/actuator/metrics/hikaricp.connections.active
-
-# Логи HikariCP
-logging:
-  level:
-    com.zaxxer.hikari: DEBUG
-```
-
-## Типы данных и ограничения
-
-### Общие enum типы (в backend-common)
-
-```java
-// Статусы централизованы
-public enum BookingStatus {
-    PENDING,
-    CONFIRMED,
-    CANCELLED,
-    COMPLETED
-}
-
-public enum PaymentStatus {
-    PENDING,
-    PROCESSING,
-    SUCCEEDED,
-    FAILED,
-    REFUNDED
-}
-
-public enum EventStatus {
-    DRAFT,
-    PUBLISHED,
-    CANCELLED,
-    COMPLETED
-}
-```
+## Constraints
 
 ### PostgreSQL constraints
 
-```sql
--- Check constraints
-ALTER TABLE event.events 
-ADD CONSTRAINT check_capacity 
-CHECK (capacity > 0);
+| Тип | Примеры |
+|-----|---------|
+| **Check** | `event.events`: `capacity > 0`, `date_end >= date_start` |
+| **Unique** | `user.users`: `username`, `event.crews`: `(event_id, name)` |
+| **Foreign Keys** | `event.bookings.event_id` → `event.events.id` ON DELETE CASCADE |
+| **Partial indexes** | `user.refresh_sessions`: WHERE `revoked_at IS NULL` |
 
-ALTER TABLE event.events 
-ADD CONSTRAINT check_dates 
-CHECK (date_end >= date_start);
+## Enum типы
 
--- Unique constraints
-ALTER TABLE user.users 
-ADD CONSTRAINT unique_username 
-UNIQUE (username);
+**Централизованы в `backend-common`**:
 
--- Foreign keys
-ALTER TABLE event.bookings 
-ADD CONSTRAINT fk_event 
-FOREIGN KEY (event_id) 
-REFERENCES event.events(id) 
-ON DELETE CASCADE;
-```
+| Enum | Значения |
+|------|----------|
+| `BookingStatus` | PENDING, CONFIRMED, CANCELLED, COMPLETED, NO_SHOW, EXPIRED |
+| `PaymentStatus` | PENDING, PROCESSING, SUCCEEDED, FAILED, REFUNDED |
+| `EventStatus` | DRAFT, PUBLISHED, CANCELLED, COMPLETED |
+| `CrewType` | CREW, TENT, TABLE, BUS |
 
 ## Backup & Restore
 
 См. [Backup & Recovery Guide](../operations/backup-recovery.md) для детальной информации.
 
-### Быстрый backup
-
+**Быстрый backup**:
 ```bash
-# Backup всей БД
-pg_dump -h localhost -U aquastream -d aquastream > backup.sql
+# Вся БД
+pg_dump -h localhost -U aquastream aquastream > backup.sql
 
-# Backup конкретной схемы
-pg_dump -h localhost -U aquastream -d aquastream -n event > event_schema.sql
+# Конкретная схема
+pg_dump -h localhost -U aquastream -n event aquastream > event_schema.sql
 
 # Restore
-psql -h localhost -U aquastream -d aquastream < backup.sql
+psql -h localhost -U aquastream aquastream < backup.sql
 ```
 
 ## Примечания
 
-- Статусы и enum'ы централизованы в `backend-common`
-- Истечение pending-броней и обработка waitlist реализованы планировщиком в `backend-event`
-- Все даты хранятся в UTC
-- Soft delete используется для audit trail (поле `deleted_at`)
-- Миграции применяются автоматически при старте сервиса
+- ✅ Все даты хранятся в UTC
+- ✅ Soft delete для audit trail (поле `deleted_at`)
+- ✅ Миграции применяются автоматически при старте
+- ✅ Статусы и enum'ы централизованы в `backend-common`
+- ✅ Истечение pending-броней обрабатывает планировщик в `backend-event`
+
+---
+
+См. [Operations Guide](../operations/README.md), [Deployment](../operations/deployment.md), [Monitoring](../operations/monitoring.md).

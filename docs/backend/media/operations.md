@@ -1,60 +1,59 @@
-# Media — операции
+# Media Service — Operations
 
 ## Обзор
 
-Media Service работает вместе с MinIO. Любые изменения конфигурации выполняются через переменные `MEDIA_*` и настройки MinIO.
-
-**Порт сервиса**: 8106  
-**Основные зависимости**: MinIO (`MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`), PostgreSQL схема `media`.
-
-## Запуск и проверка
-
-```bash
-# Локальный запуск вместе с MinIO
-make up-dev
-
-# Проверка health
-curl http://localhost:8106/actuator/health
-
-# Проверка связи с MinIO
-docker compose exec minio mc ls local/
-```
+**Порт**: 8106
+**Зависимости**: MinIO (`MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`), схема БД `media`
 
 ## Конфигурация
 
-- `MEDIA_UPLOAD_MAX_SIZE_MB` — предельный размер файлов (по умолчанию 25 MB).
-- `MEDIA_ALLOWED_MIME` — список разрешённых MIME-типа.
-- `MEDIA_PRESIGNED_TTL_MINUTES` — TTL presigned URL (стандартно 15 минут).
-- Retention настраивается через `media.retention.*` в `application.yml` (proofs 90 дней, event images — без удаления).
+| Параметр | Default | Описание |
+|----------|---------|----------|
+| `MEDIA_UPLOAD_MAX_SIZE_MB` | 25 | Максимальный размер файла |
+| `MEDIA_ALLOWED_MIME` | - | Разрешенные MIME-типы |
+| `MEDIA_PRESIGNED_TTL_MINUTES` | 15 | TTL presigned URLs |
+| Retention | - | `media.retention.*` в application.yml |
+
+## Запуск
+
+```bash
+make up-dev
+curl http://localhost:8106/actuator/health
+
+# Проверка MinIO
+docker compose exec minio mc ls local/
+```
 
 ## Мониторинг
 
-- Actuator `/actuator/metrics/media.storage.requests` — количество операций.
-- Логи: `make logs SERVICE=backend-media` — ошибки доступа или MinIO timeouts.
-- Grafana dashboard *Media Storage* (запросы, размер хранилища).
+| Метрика | Описание |
+|---------|----------|
+| `media.storage.requests` | Количество операций (Actuator) |
+| **Логи** | `docker logs backend-media` - ошибки доступа/MinIO timeouts |
+| **Grafana**: Media Storage | Запросы, размер хранилища |
 
 ## Типичные операции
 
 | Задача | Команда |
 |--------|---------|
-| Проверить метаданные файла | `psql media -c "select * from files where id='<uuid>'"` |
-| Удалить проблемный файл | `docker compose exec minio mc rm local/<bucket>/<key>` |
-| Повторно выдать ссылку | `POST /api/v1/documents/{id}` (см. API) |
+| **Проверить метаданные** | `psql media -c "SELECT * FROM files WHERE id='<uuid>'"` |
+| **Удалить файл** | `docker compose exec minio mc rm local/<bucket>/<key>` |
+| **Повторно выдать ссылку** | `POST /api/documents/{id}` |
 
 ## Retention
 
-- Payment proofs: автоудаление по крону (`media.retention.payment-proofs.cron`).
-- Отчёт в логах после каждого прохода (`RetentionJob`).
-- Проверка: `psql media -c "select file_key, expires_at from files where owner_type='payment_proof'"`.
+- **Payment proofs**: автоудаление через 90 дней (cron `RetentionJob`)
+- **Event images**: постоянно
+- **Проверка**: `psql media -c "SELECT file_key, expires_at FROM files WHERE owner_type='payment_proof'"`
 
 ## Troubleshooting
 
-- **403 при скачивании** — проверить права доступа (owner), TTL ссылки.
-- **SignatureDoesNotMatch** — убедиться, что часы синхронизированы и секреты MinIO актуальны.
-- **Large file uploads fail** — увеличить `MEDIA_UPLOAD_MAX_SIZE_MB` и параметры `nginx.conf` (`client_max_body_size`).
+| Проблема | Решение |
+|----------|---------|
+| **403 при скачивании** | Проверить права доступа (owner), TTL ссылки |
+| **SignatureDoesNotMatch** | Синхронизировать часы, проверить секреты MinIO |
+| **Large file upload fails** | Увеличить `MEDIA_UPLOAD_MAX_SIZE_MB` и `nginx client_max_body_size` |
 
-## См. также
+---
 
-- [Media Service Overview](README.md)
-- [Media API](api.md)
-- [Deployment Guide](../../operations/deployment.md)
+См. [Business Logic](business-logic.md), [API](api.md), [README](README.md).

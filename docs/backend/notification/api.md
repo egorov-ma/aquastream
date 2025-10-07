@@ -1,19 +1,37 @@
 # Notification API
 
-API уведомлений включает Telegram webhook и REST методы управления предпочтениями.
+API уведомлений: Telegram webhook, управление предпочтениями.
 
-## Основные эндпоинты
+## Endpoints
 
-- `POST /api/v1/notifications/telegram/webhook` — приём апдейтов от Telegram (валидируется бот-токеном).
-- `POST /api/v1/notifications/subscriptions` — обновление предпочтений пользователя (категория/канал/статус).
-- `GET /api/v1/notifications/subscriptions` — получение текущих настроек пользователя.
-- `POST /api/v1/notifications/test` — отправка тестового сообщения (только ADMIN).
+| Метод | Endpoint | Описание | Доступ |
+|-------|----------|----------|--------|
+| POST | `/api/notifications/telegram/webhook` | Прием апдейтов от Telegram | Signature Telegram |
+| POST | `/api/notifications/subscriptions` | Обновление предпочтений (категория/канал/статус) | USER |
+| GET | `/api/notifications/subscriptions` | Получение настроек пользователя | USER |
+| POST | `/api/notifications/test` | Тестовое сообщение | ADMIN |
 
-## Категории и каналы
+## Категории
 
-- **Обязательные**: `BOOKING_CONFIRMED`, `PAYMENT_STATUS`, `EVENT_REMINDER` — отключить нельзя.
-- **Опциональные**: `WAITLIST_AVAILABLE`, `EVENT_NEWS` — пользователь может отписаться.
-- Каналы: `telegram` (основной), `email/sms` (заготовки для будущих интеграций).
+| Тип | Категории | Управление |
+|-----|-----------|------------|
+| **Обязательные** | BOOKING_CONFIRMED, PAYMENT_STATUS, EVENT_REMINDER | Нельзя отключить |
+| **Опциональные** | WAITLIST_AVAILABLE, EVENT_NEWS | Пользователь может отписаться |
 
-## Документация API
-- Полная спецификация: [`../../api/redoc/root/backend-notification-api.html`](../../api/redoc/root/backend-notification-api.html)
+## Каналы
+
+| Канал | Статус | Приоритет |
+|-------|--------|-----------|
+| `telegram` | Активен | 1 (основной) |
+| `email` | Заготовка | 2 (fallback) |
+| `sms` | Заготовка | 3 (резерв) |
+
+## Безопасность
+
+- ✅ Webhook: валидация по bot-токену
+- ✅ REST: JWT для пользовательских операций
+- ✅ ADMIN только для тестовых сообщений
+
+---
+
+См. [Business Logic](business-logic.md), [Operations](operations.md), [README](README.md).

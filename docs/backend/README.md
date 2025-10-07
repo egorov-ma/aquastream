@@ -1,52 +1,44 @@
----
-title: Backend Overview
-summary: Обзор backend архитектуры AquaStream - микросервисы, общие компоненты и принципы проектирования.
----
-
 # Backend Architecture
 
-## Архитектура
+## Обзор
 
 AquaStream backend построен на микросервисной архитектуре с использованием Java Spring Boot. Каждый сервис отвечает за определенную бизнес-область и взаимодействует через API Gateway.
 
-### Модули сервисов
+## Сервисы
 
-- **[Gateway](gateway/README.md)** - API Gateway, маршрутизация и балансировка нагрузки
-- **[User](user/README.md)** - Управление пользователями, аутентификация и профили
-- **[Event](event/README.md)** - События, бронирования и расписания
-- **[Payment](payment/README.md)** - Платежи, транзакции и интеграции с платежными системами
-- **[Notification](notification/README.md)** - Система уведомлений (Email, SMS, Push, Telegram)
-- **[Crew](crew/README.md)** - Управление экипажами и командами
-- **[Media](media/README.md)** - Загрузка и обработка медиафайлов
+| Сервис | Назначение | Порт |
+|--------|------------|------|
+| **[Gateway](gateway/README.md)** | API Gateway, маршрутизация, JWT валидация | 8080 |
+| **[User](user/README.md)** | Аутентификация, профили, RBAC | 8101 |
+| **[Event](event/README.md)** | События, бронирования, waitlist | 8102 |
+| **[Crew](crew/README.md)** | Экипажи, команды, назначения | 8103 |
+| **[Payment](payment/README.md)** | Платежи, интеграции (YooKassa, Stripe) | 8104 |
+| **[Notification](notification/README.md)** | Уведомления (Telegram, Email, SMS) | 8105 |
+| **[Media](media/README.md)** | Загрузка файлов, MinIO/S3 | 8106 |
 
-### Общие компоненты
+## Общие компоненты
 
-- **[Common Overview](common/README.md)** - стандарты и соглашения, применимые ко всем сервисам
-- **[Error Handling](common/error-handling.md)** - централизованная обработка ошибок
-- **[Security](common/security.md)** - политики безопасности и контроль доступа
-- **[Metrics](common/metrics.md)** - метрики и мониторинг
-- **[Rate Limiting](common/rate-limiting.md)** - защита от перегрузок
-- **[Web Utilities](common/web-utilities.md)** - общие веб-компоненты и middleware
+- **[Common](common/README.md)** - shared библиотека (error handling, metrics, rate limiting)
+- **[Authentication](authentication.md)** - JWT, RBAC, refresh tokens
+- **[Database](database.md)** - PostgreSQL схемы, миграции (Liquibase)
 
 ## Технологический стек
 
 - **Framework**: Spring Boot 3.5.x
-- **Database**: PostgreSQL
-- **Security**: Spring Security, JWT
+- **Database**: PostgreSQL 16
+- **Security**: Spring Security, JWT (HS512)
 - **API**: RESTful, OpenAPI 3.0
 - **Build**: Gradle
 - **Containerization**: Docker
 
-## Принципы проектирования
+## Принципы
 
-1. **Domain Driven Design** - каждый сервис представляет бизнес-домен
-2. **API First** - контракты определяются до реализации
-3. **Microservices** - слабо связанные, высоко сплоченные сервисы
-4. **Event Sourcing** - асинхронное взаимодействие через события
-5. **CQRS** - разделение команд и запросов где необходимо
+1. **Domain Driven Design** - каждый сервис = бизнес-домен
+2. **API First** - контракты до реализации
+3. **Microservices** - слабо связанные, высоко сплоченные
+4. **Event Sourcing** - асинхронное взаимодействие
+5. **CQRS** - разделение команд и запросов
 
-## См. также
+---
 
-- [API Documentation](../api/index.md) - автогенерированная документация всех API
-- [Architecture Decisions](../decisions/index.md) - архитектурные решения (ADR)
-- [Operations](../operations/README.md) - руководства по эксплуатации
+См. [Operations](../operations/README.md), [Architecture Decisions](../decisions/README.md).
