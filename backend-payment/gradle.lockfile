@@ -157,5 +157,5 @@ org.testcontainers:junit-jupiter:1.19.7=integrationTestCompileClasspath,integrat
 org.testcontainers:testcontainers:1.19.7=integrationTestCompileClasspath,integrationTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
 org.webjars:swagger-ui:5.17.14=integrationTestRuntimeClasspath,runtimeClasspath,testRuntimeClasspath
 org.yaml:snakeyaml:2.4=integrationTestRuntimeClasspath,runtimeClasspath
-empty=integrationTestAnnotationProcessor,testAnnotationProcessor
 redis.clients.authentication:redis-authx-core:0.1.1-beta2=integrationTestRuntimeClasspath,runtimeClasspath
+empty=integrationTestAnnotationProcessor,testAnnotationProcessor

@@ -160,5 +160,5 @@ org.testcontainers:testcontainers:1.19.7=integrationTestCompileClasspath,integra
 org.webjars:swagger-ui:5.17.14=integrationTestRuntimeClasspath,runtimeClasspath,testRuntimeClasspath
 org.xerial.snappy:snappy-java:1.1.10.5=integrationTestRuntimeClasspath,runtimeClasspath,testRuntimeClasspath
 org.yaml:snakeyaml:2.4=integrationTestRuntimeClasspath,runtimeClasspath
-empty=integrationTestAnnotationProcessor,testAnnotationProcessor
 redis.clients.authentication:redis-authx-core:0.1.1-beta2=integrationTestRuntimeClasspath,runtimeClasspath
+empty=integrationTestAnnotationProcessor,testAnnotationProcessor
