@@ -41,4 +41,4 @@ AquaStream backend построен на микросервисной архит
 
 ---
 
-См. [Operations](../operations/README.md), [Architecture Decisions](../decisions/README.md).
+См. [Operations](../operations/README.md), [Architecture Decisions](../decisions/index.md).
