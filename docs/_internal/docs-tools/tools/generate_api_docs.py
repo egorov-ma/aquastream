@@ -52,17 +52,24 @@ def find_specs() -> List[Path]:
 
 
 def write_redoc_html(spec_rel_from_html: str, title: str) -> str:
+    script = "https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"
     return f"""<!doctype html>
 <html>
   <head>
     <meta charset=\"utf-8\"/>
     <title>{title}</title>
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>
-    <style>body {{ margin: 0; padding: 0; }}</style>
-    <script src=\"https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js\"></script>
+    <style>html, body {{ margin: 0; padding: 0; height: 100%; }} #redoc-container {{ height: 100%; }}</style>
   </head>
   <body>
-    <redoc spec-url=\"{spec_rel_from_html}\"></redoc>
+    <div id=\"redoc-container\"></div>
+    <script src=\"{script}\"></script>
+    <script>
+      Redoc.init('{spec_rel_from_html}', {{
+        hideFab: true,
+        expandResponses: '200,201'
+      }}, document.getElementById('redoc-container'));
+    </script>
   </body>
 </html>"""
 
