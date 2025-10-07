@@ -19,51 +19,26 @@ tags: [qa, testing, quality-assurance]
 ## Документация
 
 - **[Test Strategy](test-strategy.md)** - стратегия, уровни, инструменты, метрики
-- **[Bug Management](bug-management.md)** - процесс управления дефектами
 - **[Testing](testing.md)** - планы тестирования (backend, frontend, E2E, automation, manual)
+- **[Bug Management](bug-management.md)** - процесс управления дефектами
 - **[Performance](performance.md)** - нагрузочное тестирование и бенчмарки
 
 ## Быстрый старт
 
-### Backend тесты
+### Команды тестирования
 
-```bash
-# Unit-тесты
-./gradlew test
-
-# Integration-тесты
-./gradlew integrationTest
-
-# Все тесты
-./gradlew check
-
-# С coverage report
-./gradlew test jacocoTestReport
-```
-
-### Frontend тесты
-
-```bash
-# Линтеры и типизация
-pnpm lint
-pnpm typecheck
-
-# Unit-тесты
-pnpm test:unit
-
-# E2E-тесты
-pnpm test:e2e
-```
-
-### Performance тесты
-
-```bash
-# K6 smoke test
-k6 run k6-smoke.js
-
-# K6 load test
-k6 run k6-load.js
-```
+| Категория | Команда | Описание |
+|-----------|---------|----------|
+| **Backend Unit** | `./gradlew test` | Unit-тесты всех сервисов |
+| **Backend Integration** | `./gradlew integrationTest` | Integration-тесты с Testcontainers |
+| **Backend All** | `./gradlew check` | Все тесты + архитектурные |
+| **Backend Coverage** | `./gradlew test jacocoTestReport` | Coverage report (Jacoco) |
+| **Frontend Lint** | `pnpm lint` | ESLint + Prettier |
+| **Frontend Types** | `pnpm typecheck` | TypeScript проверка |
+| **Frontend Unit** | `pnpm test:unit` | Node test runner |
+| **Frontend E2E** | `pnpm test:e2e` | Playwright E2E tests |
+| **Performance Smoke** | `k6 run k6-smoke.js` | K6 smoke test |
+| **Performance Load** | `k6 run k6-load.js` | K6 load test |
 
 ## Метрики качества
 
@@ -78,32 +53,20 @@ k6 run k6-load.js
 | **Time to Fix (Critical)** | < 4 hours | Время исправления критичных багов |
 | **Time to Fix (High)** | < 3 days | Время исправления багов высокого приоритета |
 
-### Текущие показатели
-
-См. [Test Strategy](test-strategy.md#qa-metrics) для актуальных метрик.
+См. [Test Strategy - QA Metrics](test-strategy.md#qa-metrics) для актуальных показателей.
 
 ## Процесс QA
 
-```mermaid
-graph LR
-    A[Планирование] --> B[Разработка тестов]
-    B --> C[Выполнение]
-    C --> D[Отчетность]
-    D --> E[Анализ]
-    E --> F[Улучшение]
-    F --> A
-```
+| Этап | Действия | Выход |
+|------|----------|-------|
+| **1. Планирование** | Определение scope, выбор уровней тестирования | Test Plan |
+| **2. Разработка тестов** | Написание автотестов и тест-кейсов | Automated tests + manual test cases |
+| **3. Выполнение** | Запуск в локальном окружении и CI/CD | Test results |
+| **4. Отчетность** | Анализ результатов, создание bug reports | Test summary, bug reports |
+| **5. Анализ** | Выявление проблем, root cause analysis | Issues identified |
+| **6. Улучшение** | Оптимизация тестов, увеличение coverage | Improved test suite |
 
-**Этапы процесса:**
-
-1. **Планирование** - определение scope, выбор уровней тестирования
-2. **Разработка тестов** - написание автотестов и тест-кейсов
-3. **Выполнение** - запуск в локальном окружении и CI/CD
-4. **Отчетность** - анализ результатов, создание bug reports
-5. **Анализ** - выявление проблем, root cause analysis
-6. **Улучшение** - оптимизация тестов, увеличение coverage
-
-См. [Test Strategy - Процесс тестирования](test-strategy.md#qa-process) для деталей.
+См. [Test Strategy - QA Process](test-strategy.md#qa-process) для деталей.
 
 ## Инструменты и технологии
 
@@ -142,188 +105,89 @@ graph LR
 
 ## Критерии выхода
 
-### Для релизов (Release Criteria)
+### Release Criteria
 
-**Обязательные требования:**
-- ✅ Все unit tests passed
-- ✅ Все integration tests passed
-- ✅ E2E smoke tests passed
-- ✅ Code coverage ≥ 70%
-- ✅ No HIGH/CRITICAL security vulnerabilities
-- ✅ Performance tests passed (latency, throughput)
-- ✅ All critical bugs resolved
-- ✅ Regression suite passed
+| Категория | Требование | Критичность |
+|-----------|------------|-------------|
+| **Tests** | ✅ Все unit tests passed | Обязательно |
+| **Tests** | ✅ Все integration tests passed | Обязательно |
+| **Tests** | ✅ E2E smoke tests passed | Обязательно |
+| **Tests** | ✅ Regression suite passed | Обязательно |
+| **Coverage** | ✅ Code coverage ≥ 70% | Обязательно |
+| **Security** | ✅ No HIGH/CRITICAL vulnerabilities | Обязательно |
+| **Performance** | ✅ Performance tests passed (latency, throughput) | Обязательно |
+| **Bugs** | ✅ All critical bugs resolved | Обязательно |
+| **Exploratory** | ✅ Exploratory testing выполнено | Желательно |
+| **Docs** | ✅ Documentation updated | Желательно |
 
-**Желательные требования:**
-- ✅ Exploratory testing выполнено
-- ✅ Documentation updated
-- ✅ Known issues documented
+### Hotfix Criteria
 
-### Для hotfix
-
-**Обязательные требования:**
 - ✅ Unit tests для исправления passed
 - ✅ Integration tests для затронутых компонентов passed
 - ✅ Smoke tests passed
 - ✅ No regressions in affected area
-
-**Допустимые исключения:**
-- ⚠️ Пропустить full regression (выполнить после hotfix)
-
-См. [Test Strategy - Критерии выхода](test-strategy.md#qa-exit-criteria) для полного списка.
+- ⚠️ Full regression можно пропустить (выполнить после hotfix)
 
 ## CI/CD Integration
 
 ### GitHub Actions Workflows
 
-**Backend CI:**
-```yaml
-- Unit tests: ./gradlew test
-- Integration tests: ./gradlew integrationTest
-- Architecture tests: ArchUnit validation
-- Coverage report: Jacoco
-```
+| Workflow | Триггер | Проверки |
+|----------|---------|----------|
+| **Backend CI** | Каждый commit | Unit tests, Integration tests, ArchUnit, Jacoco coverage |
+| **Frontend CI** | Каждый commit | Lint, Type check, Unit tests, E2E tests, Build |
+| **Security CI** | Каждый PR | OWASP Dependency Check, Trivy scan, SBOM generation |
 
-**Frontend CI:**
-```yaml
-- Lint: pnpm lint
-- Type check: pnpm typecheck
-- Unit tests: pnpm test:unit
-- E2E tests: pnpm test:e2e
-- Build: pnpm build
-```
+### График запуска тестов
 
-**Security CI:**
-```yaml
-- OWASP Dependency Check
-- Trivy image scanning
-- SBOM generation (Syft)
-```
-
-См. [CI/CD Pipeline](../operations/ci-cd.md) для деталей workflows.
+| Тесты | Триггер |
+|-------|---------|
+| Unit tests | При каждом commit |
+| Integration tests | При каждом PR |
+| E2E tests | При каждом PR |
+| Smoke tests | При каждом PR |
+| Regression suite | При merge в main |
+| Full E2E | Перед релизом |
+| Performance tests | Еженедельно |
+| Security scan | При каждом PR |
 
 ## Best Practices
 
 ### Написание тестов
 
-**Unit Tests:**
-- Один тест - одна проверка (single assertion principle)
-- Arrange-Act-Assert паттерн
-- Понятные имена: `shouldCreateBookingWhenEventIsAvailable()`
-- Моки для внешних зависимостей
-
-**Integration Tests:**
-- Используй Testcontainers для реальной БД
-- Изоляция: каждый тест в отдельной транзакции
-- Проверяй все HTTP статус-коды
-- Тестируй валидацию входных данных
-
-**E2E Tests:**
-- Селекторы по ролям (Playwright `getByRole`)
-- Явные ожидания (`waitForLoadState`, `toBeVisible`)
-- Избегай хрупких селекторов (классы, id)
-- Retry logic для нестабильных тестов
+| Тип теста | Best Practices |
+|-----------|----------------|
+| **Unit Tests** | ✅ Один тест - одна проверка<br>✅ Arrange-Act-Assert паттерн<br>✅ Понятные имена: `shouldCreateBookingWhenEventIsAvailable()`<br>✅ Моки для внешних зависимостей |
+| **Integration Tests** | ✅ Testcontainers для реальной БД<br>✅ Изоляция: каждый тест в отдельной транзакции<br>✅ Проверка всех HTTP статус-кодов<br>✅ Тестирование валидации входных данных |
+| **E2E Tests** | ✅ Селекторы по ролям (`getByRole`)<br>✅ Явные ожидания (`waitForLoadState`, `toBeVisible`)<br>✅ Избегать хрупких селекторов (классы, id)<br>✅ Retry logic для нестабильных тестов |
 
 ### Управление багами
 
-**Создание bug report:**
-- Четкое описание: Title, Description, Steps to reproduce
-- Приложить логи, скриншоты
-- Указать Environment (dev/stage/prod)
-- Определить Severity и Priority
-
-**Приоритизация:**
-- **Critical**: Production down, security breach → hotfix немедленно
-- **High**: Серьезная проблема, сложный workaround → текущий спринт
-- **Medium**: Проблема с workaround → ближайшие спринты
-- **Low**: Косметика, минимальное влияние → backlog
+| Аспект | Best Practice |
+|--------|---------------|
+| **Bug Report** | ✅ Четкое описание: Title, Description, Steps to reproduce<br>✅ Приложить логи, скриншоты<br>✅ Указать Environment (dev/stage/prod)<br>✅ Определить Severity и Priority |
+| **Приоритизация** | **Critical**: Production down, security breach → hotfix немедленно<br>**High**: Серьезная проблема, сложный workaround → текущий спринт<br>**Medium**: Проблема с workaround → ближайшие спринты<br>**Low**: Косметика, минимальное влияние → backlog |
 
 См. [Bug Management](bug-management.md) для полного процесса.
 
 ## Troubleshooting
 
-### Тесты не запускаются
-
-```bash
-# Backend: проверить Gradle wrapper
-./gradlew wrapper --gradle-version 8.5
-
-# Frontend: очистить node_modules
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
-
-# Testcontainers: проверить Docker
-docker ps
-docker system prune -a --volumes
-```
-
-### Нестабильные тесты (Flaky)
-
-**Причины:**
-- Race conditions (async операции)
-- Жесткие задержки (`sleep`)
-- Зависимость от внешних сервисов
-- Недетерминированные данные
-
-**Решения:**
-- Явные ожидания вместо sleep
-- Testcontainers для изоляции
-- Retry logic в CI
-- Фиксированные seed для random data
-
-### Низкое покрытие тестами
-
-```bash
-# Проверить текущее coverage
-./gradlew test jacocoTestReport
-
-# Открыть HTML report
-open build/reports/jacoco/test/html/index.html
-
-# Найти непокрытый код
-# Добавить unit tests для Service layer
-```
+| Проблема | Решение |
+|----------|---------|
+| **Тесты не запускаются (Backend)** | 1. `./gradlew wrapper --gradle-version 8.5`<br>2. Проверить Docker: `docker ps`<br>3. Очистить: `./gradlew clean` |
+| **Тесты не запускаются (Frontend)** | 1. `rm -rf node_modules pnpm-lock.yaml`<br>2. `pnpm install`<br>3. Playwright: `pnpm exec playwright install --with-deps chromium` |
+| **Testcontainers не работают** | 1. `docker ps` (Docker должен быть запущен)<br>2. `docker system prune -a --volumes`<br>3. Проверить Docker Desktop настройки |
+| **Нестабильные тесты (Flaky)** | **Причины**: Race conditions, жесткие задержки, зависимость от внешних сервисов<br>**Решения**: Явные ожидания вместо sleep, Testcontainers для изоляции, retry logic в CI, фиксированные seed |
+| **Низкое покрытие тестами** | 1. `./gradlew test jacocoTestReport`<br>2. `open build/reports/jacoco/test/html/index.html`<br>3. Добавить unit tests для Service layer |
 
 ## Дальнейшее развитие QA
 
-### Краткосрочные цели (3 месяца)
+| Период | Цели |
+|--------|------|
+| **Краткосрочные (3 месяца)** | ✅ 70% code coverage для backend<br>✅ E2E tests в CI/CD<br>✅ Performance regression testing (K6)<br>✅ Базовые тест-планы для всех features |
+| **Среднесрочные (6 месяцев)** | ✅ Contract testing (Spring Cloud Contract)<br>✅ Visual regression testing (Percy/Chromatic)<br>✅ Chaos engineering (Chaos Monkey)<br>✅ Security testing automation (ZAP Proxy) |
+| **Долгосрочные (12 месяцев)** | ✅ 90% test automation coverage<br>✅ Production monitoring → automated test generation<br>✅ AI-powered test case generation<br>✅ Self-healing tests |
 
-- [ ] Достичь 70% code coverage для backend
-- [ ] Настроить E2E tests в CI/CD
-- [ ] Внедрить performance regression testing (K6)
-- [ ] Создать базовые тест-планы для всех features
-- [ ] Настроить автоматические bug reports из production monitoring
+---
 
-### Среднесрочные цели (6 месяцев)
-
-- [ ] Contract testing между сервисами (Spring Cloud Contract)
-- [ ] Visual regression testing (Percy/Chromatic)
-- [ ] Chaos engineering (Netflix Chaos Monkey)
-- [ ] Security testing automation (ZAP Proxy)
-- [ ] Test environment management (dedicated staging)
-
-### Долгосрочные цели (12 месяцев)
-
-- [ ] 90% test automation coverage
-- [ ] Production monitoring → automated test generation
-- [ ] AI-powered test case generation
-- [ ] Self-healing tests
-- [ ] Continuous performance optimization
-
-## См. также
-
-### Внутренние ссылки
-
-- [Architecture Overview](../architecture.md) - архитектура системы
-- [Backend Documentation](../backend/README.md) - детали backend сервисов
-- [Frontend Documentation](../frontend/README.md) - frontend архитектура
-- [Operations Guide](../operations/README.md) - deployment, CI/CD, infrastructure
-- [Development Workflows](../development/workflows.md) - setup, процессы, инструменты
-
-### Внешние ресурсы
-
-- [Testing Best Practices](https://martinfowler.com/testing/) - Martin Fowler
-- [Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html) - Practical Guide
-- [Playwright Documentation](https://playwright.dev/) - E2E testing
-- [Testcontainers](https://www.testcontainers.org/) - Integration testing
-- [K6 Documentation](https://k6.io/docs/) - Performance testing
+См. [Test Strategy](test-strategy.md), [Testing](testing.md), [Bug Management](bug-management.md), [Performance](performance.md), [Architecture](../architecture.md), [Backend Docs](../backend/README.md), [Operations](../operations/README.md).

@@ -8,121 +8,92 @@ tags: [qa, bugs, defects, issue-tracking]
 
 ## Обзор
 
-Документ описывает процесс управления дефектами (багами) в проекте AquaStream: от обнаружения до закрытия.
+Процесс управления дефектами от обнаружения до закрытия. **Инструмент**: GitHub Issues.
 
 ## Определения
 
-**Bug (Дефект)** - несоответствие между ожидаемым и фактическим поведением системы, вызванное ошибкой в коде, конфигурации или документации.
+| Термин | Описание |
+|--------|----------|
+| **Bug (Дефект)** | Несоответствие между ожидаемым и фактическим поведением системы |
+| **Severity** | Серьезность дефекта (влияние на систему) |
+| **Priority** | Приоритет исправления (срочность) |
+| **Bug Density** | Количество багов на 100 строк кода |
+| **Time to Fix** | Время от обнаружения до закрытия |
+| **Reopen Rate** | Процент багов, которые были переоткрыты |
 
-**Типы дефектов**:
-- **Functional**: ошибки в бизнес-логике
-- **UI/UX**: проблемы интерфейса
-- **Performance**: проблемы производительности
-- **Security**: уязвимости безопасности
-- **Data**: проблемы с данными
-- **Documentation**: ошибки в документации
+### Типы дефектов
 
-## Инструменты
+| Тип | Описание | Метка |
+|-----|----------|-------|
+| **Functional** | Ошибки в бизнес-логике | `bug` |
+| **UI/UX** | Проблемы интерфейса | `bug`, `frontend` |
+| **Performance** | Проблемы производительности | `bug`, `performance` |
+| **Security** | Уязвимости безопасности | `bug`, `security` |
+| **Data** | Проблемы с данными | `bug`, `backend` |
+| **Documentation** | Ошибки в документации | `documentation` |
 
-**GitHub Issues** - основной инструмент для отслеживания багов
+## GitHub Issues Labels
 
-**Метки (Labels)**:
-- `bug` - дефект
-- `priority: critical` - критический приоритет
-- `priority: high` - высокий приоритет
-- `priority: medium` - средний приоритет
-- `priority: low` - низкий приоритет
-- `backend` / `frontend` - компонент
-- `security` - уязвимость безопасности
-- `performance` - проблема производительности
-- `good first issue` - подходит для новичков
+| Метка | Назначение |
+|-------|------------|
+| `bug` | Дефект |
+| `priority: critical` | Критический приоритет |
+| `priority: high` | Высокий приоритет |
+| `priority: medium` | Средний приоритет |
+| `priority: low` | Низкий приоритет |
+| `backend` / `frontend` | Компонент |
+| `security` | Уязвимость безопасности |
+| `performance` | Проблема производительности |
+| `good first issue` | Подходит для новичков |
 
 ## Процесс управления багами
 
-### 1. Обнаружение
+### Этапы процесса
 
-**Источники**:
-- Automated tests (unit, integration, E2E)
-- Manual testing (exploratory, regression)
-- Code review
-- Production monitoring
-- User reports
+| Этап | Ответственный | Действия | Выход |
+|------|---------------|----------|-------|
+| **1. Обнаружение** | QA, Dev, Users | Воспроизвести баг, собрать логи/скриншоты | Информация для issue |
+| **2. Создание Issue** | QA, Dev | Заполнить шаблон, присвоить метки | GitHub Issue |
+| **3. Триаж** | QA Lead, Tech Lead | Определить severity/priority, назначить | Приоритизированный issue |
+| **4. Разработка Fix** | Developer | Создать ветку, написать failing test, исправить код, PR | Pull Request |
+| **5. Валидация (QA)** | QA | Retest на stage, regression testing, exploratory testing | Verified или Reopened |
+| **6. Закрытие** | QA | Комментарий, закрыть issue, deploy на prod | Closed issue |
+| **7. Мониторинг** | Ops, QA | Мониторинг логов/метрик после deploy | Подтверждение fix |
 
-**Действия**:
-- Воспроизвести баг
-- Собрать информацию (логи, скриншоты, steps to reproduce)
+### Источники обнаружения
 
-### 2. Создание Issue
+- ✅ Automated tests (unit, integration, E2E)
+- ✅ Manual testing (exploratory, regression)
+- ✅ Code review
+- ✅ Production monitoring
+- ✅ User reports
 
-**Обязательные поля**:
-- **Title**: краткое описание (например, "User registration fails with special characters in email")
-- **Description**: подробное описание с использованием шаблона
-- **Steps to reproduce**: шаги для воспроизведения
-- **Expected behavior**: ожидаемое поведение
-- **Actual behavior**: фактическое поведение
-- **Environment**: окружение (dev/stage/prod), версия, браузер
-- **Severity**: серьезность дефекта
-- **Priority**: приоритет исправления
+## Bug Report Template
 
-**Шаблон Issue**:
-```markdown
-## Description
-[Краткое описание проблемы]
+Обязательные поля в GitHub Issue:
 
-## Steps to Reproduce
-1. Перейти на страницу регистрации
-2. Ввести email: test+alias@example.com
-3. Нажать "Зарегистрироваться"
+| Поле | Описание | Пример |
+|------|----------|--------|
+| **Title** | Краткое описание | "User registration fails with special characters in email" |
+| **Description** | Подробное описание | См. шаблон ниже |
+| **Steps to Reproduce** | Пошаговые действия | 1. Go to /register<br>2. Enter email: test+alias@example.com<br>3. Click "Submit" |
+| **Expected Behavior** | Ожидаемое поведение | User should be registered successfully |
+| **Actual Behavior** | Фактическое поведение | Error: "Invalid email format" |
+| **Environment** | Окружение | Version: 1.0.0, Browser: Chrome 120, OS: macOS 14, Env: dev |
+| **Severity** | Серьезность | Critical / High / Medium / Low |
+| **Priority** | Приоритет | Critical / High / Medium / Low |
+| **Screenshots/Logs** | Приложения | Скриншоты, логи, видео |
 
-## Expected Behavior
-Пользователь должен быть успешно зарегистрирован
+## Severity vs Priority
 
-## Actual Behavior
-Появляется ошибка: "Invalid email format"
+| Severity | Описание | Priority | SLA |
+|----------|----------|----------|-----|
+| **Critical** | Система не работает, блокирует основной функционал | Critical | Hotfix немедленно (<4 часа) |
+| **High** | Серьезная проблема, сложный workaround | High | Текущий спринт (<3 дня) |
+| **Medium** | Проблема с workaround | Medium | Ближайшие спринты (<2 недели) |
+| **Low** | Косметическая проблема, минимальное влияние | Low | Backlog (когда будет время) |
 
-## Environment
-- **Version**: 1.0.0
-- **Browser**: Chrome 120
-- **OS**: macOS 14
-- **Environment**: dev
-
-## Screenshots/Logs
-[Приложить скриншоты или логи]
-
-## Additional Context
-Email с символом '+' является валидным по RFC 5322
-```
-
-**Присвоение меток**:
-```bash
-# Пример
-Labels: bug, priority: high, backend, backend-user
-```
-
-### 3. Триаж (Triage)
-
-**Ответственный**: QA Lead, Tech Lead
-
-**Действия**:
-1. Проверка дублирования (search existing issues)
-2. Определение severity
-3. Определение priority
-4. Назначение компонента (backend/frontend/infra)
-5. Назначение ответственного (assignee)
-
-**Severity (Серьезность)**:
-- **Critical**: система не работает, блокирует основной функционал
-- **High**: серьезная проблема, обходное решение сложное
-- **Medium**: проблема влияет на функциональность, есть обходной путь
-- **Low**: косметическая проблема, минимальное влияние
-
-**Priority (Приоритет)**:
-- **Critical**: исправить немедленно (hotfix)
-- **High**: исправить в текущем спринте
-- **Medium**: исправить в ближайших спринтах
-- **Low**: исправить когда будет время (backlog)
-
-**Примеры приоритизации**:
+### Примеры приоритизации
 
 | Сценарий | Severity | Priority | Действие |
 |----------|----------|----------|----------|
@@ -132,246 +103,127 @@ Labels: bug, priority: high, backend, backend-user
 | UI кнопка не центрирована | Low | Low | Backlog |
 | Медленный ответ API (> 2s) | Medium | High | Оптимизировать в текущем спринте |
 
-### 4. Разработка Fix
+## Разработка Fix - Best Practices
 
-**Действия разработчика**:
-1. Создать ветку: `fix/issue-123-user-registration-email`
-2. Воспроизвести баг локально
-3. Написать failing test, который воспроизводит баг
-4. Исправить код
-5. Убедиться что test passed
-6. Запустить все unit + integration tests
-7. Создать PR с reference на issue: `Fixes #123`
+| Этап | Best Practice |
+|------|---------------|
+| **Ветка** | `fix/issue-123-user-registration-email` |
+| **Test** | ✅ Написать failing test, который воспроизводит баг |
+| **Fix** | ✅ Минимальное исправление (не делать рефакторинг в том же PR) |
+| **Commit** | ✅ Reference на issue: `fix: user registration email validation (#123)` |
+| **Tests** | ✅ Запустить unit + integration tests |
+| **PR** | ✅ PR description с `Fixes #123` |
+| **Changelog** | ✅ Обновить CHANGELOG.md |
 
-**Code review**:
-- Проверка корректности исправления
-- Проверка покрытия тестами
-- Проверка отсутствия регрессий
+### QA Verification Checklist
 
-### 5. Валидация (QA Verification)
-
-**Действия QA**:
-1. Deploy фикса на stage окружение
-2. Проверить что баг исправлен (retest)
-3. Проверить steps to reproduce из issue
-4. Regression testing: проверить смежную функциональность
-5. Exploratory testing вокруг исправленной области
-
-**Критерии валидации**:
 - ✅ Баг не воспроизводится
-- ✅ Нет новых багов (regression)
+- ✅ Regression testing смежной функциональности
+- ✅ Проверка edge cases
 - ✅ Automated tests passed
 - ✅ Документация обновлена (если нужно)
 
-### 6. Закрытие Issue
-
-**Действия**:
-1. Оставить комментарий с результатом валидации
-2. Закрыть issue с меткой `status: verified`
-3. Deploy на production
-
-**Комментарий**:
-```markdown
-✅ **Verified on stage**
-
-- Environment: stage
-- Version: 1.0.1
-- Test result: баг не воспроизводится, регрессий не обнаружено
-
-Ready for production deployment.
-```
-
-### 7. Мониторинг
-
-**После deploy на production**:
-- Мониторинг логов на наличие ошибок
-- Мониторинг метрик (error rate, latency)
-- User feedback
-
-**Reopening**:
-Если баг воспроизводится снова:
-1. Reopen issue
-2. Добавить комментарий с деталями
-3. Повторить процесс
-
 ## Специальные случаи
 
-### Критичные баги (Critical Priority)
+### Critical Bugs (Hotfix Process)
 
-**Hotfix процесс**:
-1. Создать hotfix ветку от production: `hotfix/v1.0.1`
-2. Минимальное исправление (только баг, без дополнительных изменений)
-3. Ускоренный code review (< 1 час)
-4. Smoke tests + regression tests затронутой области
-5. Deploy на production ASAP
-6. Post-mortem: анализ причин и prevention мер
+| Шаг | Действие | SLA |
+|-----|----------|-----|
+| **1. Hotfix ветка** | Создать от production: `hotfix/v1.0.1` | Немедленно |
+| **2. Fix** | Минимальное исправление (только баг) | <2 часа |
+| **3. Review** | Ускоренный code review | <1 час |
+| **4. Tests** | Smoke tests + regression затронутой области | <30 мин |
+| **5. Deploy** | Deploy на production | ASAP |
+| **6. Post-Mortem** | Анализ причин и prevention мер | В течение дня |
 
 **Коммуникация**:
-- Обновить соответствующий Incident Issue (статус, таймлайн)
-- Сообщить заинтересованным пользователям через выбранный канал (например, комментарий в Issue или email)
-- Подготовить короткий пост-мортем заметку
+- Обновить Incident Issue (статус, таймлайн)
+- Сообщить пользователям (комментарий в Issue или email)
+- Подготовить post-mortem заметку
 
 ### Security Vulnerabilities
+
+| CVSS Score | Severity | SLA | Процесс |
+|------------|----------|-----|---------|
+| 9.0-10.0 | Critical | Hotfix немедленно | GitHub Security Advisory |
+| 7.0-8.9 | High | Hotfix <24 часа | GitHub Security Advisory |
+| 4.0-6.9 | Medium | Исправить <1 неделя | GitHub Security Advisory или Issue |
+| 0.1-3.9 | Low | Следующий релиз | GitHub Issue |
 
 **Процесс**:
 1. Использовать **GitHub Security Advisories** (не публичные issues)
 2. CVSS scoring для оценки severity
-3. Приоритет: Critical/High → немедленный hotfix
-4. Координация с DevOps для патча dependencies
-5. Security bulletin для пользователей (если public facing)
-
-**CVSS Scoring**:
-- **9.0-10.0**: Critical → hotfix немедленно
-- **7.0-8.9**: High → hotfix в течение 24 часов
-- **4.0-6.9**: Medium → исправить в течение недели
-- **0.1-3.9**: Low → исправить в следующем релизе
+3. Координация с DevOps для патча dependencies
+4. Security bulletin для пользователей (если public facing)
 
 ### Performance Issues
 
-**Процесс**:
-1. Профилирование для определения bottleneck
-2. Baseline метрики (до исправления)
-3. Исправление + оптимизация
-4. Performance testing для верификации улучшения
-5. Сравнение метрик (до/после)
-
-**Метрики**:
-- Latency: p50, p95, p99
-- Throughput: requests/sec
-- Resource usage: CPU, memory
+| Метрика | Baseline | Target | Процесс |
+|---------|----------|--------|---------|
+| **Latency** | p50, p95, p99 | Улучшение ≥20% | Профилирование → Оптимизация → Performance testing |
+| **Throughput** | requests/sec | Улучшение ≥30% | Baseline → Fix → Compare |
+| **Resource Usage** | CPU, memory | Снижение ≥15% | Monitoring → Optimization → Verification |
 
 ## Метрики и отчетность
 
 ### KPI
 
-| Метрика | Цель | Текущее |
-|---------|------|---------|
-| Bug density | < 1 bug/100 LOC | TBD |
-| Time to fix (Critical) | < 4 hours | TBD |
-| Time to fix (High) | < 3 days | TBD |
-| Time to fix (Medium) | < 2 weeks | TBD |
-| Reopen rate | < 5% | TBD |
-| Bug escape rate (to prod) | < 2% | TBD |
+| Метрика | Цель | Текущее | Мониторинг |
+|---------|------|---------|------------|
+| **Bug Density** | <1 bug/100 LOC | TBD | Еженедельно |
+| **Time to Fix (Critical)** | <4 hours | TBD | Per issue |
+| **Time to Fix (High)** | <3 days | TBD | Per issue |
+| **Time to Fix (Medium)** | <2 weeks | TBD | Per issue |
+| **Reopen Rate** | <5% | TBD | Ежемесячно |
+| **Bug Escape Rate (to prod)** | <2% | TBD | Per release |
 
 ### Отчеты
 
-**Weekly Bug Report**:
-- Новые баги: количество, severity distribution
-- Исправленные баги: количество, average time to fix
-- Открытые баги: total, по приоритетам
-- Тренды: увеличение/уменьшение количества багов
-
-**Monthly Quality Report**:
-- Bug density по компонентам
-- Most buggy components (top 5)
-- Root cause analysis: топ причины багов
-- Prevention actions
+| Отчет | Частота | Содержание |
+|-------|---------|------------|
+| **Weekly Bug Report** | Еженедельно | Новые баги, исправленные, открытые, severity distribution |
+| **Monthly Quality Report** | Ежемесячно | Bug density по компонентам, root cause analysis, prevention actions |
 
 ## Best Practices
 
 ### Для QA
 
-**При создании bug report**:
-- ✅ Воспроизвести баг минимум 2 раза
-- ✅ Проверить на последней версии (возможно уже исправлено)
-- ✅ Поиск дубликатов перед созданием
-- ✅ Четкие steps to reproduce
-- ✅ Приложить логи, скриншоты, видео
-- ✅ Указать severity и предложить priority
-
-**При валидации fix**:
-- ✅ Тестировать на том же окружении где был обнаружен
-- ✅ Regression testing смежной функциональности
-- ✅ Проверить edge cases
+| При создании bug report | При валидации fix |
+|-------------------------|-------------------|
+| ✅ Воспроизвести баг минимум 2 раза | ✅ Тестировать на том же окружении |
+| ✅ Проверить на последней версии | ✅ Regression testing |
+| ✅ Поиск дубликатов перед созданием | ✅ Проверить edge cases |
+| ✅ Четкие steps to reproduce | ✅ Проверить смежную функциональность |
+| ✅ Приложить логи, скриншоты, видео | ✅ Убедиться что automated tests passed |
 
 ### Для Developers
 
-**При исправлении**:
-- ✅ Написать failing test который воспроизводит баг
-- ✅ Исправить минимально (не делать рефакторинг в том же PR)
-- ✅ Reference на issue в commit message: `fix: user registration email validation (#123)`
-- ✅ Обновить CHANGELOG.md
-- ✅ Добавить regression test если баг критичный
+| При исправлении | Code review |
+|-----------------|-------------|
+| ✅ Написать failing test | ✅ Проверить что баг действительно исправлен |
+| ✅ Исправить минимально | ✅ Проверить наличие tests |
+| ✅ Reference на issue в commit | ✅ Проверить отсутствие side effects |
+| ✅ Обновить CHANGELOG.md | ✅ Проверить что нет regression |
 
-**Code review**:
-- ✅ Проверить что баг действительно исправлен
-- ✅ Проверить наличие tests
-- ✅ Проверить отсутствие side effects
+## Автоматизация
 
-## Инструменты и автоматизация
+### GitHub Actions Integration
 
-### GitHub Issues
+| Автоматизация | Триггер | Действие |
+|---------------|---------|----------|
+| **Auto-labeling** | Issue created | Метки по ключевым словам в title/description |
+| **Auto-assignment** | Issue created | Назначение по затронутому компоненту |
+| **PR → Issue comment** | PR created | "Fix in progress" в issue |
+| **Merge → Issue comment** | PR merged | "Fix deployed to stage" в issue |
+| **Release → Issue close** | Release created | Автоматическое закрытие с `status: released` |
+| **Stale issue bot** | Daily | Закрывать неактивные issues (>60 дней) |
 
-**Автоматизация через GitHub Actions**:
-- Auto-labeling по ключевым словам в title/description
-- Auto-assignment по затронутому компоненту
-- Stale issue bot: закрывать неактивные issues (> 60 дней)
+### Monitoring Alerts
 
-**Issue templates**:
-- `.github/ISSUE_TEMPLATE/bug_report.yml` - шаблон для багов
-- Автоматическая валидация required fields
+- **Prometheus**: Error rate spikes
+- **Grafana**: Visualize error trends
+- **Sentry/Rollbar**: Automatic bug reporting (планируется)
 
-### Integration с CI/CD
+---
 
-**Автоматическое комментирование**:
-- PR → Issue: автоматический комментарий "Fix in progress"
-- Merge → Issue: автоматический комментарий "Fix deployed to stage"
-- Release → Issue: автоматическое закрытие с меткой `status: released`
-
-### Мониторинг
-
-**Alerting**:
-- Prometheus alerting для error rate spikes
-- Grafana dashboards для визуализации error trends
-- Sentry/Rollbar для automatic bug reporting (планируется)
-
-## Примеры
-
-### Functional Bug
-
-**Title**: "Event booking fails when event is at full capacity"
-
-**Labels**: `bug`, `priority: high`, `backend`, `backend-event`
-
-**Description**:
-```markdown
-При попытке забронировать событие которое уже заполнено, система возвращает 500 вместо 400.
-
-Steps to Reproduce:
-1. POST /api/events с capacity=10
-2. POST /api/bookings 10 раз
-3. POST /api/bookings 11-й раз
-
-Expected: HTTP 400 "Event is fully booked"
-Actual: HTTP 500 Internal Server Error
-```
-
-**Fix**: Заменить `IllegalStateException` на `EventFullException`
-
-### Security Vulnerability
-
-**Title**: "SQL Injection in user search endpoint"
-
-**Labels**: `bug`, `priority: critical`, `security`, `backend`
-
-**CVSS Score**: 9.8 (Critical)
-
-**Description**:
-```markdown
-Endpoint `/api/users/search?name=` уязвим к SQL injection.
-
-Proof: GET /api/users/search?name=admin' OR '1'='1
-
-Impact: Получение всех данных из БД, GDPR violation risk
-```
-
-**Fix**: Использовать параметризованные запросы через `@Query` с `@Param`
-
-**Hotfix process**: Создать hotfix ветку → исправить → security scan → deploy ASAP
-
-## См. также
-
-- [Test Strategy](test-strategy.md)
-- [Testing](testing.md)
-- [CI/CD Pipeline](../operations/ci-cd.md)
-- [GitHub Issues Best Practices](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
+См. [Test Strategy](test-strategy.md), [Testing](testing.md), [CI/CD Pipeline](../operations/ci-cd.md).

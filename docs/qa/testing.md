@@ -1,6 +1,6 @@
 ---
 title: Testing
-summary: Comprehensive testing plans:: backend, frontend, integration, E2E, automation, manual
+summary: Comprehensive testing plans: backend, frontend, integration, E2E, automation, manual
 tags: [qa, testing, automation, manual]
 ---
 
@@ -8,120 +8,109 @@ tags: [qa, testing, automation, manual]
 
 ## Обзор
 
-Планы тестирования для всех компонентов системы AquaStream.
+Планы тестирования для всех компонентов системы AquaStream: backend (7 микросервисов), frontend (Next.js), integration, E2E и manual testing.
 
 ## Backend Testing
 
-### Объем тестирования
+### Микросервисы
 
-**Микросервисы**: User (8101), Event (8102), Crew (8103), Payment (8104), Notification (8105), Media (8106), Gateway (8080)
+| Сервис | Порт | Критичность | Test Coverage Goal |
+|--------|------|-------------|-------------------|
+| **User** | 8101 | Высокая | ≥75% |
+| **Event** | 8102 | Критическая | ≥75% |
+| **Crew** | 8103 | Средняя | ≥70% |
+| **Payment** | 8104 | Критическая | ≥75% |
+| **Notification** | 8105 | Высокая | ≥70% |
+| **Media** | 8106 | Средняя | ≥65% |
+| **Gateway** | 8080 | Критическая | ≥70% |
 
-### Уровни
+### Уровни тестирования
 
-**Unit Tests**
-- Охват: Service layer, Repository layer, Utility classes, Architecture tests (ArchUnit)
-- Инструменты: JUnit 5, Mockito
-- Критерий: покрытие ≥70%
-- Запуск: `./gradlew test`
-
-**Integration Tests**
-- Охват: REST API endpoints, Database operations, Message queuing, Redis caching
-- Инструменты: Spring Boot Test, Testcontainers
-- Критерий: все критичные API endpoints
-- Запуск: `./gradlew integrationTest`
-
-**Contract Tests**
-- Охват: OpenAPI спецификации, Межсервисное взаимодействие
-- Инструменты: Spring Cloud Contract (планируется)
+| Уровень | Охват | Инструменты | Запуск | Время |
+|---------|-------|-------------|--------|-------|
+| **Unit Tests** | Service layer, repositories, utilities, mappers | JUnit 5, Mockito, AssertJ | `./gradlew test` | <5 мин |
+| **Integration Tests** | REST API endpoints, БД, Redis, MinIO | Spring Boot Test, Testcontainers, RestAssured | `./gradlew integrationTest` | <15 мин |
+| **Architecture Tests** | Layered architecture, naming conventions | ArchUnit | Автоматически с unit tests | <1 мин |
+| **Contract Tests** | OpenAPI спецификации, межсервисное взаимодействие | Spring Cloud Contract (планируется) | - | - |
 
 ### Тестовые данные
 
-- SQL-скрипты: `backend-*/src/test/resources/data.sql`
-- Testcontainers для изоляции БД
-- Автоочистка через `@Transactional` + `@Rollback`
+| Аспект | Реализация |
+|--------|------------|
+| **Подготовка** | SQL-скрипты в `src/test/resources/data.sql`, builders для фикстур |
+| **Изоляция** | Testcontainers + PostgreSQL/Redis для каждого теста |
+| **Очистка** | `@Transactional` + `@Rollback` (unit), Testcontainers автоудаление (integration) |
 
 ### Метрики
 
-- Code Coverage: ≥70%
-- Test Success Rate: 100%
-- Execution Time: <5 мин (unit), <15 мин (integration)
+| Метрика | Цель | Мониторинг |
+|---------|------|------------|
+| **Code Coverage** | ≥70% | Jacoco reports в `build/reports/jacoco/` |
+| **Test Success Rate** | 100% | GitHub Actions badge |
+| **Execution Time** | Unit <5 мин, Integration <15 мин | CI/CD logs |
 
 ## Frontend Testing
 
 ### Технологический стек
 
-- Framework: Next.js 15 (App Router), React 18
-- Styling: Tailwind CSS 3.4 (3.4.18) + shadcn/ui
-- Testing: Playwright, Node test runner
+| Технология | Версия | Назначение |
+|------------|--------|------------|
+| **Next.js** | 15 (App Router) | Framework |
+| **React** | 18 | UI library |
+| **Tailwind CSS** | 3.4.18 | Styling |
+| **shadcn/ui** | Latest | UI components |
+| **Playwright** | Latest | E2E testing |
+| **Node test runner** | Built-in | Unit testing |
 
-### Уровни
+### Уровни тестирования
 
-**Unit Tests**
-- Охват: Утилиты, хуки, изолированные компоненты
-- Инструменты: Node test runner
-- Запуск: `pnpm test:unit`
-- Критерий: покрытие утилит 100%
+| Уровень | Охват | Инструменты | Запуск | Критерий |
+|---------|-------|-------------|--------|----------|
+| **Unit Tests** | Утилиты, хуки, изолированные компоненты | Node test runner | `pnpm test:unit` | 100% для утилит |
+| **Component Tests** | UI компоненты, композитные, layouts | React Testing Library (планируется) | - | - |
+| **E2E Tests** | Auth, навигация, формы, критичные пути | Playwright | `pnpm test:e2e` | Smoke-тесты для всех страниц |
 
-**Component Tests**
-- Охват: UI компоненты, композитные компоненты, layouts
-- Инструменты: React Testing Library (планируется)
+### Качественные проверки
 
-**E2E Tests**
-- Охват: Аутентификация, навигация, формы, критичные пути
-- Инструменты: Playwright
-- Запуск: `pnpm test:e2e`
-- Критерий: smoke-тесты для всех страниц
+| Проверка | Команда | Критерий |
+|----------|---------|----------|
+| **Линтинг** | `pnpm lint` | 0 errors |
+| **Типизация** | `pnpm typecheck` | 0 errors |
+| **Сборка** | `pnpm build` | Успешная сборка |
 
-### Качество
+### Браузеры и разрешения
 
-```bash
-# Линтеры и типизация
-pnpm lint
-pnpm typecheck
-
-# Сборка
-pnpm build
-```
-
-### Браузеры
-
-- Chrome, Firefox, Safari, Edge (последние 2 версии)
-- Разрешения: 375px, 768px, 1024px, 1280px, 1920px
+| Аспект | Поддержка |
+|--------|-----------|
+| **Браузеры** | Chrome, Firefox, Safari, Edge (последние 2 версии) |
+| **Разрешения** | 375px (mobile), 768px (tablet), 1024px, 1280px, 1920px (desktop) |
 
 ### Метрики
 
-- E2E Test Success Rate: 100%
-- Lighthouse Performance: ≥90
-- Lighthouse Accessibility: ≥95
-- Build Success Rate: 100%
+| Метрика | Цель |
+|---------|------|
+| **E2E Test Success Rate** | 100% |
+| **Lighthouse Performance** | ≥90 |
+| **Lighthouse Accessibility** | ≥95 |
+| **Build Success Rate** | 100% |
 
 ## Integration Testing
 
 ### Области интеграции
 
-**Backend ↔ Database**
-- CRUD через JPA, транзакционность, миграции
-- Инструменты: Testcontainers + PostgreSQL
+| Интеграция | Инструменты | Сценарии |
+|------------|-------------|----------|
+| **Backend ↔ Database** | Testcontainers + PostgreSQL | CRUD, транзакционность, миграции |
+| **Service ↔ Service** | MockServer, WireMock | REST взаимодействие через Gateway |
+| **Backend ↔ Redis** | Testcontainers + Redis | Кэширование, TTL, rate limiting |
+| **Frontend ↔ Backend** | Playwright + Mock Backend | REST API, JWT auth, CORS |
 
-**Service ↔ Service**
-- REST взаимодействие, API Gateway ↔ Services
-- Инструменты: MockServer, WireMock
+### Критичные сценарии
 
-**Backend ↔ Redis**
-- Кэширование, инвалидация, TTL, rate limiting
-- Инструменты: Testcontainers + Redis
-
-**Frontend ↔ Backend**
-- REST API, JWT auth, CORS
-- Инструменты: Playwright + Mock Backend
-
-### Сценарии
-
-**Создание пользователя**:
-Frontend → Gateway → User Service → PostgreSQL → Event queue → Notification Service
-
-**Бронирование события**:
-Frontend → Event Service (блокировка места) → Payment Service → Event Service (подтверждение) → Notification
+| Сценарий | Путь |
+|----------|------|
+| **Регистрация пользователя** | Frontend → Gateway → User Service → PostgreSQL → Event queue → Notification Service |
+| **Бронирование события** | Frontend → Event Service (блокировка места) → Payment Service → Event Service (подтверждение) → Notification |
 
 ### Запуск
 
@@ -138,67 +127,31 @@ pnpm test:e2e              # Frontend + Backend
 
 ## E2E Testing
 
-### Инструменты
-
-- Playwright (основной)
-- Браузер: Chromium
-- Окружение: Docker Compose
-
 ### Критичные сценарии
 
-**1. Регистрация и онбординг**
-- Регистрация → Email подтверждение → Заполнение профиля → Личный кабинет
+| ID | Сценарий | Шаги |
+|----|----------|------|
+| **E2E-01** | Регистрация и онбординг | Регистрация → Email подтверждение → Заполнение профиля → Личный кабинет |
+| **E2E-02** | Поиск и просмотр события | Главная → Поиск/фильтры → Выбор события → Детали |
+| **E2E-03** | Бронирование билета | Выбор события → Выбор мест → Корзина → Оформление → Оплата (mock) → Билет → Email |
+| **E2E-04** | Создание события (организатор) | Вход как организатор → Мои события → Создать → Детали → Изображения → Публикация |
+| **E2E-05** | Отмена бронирования | Мои бронирования → Выбор → Запрос отмены → Подтверждение → Возврат средств → Email |
 
-**2. Поиск и просмотр события**
-- Главная → Поиск/фильтры → Выбор события → Детали
+### Типы тестов
 
-**3. Бронирование билета**
-- Выбор события → Выбор мест → Корзина → Оформление → Оплата (mock) → Билет → Email
-
-**4. Создание события (организатор)**
-- Вход как организатор → Мои события → Создать → Детали → Изображения → Публикация
-
-**5. Отмена бронирования**
-- Мои бронирования → Выбор → Запрос отмены → Подтверждение → Возврат средств → Email
-
-### Smoke Tests
-
-Минимальный набор (<5 минут):
-- `auth-login.smoke.spec.ts`
-- `homepage.smoke.spec.ts`
-- `event-list.smoke.spec.ts`
-- `booking-flow.smoke.spec.ts`
-
-### Regression Tests
-
-Полный набор (<30 минут):
-- user-registration, user-login
-- event-search, booking-create, booking-cancel
-- organizer-event-create, payment-flow
-
-### Запуск
-
-```bash
-pnpm test:e2e:smoke       # Smoke tests
-pnpm test:e2e:regression  # Regression suite
-pnpm test:e2e             # Все E2E
-pnpm exec playwright test --headed  # С UI
-```
+| Тип | Время | Файлы | Запуск |
+|-----|-------|-------|--------|
+| **Smoke Tests** | <5 мин | `*.smoke.spec.ts` | `pnpm test:e2e:smoke` |
+| **Regression Tests** | <30 мин | Полный набор | `pnpm test:e2e:regression` |
+| **All E2E** | <30 мин | Все тесты | `pnpm test:e2e` |
 
 ### Best Practices
 
-```typescript
-// ✅ Хорошо - селекторы по ролям
-await page.getByRole('button', { name: /sign in/i })
-
-// ✅ Явные ожидания
-await page.waitForLoadState('networkidle')
-await expect(element).toBeVisible()
-
-// ❌ Плохо - хрупкие селекторы и жесткие задержки
-await page.locator('.btn-primary')
-await page.waitForTimeout(5000)
-```
+| Практика | ✅ Хорошо | ❌ Плохо |
+|----------|----------|---------|
+| **Селекторы** | `page.getByRole('button', { name: /sign in/i })` | `page.locator('.btn-primary')` |
+| **Ожидания** | `await page.waitForLoadState('networkidle')` | `await page.waitForTimeout(5000)` |
+| **Проверки** | `await expect(element).toBeVisible()` | Hardcoded delays |
 
 ### Метрики
 
@@ -208,187 +161,98 @@ await page.waitForTimeout(5000)
 
 ## API Tests
 
+### Структура тестов
+
+```
+src/integrationTest/java/
+├── api/              # Тесты REST endpoints
+├── integration/      # Интеграционные тесты
+└── testcontainers/   # Конфигурация Testcontainers
+```
+
 ### Технологии
 
 - Spring Boot Test, Testcontainers, MockMvc
 
-### Структура
+### Best Practices
 
-```
-src/integrationTest/java/
-  ├── api/              # Тесты REST endpoints
-  ├── integration/      # Интеграционные тесты
-  └── testcontainers/   # Конфигурация Testcontainers
-```
+- ✅ Testcontainers для реальной БД
+- ✅ Проверка всех HTTP статусов (200, 400, 401, 403, 404, 409, 422)
+- ✅ Тестирование валидации входных данных
+- ✅ Проверка структуры ответов (JSON schema validation)
 
 ### Запуск
 
 ```bash
 ./gradlew integrationTest
-./gradlew :backend-user:backend-user-api:integrationTest
-```
-
-### Best Practices
-
-- Testcontainers для реальной БД
-- Проверка всех HTTP статусов
-- Тестирование валидации
-- Проверка структуры ответов
-
-## UI Tests
-
-### Технологии
-
-- Playwright (E2E framework)
-- Chromium
-
-### Установка
-
-```bash
-cd frontend
-pnpm exec playwright install --with-deps chromium
-```
-
-### Структура
-
-```
-frontend/tests/e2e/
-  ├── auth-login.smoke.spec.ts
-  └── ... (будущие тесты)
-```
-
-### Запуск
-
-```bash
-pnpm test:e2e                       # Все тесты
-pnpm exec playwright test <file>    # Конкретный тест
-pnpm exec playwright test --debug   # Debug режим
+./gradlew :backend-user:backend-user-api:integrationTest  # Конкретный сервис
 ```
 
 ## Manual Testing
 
-### Test Cases
+### Структура тест-кейса
 
-**Структура тест-кейса**:
-- **TC-ID**: Уникальный идентификатор
-- **Приоритет**: Критичный / Высокий / Средний / Низкий
-- **Предусловия**: Что должно быть выполнено
-- **Шаги**: Пошаговые действия
-- **Ожидаемый результат**: Что должно произойти
-- **Фактический результат**: Что произошло (фиксируется при выполнении)
-
-**Примеры**:
-- TC-001: Регистрация нового пользователя
-- TC-002: Авторизация пользователя
-- TC-003: Создание события
-
-**Отчетность**: Issue tracker с меткой `qa-manual`
+| Поле | Описание |
+|------|----------|
+| **TC-ID** | Уникальный идентификатор (TC-001, TC-002) |
+| **Приоритет** | Критичный / Высокий / Средний / Низкий |
+| **Предусловия** | Что должно быть выполнено до теста |
+| **Шаги** | Пошаговые действия |
+| **Ожидаемый результат** | Что должно произойти |
+| **Фактический результат** | Что произошло (фиксируется при выполнении) |
 
 ### Regression Suite
 
-Критичные сценарии для проверки перед релизом:
+| Категория | Тест-кейсы |
+|-----------|------------|
+| **Аутентификация** | Регистрация, вход, выход, восстановление пароля, подтверждение email |
+| **Управление событиями** | Создание, редактирование, публикация, отмена, удаление |
+| **Бронирование** | Просмотр событий, выбор места, оформление, оплата, отмена |
+| **Платежи** | Добавление метода, проведение платежа, возврат средств, история |
 
-**Аутентификация**:
-- [ ] Регистрация нового пользователя
-- [ ] Вход в систему
-- [ ] Выход из системы
-- [ ] Восстановление пароля
-- [ ] Подтверждение email
-
-**Управление событиями**:
-- [ ] Создание события
-- [ ] Редактирование события
-- [ ] Публикация события
-- [ ] Отмена события
-- [ ] Удаление события
-
-**Бронирование**:
-- [ ] Просмотр доступных событий
-- [ ] Выбор места
-- [ ] Оформление бронирования
-- [ ] Оплата бронирования
-- [ ] Отмена бронирования
-
-**Платежи**:
-- [ ] Добавление платежного метода
-- [ ] Проведение платежа
-- [ ] Возврат средств
-- [ ] Просмотр истории платежей
-
-**Частота**: Полный regression перед каждым релизом, после критичных изменений — соответствующий раздел, еженедельно — smoke-тесты
+**Частота выполнения**:
+- Полный regression: перед каждым релизом
+- Соответствующий раздел: после критичных изменений
+- Smoke-тесты: еженедельно
 
 ### Exploratory Testing
 
-**Методология**: Session-Based Testing
-- Длительность: 60-90 минут
-- Чартер: конкретная цель исследования
-- Отчет: найденные проблемы и наблюдения
-
-**Техники**:
-- **Boundary Testing**: граничные значения, пустые поля, специальные символы
-- **Negative Testing**: невалидные данные, неожиданные последовательности
-- **User Journey Testing**: типичные пути, альтернативные сценарии
+| Аспект | Детали |
+|--------|--------|
+| **Методология** | Session-Based Testing (60-90 минут) |
+| **Чартер** | Конкретная цель исследования |
+| **Техники** | Boundary Testing, Negative Testing, User Journey Testing |
+| **Отчет** | Найденные проблемы и наблюдения |
 
 **Чек-лист**:
-- [ ] Все формы проверены с невалидными данными
-- [ ] Протестированы все навигационные пути
-- [ ] Проверена обработка ошибок
-- [ ] Протестирована работа без JavaScript
-- [ ] Проверена работа на разных разрешениях экрана
-- [ ] Протестирована доступность (accessibility)
-
-**Документирование**:
-```markdown
-## Сессия: [Название]
-**Дата**: YYYY-MM-DD
-**Тестировщик**: Имя
-**Чартер**: Описание цели
-
-### Найденные проблемы
-1. [Описание]
-
-### Наблюдения
-- [Наблюдение]
-
-### Следующие шаги
-- [Рекомендация]
-```
+- ✅ Все формы проверены с невалидными данными
+- ✅ Протестированы все навигационные пути
+- ✅ Проверена обработка ошибок
+- ✅ Протестирована работа без JavaScript
+- ✅ Проверена работа на разных разрешениях
+- ✅ Протестирована доступность (accessibility)
 
 ## CI/CD Integration
 
-### GitHub Actions
+### GitHub Actions Workflows
 
-**Backend CI**:
-- Unit tests: `./gradlew test`
-- Integration tests: `./gradlew integrationTest`
-- Architecture tests: ArchUnit validation
-- Coverage report: Jacoco
-
-**Frontend CI**:
-- Lint: `pnpm lint`
-- Type check: `pnpm typecheck`
-- Unit tests: `pnpm test:unit`
-- E2E tests: `pnpm test:e2e`
-- Build: `pnpm build`
-
-**Security CI**:
-- OWASP Dependency Check
-- Trivy image scanning
-- SBOM generation (Syft)
+| Workflow | Запуск | Команды |
+|----------|--------|---------|
+| **Backend CI** | При каждом commit | `./gradlew test`, `./gradlew integrationTest`, ArchUnit validation, Jacoco coverage |
+| **Frontend CI** | При каждом commit | `pnpm lint`, `pnpm typecheck`, `pnpm test:unit`, `pnpm test:e2e`, `pnpm build` |
+| **Security CI** | При каждом PR | OWASP Dependency Check, Trivy image scanning, SBOM generation (Syft) |
 
 ### График запуска
 
-- Unit tests: при каждом commit
-- Integration tests: при каждом PR
-- E2E tests: при каждом PR
-- Smoke tests: при каждом PR
-- Regression suite: при merge в main
-- Full E2E: перед релизом
+| Тесты | Триггер |
+|-------|---------|
+| **Unit tests** | При каждом commit |
+| **Integration tests** | При каждом PR |
+| **E2E tests** | При каждом PR |
+| **Smoke tests** | При каждом PR |
+| **Regression suite** | При merge в main |
+| **Full E2E** | Перед релизом |
 
-## См. также
+---
 
-- [Test Strategy](test-strategy.md) - общая стратегия тестирования
-- [Bug Management](bug-management.md) - управление дефектами
-- [Performance](performance.md) - нагрузочное тестирование
-- [CI/CD Pipeline](../operations/ci-cd.md) - детали workflows
-- [Architecture](../architecture.md) - архитектура системы
+См. [Test Strategy](test-strategy.md), [Bug Management](bug-management.md), [Performance](performance.md), [CI/CD Pipeline](../operations/ci-cd.md).
