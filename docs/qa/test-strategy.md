@@ -123,10 +123,9 @@ tags: [qa, testing, strategy, quality-assurance]
 ### CI/CD Integration
 
 **GitHub Actions workflows**:
-- Backend CI: `./gradlew clean build` (unit + integration tests)
+- Backend CI: `./gradlew build` (unit + integration tests) + Docker images (на push/release)
 - Frontend CI: `pnpm lint && pnpm typecheck && pnpm test:e2e`
-- Docker CI: build + Trivy scan + SBOM generation
-- CodeQL: security analysis
+- CodeQL: security analysis (Java/Kotlin, JS/TS, Python)
 
 **Запуск тестов**:
 - Unit tests: при каждом commit

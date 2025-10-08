@@ -26,21 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
 
-      - name: Enable problem matcher (warnings/errors)
-        run: echo "::add-matcher::.github/matchers/generic.json"
-
-      # Explicit build for Java (monorepo/Gradle)
-      - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v5
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v4
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: gradle
-
-      - name: Initialize CodeQL (Java, JS/TS, Python)
+      - name: Initialize CodeQL (Java/Kotlin, JS/TS, Python)
         uses: github/codeql-action/init@64d10c13136e1c5bce3e5fbde8d4906eeaafc885 # v3
         with:
           languages: java-kotlin,javascript-typescript,python
@@ -48,13 +34,12 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@64d10c13136e1c5bce3e5fbde8d4906eeaafc885 # v3
-        with:
-          category: "/language:${{matrix.language}}"
 
       - name: Summary
         shell: bash
         run: |
           echo "### CodeQL — анализ завершён" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Языки: Java, JavaScript/TypeScript, Python" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Языки: Java/Kotlin, JavaScript/TypeScript, Python" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Режим: build-mode=none (анализ исходного кода без компиляции)" >> "$GITHUB_STEP_SUMMARY"
           echo "- Отчёты и алерты: Security → Code scanning alerts" >> "$GITHUB_STEP_SUMMARY"
           echo "  https://github.com/${{ github.repository }}/security/code-scanning" >> "$GITHUB_STEP_SUMMARY"

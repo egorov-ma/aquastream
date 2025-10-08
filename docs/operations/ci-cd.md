@@ -173,9 +173,25 @@ git commit -m "chore: update dependency locks"
 - **Автодеплой**: GitHub Pages с main
 - **Link checking**: проверка битых ссылок
 
-#### CodeQL языки
-- По умолчанию включены `java` (Java/Kotlin), `javascript` (JS/TS) и `python`.
-- Дополнительные языки (например, `go`, `ruby`, `csharp`, `swift`) добавляются в шаге `Initialize CodeQL`: `languages: java,javascript,python,go`.
+#### CodeQL Security Scanning
+
+**Языки:**
+- `java-kotlin` - анализ Java и Kotlin кода
+- `javascript-typescript` - анализ JavaScript и TypeScript
+- `python` - анализ Python кода
+
+**Режим:** `build-mode: none` - анализ исходного кода без компиляции (быстрее и надёжнее для монорепо)
+
+**Добавление языков:**
+```yaml
+- name: Initialize CodeQL
+  uses: github/codeql-action/init@v3
+  with:
+    languages: java-kotlin,javascript-typescript,python,go
+    build-mode: none  # для go используйте 'autobuild' или 'manual'
+```
+
+**Отчёты:** Security → Code scanning alerts
 
 ## Локальная валидация
 
