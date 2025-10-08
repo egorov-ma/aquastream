@@ -10,43 +10,7 @@ tags: [operations, devops, infrastructure]
 
 Документация по эксплуатации и администрированию системы AquaStream.
 
-## Быстрый старт
-
-### Development
-
-```bash
-# 1. Клонировать репозиторий
-git clone https://github.com/your-org/aquastream.git
-cd aquastream
-
-# 2. Создать .env файл
-cp backend-infra/docker/compose/.env.dev.example backend-infra/docker/compose/.env.dev
-
-# 3. Запустить dev stack
-make up-dev
-
-# 4. Проверить health
-make smoke
-```
-
-**Доступные сервисы:**
-- Gateway: http://localhost:8080
-- Grafana: http://localhost:3001 (admin/admin)
-- MinIO Console: http://localhost:9001
-
-### Production
-
-```bash
-# 1. Настроить .env.prod с сильными паролями
-cp backend-infra/docker/compose/.env.prod.example backend-infra/docker/compose/.env.prod
-# Редактировать секреты (POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET, etc.)
-
-# 2. Запустить prod stack
-make up-prod
-
-# 3. Проверить все сервисы
-curl -f https://your-domain.com/actuator/health
-```
+**Быстрый старт**: [Quickstart Guide](../quickstart.md)
 
 ## Основные команды
 

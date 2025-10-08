@@ -25,36 +25,7 @@ node --version  # 18+
 
 ## Быстрый старт
 
-### 1. Клонирование репозитория
-
-```bash
-git clone https://github.com/egorov-ma/aquastream.git
-cd aquastream
-```
-
-### 2. Запуск всего стека (backend + инфраструктура + nginx)
-
-```bash
-make up-dev
-```
-
-Команда поднимет PostgreSQL, Redis, MinIO, nginx и все backend сервисы. Логи доступны через `make logs`.
-
-### 3. Запуск frontend
-
-```bash
-make frontend-dev
-```
-
-### 4. Проверка
-
-```bash
-curl http://localhost/actuator/health       # Gateway через nginx
-curl http://localhost:8080/actuator/health  # Прямой доступ к gateway (без nginx)
-open http://localhost:3000                  # Frontend
-```
-
-> Подробности по инфраструктуре и профилям см. в [Operations → Infrastructure](../operations/infrastructure.md).
+См. [Quickstart Guide](../quickstart.md) для запуска проекта за 5 минут.
 
 ## IDE настройка
 
@@ -119,7 +90,7 @@ PostgreSQL использует схемы: `user`, `event`, `crew`, `payment`, 
 
 # Зависимости
 ./gradlew :backend-common:dependencies                 # Дерево зависимостей
-./gradlew dependencies --write-locks (или make deps-lock)  # Обновить locks
+make deps-lock                                         # Обновить locks
 ./gradlew dependencyUpdates                            # Проверить обновления
 
 # Security
@@ -130,18 +101,15 @@ PostgreSQL использует схемы: `user`, `event`, `crew`, `payment`, 
 
 ```bash
 # Make (рекомендуется)
+make up-dev                # Запуск dev окружения
 make build-images          # Сборка образов
 make scan && make sbom     # Security scanning + SBOM
 make up-dev-observability  # Observability stack
-make logs SERVICE=user     # Логи сервиса
-make restart SERVICE=user  # Перезапуск
-make clean-all             # Очистка
-
-# Docker Compose (альтернатива)
-docker compose -f backend-infra/docker/compose/docker-compose.yml --profile dev up -d  # Запуск
-docker compose -f backend-infra/docker/compose/docker-compose.yml logs -f              # Логи
-docker compose -f backend-infra/docker/compose/docker-compose.yml down                 # Остановка
+make logs                  # Логи всех сервисов
+make down                  # Остановка
 ```
+
+Подробнее: [Operations Guide](../operations/README.md)
 
 ## Troubleshooting
 

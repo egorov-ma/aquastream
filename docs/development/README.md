@@ -14,7 +14,6 @@ tags: [development]
 | [Build Guide](build-guide.md) | Архитектура системы сборки, Gradle/Docker команды |
 | [Workflows](workflows.md) | Git-процессы, релизы, hotfix и коммиты |
 | [Style Guides](style-guides.md) | Конвенции кодирования, коммиты, документация |
-| [Testing](testing.md) | Как запускать юнит/интеграционные/Frontend тесты |
 | [Troubleshooting](troubleshooting.md) | Решение типичных проблем при разработке |
 
 ## Общие ссылки
@@ -22,6 +21,7 @@ tags: [development]
 - Архитектура: [docs/architecture.md](../architecture.md)
 - Ops и эксплуатация: [docs/operations/](../operations/README.md)
 - Backend overview: [docs/backend/](../backend/README.md)
+- **Тестирование**: [QA & Testing](../qa/testing.md) - команды, планы, best practices
 - QA стратегия: [docs/qa/](../qa/index.md)
 
 ## Принципы
