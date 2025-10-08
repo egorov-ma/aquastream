@@ -20,33 +20,33 @@ AquaStream - система управления водными мероприя
 
 ```mermaid
 graph TB
-    subgraph "Frontend Layer"
-        WEB[Web App<br/>Next.js]
+    subgraph FrontendLayer[Frontend Layer]
+        WEB[Web App<br>Next.js]
     end
 
-    subgraph "Edge Layer"
+    subgraph EdgeLayer[Edge Layer]
         NGINX[Nginx Reverse Proxy]
     end
 
-    subgraph "API Gateway Layer"
-        GW[API Gateway<br/>8080]
+    subgraph GatewayLayer[API Gateway Layer]
+        GW[API Gateway<br>8080]
     end
 
-    subgraph "Backend Services"
-        USER[User Service<br/>8101]
-        EVENT[Event Service<br/>8102]
-        CREW[Crew Service<br/>8103]
-        PAYMENT[Payment Service<br/>8104]
-        NOTIFY[Notification Service<br/>8105]
-        MEDIA[Media Service<br/>8106]
+    subgraph BackendServices[Backend Services]
+        USER[User Service<br>8101]
+        EVENT[Event Service<br>8102]
+        CREW[Crew Service<br>8103]
+        PAYMENT[Payment Service<br>8104]
+        NOTIFY[Notification Service<br>8105]
+        MEDIA[Media Service<br>8106]
     end
 
-    subgraph "Data Layer"
-        PG[(PostgreSQL<br/>Primary DB)]
-        REDIS[(Redis<br/>Cache & Sessions)]
+    subgraph DataLayer[Data Layer]
+        PG[(PostgreSQL<br>Primary DB)]
+        REDIS[(Redis<br>Cache & Sessions)]
     end
 
-    subgraph "External Services"
+    subgraph ExternalServices[External Services]
         TELEGRAM[Telegram Bot]
         PAY_PROVIDERS[Payment Providers]
         EMAIL[Email Service]

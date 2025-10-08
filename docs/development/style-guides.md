@@ -62,4 +62,4 @@ tags: [development, style-guides]
 
 ---
 
-См. [workflows.md](workflows.md) и [testing.md](testing.md).
+См. [workflows.md](workflows.md) и [QA Testing](../qa/testing.md).

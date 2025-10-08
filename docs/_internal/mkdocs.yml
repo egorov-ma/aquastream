@@ -77,7 +77,6 @@ nav:
   - Сборка: development/build-guide.md
   - Рабочие процессы: development/workflows.md
   - Стандарты оформления: development/style-guides.md
-  - Практики тестирования: development/testing.md
   - Отладка: development/troubleshooting.md
 - QA & Testing:
   - Обзор: qa/index.md
@@ -120,9 +119,14 @@ markdown_extensions:
     permalink: true
 - attr_list
 - pymdownx.details
-- pymdownx.superfences
+- pymdownx.superfences:
+    custom_fences:
+      - name: mermaid
+        class: mermaid
+        format: !!python/name:mermaid2.fence_mermaid
 - pymdownx.highlight
-- pymdownx.tabbed
+- pymdownx.tabbed:
+    alternate_style: true
 - pymdownx.tilde
 - pymdownx.caret
 plugins:

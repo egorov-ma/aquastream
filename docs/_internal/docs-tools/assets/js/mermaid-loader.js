@@ -1,5 +1,5 @@
 (function loadMermaid() {
-  const CDN_URL = 'https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js';
+  const CDN_URL = 'https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js';
 
   window.__mermaidInitArgs = window.__mermaidInitArgs || null;
 

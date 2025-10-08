@@ -63,7 +63,7 @@ graph TB
     Service --> Client[External Clients]
     Repository --> DB[(PostgreSQL)]
 
-    subgraph "External Dependencies"
+    subgraph ExternalDependencies[External Dependencies]
         Client
         MessageQueue[Kafka/RabbitMQ]
     end

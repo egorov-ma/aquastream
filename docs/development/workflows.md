@@ -128,5 +128,5 @@ git commit -m "chore(deps): update spring boot to 3.3.6"
 ## См. также
 
 - [Style Guides](style-guides.md)
-- [Testing](testing.md)
+- [QA Testing](../qa/testing.md)
 - [CI/CD](../operations/ci-cd.md)
