@@ -80,20 +80,16 @@ build (MkDocs strict mode) → deploy (GitHub Pages)
 **Файл**: Backend CI содержит job `Lock Check`
 
 **Что делает**:
-1. Генерирует lock-файлы для всех модулей: `./gradlew dependencies --write-locks`
-2. Проверяет, что `gradle.lockfile` не изменились
+1. Генерирует lock-файлы для всех модулей (root + вложенные)
+2. Проверяет, что ни один `gradle.lockfile` не изменился
 3. Если изменились - job падает с подсказкой
 
-**Исправление**:
+**Исправление при падении**:
 ```bash
-# Обновить lock файлы
+# Обновить все lock файлы
 make deps-lock
 
-# Или вручную
-./gradlew dependencies --write-locks
-
 # Закоммитить изменения
-git add */gradle.lockfile
 git commit -m "chore: update dependency locks"
 ```
 
@@ -298,9 +294,11 @@ docker buildx ls
 # Обновить lock файлы
 make deps-lock
 
+# Проверить что всё собирается
+./gradlew build
+
 # Commit изменения
-git add */gradle.lockfile
-git commit -m "chore: update gradle locks"
+git commit -m "chore: update dependency locks"
 ```
 
 ## См. также

@@ -113,8 +113,8 @@ chmod +x .git/hooks/pre-commit
 
 # 2. Обновить версии в build.gradle (ext.* версии)
 
-# 3. Обновить locks
-./gradlew dependencies --write-locks  # или make deps-lock
+# 3. Обновить все lock файлы (root + вложенные модули)
+make deps-lock
 
 # 4. Тест
 ./gradlew clean build test

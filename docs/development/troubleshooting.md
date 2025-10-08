@@ -106,7 +106,7 @@ java -version  # должна быть 21
 **Dependency conflicts**:
 ```bash
 ./gradlew :backend-common:dependencyInsight --dependency jackson-core  # Проверить конфликты
-./gradlew dependencies --write-locks  # Обновить locks
+make deps-lock  # Обновить все locks
 ```
 
 **Tests fail**:

@@ -30,7 +30,7 @@ tags: [development, build]
 
 # Зависимости
 ./gradlew :backend-common:dependencies            # Дерево зависимостей
-./gradlew dependencies --write-locks              # Обновить lock-файлы
+make deps-lock                                    # Обновить все lock-файлы (26 файлов)
 ./gradlew dependencyUpdates                       # Проверка обновлений
 ```
 
@@ -72,7 +72,7 @@ GitHub Actions использует те же команды:
 
 **Backend CI** (объединенный с Docker Images):
 - `./gradlew clean build` — сборка + тесты
-- `./gradlew dependencies --write-locks` — lock check
+- Lock check (только если изменены build.gradle) — проверка актуальности lockfile
 - Docker build (только на push/release) — сборка 7 сервисов параллельно
 - Trivy scan + SBOM generation
 
