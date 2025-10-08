@@ -69,10 +69,19 @@ docker compose --profile dev down    # Остановка
 ## CI/CD
 
 GitHub Actions использует те же команды:
-- `backend-ci.yml` — `./gradlew clean build`, `dependencyCheckAnalyze`, lock-check
-- `frontend-ci.yml` — `pnpm lint`, `typecheck`, `build`, `test:e2e`
-- `ci-images.yml` — `make build-images`, `scan`, `sbom`
-- `docs-ci.yml` — `make docs-build`
+
+**Backend CI** (объединенный с Docker Images):
+- `./gradlew clean build` — сборка + тесты
+- `./gradlew dependencies --write-locks` — lock check
+- Docker build (только на push/release) — сборка 7 сервисов параллельно
+- Trivy scan + SBOM generation
+
+**Frontend CI**:
+- `pnpm lint`, `typecheck`, `build`, `test:e2e`
+
+**Docs CI** (объединенный с Deploy):
+- `make docs-build` — сборка MkDocs
+- Deploy to Pages (только на push main)
 
 См. [`docs/operations/ci-cd.md`](../operations/ci-cd.md).
 

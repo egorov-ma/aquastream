@@ -12,18 +12,62 @@ GitHub Actions pipeline для автоматизации сборки, тест
 
 ## Workflow Компоненты
 
-| Workflow | Файл | Триггер | Шаги | Артефакты |
+| Workflow | Файл | Триггер | Этапы | Артефакты |
 |----------|------|---------|------|-----------|
-| **Backend CI** | `backend-ci.yml` | `push`/`pr` на backend paths | Gradle build, test, lock check | Test reports |
+| **Backend CI** | `backend-ci.yml` | `push`/`pr` на backend paths | 1. Lock check<br>2. Gradle build + test<br>3. Docker images (только на push/release) | JARs, security reports, SBOM |
 | **Frontend CI** | `frontend-ci.yml` | `push`/`pr` на `frontend/**` | pnpm lint/typecheck/build/test | - |
-| **Docker Images** | `ci-images.yml` | `pr`/`push`/`release` | Build, Trivy scan, SBOM, push (GHCR) | Security reports, SBOM |
+| **Docs CI** | `docs-ci.yml` | `pr`/`push` main на docs | 1. Build MkDocs<br>2. Deploy to Pages (только на push main) | Static site |
 | **CodeQL** | `codeql.yml` | `push`/`pr`/weekly | Analyze java/js/python | Security findings |
 | **Commitlint** | `commitlint.yml` | `push`/`pr` | Validate Conventional Commits | - |
 | **Labeler** | `labeler.yml` | `pr` opened | Auto-label by paths | - |
 | **Label Sync** | `label-sync.yml` | `labels.yml` changes | Sync repo labels | - |
 | **Release** | `release.yml` | Tag `v*` pushed | Create GitHub Release | Release notes |
-| **Docs CI** | `docs-ci.yml` | `pr` на docs | Build MkDocs, check links | Static site |
-| **Docs Deploy** | `docs-deploy.yml` | `push` to main | Deploy to GitHub Pages | - |
+
+### Backend CI Pipeline
+
+Объединённый workflow для полного цикла backend разработки:
+
+**На Pull Request:**
+```
+changes → lock-check → build (JARs + tests)
+```
+
+**На Push (main/develop) или Release:**
+```
+changes → lock-check → build (JARs + tests) → docker-images (7 сервисов параллельно)
+                                                ├─ gateway
+                                                ├─ user
+                                                ├─ event
+                                                ├─ crew
+                                                ├─ payment
+                                                ├─ notification
+                                                └─ media
+```
+
+**Преимущества:**
+- Один артефакт JARs переиспользуется для Docker сборки
+- На PR быстрая обратная связь (только тесты, без Docker)
+- На production (main/release) полный цикл с security scanning
+- Единый визуальный pipeline вместо разрозненных workflows
+
+### Docs CI Pipeline
+
+Объединённый workflow для документации:
+
+**На Pull Request:**
+```
+build (MkDocs strict mode) → upload artifact (для review)
+```
+
+**На Push main:**
+```
+build (MkDocs strict mode) → deploy (GitHub Pages)
+```
+
+**Преимущества:**
+- Один build вместо двух
+- На PR проверка корректности без деплоя
+- На main автоматическая публикация
 
 ### Как читать таблицу
 
@@ -59,10 +103,11 @@ git commit -m "chore: update dependency locks"
 
 ### Trivy (Docker Images)
 
-- **Режим PR**: информативный, не блокирует merge
-- **Режим main/release**: fail на HIGH/CRITICAL уязвимостях
-- **Отчеты**: SARIF format → GitHub Security tab
-- **Артефакты**: сохраняются для каждого образа
+- **Запуск**: только на push/release (не на PR)
+- **Политика**: fail на HIGH/CRITICAL уязвимостях
+- **Отчеты**: text format → GitHub Actions artifacts
+- **Артефакты**: сохраняются для каждого образа (`security-{service}-{sha}`)
+- **Базовый образ**: `eclipse-temurin:21-jre-noble` (Ubuntu 24.04 LTS)
 
 ### OWASP Dependency Check
 
@@ -85,12 +130,11 @@ git commit -m "chore: update dependency locks"
 Все ключевые пайплайны поддерживают запуск из UI:
 
 **Actions → Run workflow**:
-- Backend CI
+- Backend CI (включает Docker images build при запуске из main)
 - Frontend CI
 - CodeQL
 - Commitlint
-- Docs CI
-- Docs Deploy
+- Docs CI (включает deploy при запуске из main)
 - Release (с параметрами: `tag`, `draft`)
 
 ## Best Practices
