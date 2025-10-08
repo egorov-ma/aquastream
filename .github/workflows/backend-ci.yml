@@ -1,7 +1,10 @@
 ---
 name: Backend CI
+
 permissions:
   contents: read
+  packages: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -13,6 +16,7 @@ on:
     paths:
       - 'backend-*/**'
       - 'backend-common/**'
+      - 'backend-infra/docker/**'
       - 'build.gradle'
       - 'settings.gradle'
       - 'gradle/**'
@@ -22,10 +26,13 @@ on:
     paths:
       - 'backend-*/**'
       - 'backend-common/**'
+      - 'backend-infra/docker/**'
       - 'build.gradle'
       - 'settings.gradle'
       - 'gradle/**'
       - '.github/workflows/backend-ci.yml'
+  release:
+    types: [ published ]
 
 jobs:
   changes:
@@ -88,7 +95,7 @@ jobs:
           set -euo pipefail
           CHANGES=$(git status --porcelain | grep -E "gradle\.lockfile" || true)
           if [[ -n "$CHANGES" ]]; then
-            echo "::error::Dependency lockfiles out of sync. Run 'make deps-lock' (or './gradlew --write-locks') and commit changes." 
+            echo "::error::Dependency lockfiles out of sync. Run 'make deps-lock' (or './gradlew --write-locks') and commit changes."
             echo "$CHANGES"
             exit 1
           fi
@@ -125,11 +132,15 @@ jobs:
       - name: Build JARs
         run: ./gradlew build
 
-      - name: Upload backend build artifacts
+      - name: Upload backend JARs artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: backend-build
-          path: "**/build/libs/*.jar"
+          name: backend-jars
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            backend-*/**/build/libs/*.jar
+            backend-gateway/build/libs/*.jar
 
       - name: Summary
         shell: bash
@@ -150,4 +161,165 @@ jobs:
             L_MIB=$(awk -v b="$L_SIZE" 'BEGIN {printf "%.1f", b/1024/1024}')
             echo "- Крупнейший JAR: $L_PATH (${L_MIB} MiB)" >> "$GITHUB_STEP_SUMMARY"
           fi
-          echo "- Загружен артефакт: backend-build (JAR)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Загружен артефакт: backend-jars" >> "$GITHUB_STEP_SUMMARY"
+
+  docker-images:
+    name: "Docker Image - ${{ matrix.service }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [ build ]
+    if: github.event_name == 'push' || github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [ gateway, user, event, crew, payment, notification, media ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+
+      - name: Enable problem matcher (warnings/errors)
+        run: echo "::add-matcher::.github/matchers/generic.json"
+
+      - name: Download JAR artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: backend-jars
+          path: .
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Prepare artifact directories
+        run: |
+          mkdir -p reports/${{ matrix.service }}
+
+      - name: Mark image build start
+        run: echo "IMG_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Compute metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER_RAW="${{ github.repository_owner }}"
+          OWNER_LOWER="$(echo -n "$OWNER_RAW" | tr '[:upper:]' '[:lower:]')"
+          SERVICE="${{ matrix.service }}"
+          IMAGE="ghcr.io/${OWNER_LOWER}/aquastream-backend-${SERVICE}"
+          SHORT_SHA="$(git rev-parse --short=7 HEAD)"
+          TAGS=("${IMAGE}:sha-${SHORT_SHA}")
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            VERSION_TAG="${GITHUB_REF#refs/tags/}"
+            TAGS+=("${IMAGE}:${VERSION_TAG}" "${IMAGE}:latest")
+          elif [[ "${{ github.event_name }}" == "release" ]]; then
+            VERSION_TAG="${{ github.event.release.tag_name }}"
+            TAGS+=("${IMAGE}:${VERSION_TAG}" "${IMAGE}:latest")
+          fi
+          # JAR path mapping per service
+          case "$SERVICE" in
+            gateway)     JAR_FILE="backend-gateway/build/libs/backend-gateway-*.jar" ; DF="backend-infra/docker/images/Dockerfile.gateway" ;;
+            user)        JAR_FILE="backend-user/backend-user-api/build/libs/backend-user-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.user" ;;
+            event)       JAR_FILE="backend-event/backend-event-api/build/libs/backend-event-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.event" ;;
+            crew)        JAR_FILE="backend-crew/backend-crew-api/build/libs/backend-crew-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.crew" ;;
+            payment)     JAR_FILE="backend-payment/backend-payment-api/build/libs/backend-payment-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.payment" ;;
+            notification)JAR_FILE="backend-notification/backend-notification-api/build/libs/backend-notification-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.notification" ;;
+            media)       JAR_FILE="backend-media/backend-media-api/build/libs/backend-media-api-*.jar" ; DF="backend-infra/docker/images/Dockerfile.media" ;;
+            *) echo "::error::Unknown service: $SERVICE"; exit 1;;
+          esac
+          printf 'image=%s\n' "$IMAGE" >> "$GITHUB_OUTPUT"
+          {
+            echo 'tags<<TAGS'
+            printf '%s\n' "${TAGS[@]}"
+            echo 'TAGS'
+          } >> "$GITHUB_OUTPUT"
+          PRIMARY_TAG="${IMAGE}:sha-${SHORT_SHA}"
+          printf 'jar_file=%s\n' "$JAR_FILE" >> "$GITHUB_OUTPUT"
+          printf 'dockerfile=%s\n' "$DF" >> "$GITHUB_OUTPUT"
+          printf 'short_sha=%s\n' "$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          printf 'primary_tag=%s\n' "$PRIMARY_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push image
+        id: build_push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ steps.meta.outputs.dockerfile }}
+          platforms: linux/amd64
+          build-args: |
+            JAR_FILE=${{ steps.meta.outputs.jar_file }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Generate SBOM (Syft)
+        shell: bash
+        env:
+          IMAGE_REF: ${{ steps.meta.outputs.primary_tag }}
+          SERVICE: ${{ matrix.service }}
+          SHORT_SHA: ${{ steps.meta.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "reports/${SERVICE}"
+          docker pull "$IMAGE_REF"
+          # Syft CLI (pinned version)
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            ghcr.io/anchore/syft:v1.6.0 \
+            "$IMAGE_REF" -o spdx-json > "reports/${SERVICE}/sbom-${SHORT_SHA}.spdx.json"
+
+      - name: Trivy Scan
+        id: trivy
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ steps.meta.outputs.primary_tag }}
+          format: 'table'
+          vuln-type: 'os,library'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+          output: reports/${{ matrix.service }}/trivy.txt
+          exit-code: '1'
+
+      - name: Upload security artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: security-${{ matrix.service }}-${{ steps.meta.outputs.short_sha }}
+          if-no-files-found: ignore
+          retention-days: 14
+          path: reports/${{ matrix.service }}
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Docker Image — ${{ matrix.service }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Образ:  ${{ steps.meta.outputs.image }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -n "${IMG_BUILD_START:-}" ]]; then NOW=$(date +%s); DUR=$((NOW-IMG_BUILD_START)); printf -- "- Время сборки образа: %02d:%02d\n" $((DUR/60)) $((DUR%60)) >> "$GITHUB_STEP_SUMMARY"; fi
+          echo "- Опубликованные теги:" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.meta.outputs.tags }}" | while IFS= read -r t; do echo "  - $t" >> "$GITHUB_STEP_SUMMARY"; done
+          DIGEST="${{ steps.build_push.outputs.digest }}"
+          if [[ -n "$DIGEST" ]]; then
+            echo "- Digest: $DIGEST" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          REPORT_DIR="reports/${{ matrix.service }}"
+          if [[ -f "$REPORT_DIR/trivy.txt" ]]; then
+            echo "- Trivy report: $REPORT_DIR/trivy.txt (см. artifacts)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [[ -f "$REPORT_DIR/sbom-${{ steps.meta.outputs.short_sha }}.spdx.json" ]]; then
+            echo "- SBOM: $REPORT_DIR/sbom-${{ steps.meta.outputs.short_sha }}.spdx.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce Trivy policy
+        if: steps.trivy.outcome == 'failure'
+        run: |
+          echo "High/Critical vulnerabilities detected. See Trivy report." >&2
+          exit 1
