@@ -90,6 +90,8 @@ graph TB
 | **Notification** | 8105 | Supporting | Email, Telegram бот, push notifications | `notification` | Telegram Bot API |
 | **Media** | 8106 | Supporting | Файлы, presigned URLs, загрузка | `media` | MinIO/S3 |
 
+Подробнее: [Backend Services](backend/README.md)
+
 ## Модульная структура сервисов
 
 Каждый микросервис (кроме Gateway) разбит на три модуля:
@@ -97,22 +99,8 @@ graph TB
 ```
 backend-[service]/
 ├── backend-[service]-api/        # REST API endpoints, Transport DTO, Controllers
-│   └── src/main/java/
-│       └── com/aquastream/[service]/api/
-│           ├── controller/       # REST контроллеры
-│           ├── dto/              # Transport DTO с validation
-│           └── [Service]ApiApplication.java
 ├── backend-[service]-service/    # Бизнес-логика, Service DTO
-│   └── src/main/java/
-│       └── com/aquastream/[service]/service/
-│           ├── service/          # Сервисный слой
-│           ├── dto/              # Service DTO (доменные модели)
-│           └── mapper/           # Маппинг между DTO
 └── backend-[service]-db/         # Data Access, JPA Entities
-    └── src/main/java/
-        └── com/aquastream/[service]/db/
-            ├── entity/           # JPA сущности
-            └── repository/       # Spring Data репозитории
 ```
 
 ### Правила взаимодействия между модулями
@@ -122,6 +110,8 @@ backend-[service]/
 | **API → Service** | ✅ Контроллеры вызывают сервисы | ❌ API → DB напрямую | ArchUnit |
 | **Service → DB** | ✅ Сервисы используют репозитории | ❌ Service → API | ArchUnit |
 | **DTO Mapping** | ✅ Контроллеры: Transport ↔ Service DTO<br>✅ Сервисы: Service DTO ↔ Entity | ❌ Entity в API responses | ArchUnit |
+
+Подробнее: [Backend Common](backend/common/README.md)
 
 ## Слоистая архитектура
 
@@ -143,32 +133,6 @@ backend-[service]/
 | **Service** | `service` | Бизнес-логика, транзакционная обработка, Service DTO, маппинг между слоями | `@Service`, `@Transactional` |
 | **Repository** | `db` | Spring Data JPA репозитории, custom queries, Specifications для сложных запросов | Spring Data JPA, `@Query` |
 | **Domain** | `db/entity` | JPA entities, Value Objects, domain logic (методы сущностей) | `@Entity`, JPA |
-
-## Backend-Common Library
-
-Общая библиотека для всех сервисов с автоконфигурацией Spring Boot.
-
-### Основные компоненты
-
-| Модуль | Компоненты | Назначение |
-|--------|------------|------------|
-| **config/** | `ServiceDiscoveryAutoConfiguration`, `ServiceUrls` | Auto-конфигурации, service discovery |
-| **domain/** | `UserRole`, `BookingStatus`, `PaymentStatus`, `DomainConstants` | Доменные enum'ы и константы (GUEST/USER/ORGANIZER/ADMIN, заголовки, лимиты) |
-| **error/** | `GlobalExceptionHandler`, `ApiException`, `ProblemDetails`, `ErrorCodes` | RFC 7807 Problem Details, глобальная обработка ошибок |
-| **health/** | `ServiceHealthChecker` | Health checks |
-| **metrics/** | `MetricsCollector`, `MetricsFilter`, `MetricsScheduler`, `RedisMetricsWriter` | Система метрик (HTTP, бизнес-метрики, Redis storage) |
-| **mock/** | `MockDetector`, `MockResponseGenerator` | Моки для dev окружения |
-| **ratelimit/** | `RateLimitFilter`, `RateLimitService` | Bucket4j + Redis rate limiting |
-| **util/** | `Ids` | Генерация UUID, JTI, idempotency keys |
-| **web/** | `CorrelationIdFilter`, `CorrelationIdRestTemplateInterceptor`, `ServiceDiscoveryController` | Web конфигурация, CORS, Correlation IDs |
-
-### Зависимости и автоконфигурации
-
-| Тип | Библиотеки |
-|-----|-----------|
-| **Exported (api)** | `spring-boot-starter-web`, `spring-boot-starter-validation`, `bucket4j-redis` |
-| **Internal (implementation)** | `spring-boot-starter-security`, `spring-boot-starter-data-redis`, `logstash-logback-encoder` |
-| **Автоконфигурации** | `CommonErrorHandlingAutoConfiguration` (RFC 7807), `RateLimitAutoConfiguration` (Bucket4j), `WebAutoConfiguration` (CORS, CorrelationId), `MetricsAutoConfiguration`, `ServiceDiscoveryAutoConfiguration` |
 
 ## Технологический стек
 
@@ -205,20 +169,15 @@ backend-[service]/
 | **Forms** | React Hook Form + Zod | Validation, form handling |
 | **Testing** | Node test runner, Playwright | Unit tests, E2E tests |
 
+Подробнее: [Frontend Architecture](frontend/README.md)
+
 ### Infrastructure
 
-| Технология | Назначение |
-|------------|------------|
-| **Docker + Docker Compose** | Контейнеризация, оркестрация (dev/staging) |
-| **Prometheus + Grafana** | Метрики, дашборды |
-| **Loki + Promtail** | Centralized logging |
-| **Trivy** | Docker image security scanning |
-| **OWASP Dependency Check** | Dependency vulnerabilities |
-| **Syft** | SBOM generation |
-| **MkDocs + Material** | Documentation as Code |
-| **GitHub Actions** | CI/CD pipelines |
-| **Nginx** | Reverse proxy, TLS termination |
-| **MinIO** | S3-compatible object storage |
+См. [Operations Guide](operations/README.md):
+- [Infrastructure](operations/infrastructure.md) - Docker, PostgreSQL, Redis, MinIO
+- [CI/CD](operations/ci-cd.md) - GitHub Actions, security scanning
+- [Monitoring](operations/monitoring.md) - Prometheus, Grafana, Loki
+- [Deployment](operations/deployment.md) - blue-green, health checks
 
 ## Ключевые архитектурные паттерны
 
@@ -266,6 +225,8 @@ backend-[service]/
 | **Data Protection** | HTTPS обязателен, input validation (`@Valid`, Jakarta Bean Validation), SQL injection protection (Spring Data JPA), secrets management (environment variables) |
 | **Monitoring & Auditing** | Structured logging (JSON, Logback), security event tracking (`EXTERNAL_API_CALL`, `ERROR_OCCURRED`), Correlation IDs для трейсинга |
 
+Подробнее: [Security Policy](operations/policies/security.md)
+
 ## Производительность и масштабирование
 
 ### Performance SLA
@@ -287,143 +248,7 @@ backend-[service]/
 | **N+1 query prevention** | Entity graphs для eager loading критичных связей, `@BatchSize` для коллекций, DTO projections для read-only | Меньше DB roundtrips |
 | **Caching** | Redis для sessions (TTL: 1 час), Caffeine для справочных данных, HTTP cache headers для статики | Снижение latency |
 
-### Горизонтальное масштабирование
-
-| Аспект | Реализация |
-|--------|------------|
-| **Stateless сервисы** | Session в Redis (не в JVM), MinIO для файлов (no local storage), idempotency keys для retry |
-| **Load balancing** | `docker-compose up -d --scale backend-event=3`, Nginx upstream с `least_conn` algorithm |
-| **Database scaling** | PostgreSQL read replicas (планируется), connection pooling, schema-per-service для независимости |
-
-### Вертикальное масштабирование
-
-| Аспект | Значение |
-|--------|----------|
-| **JVM Heap** | `-Xms512m -Xmx768m` (50-75% от container memory) |
-| **GC** | `-XX:+UseG1GC -XX:MaxGCPauseMillis=200` (G1GC для latency-sensitive apps) |
-| **Metaspace** | `-XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m` |
-| **Resource limits** | Memory: 512-768MB, CPU: 0.75-1.0 vCPU per service |
-
-## Мониторинг и наблюдаемость
-
-### Метрики (Prometheus)
-
-| Категория | Метрики | Формат |
-|-----------|---------|--------|
-| **Business** | `bookings_created_total`, `payments_succeeded_total`, `booking_duration_seconds`, `waitlist_additions_total` | Counter, Histogram |
-| **Technical** | `http_requests_total{method,status,service}`, `http_request_duration_seconds`, `jvm_memory_used_bytes{area}`, `database_connections_active`, `redis_commands_total{command}` | Counter, Histogram, Gauge |
-| **Endpoints** | `/actuator/metrics`, `/actuator/prometheus`, `/actuator/health`, `/actuator/info` | Spring Boot Actuator |
-
-### Логирование
-
-**Формат**: Structured JSON (Logback + Logstash encoder)
-
-| Поле | Пример | Назначение |
-|------|--------|------------|
-| `timestamp` | `2025-10-01T12:00:00.123Z` | Время события |
-| `level` | `INFO` / `WARN` / `ERROR` | Log level |
-| `service` | `backend-event` | Сервис |
-| `correlationId` | `abc-123-def-456` | Трейсинг запросов |
-| `userId` | `user-789` | Пользователь |
-| `event` | `BOOKING_CREATED` | Бизнес-событие |
-| `duration` | `287` | Длительность (ms) |
-
-### Key Events для мониторинга
-
-| Event | Описание | Level |
-|-------|----------|-------|
-| `SERVICE_STARTED` | Сервис запущен | INFO |
-| `BOOKING_CREATED` | Создано бронирование | INFO |
-| `PAYMENT_SUCCEEDED` / `PAYMENT_FAILED` | Результат платежа | INFO / ERROR |
-| `EXTERNAL_API_CALL` | Вызовы внешних API (YooKassa, Telegram) | INFO |
-| `ERROR_OCCURRED` | Ошибки требующие внимания | ERROR |
-| `CAPACITY_EXCEEDED` | Превышение capacity экипажа | WARN |
-
-### Centralized Logging
-
-| Компонент | Назначение |
-|-----------|------------|
-| **Loki** | Хранение логов |
-| **Promtail** | Сбор логов из Docker контейнеров |
-| **Grafana** | Визуализация и поиск |
-| **Correlation IDs** | Трейсинг запросов между сервисами |
-
-### Дашборды (Grafana)
-
-| Dashboard | Метрики |
-|-----------|---------|
-| **Service Health** | Health checks, uptime, service status |
-| **Business Metrics** | Bookings created, payments succeeded, users registered |
-| **Performance** | Latency (p50/p95/p99), throughput (req/sec), error rate (%) |
-
-### Алерты
-
-| Тип | Условие | Severity | SLA |
-|-----|---------|----------|-----|
-| **Critical** | Service down (health check failed >2 min), Error rate >5% (5xx), Response time p95 >2s, DB connections >90% pool | Critical | Немедленно |
-| **Warning** | Memory usage >85%, Disk space <15%, Event capacity >80% | Warning | <1 час |
-
-## Тестирование
-
-### Test Pyramid
-
-```
-    /\     E2E Tests (5%)
-   /  \    ← Critical user journeys
-  /____\   Integration Tests (15%)
- /      \  ← API contracts, DB interactions
-/________\ Unit Tests (80%)
-           ← Business logic, edge cases
-```
-
-### Стратегия тестирования
-
-| Уровень | Coverage Target | Инструменты | Запуск | Что тестируем |
-|---------|----------------|-------------|--------|---------------|
-| **Unit Tests** | >80% line coverage | JUnit 5, Mockito, AssertJ | `./gradlew test` | Бизнес-логика в `@Service`, маппинг DTO, валидация, edge cases |
-| **Integration Tests** | Все API endpoints | Spring Boot Test, Testcontainers, REST Assured | `./gradlew integrationTest` | API endpoints, DB взаимодействие, Redis caching, Liquibase migrations |
-| **Architecture Tests** | 100% архитектурных правил | ArchUnit | `./gradlew test` | `api` не зависит от `db`, `service` не зависит от `api`, no cyclic dependencies |
-| **E2E Tests** | Critical paths | Playwright, Node test runner | `pnpm test:e2e` | Booking flow, payment flow, user registration |
-
-### Команды тестирования
-
-| Команда | Описание |
-|---------|----------|
-| `./gradlew test` | Все unit tests (JUnit 5) |
-| `./gradlew integrationTest` | Integration tests с Testcontainers (PostgreSQL, Redis) |
-| `./gradlew check` | All tests + ArchUnit + code quality |
-| `./gradlew :backend-event:test` | Unit tests для конкретного сервиса |
-| `pnpm test:unit` | Frontend unit tests |
-| `pnpm test:e2e` | Frontend E2E tests (Playwright) |
-
-## Развертывание
-
-### Environments
-
-| Environment | Purpose | URL | Deployment |
-|-------------|---------|-----|------------|
-| **Local** | Development | localhost | Docker Compose |
-| **Staging** | Testing | staging.aquastream.org | Docker Compose |
-| **Production** | Live | aquastream.org | Docker Compose (планируется: Kubernetes) |
-
-### Deployment Strategy
-
-| Стратегия | Описание |
-|-----------|----------|
-| **Blue-green deployments** | Переключение трафика между старой (blue) и новой (green) версией |
-| **Health checks** | Проверка `/actuator/health` перед переключением трафика |
-| **Automated rollback** | Автоматический откат при failure health checks |
-
-См. [Deployment Guide](operations/deployment.md) для деталей.
-
-## Архитектурные решения (ADR)
-
-Ключевые решения документированы в [ADR записях](decisions/index.md):
-
-| ADR | Тема | Статус |
-|-----|------|--------|
-| [ADR-001](decisions/adr-001-docs-stack.md) | Doc as Code Stack | ✅ Принято |
-| [ADR-002](decisions/adr-002-api-documentation.md) | API Documentation Strategy | ✅ Принято |
+Подробнее: [Operations - Infrastructure](operations/infrastructure.md)
 
 ## Риски и ограничения
 
@@ -459,10 +284,20 @@ backend-[service]/
 | **JWT vs Session-based auth** | Stateless, horizontal scaling, no session storage | Сложность revoke, размер токена, хранение в browser storage |
 | **Docker Compose vs Kubernetes** | Простота setup, low overhead, достаточно для текущей цели | Нет авто-масштабирования, ручное управление отказами, нет self-healing |
 
+## Архитектурные решения (ADR)
+
+Ключевые решения документированы в [ADR записях](decisions/index.md):
+
+| ADR | Тема | Статус |
+|-----|------|--------|
+| [ADR-001](decisions/adr-001-docs-stack.md) | Doc as Code Stack | ✅ Принято |
+| [ADR-002](decisions/adr-002-api-documentation.md) | API Documentation Strategy | ✅ Принято |
+
 ## См. также
 
-- [Backend Documentation](backend/README.md) - детали по каждому сервису
-- [Frontend Documentation](frontend/README.md) - архитектура клиентской части
-- [API Documentation](api/index.md) - полная документация API
-- [Operations Guide](operations/README.md) - руководство по эксплуатации
-- [QA Strategy](qa/index.md) - стратегия тестирования
+- **Backend**: [Backend Services](backend/README.md) - детали по каждому сервису
+- **Frontend**: [Frontend Documentation](frontend/README.md) - архитектура клиентской части
+- **API**: [API Documentation](api/index.md) - полная документация API
+- **Operations**: [Operations Guide](operations/README.md) - infrastructure, deployment, monitoring, CI/CD
+- **QA**: [QA Strategy](qa/index.md) - стратегия тестирования
+- **Decisions**: [ADR Index](decisions/index.md) - архитектурные решения

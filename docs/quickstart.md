@@ -1,6 +1,12 @@
+---
+title: Quick Start Guide
+summary: Быстрый старт AquaStream - от клонирования до первого запуска за 5 минут
+tags: [quickstart, setup]
+---
+
 # Быстрый старт AquaStream
 
-Добро пожаловать в AquaStream! Это руководство поможет вам быстро начать работу с проектом.
+Это руководство поможет вам запустить AquaStream локально за 5 минут.
 
 ## Предварительные требования
 
@@ -59,12 +65,6 @@ make backend-up
 - Notification Service (порт 8105)
 - Media Service (порт 8106)
 
-**Политики безопасности контейнеров:**
-- Сервисы запускаются под пользователем `1000:1000` (без root)
-- Корневая ФС read-only, запись только в `/tmp` и volumes
-- `cap_drop: [ALL]` + `no-new-privileges:true` - защита от эскалации привилегий
-- Лимит открытых файлов увеличен до 65536
-
 ### 4. Запуск Frontend
 
 ```bash
@@ -81,99 +81,45 @@ make frontend-dev
 make health-check
 ```
 
-Вы должны увидеть статус "UP" для всех сервисов.
+Вы должны увидеть статус \"UP\" для всех сервисов.
 
 ## Основные команды
 
 ### Управление инфраструктурой
 
 ```bash
-# Запуск
-make infra-up
-
-# Остановка
-make infra-down
-
-# Просмотр логов
-make infra-logs
+make infra-up         # Запуск инфраструктуры
+make infra-down       # Остановка инфраструктуры
+make infra-logs       # Просмотр логов
 ```
 
 ### Backend разработка
 
 ```bash
-# Сборка
-make backend-build
+make backend-build    # Сборка всех модулей
+make backend-up       # Запуск всех сервисов
+make backend-down     # Остановка всех сервисов
+make backend-logs     # Просмотр логов всех сервисов
 
-# Запуск
-make backend-up
-
-# Остановка
-make backend-down
-
-# Логи конкретного сервиса
-make logs SERVICE=user-service
-
-# Тесты
-make backend-test
-
-# Перезапуск сервиса
-make restart SERVICE=user-service
+# Работа с конкретным сервисом
+make logs SERVICE=user-service        # Логи сервиса
+make restart SERVICE=user-service     # Перезапуск сервиса
 ```
-
-### Инфраструктурные команды
-
-```bash
-# Сборка Docker образов локально
-make build-images
-
-# Security scanning (Trivy)
-make scan
-
-# Генерация SBOM (Software Bill of Materials)
-make sbom
-
-# Запуск Observability stack (Prometheus/Grafana/Loki)
-make up-dev-observability
-
-# Инициализация MinIO бакетов
-make minio-bootstrap
-```
-
-**Отчеты сохраняются:**
-- SBOM: `backend-infra/reports/sbom/`
-- Security scans: `backend-infra/reports/scan/`
 
 ### Frontend разработка
 
 ```bash
-# Dev режим (с hot reload)
-make frontend-dev
-
-# Production сборка
-make frontend-build
-
-# Тесты
-make frontend-test
-
-# Линтеры
-cd frontend && pnpm lint
-
-# Проверка типов
-cd frontend && pnpm typecheck
+make frontend-dev     # Dev режим (с hot reload)
+make frontend-build   # Production сборка
+make frontend-test    # Тесты
 ```
 
 ### Документация
 
 ```bash
-# Установка зависимостей (один раз)
-make docs-setup
-
-# Локальный просмотр
-make docs-serve
-# Открыть http://localhost:8000
-
-# Сборка
-make docs-build
+make docs-setup       # Установка зависимостей (один раз)
+make docs-serve       # Локальный просмотр (http://localhost:8000)
+make docs-build       # Сборка статического сайта
 ```
 
 ## Доступ к сервисам
@@ -229,58 +175,6 @@ aquastream/
 └── Makefile              # Команды для разработки
 ```
 
-## Разработка
-
-### Backend
-
-1. Откройте проект в IntelliJ IDEA как Gradle проект
-2. Настройте Java 21 как Project SDK
-3. Установите плагины: Spring Boot, Docker
-4. Найдите класс `*Application.java` и запустите
-
-См. [Development Setup](development/setup.md) для деталей.
-
-### Frontend
-
-1. Откройте папку `frontend/` в VS Code
-2. Установите рекомендуемые расширения
-3. Запустите `pnpm dev`
-
-См. [Frontend Setup](frontend/setup.md) для деталей.
-
-## Тестирование
-
-### Backend тесты
-
-```bash
-# Unit-тесты
-./gradlew test
-
-# Integration-тесты
-./gradlew integrationTest
-
-# Все тесты
-./gradlew check
-```
-
-### Frontend тесты
-
-```bash
-cd frontend
-
-# Линтеры
-pnpm lint
-
-# Типизация
-pnpm typecheck
-
-# Unit-тесты
-pnpm test:unit
-
-# E2E-тесты
-pnpm test:e2e
-```
-
 ## Решение проблем
 
 ### Backend не запускается
@@ -316,18 +210,10 @@ node --version  # должна быть 18+
 make clean-all
 
 # Проверьте занятые порты
-lsof -i :8100  # для конкретного порта
+lsof -i :8080  # для конкретного порта
 ```
 
-См. [Troubleshooting](development/troubleshooting.md) для деталей.
-
-## Полезные ссылки
-
-- **[Архитектура](architecture.md)** - обзор архитектуры системы
-- **[Backend Guide](backend/README.md)** - руководство по backend
-- **[Frontend Guide](frontend/README.md)** - руководство по frontend
-- **[Operations](operations/README.md)** - DevOps и эксплуатация
-- **[QA Guide](qa/index.md)** - тестирование и QA
+Подробнее: [Troubleshooting](development/troubleshooting.md)
 
 ## Следующие шаги
 
