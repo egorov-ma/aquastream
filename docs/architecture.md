@@ -8,20 +8,13 @@ tags: [architecture, overview]
 
 ## Обзор
 
-AquaStream - система управления водными мероприятиями, построенная на модульной архитектуре с четким разделением ответственности между компонентами.
+AquaStream - система управления водными мероприятиями, построенная на модульной архитектуре с четким разделением ответственности.
 
-**Назначение:**
-- Управление водными мероприятиями (сплавы, походы, туры)
-- Бронирование участников на события
-- Управление экипажами и назначениями
-- Обработка платежей и уведомлений
-- Хранение медиа-контента
-
-**Границы ответственности:**
-- ✅ Бизнес-логика организации водных мероприятий
-- ✅ API для frontend и мобильных приложений
-- ✅ Интеграция с платежными провайдерами
-- ✅ Уведомления через Telegram и Email
+| Аспект | Описание |
+|--------|----------|
+| **Назначение** | Управление водными мероприятиями (сплавы, походы, туры), бронирование, экипажи, платежи, уведомления |
+| **Архитектура** | Микросервисы с API Gateway, schema-per-service PostgreSQL, Redis кэш |
+| **Границы ответственности** | ✅ Бизнес-логика водных мероприятий<br>✅ API для frontend/mobile<br>✅ Интеграции с платежными провайдерами<br>✅ Уведомления (Telegram, Email) |
 
 ## Архитектурная схема
 
@@ -86,65 +79,18 @@ graph TB
 
 ## Модули системы
 
-### 🎯 Core Business Services
+| Сервис | Порт | Тип | Назначение | База (схема) | Внешние интеграции |
+|--------|------|-----|------------|--------------|-------------------|
+| **Nginx** | 80/443 | Edge | TLS termination, CORS, базовый rate limiting, статика, health-check | - | - |
+| **Gateway** | 8080 | Gateway | Валидация JWT, X-User-Id/X-User-Role, прикладной rate limiting, health aggregation | - | - |
+| **User** | 8101 | Core | Аутентификация, профили, роли, RBAC | `user` | - |
+| **Event** | 8102 | Core | События, организаторы, бронирования, waitlist | `event` | - |
+| **Crew** | 8103 | Core | Управление группами (экипажи/палатки) | `crew` | - |
+| **Payment** | 8104 | Core | Платежи, транзакции, вебхуки | `payment` | YooKassa, CloudPayments, Stripe |
+| **Notification** | 8105 | Supporting | Email, Telegram бот, push notifications | `notification` | Telegram Bot API |
+| **Media** | 8106 | Supporting | Файлы, presigned URLs, загрузка | `media` | MinIO/S3 |
 
-**User Service (8101)**
-- Аутентификация и авторизация
-- Управление профилями пользователей
-- Роли и разрешения
-
-**Event Service (8102)**
-- Создание и управление событиями
-- Система бронирований
-- Управление расписанием
-
-**Crew Service (8103)**
-- Управление экипажами
-- Назначение команд на события
-- Квалификации и сертификации
-
-**Payment Service (8104)**
-- Обработка платежей
-- Интеграция с платежными провайдерами
-- Управление транзакциями
-
-### 🔧 Supporting Services
-
-**Nginx Reverse Proxy**
-- TLS termination, CORS, базовый rate limiting
-- Маршрутизация клиентских запросов к API Gateway
-- Раздача статического контента и health-check на уровне edge
-
-**API Gateway (8080)**
-- Валидация JWT и проброс user context (X-User-Id, X-User-Role)
-- Прикладной rate limiting и аудит запросов
-- Агрегация health статусов сервисов
-
-**Notification Service (8105)**
-- Email уведомления
-- Telegram интеграция
-- Push notifications
-
-**Media Service (8106)**
-- Загрузка и обработка файлов
-- Управление изображениями
-- CDN интеграция
-
-## Детальная спецификация сервисов
-
-### Таблица сервисов
-
-| Сервис | Порт | Назначение | База (схема) | Внешние интеграции |
-|--------|------|------------|--------------|-------------------|
-| **Gateway** | 8080 | Маршрутизация, CORS, Rate Limiting, Health aggregation | - | - |
-| **User** | 8101 | Аутентификация, профили, роли, RBAC | `user` | Telegram Bot |
-| **Event** | 8102 | События, организаторы, бронирования, waitlist | `event` | - |
-| **Crew** | 8103 | Управление группами (экипажи/палатки) | `crew` | - |
-| **Payment** | 8104 | Платежи, транзакции, вебхуки | `payment` | YooKassa, CloudPayments, Stripe |
-| **Notification** | 8105 | Telegram бот, уведомления | `notification` | Telegram Bot API |
-| **Media** | 8106 | Файлы, presigned URLs, загрузка | `media` | MinIO/S3 |
-
-### Модульная структура сервисов
+## Модульная структура сервисов
 
 Каждый микросервис (кроме Gateway) разбит на три модуля:
 
@@ -169,14 +115,15 @@ backend-[service]/
             └── repository/       # Spring Data репозитории
 ```
 
-**Правила взаимодействия:**
-- `api` → `service` (запрещено: `api` → `db`)
-- `service` → `db` (запрещено: `service` → `api`)
-- Контроллеры маппят Transport DTO ↔ Service DTO
-- Сервисы маппят Service DTO ↔ Entity
-- ArchUnit тесты проверяют соблюдение правил
+### Правила взаимодействия между модулями
 
-### Слоистая архитектура
+| Правило | Разрешено | Запрещено | Проверка |
+|---------|-----------|-----------|----------|
+| **API → Service** | ✅ Контроллеры вызывают сервисы | ❌ API → DB напрямую | ArchUnit |
+| **Service → DB** | ✅ Сервисы используют репозитории | ❌ Service → API | ArchUnit |
+| **DTO Mapping** | ✅ Контроллеры: Transport ↔ Service DTO<br>✅ Сервисы: Service DTO ↔ Entity | ❌ Entity в API responses | ArchUnit |
+
+## Слоистая архитектура
 
 ```
 ┌─────────────────────────────────────┐
@@ -190,434 +137,236 @@ backend-[service]/
 └─────────────────────────────────────┘
 ```
 
-**Presentation Layer (api):**
-- REST контроллеры (`@RestController`)
-- Input validation (`@Valid`, Jakarta Bean Validation)
-- Transport DTO (request/response models)
-- OpenAPI аннотации
+| Слой | Модуль | Ответственность | Технологии |
+|------|--------|----------------|------------|
+| **Presentation** | `api` | REST контроллеры, input validation, Transport DTO, OpenAPI аннотации | `@RestController`, `@Valid`, Jakarta Bean Validation |
+| **Service** | `service` | Бизнес-логика, транзакционная обработка, Service DTO, маппинг между слоями | `@Service`, `@Transactional` |
+| **Repository** | `db` | Spring Data JPA репозитории, custom queries, Specifications для сложных запросов | Spring Data JPA, `@Query` |
+| **Domain** | `db/entity` | JPA entities, Value Objects, domain logic (методы сущностей) | `@Entity`, JPA |
 
-**Service Layer (service):**
-- Бизнес-логика (`@Service`)
-- Транзакционная обработка (`@Transactional`)
-- Service DTO (доменные модели)
-- Маппинг между слоями
+## Backend-Common Library
 
-**Repository Layer (db):**
-- Spring Data JPA репозитории
-- Custom queries (`@Query`)
-- Specifications для сложных запросов
+Общая библиотека для всех сервисов с автоконфигурацией Spring Boot.
 
-**Domain Layer (db/entity):**
-- JPA entities (`@Entity`)
-- Value Objects
-- Domain logic (методы сущностей)
+### Основные компоненты
 
-### Backend-Common
+| Модуль | Компоненты | Назначение |
+|--------|------------|------------|
+| **config/** | `ServiceDiscoveryAutoConfiguration`, `ServiceUrls` | Auto-конфигурации, service discovery |
+| **domain/** | `UserRole`, `BookingStatus`, `PaymentStatus`, `DomainConstants` | Доменные enum'ы и константы (GUEST/USER/ORGANIZER/ADMIN, заголовки, лимиты) |
+| **error/** | `GlobalExceptionHandler`, `ApiException`, `ProblemDetails`, `ErrorCodes` | RFC 7807 Problem Details, глобальная обработка ошибок |
+| **health/** | `ServiceHealthChecker` | Health checks |
+| **metrics/** | `MetricsCollector`, `MetricsFilter`, `MetricsScheduler`, `RedisMetricsWriter` | Система метрик (HTTP, бизнес-метрики, Redis storage) |
+| **mock/** | `MockDetector`, `MockResponseGenerator` | Моки для dev окружения |
+| **ratelimit/** | `RateLimitFilter`, `RateLimitService` | Bucket4j + Redis rate limiting |
+| **util/** | `Ids` | Генерация UUID, JTI, idempotency keys |
+| **web/** | `CorrelationIdFilter`, `CorrelationIdRestTemplateInterceptor`, `ServiceDiscoveryController` | Web конфигурация, CORS, Correlation IDs |
 
-Общая библиотека для всех сервисов с автоконфигурацией Spring Boot:
+### Зависимости и автоконфигурации
 
-```
-backend-common/
-├── config/              # Auto-конфигурации
-│   ├── ServiceDiscoveryAutoConfiguration.java
-│   └── ServiceUrls.java
-├── domain/              # Доменные константы и enum'ы
-│   ├── UserRole.java           # GUEST, USER, ORGANIZER, ADMIN
-│   ├── BookingStatus.java      # PENDING, CONFIRMED, COMPLETED, EXPIRED, CANCELLED, NO_SHOW
-│   ├── PaymentStatus.java      # PENDING, PROCESSING, SUCCEEDED, FAILED, REFUNDED
-│   └── DomainConstants.java    # Константы (заголовки, лимиты)
-├── error/               # RFC 7807 Problem Details
-│   ├── GlobalExceptionHandler.java
-│   ├── ApiException.java
-│   ├── ProblemDetails.java
-│   ├── ErrorCodes.java
-│   └── CommonErrorHandlingAutoConfiguration.java
-├── health/              # Health checks
-│   └── ServiceHealthChecker.java
-├── metrics/             # Система метрик
-│   ├── collector/       # MetricsCollector
-│   ├── config/          # MetricsAutoConfiguration, MetricsProperties
-│   ├── controller/      # MetricsController (REST endpoint)
-│   ├── filter/          # MetricsFilter (HTTP метрики)
-│   ├── model/           # MetricData, MetricType
-│   ├── scheduler/       # MetricsScheduler (периодическая запись)
-│   └── writer/          # RedisMetricsWriter
-├── mock/                # Моки для dev окружения
-│   ├── config/          # MockProperties
-│   └── service/         # MockDetector, MockResponseGenerator
-├── ratelimit/           # Rate limiting (Bucket4j + Redis)
-│   ├── config/          # RateLimitAutoConfiguration, RateLimitProperties
-│   ├── filter/          # RateLimitFilter
-│   └── service/         # RateLimitService
-├── util/                # Утилиты
-│   └── Ids.java         # Генерация UUID, JTI, idempotency keys
-└── web/                 # Web конфигурация
-    ├── config/          # WebAutoConfiguration
-    ├── CorrelationIdFilter.java
-    ├── CorrelationIdRestTemplateInterceptor.java
-    └── ServiceDiscoveryController.java
-```
-
-**Экспортируемые зависимости (api)**:
-- `spring-boot-starter-web` - REST, Jackson, Tomcat
-- `spring-boot-starter-validation` - Bean Validation
-- `bucket4j-redis` - Rate limiting
-
-**Internal зависимости (implementation)**:
-- `spring-boot-starter-security` - Security utilities
-- `spring-boot-starter-data-redis` - Redis client
-- `logstash-logback-encoder` - Structured logging
-
-**Автоконфигурации** (через `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`):
-- `CommonErrorHandlingAutoConfiguration` - глобальная обработка ошибок
-- `RateLimitAutoConfiguration` - Bucket4j rate limiting
-- `WebAutoConfiguration` - CORS, CorrelationId
-- `MetricsAutoConfiguration` - система метрик
-- `ServiceDiscoveryAutoConfiguration` - service discovery
-
-## Ключевые решения и паттерны
-
-### Design Patterns
-
-**Применяемые паттерны:**
-
-**Repository Pattern**
-- Абстракция доступа к данным через Spring Data JPA
-- Инкапсуляция деталей persistence слоя
-- Переиспользуемые query методы
-
-**Service Layer Pattern**
-- Инкапсуляция бизнес-логики в `@Service` классах
-- Транзакционные границы через `@Transactional`
-- Координация между репозиториями
-
-**DTO/Mapper Pattern**
-- Изоляция слоев через Transport DTO и Service DTO
-- Явный маппинг данных между слоями
-- Предотвращение утечки Entity в API
-
-**Circuit Breaker** (планируется)
-- Устойчивость к сбоям внешних сервисов
-- Fallback логика для критичных операций
-- Resilience4j интеграция
-
-**Saga Pattern** (частично)
-- Компенсирующие транзакции для межсервисных операций
-- Eventual consistency через события
-
-**API Gateway Pattern**
-- Единая точка входа для всех клиентов
-- Централизованная аутентификация и rate limiting
-- Routing и aggregation
-
-### Обоснование технологического стека
-
-**Java 21**
-- Производительность: virtual threads (Project Loom) для высокой throughput
-- Экосистема: богатая библиотека, зрелые фреймворки
-- Команда: опыт разработки на Java
-
-**Spring Boot 3.5.x**
-- Быстрая разработка: автоконфигурация, стартеры
-- Интеграции: готовые решения для PostgreSQL, Redis, MinIO
-- Production-ready: Actuator, metrics, health checks
-
-**PostgreSQL 16**
-- ACID транзакции для финансовых операций
-- Производительность: эффективные индексы, query planner
-- JSON поддержка для гибких данных (notifications, metadata)
-- Multi-schema: изоляция данных сервисов
-
-**Gradle**
-- Гибкость: Kotlin DSL, convention plugins
-- Performance: incremental builds, build cache
-- Dependency locking для воспроизводимых сборок
+| Тип | Библиотеки |
+|-----|-----------|
+| **Exported (api)** | `spring-boot-starter-web`, `spring-boot-starter-validation`, `bucket4j-redis` |
+| **Internal (implementation)** | `spring-boot-starter-security`, `spring-boot-starter-data-redis`, `logstash-logback-encoder` |
+| **Автоконфигурации** | `CommonErrorHandlingAutoConfiguration` (RFC 7807), `RateLimitAutoConfiguration` (Bucket4j), `WebAutoConfiguration` (CORS, CorrelationId), `MetricsAutoConfiguration`, `ServiceDiscoveryAutoConfiguration` |
 
 ## Технологический стек
 
 ### Backend
-```yaml
-Language: Java 21
-Framework: Spring Boot 3.5.x
-Gateway: Spring WebFlux + Spring Security
-Edge Proxy: Nginx (TLS, CORS, IP rate limit)
-Build: Gradle 8.12+
-Database: PostgreSQL 16 (схемы на сервис)
-Cache: Redis 7
-Storage: MinIO (S3-compatible)
-Migrations: Liquibase
-Security: Spring Security + JWT
-API: RESTful + OpenAPI 3.0
-Error Handling: RFC 7807 Problem Details
-Rate Limiting: Bucket4j (soft limits)
-Monitoring: Spring Boot Actuator
-Testing: JUnit 5, TestContainers, ArchUnit
-```
+
+| Технология | Версия/Детали | Назначение |
+|------------|---------------|------------|
+| **Language** | Java 21 | Virtual threads (Project Loom), производительность |
+| **Framework** | Spring Boot 3.5.x | Автоконфигурация, стартеры, Actuator |
+| **Gateway** | Spring WebFlux + Spring Security | Реактивный Gateway с JWT validation |
+| **Edge Proxy** | Nginx | TLS, CORS, IP rate limit |
+| **Build** | Gradle 8.12+ | Kotlin DSL, convention plugins, dependency locking |
+| **Database** | PostgreSQL 16 | ACID транзакции, multi-schema (schema-per-service) |
+| **Cache** | Redis 7 | Sessions, rate limiting, metrics |
+| **Storage** | MinIO | S3-compatible object storage |
+| **Migrations** | Liquibase | Schema versioning |
+| **Security** | Spring Security + JWT | HS512, access + refresh tokens |
+| **API** | RESTful + OpenAPI 3.0 | REST endpoints, Swagger UI |
+| **Error Handling** | RFC 7807 Problem Details | Стандартизированные ошибки |
+| **Rate Limiting** | Bucket4j | Soft limits с Redis backend |
+| **Monitoring** | Spring Boot Actuator | Health checks, Prometheus metrics |
+| **Testing** | JUnit 5, Testcontainers, ArchUnit | Unit, integration, architecture tests |
 
 ### Frontend
-```yaml
-Framework: Next.js 15 (App Router)
-Language: TypeScript 5.x
-Runtime: React 18
-Styling: Tailwind CSS 3.4 (3.4.18) + shadcn/ui
-UI Components: Radix UI
-State: React Hooks + Context
-HTTP: Fetch API
-Forms: React Hook Form + Zod
-Testing: Node test runner, Playwright
-```
+
+| Технология | Версия/Детали | Назначение |
+|------------|---------------|------------|
+| **Framework** | Next.js 15 | App Router, SSR/SSG |
+| **Language** | TypeScript 5.x | Type safety |
+| **Runtime** | React 18 | UI library |
+| **Styling** | Tailwind CSS 3.4.18 + shadcn/ui | Utility-first CSS, Radix UI components |
+| **State** | React Hooks + Context | State management |
+| **HTTP** | Fetch API | Backend communication |
+| **Forms** | React Hook Form + Zod | Validation, form handling |
+| **Testing** | Node test runner, Playwright | Unit tests, E2E tests |
 
 ### Infrastructure
-```yaml
-Containerization: Docker + Docker Compose
-Observability: Prometheus + Grafana + Loki + Promtail
-Security Scanning: Trivy, OWASP Dependency Check
-SBOM: Syft
-Documentation: MkDocs + Material
-CI/CD: GitHub Actions
-Deployment: Nginx + Docker Compose (local/staging/prod)
-Storage: MinIO (S3-compatible object storage)
-```
+
+| Технология | Назначение |
+|------------|------------|
+| **Docker + Docker Compose** | Контейнеризация, оркестрация (dev/staging) |
+| **Prometheus + Grafana** | Метрики, дашборды |
+| **Loki + Promtail** | Centralized logging |
+| **Trivy** | Docker image security scanning |
+| **OWASP Dependency Check** | Dependency vulnerabilities |
+| **Syft** | SBOM generation |
+| **MkDocs + Material** | Documentation as Code |
+| **GitHub Actions** | CI/CD pipelines |
+| **Nginx** | Reverse proxy, TLS termination |
+| **MinIO** | S3-compatible object storage |
+
+## Ключевые архитектурные паттерны
+
+| Паттерн | Назначение | Реализация | Статус |
+|---------|-----------|------------|--------|
+| **Repository Pattern** | Абстракция доступа к данным | Spring Data JPA, переиспользуемые query методы | ✅ Активен |
+| **Service Layer Pattern** | Инкапсуляция бизнес-логики | `@Service` классы, `@Transactional` границы, координация между репозиториями | ✅ Активен |
+| **DTO/Mapper Pattern** | Изоляция слоев | Transport DTO (API) ↔ Service DTO ↔ Entity (DB), предотвращение утечки Entity в API | ✅ Активен |
+| **API Gateway Pattern** | Единая точка входа | Централизованная аутентификация, rate limiting, routing, health aggregation | ✅ Активен |
+| **Saga Pattern** | Distributed transactions | Компенсирующие транзакции для межсервисных операций, eventual consistency через события | 🔶 Частично |
+| **Circuit Breaker** | Устойчивость к сбоям внешних сервисов | Fallback логика для критичных операций, Resilience4j интеграция | 📋 Планируется |
+
+## Обоснование технологического стека
+
+| Технология | Обоснование | Альтернативы |
+|------------|-------------|--------------|
+| **Java 21** | Virtual threads (Project Loom) для высокой throughput, богатая экосистема, зрелые фреймворки, опыт команды | Kotlin (совместим с Spring), Go (проще, но меньше библиотек) |
+| **Spring Boot 3.5.x** | Быстрая разработка (автоконфигурация, стартеры), готовые интеграции (PostgreSQL, Redis, MinIO), production-ready (Actuator, metrics, health checks) | Micronaut (lighter), Quarkus (native compilation) |
+| **PostgreSQL 16** | ACID транзакции для финансовых операций, эффективные индексы и query planner, JSON поддержка (notifications, metadata), multi-schema для изоляции данных сервисов | MySQL (меньше возможностей), MongoDB (no ACID) |
+| **Gradle** | Kotlin DSL, convention plugins, incremental builds, build cache, dependency locking для воспроизводимых сборок | Maven (XML verbosity), Bazel (сложнее setup) |
 
 ## Принципы архитектуры
 
-### 1. Domain Driven Design
-Каждый сервис представляет отдельный бизнес-домен с четкими границами
-
-### 2. API First
-Контракты определяются до реализации через OpenAPI спецификации
-
-### 3. Microservices
-Слабо связанные сервисы с собственными базами данных
-
-### 4. Event Sourcing (частично)
-Асинхронная обработка доменных событий
-
-### 5. Security First
-Безопасность встроена на всех уровнях
+| Принцип | Описание |
+|---------|----------|
+| **Domain Driven Design** | Каждый сервис представляет отдельный бизнес-домен с четкими границами |
+| **API First** | Контракты определяются до реализации через OpenAPI спецификации |
+| **Microservices** | Слабо связанные сервисы с собственными базами данных (schema-per-service) |
+| **Event Sourcing** | Асинхронная обработка доменных событий (планируется) |
+| **Security First** | Безопасность встроена на всех уровнях (JWT, validation, HTTPS) |
 
 ## Паттерны взаимодействия
 
-### Synchronous Communication
-- REST API между frontend и gateway
-- HTTP calls между сервисами для критичных операций
-- JWT для аутентификации
-
-### Asynchronous Communication
-- Event publishing для доменных событий
-- Message queues для фоновых задач
-- Email/SMS уведомления
-
-### Data Consistency
-- Каждый сервис владеет своими данными
-- Eventual consistency через события
-- Компенсирующие транзакции при необходимости
+| Тип | Технологии | Применение |
+|-----|-----------|-----------|
+| **Synchronous** | REST API, HTTP calls, JWT | Frontend ↔ Gateway, сервисы для критичных операций |
+| **Asynchronous** | Event publishing, message queues (планируется) | Доменные события, фоновые задачи, email/SMS уведомления |
+| **Data Consistency** | Schema-per-service, eventual consistency, compensating transactions | Каждый сервис владеет своими данными, eventual consistency через события |
 
 ## Безопасность
 
-### Authentication & Authorization
-- JWT токены с refresh mechanism
-- Role-based access control (RBAC)
-- Method-level security
-
-### Data Protection
-- HTTPS обязателен
-- Input validation и sanitization
-- SQL injection protection
-- Secrets management
-
-### Monitoring & Auditing
-- Structured logging
-- Security event tracking
-- Access audit trails
+| Аспект | Реализация |
+|--------|------------|
+| **Authentication & Authorization** | JWT токены (HS512) с refresh mechanism (30 дней), RBAC (GUEST/USER/ORGANIZER/ADMIN), method-level security (`@PreAuthorize`) |
+| **Data Protection** | HTTPS обязателен, input validation (`@Valid`, Jakarta Bean Validation), SQL injection protection (Spring Data JPA), secrets management (environment variables) |
+| **Monitoring & Auditing** | Structured logging (JSON, Logback), security event tracking (`EXTERNAL_API_CALL`, `ERROR_OCCURRED`), Correlation IDs для трейсинга |
 
 ## Производительность и масштабирование
 
-### Performance характеристики
+### Performance SLA
 
-**Целевые SLA:**
-- Response time: <500ms (p95) для READ операций
-- Response time: <1s (p95) для WRITE операций
-- Throughput: 100 requests/second на сервис
-- Availability: 99.5% uptime (dev/staging), 99.9% (production)
-- Concurrent users: 500-1000 одновременных пользователей
+| Метрика | Цель (Target) | Текущее значение | Статус |
+|---------|---------------|------------------|--------|
+| **Response time (READ)** | <500ms (p95) | User Service: ~100ms (p95) | ✅ |
+| **Response time (WRITE)** | <1s (p95) | Event Service: ~300ms, Payment: ~800ms (с провайдерами) | ✅ |
+| **Throughput** | 100 req/sec на сервис | TBD | 🔶 |
+| **Availability** | 99.5% (dev/staging), 99.9% (prod) | TBD | 🔶 |
+| **Concurrent users** | 500-1000 одновременных | TBD | 🔶 |
 
-**Текущие метрики:**
-- Event Service: ~300ms (p95) для создания бронирования
-- User Service: ~100ms (p95) для authentication
-- Payment Service: ~800ms (p95) с учетом внешних провайдеров
+### Стратегии оптимизации
 
-**Оптимизации:**
-
-**Database indexing**
-- Composite индексы на частых JOIN колонках
-- Partial индексы для filtered queries
-- GIN индексы для JSON поля (notifications, metadata)
-
-**Connection pooling (HikariCP)**
-```yaml
-spring.datasource.hikari:
-  maximum-pool-size: 20        # Max connections
-  minimum-idle: 5              # Min idle connections
-  connection-timeout: 30000    # 30s
-  idle-timeout: 600000         # 10 min
-```
-
-**Lazy loading с N+1 защитой**
-- Entity graphs для eager loading критичных связей
-- @BatchSize для коллекций
-- DTO projections для read-only queries
-
-**Caching strategy**
-- Redis для session storage (TTL: 1 час)
-- In-memory cache (Caffeine) для справочных данных
-- HTTP cache headers для статики
+| Оптимизация | Реализация | Impact |
+|-------------|------------|--------|
+| **Database indexing** | Composite индексы на частых JOIN, partial индексы для filtered queries, GIN индексы для JSON (notifications, metadata) | Faster queries |
+| **Connection pooling** | HikariCP: max 20, min idle 5, timeout 30s, idle timeout 10min | Эффективное использование DB connections |
+| **N+1 query prevention** | Entity graphs для eager loading критичных связей, `@BatchSize` для коллекций, DTO projections для read-only | Меньше DB roundtrips |
+| **Caching** | Redis для sessions (TTL: 1 час), Caffeine для справочных данных, HTTP cache headers для статики | Снижение latency |
 
 ### Горизонтальное масштабирование
 
-**Stateless сервисы:**
-- Session в Redis (не в JVM memory)
-- No local file storage (MinIO для файлов)
-- Idempotency keys для безопасного retry
-
-**Load balancing:**
-```bash
-# Docker Compose scale
-docker-compose up -d --scale backend-event=3
-
-# Nginx upstream
-upstream event-service {
-    least_conn;  # Least connections algorithm
-    server backend-event-1:8102;
-    server backend-event-2:8102;
-    server backend-event-3:8102;
-}
-```
-
-**Database scaling:**
-- PostgreSQL read replicas (планируется)
-- Connection pooling для эффективного использования
-- Schema-per-service для независимости
+| Аспект | Реализация |
+|--------|------------|
+| **Stateless сервисы** | Session в Redis (не в JVM), MinIO для файлов (no local storage), idempotency keys для retry |
+| **Load balancing** | `docker-compose up -d --scale backend-event=3`, Nginx upstream с `least_conn` algorithm |
+| **Database scaling** | PostgreSQL read replicas (планируется), connection pooling, schema-per-service для независимости |
 
 ### Вертикальное масштабирование
 
-**JVM tuning:**
-```bash
-# Heap size (50-75% от container memory)
--Xms512m -Xmx768m
+| Аспект | Значение |
+|--------|----------|
+| **JVM Heap** | `-Xms512m -Xmx768m` (50-75% от container memory) |
+| **GC** | `-XX:+UseG1GC -XX:MaxGCPauseMillis=200` (G1GC для latency-sensitive apps) |
+| **Metaspace** | `-XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m` |
+| **Resource limits** | Memory: 512-768MB, CPU: 0.75-1.0 vCPU per service |
 
-# GC (G1GC для latency-sensitive apps)
--XX:+UseG1GC
--XX:MaxGCPauseMillis=200
+## Мониторинг и наблюдаемость
 
-# Metaspace
--XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m
-```
+### Метрики (Prometheus)
 
-**Resource limits (Docker Compose):**
-- Memory: 512MB-768MB per service
-- CPU: 0.75-1.0 vCPU
-- См. [Infrastructure](operations/infrastructure.md) для деталей
-
-## Мониторинг и наблюдаемость {#мониторинг-и-наблюдаемость}
-
-### Метрики (Prometheus format)
-
-**Business Metrics:**
-- `bookings_created_total` — количество созданных бронирований
-- `payments_succeeded_total` — успешные платежи
-- `booking_duration_seconds` — время создания бронирования
-- `waitlist_additions_total` — добавления в waitlist
-
-**Technical Metrics:**
-- `http_requests_total{method, status, service}` — HTTP запросы
-- `http_request_duration_seconds` — latency (histogram)
-- `jvm_memory_used_bytes{area}` — использование памяти JVM
-- `database_connections_active` — активные DB соединения
-- `redis_commands_total{command}` — Redis операции
-
-**Доступ к метрикам:**
-```bash
-# Actuator endpoints
-curl http://localhost:8102/actuator/metrics
-curl http://localhost:8102/actuator/prometheus
-
-# Prometheus (dev окружение)
-http://localhost:9090
-```
+| Категория | Метрики | Формат |
+|-----------|---------|--------|
+| **Business** | `bookings_created_total`, `payments_succeeded_total`, `booking_duration_seconds`, `waitlist_additions_total` | Counter, Histogram |
+| **Technical** | `http_requests_total{method,status,service}`, `http_request_duration_seconds`, `jvm_memory_used_bytes{area}`, `database_connections_active`, `redis_commands_total{command}` | Counter, Histogram, Gauge |
+| **Endpoints** | `/actuator/metrics`, `/actuator/prometheus`, `/actuator/health`, `/actuator/info` | Spring Boot Actuator |
 
 ### Логирование
 
-**Structured logging (JSON через Logback):**
-```json
-{
-  "timestamp": "2025-10-01T12:00:00.123Z",
-  "level": "INFO",
-  "service": "backend-event",
-  "correlationId": "abc-123-def-456",
-  "userId": "user-789",
-  "event": "BOOKING_CREATED",
-  "message": "Booking successfully created",
-  "duration": 287,
-  "bookingId": "booking-1001",
-  "eventId": "event-42"
-}
-```
+**Формат**: Structured JSON (Logback + Logstash encoder)
 
-**Key events для мониторинга:**
-- `SERVICE_STARTED` — сервис запущен
-- `BOOKING_CREATED` — создано бронирование
-- `PAYMENT_SUCCEEDED` / `PAYMENT_FAILED` — результат платежа
-- `EXTERNAL_API_CALL` — вызовы внешних API (YooKassa, Telegram)
-- `ERROR_OCCURRED` — ошибки требующие внимания
-- `CAPACITY_EXCEEDED` — превышение capacity экипажа
+| Поле | Пример | Назначение |
+|------|--------|------------|
+| `timestamp` | `2025-10-01T12:00:00.123Z` | Время события |
+| `level` | `INFO` / `WARN` / `ERROR` | Log level |
+| `service` | `backend-event` | Сервис |
+| `correlationId` | `abc-123-def-456` | Трейсинг запросов |
+| `userId` | `user-789` | Пользователь |
+| `event` | `BOOKING_CREATED` | Бизнес-событие |
+| `duration` | `287` | Длительность (ms) |
 
-**Centralized logging (dev окружение):**
-- Loki для хранения логов
-- Promtail для сбора из Docker контейнеров
-- Grafana для визуализации и поиска
-- Correlation IDs для трейсинга запросов
+### Key Events для мониторинга
 
-**Log levels:**
-- **TRACE** (dev only): детальная отладка
-- **DEBUG** (dev only): разработка
-- **INFO**: нормальные операции, бизнес-события
-- **WARN**: предупреждения (capacity близко к лимиту)
-- **ERROR**: ошибки требующие внимания
+| Event | Описание | Level |
+|-------|----------|-------|
+| `SERVICE_STARTED` | Сервис запущен | INFO |
+| `BOOKING_CREATED` | Создано бронирование | INFO |
+| `PAYMENT_SUCCEEDED` / `PAYMENT_FAILED` | Результат платежа | INFO / ERROR |
+| `EXTERNAL_API_CALL` | Вызовы внешних API (YooKassa, Telegram) | INFO |
+| `ERROR_OCCURRED` | Ошибки требующие внимания | ERROR |
+| `CAPACITY_EXCEEDED` | Превышение capacity экипажа | WARN |
 
-### Дашборды
+### Centralized Logging
 
-**Dev окружение (Grafana):**
-- Service Health Dashboard — health checks, uptime
-- Business Metrics Dashboard — bookings, payments, users
-- Performance Dashboard — latency, throughput, errors
+| Компонент | Назначение |
+|-----------|------------|
+| **Loki** | Хранение логов |
+| **Promtail** | Сбор логов из Docker контейнеров |
+| **Grafana** | Визуализация и поиск |
+| **Correlation IDs** | Трейсинг запросов между сервисами |
 
-**Actuator endpoints:**
-```bash
-/actuator/health       # Health status
-/actuator/info         # Build info, version
-/actuator/metrics      # All metrics
-/actuator/prometheus   # Prometheus format
-```
+### Дашборды (Grafana)
+
+| Dashboard | Метрики |
+|-----------|---------|
+| **Service Health** | Health checks, uptime, service status |
+| **Business Metrics** | Bookings created, payments succeeded, users registered |
+| **Performance** | Latency (p50/p95/p99), throughput (req/sec), error rate (%) |
 
 ### Алерты
 
-**Критичные алерты:**
-- Service down (health check failed > 2 min)
-- Error rate > 5% (5xx responses)
-- Response time p95 > 2s
-- Database connections > 90% pool size
-
-**Предупреждения:**
-- Memory usage > 85%
-- Disk space < 15%
-- Event capacity близко к лимиту (>80%)
+| Тип | Условие | Severity | SLA |
+|-----|---------|----------|-----|
+| **Critical** | Service down (health check failed >2 min), Error rate >5% (5xx), Response time p95 >2s, DB connections >90% pool | Critical | Немедленно |
+| **Warning** | Memory usage >85%, Disk space <15%, Event capacity >80% | Warning | <1 час |
 
 ## Тестирование
 
-### Стратегия тестирования
+### Test Pyramid
 
-**Test Pyramid:**
 ```
     /\     E2E Tests (5%)
    /  \    ← Critical user journeys
@@ -627,92 +376,54 @@ http://localhost:9090
            ← Business logic, edge cases
 ```
 
-**Coverage targets:**
-- Unit tests: >80% line coverage
-- Integration tests: все API endpoints
-- E2E tests: critical paths (booking, payment)
+### Стратегия тестирования
 
-### Unit Tests (JUnit 5)
+| Уровень | Coverage Target | Инструменты | Запуск | Что тестируем |
+|---------|----------------|-------------|--------|---------------|
+| **Unit Tests** | >80% line coverage | JUnit 5, Mockito, AssertJ | `./gradlew test` | Бизнес-логика в `@Service`, маппинг DTO, валидация, edge cases |
+| **Integration Tests** | Все API endpoints | Spring Boot Test, Testcontainers, REST Assured | `./gradlew integrationTest` | API endpoints, DB взаимодействие, Redis caching, Liquibase migrations |
+| **Architecture Tests** | 100% архитектурных правил | ArchUnit | `./gradlew test` | `api` не зависит от `db`, `service` не зависит от `api`, no cyclic dependencies |
+| **E2E Tests** | Critical paths | Playwright, Node test runner | `pnpm test:e2e` | Booking flow, payment flow, user registration |
 
-```bash
-# Запуск всех unit тестов
-./gradlew test
+### Команды тестирования
 
-# Конкретный модуль
-./gradlew :backend-event:backend-event-service:test
-```
-
-**Что тестируем:**
-- Бизнес-логика в `@Service` классах
-- Маппинг между DTO
-- Валидация входных данных
-- Edge cases (null, empty, boundary values)
-
-**Инструменты:**
-- JUnit 5 — test framework
-- Mockito — моки зависимостей
-- AssertJ — fluent assertions
-
-### Integration Tests (TestContainers)
-
-```bash
-# Запуск integration тестов
-./gradlew integrationTest
-
-# С TestContainers (Postgres, Redis)
-./gradlew :backend-event:backend-event-api:integrationTest
-```
-
-**Что тестируем:**
-- API endpoints (REST controllers)
-- Database взаимодействие (JPA repositories)
-- Redis caching
-- Liquibase migrations
-
-**Инструменты:**
-- Spring Boot Test (`@SpringBootTest`)
-- TestContainers (PostgreSQL, Redis)
-- REST Assured для API тестов
-
-### Architecture Tests (ArchUnit)
-
-```bash
-# Проверка архитектурных правил
-./gradlew :backend-event:test --tests ArchitectureTest
-```
-
-**Правила:**
-- `api` модуль не зависит от `db`
-- `service` модуль не зависит от `api`
-- Controllers только в `api` пакете
-- Entities только в `db` пакете
-- No cyclic dependencies
-
-### Contract Tests (планируется)
-
-Spring Cloud Contract для API contracts между сервисами
+| Команда | Описание |
+|---------|----------|
+| `./gradlew test` | Все unit tests (JUnit 5) |
+| `./gradlew integrationTest` | Integration tests с Testcontainers (PostgreSQL, Redis) |
+| `./gradlew check` | All tests + ArchUnit + code quality |
+| `./gradlew :backend-event:test` | Unit tests для конкретного сервиса |
+| `pnpm test:unit` | Frontend unit tests |
+| `pnpm test:e2e` | Frontend E2E tests (Playwright) |
 
 ## Развертывание
 
 ### Environments
-| Environment | Purpose | URL |
-|-------------|---------|-----|
-| Local | Development | localhost |
-| Staging | Testing | staging.aquastream.org |
-| Production | Live | aquastream.org |
+
+| Environment | Purpose | URL | Deployment |
+|-------------|---------|-----|------------|
+| **Local** | Development | localhost | Docker Compose |
+| **Staging** | Testing | staging.aquastream.org | Docker Compose |
+| **Production** | Live | aquastream.org | Docker Compose (планируется: Kubernetes) |
 
 ### Deployment Strategy
-- Blue-green deployments
-- Health checks перед переключением трафика
-- Automated rollback при failure
-- См. [Deployment Guide](operations/deployment.md)
 
-## Архитектурные решения
+| Стратегия | Описание |
+|-----------|----------|
+| **Blue-green deployments** | Переключение трафика между старой (blue) и новой (green) версией |
+| **Health checks** | Проверка `/actuator/health` перед переключением трафика |
+| **Automated rollback** | Автоматический откат при failure health checks |
+
+См. [Deployment Guide](operations/deployment.md) для деталей.
+
+## Архитектурные решения (ADR)
 
 Ключевые решения документированы в [ADR записях](decisions/index.md):
 
-- [ADR-001: Doc as Code Stack](decisions/adr-001-docs-stack.md)
-- [ADR-002: API Documentation Strategy](decisions/adr-002-api-documentation.md)
+| ADR | Тема | Статус |
+|-----|------|--------|
+| [ADR-001](decisions/adr-001-docs-stack.md) | Doc as Code Stack | ✅ Принято |
+| [ADR-002](decisions/adr-002-api-documentation.md) | API Documentation Strategy | ✅ Принято |
 
 ## Риски и ограничения
 
@@ -720,51 +431,33 @@ Spring Cloud Contract для API contracts между сервисами
 
 | Риск | Вероятность | Влияние | Митигация |
 |------|-------------|---------|-----------|
-| Database bottleneck | Medium | High | Connection pooling, read replicas (планируется), индексы |
-| Single point of failure (PostgreSQL) | Low | Critical | Backup каждые 24ч, retention policy, restore testing |
-| External API unavailable (YooKassa) | High | Medium | Circuit breaker (планируется), fallback, retry logic |
-| Memory leaks в JVM | Low | High | Мониторинг heap, G1GC tuning, heap dumps при OOM |
-| Redis unavailability | Medium | Medium | Session regeneration, graceful degradation |
-| Capacity exhaustion (events) | Medium | Medium | Waitlist mechanism, capacity alerts (>80%) |
+| **Database bottleneck** | Medium | High | Connection pooling, read replicas (планируется), composite индексы |
+| **Single point of failure (PostgreSQL)** | Low | Critical | Backup каждые 24ч, retention policy, restore testing |
+| **External API unavailable (YooKassa)** | High | Medium | Circuit breaker (планируется), fallback провайдеры, retry logic |
+| **Memory leaks в JVM** | Low | High | Мониторинг heap usage, G1GC tuning, heap dumps при OOM |
+| **Redis unavailability** | Medium | Medium | Session regeneration, graceful degradation без кэша |
+| **Capacity exhaustion (events)** | Medium | Medium | Waitlist mechanism, capacity alerts (>80%) |
 
 ### Текущие ограничения
 
-**Технические:**
-- Single PostgreSQL instance (нет HA)
-  - Impact: downtime при сбое БД
-  - Планируется: PostgreSQL read replicas, failover
-- Synchronous inter-service communication
-  - Impact: latency накапливается
-  - Планируется: async messaging (RabbitMQ/Kafka)
-- Manual deployment процессы
-  - Impact: human error risks
-  - Планируется: CI/CD automation
-- No distributed tracing
-  - Impact: сложно отлаживать межсервисные проблемы
-  - Планируется: Jaeger/Zipkin integration
-
-**Бизнесовые:**
-- Только одна платежная система (YooKassa)
-- Нет multi-tenancy (одна организация)
-- Ограниченная поддержка локализации (русский язык)
+| Ограничение | Impact | Планируется |
+|-------------|--------|-------------|
+| **Single PostgreSQL instance (нет HA)** | Downtime при сбое БД | PostgreSQL read replicas, failover |
+| **Synchronous inter-service communication** | Latency накапливается | Async messaging (RabbitMQ/Kafka) |
+| **Manual deployment процессы** | Human error risks | CI/CD automation |
+| **No distributed tracing** | Сложно отлаживать межсервисные проблемы | Jaeger/Zipkin integration |
+| **Только одна платежная система (YooKassa)** | Vendor lock-in | Поддержка CloudPayments, Stripe |
+| **Нет multi-tenancy** | Одна организация | Multi-tenant архитектура |
+| **Ограниченная локализация** | Только русский язык | i18n (английский, другие языки) |
 
 ### Trade-offs архитектурных решений
 
-**Microservices vs Monolith:**
-- ✅ Pros: независимый deploy, масштабирование, изоляция сбоев
-- ❌ Cons: network latency, сложность разработки, distributed transactions
-
-**Multi-schema PostgreSQL vs отдельные БД:**
-- ✅ Pros: простота backup/restore, одна Postgres instance, схемы как namespace
-- ❌ Cons: shared connection pool, no physical isolation, single point of failure
-
-**JWT vs Session-based auth:**
-- ✅ Pros: stateless, horizontal scaling, no session storage
-- ❌ Cons: сложность revoke, размер токена, хранение в browser storage
-
-**Docker Compose:**
-- ✅ Pros: простота setup, low overhead, достаточно для текущей цели
-- ❌ Cons: нет авто-масштабирования, ручное управление отказами
+| Решение | ✅ Плюсы | ❌ Минусы |
+|---------|----------|-----------|
+| **Microservices vs Monolith** | Независимый deploy, масштабирование по сервисам, изоляция сбоев | Network latency, сложность разработки, distributed transactions |
+| **Multi-schema PostgreSQL vs отдельные БД** | Простота backup/restore, одна Postgres instance, схемы как namespace | Shared connection pool, no physical isolation, single point of failure |
+| **JWT vs Session-based auth** | Stateless, horizontal scaling, no session storage | Сложность revoke, размер токена, хранение в browser storage |
+| **Docker Compose vs Kubernetes** | Простота setup, low overhead, достаточно для текущей цели | Нет авто-масштабирования, ручное управление отказами, нет self-healing |
 
 ## См. также
 
