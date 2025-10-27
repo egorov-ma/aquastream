@@ -185,7 +185,7 @@ jobs:
         run: echo "::add-matcher::.github/matchers/generic.json"
 
       - name: Download JAR artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: backend-jars
           path: .
